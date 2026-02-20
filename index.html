@@ -350,9 +350,13 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .sel-area{flex-direction:column}
   .sel-card{max-width:100%;overflow:visible;position:relative;z-index:10}
   .sel-card:focus-within{z-index:20}
-  .dd{top:68px;max-height:200px;left:12px;right:12px}
+  /* iOS requires 16px+ font-size on inputs to prevent zoom and input event issues */
+  .sel-input{font-size:16px;padding:10px 12px}
+  .dd{top:74px;max-height:200px;left:12px;right:12px}
+  .dd-item{padding:12px 14px;font-size:14px;min-height:44px} /* 44px is iOS minimum touch target */
   .add-player-btn{max-width:100%;min-height:50px}
   .fp-grid{grid-template-columns:1fr 1fr}
+  .fp-select{font-size:16px} /* Prevent iOS zoom */
   .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .cmp-table{min-width:600px}
   .cmp-table thead th{padding:7px 8px;font-size:8.5px}
@@ -514,41 +518,61 @@ let slotCount=2; // visible slots
 
 function initSearch(n){
   const inp=document.getElementById('s'+n), dd=document.getElementById('d'+n);
+  let searchTimeout=null;
+  let isComposing=false;
   
   function doSearch(){
-    const q=inp.value.trim().toLowerCase();
+    if(isComposing)return;
+    const q=(inp.value||'').trim().toLowerCase();
+    
+    // DEBUG: Show what's happening
+    document.getElementById('debug').textContent = 'Query: "'+q+'" | Players found: '+PLAYERS.filter(p=>p.name.toLowerCase().includes(q)||p.fullName.toLowerCase().includes(q)).length;
+    
     if(q.length<2){dd.classList.remove('open');dd.innerHTML='';return}
     const already=sel.filter(Boolean).map(p=>p.id);
     const m=PLAYERS.filter(p=>!already.includes(p.id)&&(p.name.toLowerCase().includes(q)||p.fullName.toLowerCase().includes(q)||p.country.toLowerCase().includes(q))).slice(0,15);
+    
+    // DEBUG: Show matches
+    document.getElementById('debug').textContent = 'Query: "'+q+'" | Matches: '+m.length+' | First: '+(m[0]?m[0].fullName:'none');
+    
     if(m.length===0){dd.classList.remove('open');dd.innerHTML='';return}
     dd.innerHTML=m.map(p=>`<div class="dd-item" data-slot="${n}" data-pid="${p.id}"><span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span><span class="ct">${p.country}</span></div>`).join('');
     dd.classList.add('open');
   }
   
-  // Use multiple events for better mobile compatibility
-  inp.addEventListener('input',doSearch);
-  inp.addEventListener('keyup',doSearch);
-  inp.addEventListener('change',doSearch);
+  function triggerSearch(){
+    clearTimeout(searchTimeout);
+    searchTimeout=setTimeout(doSearch,10);
+  }
   
-  inp.addEventListener('focus',()=>{if(inp.value.trim().length>=2)doSearch()});
+  inp.addEventListener('compositionstart',()=>{isComposing=true});
+  inp.addEventListener('compositionend',()=>{isComposing=false;triggerSearch()});
   
-  // Use mousedown for closing (fires before click) but not on dropdown items
-  document.addEventListener('mousedown',e=>{
-    if(!e.target.closest('#c'+n) && !e.target.closest('.dd-item'))dd.classList.remove('open');
+  inp.addEventListener('input',triggerSearch);
+  inp.addEventListener('keyup',triggerSearch);
+  inp.addEventListener('keydown',e=>{if(e.key&&e.key.length===1)setTimeout(triggerSearch,50)});
+  inp.addEventListener('textInput',triggerSearch);
+  inp.addEventListener('paste',()=>setTimeout(triggerSearch,50));
+  
+  inp.addEventListener('focus',()=>{
+    setTimeout(()=>{if(inp.value.trim().length>=2)doSearch()},100);
   });
-  document.addEventListener('touchstart',e=>{
-    if(!e.target.closest('#c'+n) && !e.target.closest('.dd-item'))dd.classList.remove('open');
-  },{passive:true});
   
-  // Event delegation for dropdown item clicks - works better on mobile
+  document.addEventListener('touchstart',e=>{
+    if(!e.target.closest('#c'+n))dd.classList.remove('open');
+  },{passive:true});
+  document.addEventListener('mousedown',e=>{
+    if(!e.target.closest('#c'+n))dd.classList.remove('open');
+  });
+  
   dd.addEventListener('click',e=>{
     const item=e.target.closest('.dd-item');
     if(item){
+      e.preventDefault();
       e.stopPropagation();
       pickP(parseInt(item.dataset.slot),parseInt(item.dataset.pid));
     }
   });
-  // Also handle touch for mobile
   dd.addEventListener('touchend',e=>{
     const item=e.target.closest('.dd-item');
     if(item){
@@ -558,6 +582,15 @@ function initSearch(n){
     }
   });
 }
+
+// DEBUG: Check if data loaded
+document.addEventListener('DOMContentLoaded',()=>{
+  const dbg=document.createElement('div');
+  dbg.id='debug';
+  dbg.style.cssText='position:fixed;bottom:60px;left:10px;right:10px;background:red;color:white;padding:10px;font-size:14px;z-index:9999;border-radius:8px;';
+  dbg.textContent='Players loaded: '+PLAYERS.length+' | First: '+(PLAYERS[0]?PLAYERS[0].fullName:'NONE');
+  document.body.appendChild(dbg);
+});
 // Init search for initial 2 slots
 [1,2].forEach(initSearch);
 
