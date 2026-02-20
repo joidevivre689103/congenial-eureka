@@ -93,8 +93,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   position:absolute;left:16px;right:16px;top:72px;z-index:100;
   background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
   max-height:250px;overflow-y:auto;box-shadow:0 14px 44px rgba(0,0,0,0.12);display:none;
+  -webkit-overflow-scrolling:touch;
 }
-.dd.open{display:block}
+.dd.open{display:block!important;visibility:visible!important;opacity:1!important}
 .dd-item{
   padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
   font-size:12.5px;border-bottom:1px solid rgba(200,205,214,0.6);transition:background 0.12s;
@@ -347,7 +348,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .share-btn span{display:none}
   .main{padding:12px 14px}
   .sel-area{flex-direction:column}
-  .sel-card{max-width:100%}
+  .sel-card{max-width:100%;overflow:visible;position:relative;z-index:10}
+  .sel-card:focus-within{z-index:20}
+  .dd{top:68px;max-height:200px;left:12px;right:12px}
   .add-player-btn{max-width:100%;min-height:50px}
   .fp-grid{grid-template-columns:1fr 1fr}
   .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -511,19 +514,32 @@ let slotCount=2; // visible slots
 
 function initSearch(n){
   const inp=document.getElementById('s'+n), dd=document.getElementById('d'+n);
-  inp.addEventListener('input',()=>{
+  
+  function doSearch(){
     const q=inp.value.trim().toLowerCase();
-    if(q.length<2){dd.classList.remove('open');return}
+    if(q.length<2){dd.classList.remove('open');dd.innerHTML='';return}
     const already=sel.filter(Boolean).map(p=>p.id);
     const m=PLAYERS.filter(p=>!already.includes(p.id)&&(p.name.toLowerCase().includes(q)||p.fullName.toLowerCase().includes(q)||p.country.toLowerCase().includes(q))).slice(0,15);
+    if(m.length===0){dd.classList.remove('open');dd.innerHTML='';return}
     dd.innerHTML=m.map(p=>`<div class="dd-item" data-slot="${n}" data-pid="${p.id}"><span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span><span class="ct">${p.country}</span></div>`).join('');
     dd.classList.add('open');
-  });
-  inp.addEventListener('focus',()=>{if(inp.value.trim().length>=2)dd.classList.add('open')});
+  }
+  
+  // Use multiple events for better mobile compatibility
+  inp.addEventListener('input',doSearch);
+  inp.addEventListener('keyup',doSearch);
+  inp.addEventListener('change',doSearch);
+  
+  inp.addEventListener('focus',()=>{if(inp.value.trim().length>=2)doSearch()});
+  
   // Use mousedown for closing (fires before click) but not on dropdown items
   document.addEventListener('mousedown',e=>{
     if(!e.target.closest('#c'+n) && !e.target.closest('.dd-item'))dd.classList.remove('open');
   });
+  document.addEventListener('touchstart',e=>{
+    if(!e.target.closest('#c'+n) && !e.target.closest('.dd-item'))dd.classList.remove('open');
+  },{passive:true});
+  
   // Event delegation for dropdown item clicks - works better on mobile
   dd.addEventListener('click',e=>{
     const item=e.target.closest('.dd-item');
