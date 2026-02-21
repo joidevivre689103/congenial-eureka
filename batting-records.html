@@ -41,6 +41,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .brand-sub{font-size:11.5px;color:var(--text3);margin-top:2px;margin-left:48px}
 
 .hdr-nav{display:flex;align-items:center;gap:8px}
+.share-btn{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;
+  color:var(--text2);transition:all 0.2s;
+}
+.share-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.share-btn svg{width:16px;height:16px;stroke:currentColor;fill:none}
 .nav-link{
   background:var(--surface);border:1px solid var(--border);border-radius:8px;
   padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:7px;
@@ -223,6 +231,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .hdr-nav{position:absolute;top:14px;right:16px}
   .nav-link span{display:none}
   .nav-link{padding:8px 10px}
+  .share-btn{padding:8px 10px;font-size:0}
+  .share-btn svg{margin:0}
+  .share-btn span{display:none}
   .main{padding:12px 14px 40px}
   .stat-cards{grid-template-columns:repeat(2,1fr)}
   .fp-grid{grid-template-columns:1fr 1fr}
@@ -272,6 +283,27 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </svg>
         <span>Countries</span>
       </a>
+      <a href="simulation.html" class="nav-link">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="3"></rect>
+          <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"></circle>
+          <circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"></circle>
+          <circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"></circle>
+          <circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"></circle>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>
+        </svg>
+        <span>Simulation</span>
+      </a>
+      <button class="share-btn" onclick="sharePage()">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        <span>Share</span>
+      </button>
     </div>
   </div>
 </div>
@@ -673,6 +705,70 @@ function resetFilters(){
 
 // Initial render
 applyFilters();
+
+// Share functionality
+function sharePage(){
+  const params = new URLSearchParams();
+  
+  // Capture current filter state
+  const minInns = document.getElementById('fMinInns').value;
+  const minTests = document.getElementById('fMinTests')?.value;
+  const sortCol = document.querySelector('.rec-table th.sorted')?.dataset?.col;
+  const sortDir = document.querySelector('.rec-table th.sorted')?.classList.contains('desc') ? 'desc' : 'asc';
+  
+  if(minInns && minInns !== '20') params.set('minInns', minInns);
+  if(minTests) params.set('minTests', minTests);
+  if(sortCol) params.set('sort', sortCol);
+  if(sortDir) params.set('dir', sortDir);
+  
+  const shareUrl = window.location.origin + window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+  
+  const shareTitle = 'Test Cricket Batting Records';
+  const shareText = 'All-time Test cricket batting statistics — sorted, filtered, and ranked';
+  
+  if(navigator.share && navigator.canShare && navigator.canShare({url: shareUrl})){
+    navigator.share({
+      title: shareTitle,
+      text: shareText,
+      url: shareUrl
+    }).catch(err => {
+      if(err.name !== 'AbortError'){
+        fallbackShare(shareUrl);
+      }
+    });
+  } else {
+    fallbackShare(shareUrl);
+  }
+}
+
+function fallbackShare(url){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>{
+      showCopiedFeedback();
+    }).catch(()=>{
+      showShareDialog(url);
+    });
+  } else {
+    showShareDialog(url);
+  }
+}
+
+function showCopiedFeedback(){
+  const btn = document.querySelector('.share-btn');
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;stroke:currentColor;fill:none"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
+  btn.style.color = 'var(--green)';
+  btn.style.borderColor = 'var(--green)';
+  setTimeout(()=>{
+    btn.innerHTML = originalHTML;
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }, 2000);
+}
+
+function showShareDialog(url){
+  prompt('Copy this URL to share:', url);
+}
 </script>
 </body>
 </html>
