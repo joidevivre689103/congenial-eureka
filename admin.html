@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Cricket Stats</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f4f5f7;--surface:#ffffff;--surface2:#f0f1f4;
+  --border:#d8dce3;--text:#1a1e26;--text2:#5a6578;--text3:#8896a8;
+  --accent:#c08018;--accent-dim:rgba(192,128,24,0.10);
+  --green:#1a9a60;--green-dim:rgba(26,154,96,0.10);
+  --red:#d04040;--red-dim:rgba(208,64,64,0.10);
+}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh}
+
+/* Admin Login Overlay */
+.admin-login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a1e26 0%,#2d3340 100%);z-index:99999;display:flex;align-items:center;justify-content:center}
+.admin-login-overlay.hidden{display:none}
+.login-box{background:#fff;border-radius:16px;padding:40px 48px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.4);max-width:400px;width:90%}
+.login-box h2{font-family:'DM Serif Display',serif;font-size:24px;color:#1a1e26;margin-bottom:8px}
+.login-box p{font-size:13px;color:#5a6578;margin-bottom:24px}
+.input-group{position:relative;margin-bottom:12px}
+.input-group input{width:100%;padding:12px 16px;padding-right:44px;border:2px solid #d8dce3;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s}
+.input-group input:focus{border-color:#c08018}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8896a8;padding:4px}
+.toggle-pw:hover{color:#5a6578}
+.toggle-pw svg{width:20px;height:20px}
+.login-box button.submit-btn{width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#c08018,#8a5810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+.login-box button.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,128,24,0.35)}
+.login-error{color:#d04040;font-size:12px;margin-top:10px;display:none}
+.login-error.show{display:block}
+
+/* Admin Panel */
+.admin-panel{display:none;padding:32px;max-width:1000px;margin:0 auto}
+.admin-panel.visible{display:block}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.admin-title{font-family:'DM Serif Display',serif;font-size:28px}
+.logout-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--text2);transition:all 0.2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px}
+.card-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+
+/* Password Change */
+.pw-form{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.pw-form .input-group{margin-bottom:0;flex:1;min-width:200px}
+.pw-form label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.pw-form input{width:100%;padding:10px 14px;padding-right:40px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:'Outfit',sans-serif}
+.pw-form button{padding:10px 24px;background:var(--green);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.pw-form button:hover{background:#158050}
+.pw-success{color:var(--green);font-size:12px;margin-top:10px;display:none}
+.pw-success.show{display:block}
+
+/* Logins Table */
+.logins-table{width:100%;border-collapse:collapse}
+.logins-table th{text-align:left;padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);border-bottom:2px solid var(--border)}
+.logins-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+.logins-table tr:last-child td{border-bottom:none}
+.logins-table tr:hover td{background:var(--surface2)}
+.no-logins{text-align:center;padding:40px;color:var(--text3);font-size:14px}
+.clear-btn{margin-top:16px;padding:8px 16px;background:var(--red-dim);color:var(--red);border:1px solid var(--red);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.clear-btn:hover{background:var(--red);color:#fff}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface2);border-radius:8px;padding:16px;text-align:center}
+.stat-value{font-family:'DM Serif Display',serif;font-size:32px;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:4px}
+</style>
+</head>
+<body>
+
+<!-- Admin Login -->
+<div class="admin-login-overlay" id="adminLoginOverlay">
+  <div class="login-box">
+    <h2>🔐 Admin Access</h2>
+    <p>Enter admin credentials to continue</p>
+    <div class="input-group">
+      <input type="password" id="adminPassword" placeholder="Admin password" onkeypress="if(event.key==='Enter')adminLogin()">
+      <button class="toggle-pw" onclick="toggleAdminPw()">
+        <svg id="adminEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+    <button class="submit-btn" onclick="adminLogin()">Login</button>
+    <div class="login-error" id="adminError">Incorrect admin password</div>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-header">
+    <h1 class="admin-title">🏏 Cricket Stats Admin</h1>
+    <button class="logout-btn" onclick="adminLogout()">Logout</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value" id="totalLogins">0</div>
+      <div class="stat-label">Total Logins</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="uniqueUsers">0</div>
+      <div class="stat-label">Unique Emails</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="todayLogins">0</div>
+      <div class="stat-label">Today's Logins</div>
+    </div>
+  </div>
+
+  <!-- Change Password -->
+  <div class="card">
+    <div class="card-title">Change Site Password</div>
+    <div class="pw-form">
+      <div class="input-group">
+        <label>New Password</label>
+        <input type="password" id="newPassword" placeholder="Enter new password">
+        <button class="toggle-pw" onclick="toggleNewPw()" style="top:calc(50% + 10px)">
+          <svg id="newPwEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+      <button onclick="changePassword()">Update Password</button>
+    </div>
+    <div class="pw-success" id="pwSuccess">✓ Password updated successfully!</div>
+  </div>
+
+  <!-- Change Admin Password -->
+  <div class="card">
+    <div class="card-title">Change Admin Password</div>
+    <div class="pw-form">
+      <div class="input-group">
+        <label>New Admin Password</label>
+        <input type="password" id="newAdminPassword" placeholder="Enter new admin password">
+        <button class="toggle-pw" onclick="toggleNewAdminPw()" style="top:calc(50% + 10px)">
+          <svg id="newAdminPwEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+      <button onclick="changeAdminPassword()">Update Admin Password</button>
+    </div>
+    <div class="pw-success" id="adminPwSuccess">✓ Admin password updated successfully!</div>
+  </div>
+
+  <!-- Login History -->
+  <div class="card">
+    <div class="card-title">Login History</div>
+    <div id="loginsContainer">
+      <div class="no-logins">Loading...</div>
+    </div>
+    <button class="clear-btn" onclick="clearLogins()" id="clearBtn" style="display:none">Clear All Logins</button>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDhQrnZkxPT1bWE-V5bl39EKJRptPUPSnI",
+  authDomain: "hitwicket-cba02.firebaseapp.com",
+  projectId: "hitwicket-cba02",
+  storageBucket: "hitwicket-cba02.firebasestorage.app",
+  messagingSenderId: "196915483829",
+  appId: "1:196915483829:web:071c47af79914aec88dafc"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Default admin password (will be stored in Firestore)
+const DEFAULT_ADMIN_PASSWORD = 'admin123';
+
+let adminPassword = DEFAULT_ADMIN_PASSWORD;
+
+// Eye icons
+const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+
+function toggleAdminPw() {
+  const input = document.getElementById('adminPassword');
+  const icon = document.getElementById('adminEyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = eyeClosed;
+  } else {
+    input.type = 'password';
+    icon.innerHTML = eyeOpen;
+  }
+}
+
+function toggleNewPw() {
+  const input = document.getElementById('newPassword');
+  const icon = document.getElementById('newPwEyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = eyeClosed;
+  } else {
+    input.type = 'password';
+    icon.innerHTML = eyeOpen;
+  }
+}
+
+function toggleNewAdminPw() {
+  const input = document.getElementById('newAdminPassword');
+  const icon = document.getElementById('newAdminPwEyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = eyeClosed;
+  } else {
+    input.type = 'password';
+    icon.innerHTML = eyeOpen;
+  }
+}
+
+// Load admin password from Firestore
+async function loadAdminPassword() {
+  try {
+    const doc = await db.collection('settings').doc('admin').get();
+    if (doc.exists && doc.data().password) {
+      adminPassword = doc.data().password;
+    } else {
+      // Initialize with default
+      await db.collection('settings').doc('admin').set({ password: DEFAULT_ADMIN_PASSWORD });
+    }
+  } catch (e) {
+    console.error('Error loading admin password:', e);
+  }
+}
+
+async function adminLogin() {
+  const input = document.getElementById('adminPassword');
+  const error = document.getElementById('adminError');
+  
+  await loadAdminPassword();
+  
+  if (input.value === adminPassword) {
+    sessionStorage.setItem('cricket_admin_auth', 'true');
+    document.getElementById('adminLoginOverlay').classList.add('hidden');
+    document.getElementById('adminPanel').classList.add('visible');
+    loadLogins();
+  } else {
+    error.classList.add('show');
+    input.style.borderColor = '#d04040';
+    setTimeout(() => {
+      error.classList.remove('show');
+      input.style.borderColor = '';
+    }, 2000);
+  }
+}
+
+function adminLogout() {
+  sessionStorage.removeItem('cricket_admin_auth');
+  location.reload();
+}
+
+async function changePassword() {
+  const newPw = document.getElementById('newPassword').value.trim();
+  if (!newPw) return alert('Please enter a new password');
+  
+  try {
+    await db.collection('settings').doc('site').set({ password: newPw }, { merge: true });
+    document.getElementById('pwSuccess').classList.add('show');
+    document.getElementById('newPassword').value = '';
+    setTimeout(() => document.getElementById('pwSuccess').classList.remove('show'), 3000);
+  } catch (e) {
+    alert('Error updating password: ' + e.message);
+  }
+}
+
+async function changeAdminPassword() {
+  const newPw = document.getElementById('newAdminPassword').value.trim();
+  if (!newPw) return alert('Please enter a new admin password');
+  
+  try {
+    await db.collection('settings').doc('admin').set({ password: newPw }, { merge: true });
+    adminPassword = newPw;
+    document.getElementById('adminPwSuccess').classList.add('show');
+    document.getElementById('newAdminPassword').value = '';
+    setTimeout(() => document.getElementById('adminPwSuccess').classList.remove('show'), 3000);
+  } catch (e) {
+    alert('Error updating admin password: ' + e.message);
+  }
+}
+
+async function loadLogins() {
+  try {
+    const snapshot = await db.collection('logins').orderBy('timestamp', 'desc').get();
+    const logins = [];
+    snapshot.forEach(doc => logins.push({ id: doc.id, ...doc.data() }));
+    
+    // Stats
+    const uniqueEmails = new Set(logins.map(l => l.email)).size;
+    const today = new Date().toDateString();
+    const todayLogins = logins.filter(l => l.timestamp && new Date(l.timestamp.toDate()).toDateString() === today).length;
+    
+    document.getElementById('totalLogins').textContent = logins.length;
+    document.getElementById('uniqueUsers').textContent = uniqueEmails;
+    document.getElementById('todayLogins').textContent = todayLogins;
+    
+    // Table
+    const container = document.getElementById('loginsContainer');
+    if (logins.length === 0) {
+      container.innerHTML = '<div class="no-logins">No logins recorded yet</div>';
+      document.getElementById('clearBtn').style.display = 'none';
+    } else {
+      let html = `<table class="logins-table">
+        <thead><tr><th>Email</th><th>Page</th><th>Date & Time</th></tr></thead>
+        <tbody>`;
+      logins.forEach(l => {
+        const date = l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : 'Unknown';
+        html += `<tr><td>${l.email || 'N/A'}</td><td>${l.page || 'N/A'}</td><td>${date}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+      document.getElementById('clearBtn').style.display = 'inline-block';
+    }
+  } catch (e) {
+    console.error('Error loading logins:', e);
+    document.getElementById('loginsContainer').innerHTML = '<div class="no-logins">Error loading logins</div>';
+  }
+}
+
+async function clearLogins() {
+  if (!confirm('Are you sure you want to delete all login records?')) return;
+  
+  try {
+    const snapshot = await db.collection('logins').get();
+    const batch = db.batch();
+    snapshot.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+    loadLogins();
+  } catch (e) {
+    alert('Error clearing logins: ' + e.message);
+  }
+}
+
+// Check if already logged in
+if (sessionStorage.getItem('cricket_admin_auth') === 'true') {
+  document.getElementById('adminLoginOverlay').classList.add('hidden');
+  document.getElementById('adminPanel').classList.add('visible');
+  loadLogins();
+} else {
+  document.getElementById('adminPassword').focus();
+}
+</script>
+</body>
+</html>

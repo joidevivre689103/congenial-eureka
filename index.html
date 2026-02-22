@@ -7,19 +7,24 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Test Cricket Side by Side</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="data.js?v=2"></script>
 <style>
 /* Password Gate Styles */
 .password-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a1e26 0%,#2d3340 100%);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 0.4s}
 .password-overlay.hidden{opacity:0;pointer-events:none}
-.password-box{background:#fff;border-radius:16px;padding:40px 48px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.4);max-width:380px;width:90%}
+.password-box{background:#fff;border-radius:16px;padding:40px 48px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.4);max-width:400px;width:90%}
 .password-box h2{font-family:'DM Serif Display',serif;font-size:24px;color:#1a1e26;margin-bottom:8px}
 .password-box p{font-size:13px;color:#5a6578;margin-bottom:24px}
-.password-box input{width:100%;padding:12px 16px;border:2px solid #d8dce3;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s}
-.password-box input:focus{border-color:#c08018}
-.password-box input.error{border-color:#d04040;animation:shake 0.4s}
-.password-box button{width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#c08018,#8a5810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
-.password-box button:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,128,24,0.35)}
+.input-group{position:relative;margin-bottom:12px;text-align:left}
+.input-group input{width:100%;padding:12px 16px;border:2px solid #d8dce3;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s}
+.input-group input[type="password"],.input-group input[type="text"]:not([type="email"]){padding-right:44px}
+.input-group input:focus{border-color:#c08018}
+.input-group input.error{border-color:#d04040;animation:shake 0.4s}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8896a8;padding:4px}
+.toggle-pw:hover{color:#5a6578}
+.toggle-pw svg{width:20px;height:20px}
+.password-box button.submit-btn{width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#c08018,#8a5810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+.password-box button.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,128,24,0.35)}
+.password-box button.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
 .password-error{color:#d04040;font-size:12px;margin-top:10px;opacity:0;transition:opacity 0.2s}
 .password-error.show{opacity:1}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
@@ -382,10 +387,21 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 <!-- Password Gate Overlay -->
 <div class="password-overlay" id="passwordOverlay">
   <div class="password-box">
-    <h2>🏏 Protected Area</h2>
-    <p>Enter the password to access this site</p>
-    <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
-    <button onclick="checkPassword()">Unlock</button>
+    <h2>🏏 Cricket Stats</h2>
+    <p>Enter your email and password to access</p>
+    <div class="input-group">
+      <input type="email" id="emailInput" placeholder="Email address">
+    </div>
+    <div class="input-group">
+      <input type="password" id="passwordInput" placeholder="Password" onkeypress="if(event.key==='Enter')checkPassword()">
+      <button class="toggle-pw" onclick="togglePassword()" type="button">
+        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+    <button class="submit-btn" onclick="checkPassword()">Unlock</button>
     <div class="password-error" id="passwordError">Incorrect password. Try again.</div>
   </div>
 </div>
@@ -518,8 +534,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   Data Source - Ananth Narayanan
 </div>
 
-</div><!-- end site-content -->
-
+<script src="data.js"></script>
 <script>
 
 const KEYS=['id','name','fullName','country','fromYear','toYear','tests','innings','notOuts',
@@ -1180,24 +1195,98 @@ function showShareDialog(url, playerNames){
     showCopiedFeedback();
   }
 }
+</script>
 
-// Password Protection - Change 'mylaptopismAI!' to your desired password
-const SITE_PASSWORD = 'mylaptopismAI!';
+</div><!-- end site-content -->
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDhQrnZkxPT1bWE-V5bl39EKJRptPUPSnI",
+  authDomain: "hitwicket-cba02.firebaseapp.com",
+  projectId: "hitwicket-cba02",
+  storageBucket: "hitwicket-cba02.firebasestorage.app",
+  messagingSenderId: "196915483829",
+  appId: "1:196915483829:web:071c47af79914aec88dafc"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const STORAGE_KEY = 'cricket_site_auth';
+const DEFAULT_PASSWORD = 'mylaptopismAI!';
+let sitePassword = DEFAULT_PASSWORD;
 
-function checkPassword() {
+// Eye icons SVG
+const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+
+function togglePassword() {
   const input = document.getElementById('passwordInput');
+  const icon = document.getElementById('eyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = eyeClosed;
+  } else {
+    input.type = 'password';
+    icon.innerHTML = eyeOpen;
+  }
+}
+
+// Load password from Firestore
+async function loadPassword() {
+  try {
+    const doc = await db.collection('settings').doc('site').get();
+    if (doc.exists && doc.data().password) {
+      sitePassword = doc.data().password;
+    } else {
+      // Initialize with default password
+      await db.collection('settings').doc('site').set({ password: DEFAULT_PASSWORD });
+    }
+  } catch (e) {
+    console.error('Error loading password:', e);
+  }
+}
+
+async function checkPassword() {
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
   const error = document.getElementById('passwordError');
   
-  if (input.value === SITE_PASSWORD) {
-    // Store auth in sessionStorage (clears when browser closes)
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  
+  if (!email) {
+    emailInput.classList.add('error');
+    setTimeout(() => emailInput.classList.remove('error'), 400);
+    return;
+  }
+  
+  await loadPassword();
+  
+  if (password === sitePassword) {
+    // Log the login to Firestore
+    try {
+      await db.collection('logins').add({
+        email: email,
+        page: 'index.html',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (e) {
+      console.error('Error logging login:', e);
+    }
+    
     sessionStorage.setItem(STORAGE_KEY, 'authenticated');
+    sessionStorage.setItem('cricket_user_email', email);
     unlockSite();
   } else {
-    input.classList.add('error');
+    passwordInput.classList.add('error');
     error.classList.add('show');
     setTimeout(() => {
-      input.classList.remove('error');
+      passwordInput.classList.remove('error');
     }, 400);
   }
 }
@@ -1214,7 +1303,7 @@ function unlockSite() {
 if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
   unlockSite();
 } else {
-  document.getElementById('passwordInput').focus();
+  document.getElementById('emailInput').focus();
 }
 </script>
 </body>
