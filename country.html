@@ -7,6 +7,23 @@
 <title>Test Cricket â€“ Country vs Country</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Password Gate Styles */
+.password-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a1e26 0%,#2d3340 100%);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 0.4s}
+.password-overlay.hidden{opacity:0;pointer-events:none}
+.password-box{background:#fff;border-radius:16px;padding:40px 48px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.4);max-width:380px;width:90%}
+.password-box h2{font-family:'DM Serif Display',serif;font-size:24px;color:#1a1e26;margin-bottom:8px}
+.password-box p{font-size:13px;color:#5a6578;margin-bottom:24px}
+.password-box input{width:100%;padding:12px 16px;border:2px solid #d8dce3;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s}
+.password-box input:focus{border-color:#c08018}
+.password-box input.error{border-color:#d04040;animation:shake 0.4s}
+.password-box button{width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#c08018,#8a5810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+.password-box button:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,128,24,0.35)}
+.password-error{color:#d04040;font-size:12px;margin-top:10px;opacity:0;transition:opacity 0.2s}
+.password-error.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.site-content{display:none}
+.site-content.unlocked{display:block}
+
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 :root{
@@ -110,7 +127,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   padding:0;margin-bottom:20px;overflow:hidden;
 }
 .sb-body{
-  display:grid;grid-template-columns:repeat(6,1fr);
+  display:grid;grid-template-columns:repeat(4,1fr);
   border-top:1px solid var(--border);
 }
 .sb-stat{
@@ -246,13 +263,25 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 </head>
 <body>
 
+<!-- Password Gate Overlay -->
+<div class="password-overlay" id="passwordOverlay">
+  <div class="password-box">
+    <h2>🏏 Protected Area</h2>
+    <p>Enter the password to access this site</p>
+    <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
+    <button onclick="checkPassword()">Unlock</button>
+    <div class="password-error" id="passwordError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div class="site-content" id="siteContent">
 <!-- Header -->
 <div class="header">
   <div class="hdr-inner">
     <div>
       <div class="brand">
         <div class="brand-icon">CT</div>
-        <h1>Test Cricket Comparisons</h1>
+        <h1>Test Cricket Side by Side</h1>
       </div>
       <div class="brand-sub">Country vs Country Results</div>
     </div>
@@ -302,14 +331,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         <div class="sel-group">
           <label>Country 1</label>
           <select class="team-select" id="team1" onchange="updateResults()">
-            <option value="">– Select –</option>
+            <option value="">â€” Select â€”</option>
           </select>
         </div>
         <div class="vs-badge">vs</div>
         <div class="sel-group">
           <label>Country 2</label>
           <select class="team-select" id="team2" onchange="updateResults()">
-            <option value="">– Select –</option>
+            <option value="">â€” Select â€”</option>
           </select>
         </div>
       </div>
@@ -327,7 +356,15 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         <label>To</label>
         <input type="number" id="filterTo" placeholder="Year" oninput="renderTable()" class="year-input">
       </div>
-
+      <div class="sel-group" style="min-width:110px">
+        <label>Venue</label>
+        <select id="filterHA" onchange="renderTable()" style="width:100%;background:var(--surface2);border:2px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6578'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center;">
+          <option value="all">All</option>
+          <option value="home">Home</option>
+          <option value="away">Away</option>
+          <option value="neutral">Neutral</option>
+        </select>
+      </div>
       <button class="swap-btn" onclick="clearYearFilters()" title="Clear year filters" style="padding:8px 12px">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><path d="M18 6L6 18M6 6l12 12"/></svg>
         Clear
@@ -350,37 +387,25 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         <div class="sb-stat">
           <div class="sb-stat-label">Wins</div>
           <div class="sb-stat-values">
-            <div class="sb-val" id="sbW1">–</div>
+            <div class="sb-val" id="sbW1">â€”</div>
           </div>
         </div>
         <div class="sb-stat">
           <div class="sb-stat-label">Losses</div>
           <div class="sb-stat-values">
-            <div class="sb-val" id="sbL1">–</div>
+            <div class="sb-val" id="sbL1">â€”</div>
           </div>
         </div>
         <div class="sb-stat">
           <div class="sb-stat-label">Draws</div>
           <div class="sb-stat-values">
-            <div class="sb-val neutral" id="sbD">–</div>
+            <div class="sb-val neutral" id="sbD">â€”</div>
           </div>
         </div>
         <div class="sb-stat">
           <div class="sb-stat-label">Total</div>
           <div class="sb-stat-values">
-            <div class="sb-val neutral" id="sbTotal">–</div>
-          </div>
-        </div>
-        <div class="sb-stat">
-          <div class="sb-stat-label" id="sbWinPctLabel">Win %</div>
-          <div class="sb-stat-values">
-            <div class="sb-val" id="sbWinPct" style="font-size:22px">–</div>
-          </div>
-        </div>
-        <div class="sb-stat">
-          <div class="sb-stat-label" id="sbWLRatioLabel">W/L Ratio</div>
-          <div class="sb-stat-values">
-            <div class="sb-val" id="sbWLRatio" style="font-size:22px">–</div>
+            <div class="sb-val neutral" id="sbTotal">â€”</div>
           </div>
         </div>
       </div>
@@ -524,12 +549,14 @@ function updateResults() {
   document.getElementById('filterResult').value = '';
   document.getElementById('filterFrom').value = '';
   document.getElementById('filterTo').value = '';
+  document.getElementById('filterHA').value = 'all';
   renderTable();
 }
 
 function clearYearFilters() {
   document.getElementById('filterFrom').value = '';
   document.getElementById('filterTo').value = '';
+  document.getElementById('filterHA').value = 'all';
   renderTable();
 }
 
@@ -540,6 +567,7 @@ function renderTable() {
   const filter = document.getElementById('filterResult').value;
   const fromYear = parseInt(document.getElementById('filterFrom').value) || null;
   const toYear = parseInt(document.getElementById('filterTo').value) || null;
+  const haFilter = (document.getElementById('filterHA') || {value:'all'}).value;
   const t1Name = TEAM_NAMES[t1] || t1;
   const t2Name = TEAM_NAMES[t2] || t2;
 
@@ -548,10 +576,20 @@ function renderTable() {
   filterSel.options[1].textContent = 'Wins for ' + t1Name;
   filterSel.options[2].textContent = 'Wins for ' + t2Name;
 
+  // Update HA dropdown labels with team name context
+  const haEl = document.getElementById('filterHA');
+  haEl.options[1].textContent = t1Name + ' Home';
+  haEl.options[2].textContent = t1Name + ' Away';
+
   // Apply year filter to base set first (for scoreboard/bars/decades)
   let yearFiltered = currentMatches;
   if (fromYear) yearFiltered = yearFiltered.filter(m => m.year >= fromYear);
   if (toYear) yearFiltered = yearFiltered.filter(m => m.year <= toYear);
+  console.log('haFilter:', haFilter, 'before filter:', yearFiltered.length);
+  console.log('sample match objects:', JSON.stringify(yearFiltered.slice(0,2)));
+  if (haFilter !== 'all') yearFiltered = yearFiltered.filter(m => m.ha === haFilter);
+  console.log('after HA filter:', yearFiltered.length, 'sample ha values:', yearFiltered.slice(0,3).map(m=>m.ha));
+
   // Recalculate summary stats from year-filtered matches
   const w1 = yearFiltered.filter(m => m.result === 'Won').length;
   const w2 = yearFiltered.filter(m => m.result === 'Lost').length;
@@ -565,35 +603,6 @@ function renderTable() {
   document.getElementById('sbL1').className = 'sb-val';
   document.getElementById('sbD').textContent = d;
   document.getElementById('sbTotal').textContent = tot;
-
-  // Win %
-  const winPctEl = document.getElementById('sbWinPct');
-  const winPctLabelEl = document.getElementById('sbWinPctLabel');
-  winPctLabelEl.textContent = (TEAM_NAMES[t1] || t1) + ' Win %';
-  if (tot > 0) {
-    const wp = (w1 / tot * 100).toFixed(1);
-    winPctEl.textContent = wp + '%';
-    winPctEl.style.color = w1 > w2 ? 'var(--green)' : w1 < w2 ? 'var(--red)' : 'inherit';
-  } else {
-    winPctEl.textContent = '–';
-    winPctEl.style.color = 'inherit';
-  }
-
-  // W/L Ratio
-  const wlRatioEl = document.getElementById('sbWLRatio');
-  const wlRatioLabelEl = document.getElementById('sbWLRatioLabel');
-  wlRatioLabelEl.textContent = (TEAM_NAMES[t1] || t1) + ' W/L';
-  if (w2 > 0) {
-    const ratio = (w1 / w2).toFixed(2);
-    wlRatioEl.textContent = ratio;
-    wlRatioEl.style.color = w1 > w2 ? 'var(--green)' : w1 < w2 ? 'var(--red)' : 'inherit';
-  } else if (w1 > 0) {
-    wlRatioEl.textContent = '∞';
-    wlRatioEl.style.color = 'var(--green)';
-  } else {
-    wlRatioEl.textContent = '–';
-    wlRatioEl.style.color = 'inherit';
-  }
 
   // Bars
   setTimeout(() => {
@@ -657,10 +666,10 @@ function renderTable() {
     return `<tr>
       <td>${m.test}</td>
       <td>${m.year}</td>
-      <td class="left">${m.venue || '–'}</td>
+      <td class="left">${m.venue || 'â€”'}</td>
       <td style="font-weight:700;color:${haColor}">${haLabel}</td>
       <td><span class="result-badge ${m.result === 'Won' ? 'won' : m.result === 'Lost' ? 'lost' : 'draw'}">${m.result === 'Won' ? t1Name + ' won' : m.result === 'Lost' ? t2Name + ' won' : 'Draw'}</span></td>
-      <td style="color:var(--text2)">${m.margin || '–'}</td>
+      <td style="color:var(--text2)">${m.margin || 'â€”'}</td>
     </tr>`;
   }).join('');
 
@@ -700,6 +709,46 @@ function renderTable() {
 
 // Initial load
 updateResults();
+</script>
+
+</div><!-- end site-content -->
+
+<script>
+// Password Protection - Change 'cricket2024' to your desired password
+const SITE_PASSWORD = 'mylaptopismAI!';
+const STORAGE_KEY = 'cricket_site_auth';
+
+function checkPassword() {
+  const input = document.getElementById('passwordInput');
+  const error = document.getElementById('passwordError');
+  
+  if (input.value === SITE_PASSWORD) {
+    // Store auth in sessionStorage (clears when browser closes)
+    sessionStorage.setItem(STORAGE_KEY, 'authenticated');
+    unlockSite();
+  } else {
+    input.classList.add('error');
+    error.classList.add('show');
+    setTimeout(() => {
+      input.classList.remove('error');
+    }, 400);
+  }
+}
+
+function unlockSite() {
+  document.getElementById('passwordOverlay').classList.add('hidden');
+  document.getElementById('siteContent').classList.add('unlocked');
+  setTimeout(() => {
+    document.getElementById('passwordOverlay').style.display = 'none';
+  }, 400);
+}
+
+// Check if already authenticated this session
+if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
+  unlockSite();
+} else {
+  document.getElementById('passwordInput').focus();
+}
 </script>
 </body>
 </html>

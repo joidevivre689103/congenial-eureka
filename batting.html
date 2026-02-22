@@ -8,6 +8,23 @@
 <title>Test Cricket — Batting</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Password Gate Styles */
+.password-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a1e26 0%,#2d3340 100%);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 0.4s}
+.password-overlay.hidden{opacity:0;pointer-events:none}
+.password-box{background:#fff;border-radius:16px;padding:40px 48px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.4);max-width:380px;width:90%}
+.password-box h2{font-family:'DM Serif Display',serif;font-size:24px;color:#1a1e26;margin-bottom:8px}
+.password-box p{font-size:13px;color:#5a6578;margin-bottom:24px}
+.password-box input{width:100%;padding:12px 16px;border:2px solid #d8dce3;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s}
+.password-box input:focus{border-color:#c08018}
+.password-box input.error{border-color:#d04040;animation:shake 0.4s}
+.password-box button{width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#c08018,#8a5810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+.password-box button:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,128,24,0.35)}
+.password-error{color:#d04040;font-size:12px;margin-top:10px;opacity:0;transition:opacity 0.2s}
+.password-error.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.site-content{display:none}
+.site-content.unlocked{display:block}
+
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 :root{
@@ -235,13 +252,25 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 </head>
 <body>
 
+<!-- Password Gate Overlay -->
+<div class="password-overlay" id="passwordOverlay">
+  <div class="password-box">
+    <h2>🏏 Protected Area</h2>
+    <p>Enter the password to access this site</p>
+    <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
+    <button onclick="checkPassword()">Unlock</button>
+    <div class="password-error" id="passwordError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div class="site-content" id="siteContent">
 <!-- ── Header ── -->
 <div class="header">
   <div class="hdr-inner">
     <div>
       <div class="brand">
         <div class="brand-icon">CT</div>
-        <h1>Test Cricket Comparisons</h1>
+        <h1>Test Cricket Side by Side</h1>
       </div>
       <div class="brand-sub">Batting &amp; Statistics</div>
     </div>
@@ -368,7 +397,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <option value="30">30+</option>
           <option value="40">40+</option>
           <option value="45">45+</option>
-          <option value="48">48+</option>
           <option value="50">50+</option>
           <option value="55">55+</option>
         </select>
@@ -673,6 +701,46 @@ function resetFilters(){
 
 // Initial render
 applyFilters();
+</script>
+
+</div><!-- end site-content -->
+
+<script>
+// Password Protection - Change 'cricket2024' to your desired password
+const SITE_PASSWORD = 'mylaptopismAI!';
+const STORAGE_KEY = 'cricket_site_auth';
+
+function checkPassword() {
+  const input = document.getElementById('passwordInput');
+  const error = document.getElementById('passwordError');
+  
+  if (input.value === SITE_PASSWORD) {
+    // Store auth in sessionStorage (clears when browser closes)
+    sessionStorage.setItem(STORAGE_KEY, 'authenticated');
+    unlockSite();
+  } else {
+    input.classList.add('error');
+    error.classList.add('show');
+    setTimeout(() => {
+      input.classList.remove('error');
+    }, 400);
+  }
+}
+
+function unlockSite() {
+  document.getElementById('passwordOverlay').classList.add('hidden');
+  document.getElementById('siteContent').classList.add('unlocked');
+  setTimeout(() => {
+    document.getElementById('passwordOverlay').style.display = 'none';
+  }, 400);
+}
+
+// Check if already authenticated this session
+if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
+  unlockSite();
+} else {
+  document.getElementById('passwordInput').focus();
+}
 </script>
 </body>
 </html>
