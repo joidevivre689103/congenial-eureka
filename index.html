@@ -504,6 +504,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       <div class="fp-group"><label>Match Innings</label><select class="fp-select" id="fInn" onchange="applyFilters()"><option value="">All innings</option><option value="1">1st innings</option><option value="2">2nd innings</option><option value="3">3rd innings</option><option value="4">4th innings</option></select></div>
       <div class="fp-group"><label>Result</label><select class="fp-select" id="fRes" onchange="applyFilters()"><option value="">All results</option><option value="won">Won</option><option value="lost">Lost</option><option value="drawn">Drawn</option><option value="tied">Tied</option></select></div>
       <div class="fp-group"><label>Toss</label><select class="fp-select" id="fToss" onchange="applyFilters()"><option value="">All</option><option value="won">Won toss</option><option value="lost">Lost toss</option></select></div>
+      <div class="fp-group"><label>Played Together</label><select class="fp-select" id="fTogether" onchange="applyFilters()"><option value="">No (all stats)</option><option value="yes">Yes (same matches)</option></select></div>
     </div>
     <div class="active-filters" id="activeFilt"></div>
   </div>
@@ -628,6 +629,7 @@ function loadFromURL(){
       if(params.get('inn')) document.getElementById('fInn').value = params.get('inn');
       if(params.get('res')) document.getElementById('fRes').value = params.get('res');
       if(params.get('toss')) document.getElementById('fToss').value = params.get('toss');
+      if(params.get('together')) document.getElementById('fTogether').value = params.get('together');
       
       // Render with filters applied
       if(hasEnough()) render();
@@ -736,9 +738,9 @@ function populateFilters(){
   [...gU].sort((a,b)=>GROUNDS[a].localeCompare(GROUNDS[b])).forEach(gi=>{gndS.innerHTML+=`<option value="${gi}">${GROUNDS[gi]}</option>`});
 }
 
-function getF(){return{opp:selectedOpps,city:document.getElementById('fCity').value,gnd:document.getElementById('fGnd').value,ha:document.getElementById('fHA').value,inn:document.getElementById('fInn').value,res:document.getElementById('fRes').value,toss:document.getElementById('fToss').value}}
+function getF(){return{opp:selectedOpps,city:document.getElementById('fCity').value,gnd:document.getElementById('fGnd').value,ha:document.getElementById('fHA').value,inn:document.getElementById('fInn').value,res:document.getElementById('fRes').value,toss:document.getElementById('fToss').value,together:document.getElementById('fTogether').value}}
 function applyFilters(){if(hasEnough())render();showTags()}
-function resetFilters(){selectedOpps=[];['fCity','fGnd','fHA','fInn','fRes','fToss'].forEach(id=>{document.getElementById(id).value=''});document.getElementById('activeFilt').innerHTML='';updateOppToggleLabel();document.querySelectorAll('#fOppDD .ms-dd-item').forEach(el=>el.classList.remove('checked'));if(hasEnough())render()}
+function resetFilters(){selectedOpps=[];['fCity','fGnd','fHA','fInn','fRes','fToss','fTogether'].forEach(id=>{document.getElementById(id).value=''});document.getElementById('activeFilt').innerHTML='';updateOppToggleLabel();document.querySelectorAll('#fOppDD .ms-dd-item').forEach(el=>el.classList.remove('checked'));if(hasEnough())render()}
 function ordinal(n){return['','1st','2nd','3rd','4th'][n]||n}
 function showTags(){
   const f=getF(),tags=[];
@@ -749,6 +751,7 @@ function showTags(){
   if(f.inn)tags.push({k:'fInn',l:ordinal(f.inn)+' innings'});
   if(f.res)tags.push({k:'fRes',l:f.res[0].toUpperCase()+f.res.slice(1)});
   if(f.toss)tags.push({k:'fToss',l:(f.toss==='won'?'Won':'Lost')+' toss'});
+  if(f.together)tags.push({k:'fTogether',l:'Played together'});
   document.getElementById('activeFilt').innerHTML=tags.map(t=>{
     if(t.k.startsWith('opp_')){
       const ov=t.k.split('_')[1];
@@ -777,7 +780,7 @@ function getRows(player){
 
 function agg(player,idxs,isFiltered){
   let inns=0,no=0,runs=0,balls=0,hs=0,fifties=0,hundreds=0;
-  let overs=0,mdns=0,bR=0,wkts=0,bestW=0,bestR=9999;
+  let overs=0,mdns=0,bR=0,wkts=0,bestW=0,bestR=9999,bowlInns=0;
   const tests=new Set();
   idxs.forEach(i=>{
     const r=SCD[i];tests.add(r[0]);
@@ -789,6 +792,7 @@ function agg(player,idxs,isFiltered){
       if(br>hs)hs=br;if(br>=100)hundreds++;else if(br>=50)fifties++;
     }
     const bo=typeof r[6]==='number'?r[6]:0;
+    if(bo>0) bowlInns++; // Count innings where player bowled
     overs+=bo;mdns+=typeof r[7]==='number'?r[7]:0;
     const brn=typeof r[8]==='number'?r[8]:0, bw=typeof r[9]==='number'?r[9]:0;
     bR+=brn;wkts+=bw;
@@ -812,7 +816,7 @@ function agg(player,idxs,isFiltered){
     batAvg:(inns-no)>0?runs/(inns-no):0,
     sr:sr,
     hs, fifties, hundreds,
-    overs:Math.round(overs*10)/10, mdns, bowlRuns:bR, wkts,
+    overs:Math.round(overs*10)/10, mdns, bowlRuns:bR, wkts, bowlInns,
     bowlAvg:wkts>0?bR/wkts:0, econ:overs>0?bR/overs:0,
     bpw:wkts>0?(overs*6)/wkts:0,
     bestBowl:bestW>0?bestW+'/'+bestR:'—',
@@ -822,7 +826,9 @@ function agg(player,idxs,isFiltered){
 }
 
 // ---- Multi-player Table Builder ----
-function buildTable(stats, cols) {
+function buildTable(stats, cols, options = {}) {
+  const { showBowlInns = false, showTotals = false, sharedStats = null } = options;
+  
   // Build header row
   let hdr = '<th>Player</th>';
   cols.forEach(c => {
@@ -848,7 +854,13 @@ function buildTable(stats, cols) {
   // Build player rows
   let rows = '';
   stats.forEach((s, idx) => {
-    let row = `<td class="player-cell"><span class="pc-name">${s.name}</span><span class="pc-meta">${s.country} · ${s.tests} Tests</span></td>`;
+    // Build player cell - show bowling innings if requested
+    let playerMeta = `${s.country} · ${s.tests} Tests`;
+    if(showBowlInns && s.bowlInns !== undefined) {
+      playerMeta += ` · ${s.bowlInns} bowl inn`;
+    }
+    let row = `<td class="player-cell"><span class="pc-name">${s.name}</span><span class="pc-meta">${playerMeta}</span></td>`;
+    
     cols.forEach(c => {
       if(c.sec) { row += '<td class="sec-div"></td>'; return; }
       const v = s[c.key];
@@ -872,6 +884,97 @@ function buildTable(stats, cols) {
     });
     rows += `<tr class="p${idx+1}-row">${row}</tr>`;
   });
+  
+  // Add totals row if requested
+  if(showTotals && stats.length >= 2 && sharedStats) {
+    const totals = {};
+    
+    // Use shared stats for tests (for display purposes)
+    totals.tests = sharedStats.sharedTests;
+    totals.bowlInns = sharedStats.sharedBowlInns;
+    
+    // Use combined batting stats from SHARED batting innings only
+    totals.inns = sharedStats.combinedBatInnsCount;
+    totals.no = sharedStats.combinedNO;
+    totals.runs = sharedStats.combinedBatRuns;
+    totals.balls = sharedStats.combinedBalls;
+    const combinedDismissals = totals.inns - totals.no;
+    
+    // Use combined bowling stats from SHARED bowling innings only
+    totals.bowlRuns = sharedStats.combinedBowlRuns;
+    totals.wkts = sharedStats.combinedWkts;
+    totals.overs = sharedStats.combinedOvers;
+    
+    // Sum up other fields that don't need shared innings filtering
+    const otherSumFields = ['fifties', 'hundreds', 'mdns', 'catches', 'stumpings', 'mom'];
+    otherSumFields.forEach(key => {
+      totals[key] = stats.reduce((sum, s) => {
+        const v = s[key];
+        return sum + (typeof v === 'number' ? v : 0);
+      }, 0);
+    });
+    
+    // Sum up other numeric columns that aren't already handled
+    cols.forEach(c => {
+      if(c.sec) return;
+      if(c.key === 'tests' || c.key === 'inns' || c.key === 'no' || c.key === 'bowlInns') return; // Already set
+      if(c.key === 'runs' || c.key === 'balls' || c.key === 'bowlRuns' || c.key === 'wkts' || c.key === 'overs') return; // Using shared stats
+      if(otherSumFields.includes(c.key)) return; // Already summed above
+      if(c.key === 'batAvg' || c.key === 'bowlAvg' || c.key === 'sr' || c.key === 'econ' || c.key === 'bpw') {
+        // These are calculated fields, we'll compute them from totals
+        return;
+      }
+      if(c.key === 'bestBowl' || c.key === 'hs') {
+        // Take the best value
+        if(c.key === 'hs') {
+          totals[c.key] = Math.max(...stats.map(s => typeof s[c.key] === 'number' ? s[c.key] : 0));
+        } else {
+          // For bestBowl, find the best
+          let bestW = 0, bestR = 9999;
+          stats.forEach(s => {
+            if(s.bestBowl && s.bestBowl !== '—') {
+              const [w, r] = s.bestBowl.split('/').map(Number);
+              if(w > bestW || (w === bestW && r < bestR)) {
+                bestW = w; bestR = r;
+              }
+            }
+          });
+          totals[c.key] = bestW > 0 ? `${bestW}/${bestR}` : '—';
+        }
+        return;
+      }
+      // Sum numeric values for any remaining columns
+      if(totals[c.key] === undefined) {
+        totals[c.key] = stats.reduce((sum, s) => {
+          const v = s[c.key];
+          return sum + (typeof v === 'number' ? v : 0);
+        }, 0);
+      }
+    });
+    
+    // Calculate derived stats for totals (using shared innings data)
+    // Batting average: combined runs / combined dismissals (from shared batting innings)
+    totals.batAvg = combinedDismissals > 0 ? totals.runs / combinedDismissals : 0;
+    // Bowling stats: from shared bowling innings only
+    totals.bowlAvg = totals.wkts > 0 ? totals.bowlRuns / totals.wkts : 0;
+    totals.econ = totals.overs > 0 ? totals.bowlRuns / totals.overs : 0;
+    totals.bpw = totals.wkts > 0 ? (totals.overs * 6) / totals.wkts : 0;
+    totals.sr = totals.balls > 0 ? (totals.runs / totals.balls) * 100 : null;
+    
+    // Determine what to show in the meta line based on view type
+    let totalsMeta = `${stats.length} players · ${totals.tests} Tests together`;
+    if(showBowlInns) {
+      totalsMeta += ` · ${totals.bowlInns} bowl inn together`;
+    }
+    
+    let totalRow = `<td class="player-cell" style="background:var(--surface2);border-left:3px solid var(--accent);"><span class="pc-name" style="color:var(--accent);">Combined Total</span><span class="pc-meta">${totalsMeta}</span></td>`;
+    cols.forEach(c => {
+      if(c.sec) { totalRow += '<td class="sec-div" style="background:var(--surface2);"></td>'; return; }
+      const v = totals[c.key];
+      totalRow += `<td style="background:var(--surface2);font-weight:600;">${fmt(v, c.dec||2)}</td>`;
+    });
+    rows += `<tr class="totals-row">${totalRow}</tr>`;
+  }
 
   return `<div class="tbl-wrap"><table class="cmp-table"><thead><tr>${hdr}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -890,10 +993,87 @@ function render(){
   document.getElementById('comp').classList.add('show');
 
   // Check filters first
-  const f=getF(), any=f.opp.length||f.city||f.gnd||f.ha||f.inn||f.res||f.toss;
+  const f=getF(), any=f.opp.length||f.city||f.gnd||f.ha||f.inn||f.res||f.toss||f.together;
   
-  const rowSets=players.map(p=>getRows(p));
-  const stats=players.map((p,i)=>agg(p,rowSets[i],any));
+  let displayPlayers = players;
+  let rowSets = players.map(p=>getRows(p));
+  
+  // Handle "played together" filter
+  if(f.together === 'yes'){
+    // Get match IDs for each player (after applying other filters)
+    const matchSets = rowSets.map(idxs => {
+      const matches = new Set();
+      idxs.forEach(i => matches.add(SCD[i][0]));
+      return matches;
+    });
+    
+    // Find common matches between ALL selected players
+    let commonMatches = new Set(matchSets[0]);
+    for(let i = 1; i < matchSets.length; i++){
+      commonMatches = new Set([...commonMatches].filter(m => matchSets[i].has(m)));
+    }
+    
+    // If no common matches among all players, find players who share matches with at least one other
+    if(commonMatches.size === 0 && players.length > 2){
+      // Find which players played together in at least one match
+      const playersWithSharedMatches = [];
+      const sharedMatchesByPlayer = [];
+      
+      for(let i = 0; i < players.length; i++){
+        let hasShared = false;
+        const mySharedMatches = new Set();
+        for(let j = 0; j < players.length; j++){
+          if(i !== j){
+            const shared = [...matchSets[i]].filter(m => matchSets[j].has(m));
+            if(shared.length > 0){
+              hasShared = true;
+              shared.forEach(m => mySharedMatches.add(m));
+            }
+          }
+        }
+        if(hasShared){
+          playersWithSharedMatches.push(i);
+          sharedMatchesByPlayer.push(mySharedMatches);
+        }
+      }
+      
+      if(playersWithSharedMatches.length >= 2){
+        // Filter to only players who played together
+        displayPlayers = playersWithSharedMatches.map(i => players[i]);
+        // Filter row sets to only include shared matches
+        rowSets = playersWithSharedMatches.map((pIdx, i) => {
+          const sharedMatches = sharedMatchesByPlayer[i];
+          return rowSets[pIdx].filter(idx => sharedMatches.has(SCD[idx][0]));
+        });
+      } else {
+        // No players played together at all
+        displayPlayers = [];
+        rowSets = [];
+      }
+    } else if(commonMatches.size > 0){
+      // All players share common matches - filter to those matches
+      rowSets = rowSets.map(idxs => 
+        idxs.filter(i => commonMatches.has(SCD[i][0]))
+      );
+    } else {
+      // Only 2 players and no common matches
+      displayPlayers = [];
+      rowSets = [];
+    }
+  }
+  
+  // Show message if no players played together
+  if(f.together === 'yes' && displayPlayers.length < 2){
+    document.getElementById('tblOverview').innerHTML = '<div class="verd"><div class="verd-lb">No shared matches</div><div class="verd-tx">The selected players never played in the same match together. Try selecting different players or change the filter to "No (all stats)".</div></div>';
+    document.getElementById('tblBatting').innerHTML = '';
+    document.getElementById('tblBowling').innerHTML = '';
+    document.getElementById('tblAll').innerHTML = '';
+    document.getElementById('filtSummary').innerHTML = '';
+    showTags();
+    return;
+  }
+  
+  const stats=displayPlayers.map((p,i)=>agg(p,rowSets[i],any));
 
   // Filter summary
   const sumEl=document.getElementById('filtSummary');
@@ -904,8 +1084,15 @@ function render(){
     if(f.gnd)parts.push('at '+GROUNDS[f.gnd]);if(f.ha)parts.push(f.ha);
     if(f.inn)parts.push(ordinal(f.inn)+' inn');if(f.res)parts.push(f.res);
     if(f.toss)parts.push(f.toss+' toss');
+    if(f.together)parts.push('played together');
     const pParts=stats.map((s,i)=>`${s.name}: ${s.inns} inn`);
-    sumEl.innerHTML=`<div class="filt-sum">Filtered: ${parts.join(' · ')} — ${pParts.join(' · ')}</div>`;
+    let summaryHTML = `<div class="filt-sum">Filtered: ${parts.join(' · ')} — ${pParts.join(' · ')}</div>`;
+    if(f.together === 'yes' && displayPlayers.length < players.length){
+      const excludedCount = players.length - displayPlayers.length;
+      const excludedNames = players.filter(p => !displayPlayers.includes(p)).map(p => p.fullName || p.name).join(', ');
+      summaryHTML += `<div class="filt-sum" style="background:var(--red);background:rgba(208,64,64,0.1);color:var(--red);margin-top:6px;">Note: ${excludedCount} player${excludedCount>1?'s':''} excluded (${excludedNames}) — no shared matches</div>`;
+    }
+    sumEl.innerHTML = summaryHTML;
   } else sumEl.innerHTML='';
 
   // Verdict — score each player across key metrics
@@ -962,6 +1149,123 @@ function render(){
   
   const verdictHTML=`<div class="verd"><div class="verd-lb">Summary</div><div class="verd-tx">${summaryText}</div></div>`;
 
+  // ---- Calculate shared stats for "played together" totals ----
+  let sharedStats = null;
+  if(f.together === 'yes') {
+    // Find matches where ALL displayed players participated
+    const allMatchIds = rowSets.map(idxs => new Set(idxs.map(i => SCD[i][0])));
+    let sharedMatchIds = new Set(allMatchIds[0]);
+    for(let i = 1; i < allMatchIds.length; i++) {
+      sharedMatchIds = new Set([...sharedMatchIds].filter(m => allMatchIds[i].has(m)));
+    }
+    
+    // Count innings where ALL players batted together (same match AND same innings number)
+    // Build map of match+innings -> set of players who batted
+    const batInningsMap = new Map(); // key: "matchId-innNum", value: count of players
+    rowSets.forEach((idxs, pIdx) => {
+      idxs.forEach(i => {
+        const r = SCD[i];
+        const matchId = r[0];
+        const innNum = r[2];
+        const didBat = r[4] !== null; // isNO field exists means they batted
+        if(didBat && sharedMatchIds.has(matchId)) {
+          const key = `${matchId}-${innNum}`;
+          if(!batInningsMap.has(key)) batInningsMap.set(key, new Set());
+          batInningsMap.get(key).add(pIdx);
+        }
+      });
+    });
+    
+    // Count innings where all players batted
+    let sharedBatInns = 0;
+    batInningsMap.forEach((playerSet, key) => {
+      if(playerSet.size === displayPlayers.length) sharedBatInns++;
+    });
+    
+    // Count innings where ALL players bowled together
+    const bowlInningsMap = new Map();
+    rowSets.forEach((idxs, pIdx) => {
+      idxs.forEach(i => {
+        const r = SCD[i];
+        const matchId = r[0];
+        const innNum = r[2];
+        const didBowl = typeof r[6] === 'number' && r[6] > 0; // overs > 0
+        if(didBowl && sharedMatchIds.has(matchId)) {
+          const key = `${matchId}-${innNum}`;
+          if(!bowlInningsMap.has(key)) bowlInningsMap.set(key, new Set());
+          bowlInningsMap.get(key).add(pIdx);
+        }
+      });
+    });
+    
+    let sharedBowlInns = 0;
+    const sharedBowlInningsKeys = new Set();
+    bowlInningsMap.forEach((playerSet, key) => {
+      if(playerSet.size === displayPlayers.length) {
+        sharedBowlInns++;
+        sharedBowlInningsKeys.add(key);
+      }
+    });
+    
+    // Calculate combined bowling stats ONLY from innings where ALL players bowled
+    let combinedBowlRuns = 0, combinedWkts = 0, combinedOvers = 0;
+    rowSets.forEach((idxs, pIdx) => {
+      idxs.forEach(i => {
+        const r = SCD[i];
+        const matchId = r[0];
+        const innNum = r[2];
+        const key = `${matchId}-${innNum}`;
+        if(sharedBowlInningsKeys.has(key)) {
+          combinedOvers += typeof r[6] === 'number' ? r[6] : 0;
+          combinedBowlRuns += typeof r[8] === 'number' ? r[8] : 0;
+          combinedWkts += typeof r[9] === 'number' ? r[9] : 0;
+        }
+      });
+    });
+    
+    // Similarly, calculate combined batting stats ONLY from innings where ALL players batted
+    const sharedBatInningsKeys = new Set();
+    batInningsMap.forEach((playerSet, key) => {
+      if(playerSet.size === displayPlayers.length) {
+        sharedBatInningsKeys.add(key);
+      }
+    });
+    
+    let combinedBatRuns = 0, combinedBalls = 0, combinedBatInnsCount = 0, combinedNO = 0;
+    rowSets.forEach((idxs, pIdx) => {
+      idxs.forEach(i => {
+        const r = SCD[i];
+        const matchId = r[0];
+        const innNum = r[2];
+        const key = `${matchId}-${innNum}`;
+        if(sharedBatInningsKeys.has(key)) {
+          const didBat = r[4] !== null;
+          if(didBat) {
+            combinedBatInnsCount++;
+            if(r[4]) combinedNO++; // is not out
+            combinedBatRuns += typeof r[3] === 'number' ? r[3] : 0;
+            combinedBalls += typeof r[5] === 'number' ? r[5] : 0;
+          }
+        }
+      });
+    });
+    
+    sharedStats = {
+      sharedTests: sharedMatchIds.size,
+      sharedBatInns: sharedBatInns,
+      sharedBowlInns: sharedBowlInns,
+      // Combined batting from shared innings
+      combinedBatRuns: combinedBatRuns,
+      combinedBalls: combinedBalls,
+      combinedBatInnsCount: combinedBatInnsCount,
+      combinedNO: combinedNO,
+      // Combined bowling from shared innings
+      combinedBowlRuns: combinedBowlRuns,
+      combinedWkts: combinedWkts,
+      combinedOvers: combinedOvers
+    };
+  }
+
   // ---- OVERVIEW ----
   const ovCols = [
     {sec:'Batting'},
@@ -981,8 +1285,12 @@ function render(){
     {label:'St',key:'stumpings',higher:true,dec:0},
     {label:'MoM',key:'mom',higher:true,dec:0},
   ];
+  
+  // Determine if we should show totals (only when "played together" is active)
+  const showTotals = f.together === 'yes';
+  
   document.getElementById('tblOverview').innerHTML =
-    buildTable(stats,ovCols) + verdictHTML +
+    buildTable(stats, ovCols, { showTotals, sharedStats }) + verdictHTML +
     '<div class="foot-note">* Career totals — not affected by filters</div>';
 
   // ---- BATTING ----
@@ -998,7 +1306,7 @@ function render(){
     {label:'50s',key:'fifties',higher:true,dec:0},
     {label:'100s',key:'hundreds',higher:true,dec:0},
   ];
-  document.getElementById('tblBatting').innerHTML = buildTable(stats,batCols);
+  document.getElementById('tblBatting').innerHTML = buildTable(stats, batCols, { showTotals, sharedStats });
 
   // ---- BOWLING ----
   const bowlCols = [
@@ -1011,7 +1319,7 @@ function render(){
     {label:'B/W',key:'bpw',higher:false,dec:1},
     {label:'Best',key:'bestBowl',higher:null},
   ];
-  document.getElementById('tblBowling').innerHTML = buildTable(stats,bowlCols);
+  document.getElementById('tblBowling').innerHTML = buildTable(stats, bowlCols, { showBowlInns: true, showTotals, sharedStats });
 
   // ---- ALL STATS ----
   const allCols = [
@@ -1041,7 +1349,7 @@ function render(){
     {label:'MoM',key:'mom',higher:true,dec:0},
   ];
   document.getElementById('tblAll').innerHTML =
-    buildTable(stats,allCols) + verdictHTML +
+    buildTable(stats, allCols, { showTotals, sharedStats }) + verdictHTML +
     '<div class="foot-note">* Career totals — not affected by filters</div>';
 
   showTags();
@@ -1074,12 +1382,13 @@ function shareComparison(){
   if(f.inn) params.set('inn', f.inn);
   if(f.res) params.set('res', f.res);
   if(f.toss) params.set('toss', f.toss);
+  if(f.together) params.set('together', f.together);
   
   const shareUrl = window.location.origin + window.location.pathname + '?' + params.toString();
   
   // Get current stats and build summary
   const rowSets = players.map(p => getRows(p));
-  const stats = players.map((p, i) => agg(p, rowSets[i], f.opp.length || f.city || f.gnd || f.ha || f.inn || f.res || f.toss));
+  const stats = players.map((p, i) => agg(p, rowSets[i], f.opp.length || f.city || f.gnd || f.ha || f.inn || f.res || f.toss || f.together));
   
   // Calculate metric wins for summary
   const metricWins = stats.map(() => []);
