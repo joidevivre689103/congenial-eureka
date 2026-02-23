@@ -7,6 +7,28 @@
 <title>Test Cricket â€“ Country vs Country</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Password Gate Styles */
+.password-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a1e26 0%,#2d3340 100%);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 0.4s}
+.password-overlay.hidden{opacity:0;pointer-events:none}
+.password-box{background:#fff;border-radius:16px;padding:40px 48px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.4);max-width:400px;width:90%}
+.password-box h2{font-family:'DM Serif Display',serif;font-size:24px;color:#1a1e26;margin-bottom:8px}
+.password-box p{font-size:13px;color:#5a6578;margin-bottom:24px}
+.input-group{position:relative;margin-bottom:12px;text-align:left}
+.input-group input{width:100%;padding:12px 16px;border:2px solid #d8dce3;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s}
+.input-group input[type="password"],.input-group input[type="text"]:not([type="email"]){padding-right:44px}
+.input-group input:focus{border-color:#c08018}
+.input-group input.error{border-color:#d04040;animation:shake 0.4s}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8896a8;padding:4px}
+.toggle-pw:hover{color:#5a6578}
+.toggle-pw svg{width:20px;height:20px}
+.password-box button.submit-btn{width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#c08018,#8a5810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+.password-box button.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,128,24,0.35)}
+.password-error{color:#d04040;font-size:12px;margin-top:10px;opacity:0;transition:opacity 0.2s}
+.password-error.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.site-content{display:none}
+.site-content.unlocked{display:block}
+
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 :root{
@@ -39,14 +61,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .brand h1{font-family:'DM Serif Display',serif;font-size:21px;letter-spacing:-0.3px}
 .brand-sub{font-size:11.5px;color:var(--text3);margin-top:2px;margin-left:48px}
 .hdr-nav{display:flex;align-items:center;gap:8px}
-.share-btn{
-  background:var(--surface);border:1px solid var(--border);border-radius:8px;
-  padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;
-  font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;
-  color:var(--text2);transition:all 0.2s;
-}
-.share-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.share-btn svg{width:16px;height:16px;stroke:currentColor;fill:none}
 .nav-link{
   background:var(--surface);border:1px solid var(--border);border-radius:8px;
   padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:7px;
@@ -118,7 +132,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   padding:0;margin-bottom:20px;overflow:hidden;
 }
 .sb-body{
-  display:grid;grid-template-columns:repeat(6,1fr);
+  display:grid;grid-template-columns:repeat(4,1fr);
   border-top:1px solid var(--border);
 }
 .sb-stat{
@@ -241,9 +255,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .hdr-nav{position:absolute;top:14px;right:16px}
   .nav-link span{display:none}
   .nav-link{padding:8px 10px}
-  .share-btn{padding:8px 10px;font-size:0}
-  .share-btn svg{margin:0}
-  .share-btn span{display:none}
   .main{padding:12px 14px 40px}
   .selectors{grid-template-columns:1fr;gap:10px}
   .vs-badge{display:none}
@@ -257,24 +268,48 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 </head>
 <body>
 
+<!-- Password Gate Overlay -->
+<div class="password-overlay" id="passwordOverlay">
+  <div class="password-box">
+    <h2>🏏 Cricket Stats</h2>
+    <p>Enter your email and password to access</p>
+    <div class="input-group">
+      <input type="email" id="emailInput" placeholder="Email address">
+    </div>
+    <div class="input-group">
+      <input type="password" id="passwordInput" placeholder="Password" onkeypress="if(event.key==='Enter')checkPassword()">
+      <button class="toggle-pw" onclick="togglePassword()" type="button">
+        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+    <button class="submit-btn" onclick="checkPassword()">Unlock</button>
+    <div class="password-error" id="passwordError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div class="site-content" id="siteContent">
 <!-- Header -->
 <div class="header">
   <div class="hdr-inner">
     <div>
       <div class="brand">
         <div class="brand-icon">CT</div>
-        <h1>Test Cricket Comparisons</h1>
+        <h1>Test Cricket Side by Side</h1>
       </div>
       <div class="brand-sub">Country vs Country Results</div>
     </div>
     <div class="hdr-nav">
-      <a href="country-results.html" class="nav-link active">
+      <a href="index.html" class="nav-link">
         <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="2" y1="12" x2="22" y2="12"></line>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
         </svg>
-        <span>Countries</span>
+        <span>Side by Side</span>
       </a>
       <a href="batting-records.html" class="nav-link">
         <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -285,36 +320,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </svg>
         <span>Batting</span>
       </a>
-      <a href="index.html" class="nav-link">
+      <a href="#" class="nav-link active">
         <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
         </svg>
-        <span>Compare</span>
+        <span>Countries</span>
       </a>
-      <a href="simulation.html" class="nav-link">
-        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="3"></rect>
-          <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"></circle>
-          <circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"></circle>
-          <circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"></circle>
-          <circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"></circle>
-          <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>
-        </svg>
-        <span>Simulation</span>
-      </a>
-      <button class="share-btn" onclick="sharePage()">
-        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="18" cy="5" r="3"></circle>
-          <circle cx="6" cy="12" r="3"></circle>
-          <circle cx="18" cy="19" r="3"></circle>
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-        </svg>
-        <span>Share</span>
-      </button>
     </div>
   </div>
 </div>
@@ -334,14 +347,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         <div class="sel-group">
           <label>Country 1</label>
           <select class="team-select" id="team1" onchange="updateResults()">
-            <option value="">– Select –</option>
+            <option value="">â€” Select â€”</option>
           </select>
         </div>
         <div class="vs-badge">vs</div>
         <div class="sel-group">
           <label>Country 2</label>
           <select class="team-select" id="team2" onchange="updateResults()">
-            <option value="">– Select –</option>
+            <option value="">â€” Select â€”</option>
           </select>
         </div>
       </div>
@@ -359,7 +372,15 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         <label>To</label>
         <input type="number" id="filterTo" placeholder="Year" oninput="renderTable()" class="year-input">
       </div>
-
+      <div class="sel-group" style="min-width:110px">
+        <label>Venue</label>
+        <select id="filterHA" onchange="renderTable()" style="width:100%;background:var(--surface2);border:2px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6578'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center;">
+          <option value="all">All</option>
+          <option value="home">Home</option>
+          <option value="away">Away</option>
+          <option value="neutral">Neutral</option>
+        </select>
+      </div>
       <button class="swap-btn" onclick="clearYearFilters()" title="Clear year filters" style="padding:8px 12px">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><path d="M18 6L6 18M6 6l12 12"/></svg>
         Clear
@@ -382,37 +403,25 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         <div class="sb-stat">
           <div class="sb-stat-label">Wins</div>
           <div class="sb-stat-values">
-            <div class="sb-val" id="sbW1">–</div>
+            <div class="sb-val" id="sbW1">â€”</div>
           </div>
         </div>
         <div class="sb-stat">
           <div class="sb-stat-label">Losses</div>
           <div class="sb-stat-values">
-            <div class="sb-val" id="sbL1">–</div>
+            <div class="sb-val" id="sbL1">â€”</div>
           </div>
         </div>
         <div class="sb-stat">
           <div class="sb-stat-label">Draws</div>
           <div class="sb-stat-values">
-            <div class="sb-val neutral" id="sbD">–</div>
+            <div class="sb-val neutral" id="sbD">â€”</div>
           </div>
         </div>
         <div class="sb-stat">
           <div class="sb-stat-label">Total</div>
           <div class="sb-stat-values">
-            <div class="sb-val neutral" id="sbTotal">–</div>
-          </div>
-        </div>
-        <div class="sb-stat">
-          <div class="sb-stat-label" id="sbWinPctLabel">Win %</div>
-          <div class="sb-stat-values">
-            <div class="sb-val" id="sbWinPct" style="font-size:22px">–</div>
-          </div>
-        </div>
-        <div class="sb-stat">
-          <div class="sb-stat-label" id="sbWLRatioLabel">W/L Ratio</div>
-          <div class="sb-stat-values">
-            <div class="sb-val" id="sbWLRatio" style="font-size:22px">–</div>
+            <div class="sb-val neutral" id="sbTotal">â€”</div>
           </div>
         </div>
       </div>
@@ -556,12 +565,14 @@ function updateResults() {
   document.getElementById('filterResult').value = '';
   document.getElementById('filterFrom').value = '';
   document.getElementById('filterTo').value = '';
+  document.getElementById('filterHA').value = 'all';
   renderTable();
 }
 
 function clearYearFilters() {
   document.getElementById('filterFrom').value = '';
   document.getElementById('filterTo').value = '';
+  document.getElementById('filterHA').value = 'all';
   renderTable();
 }
 
@@ -572,6 +583,7 @@ function renderTable() {
   const filter = document.getElementById('filterResult').value;
   const fromYear = parseInt(document.getElementById('filterFrom').value) || null;
   const toYear = parseInt(document.getElementById('filterTo').value) || null;
+  const haFilter = (document.getElementById('filterHA') || {value:'all'}).value;
   const t1Name = TEAM_NAMES[t1] || t1;
   const t2Name = TEAM_NAMES[t2] || t2;
 
@@ -580,10 +592,20 @@ function renderTable() {
   filterSel.options[1].textContent = 'Wins for ' + t1Name;
   filterSel.options[2].textContent = 'Wins for ' + t2Name;
 
+  // Update HA dropdown labels with team name context
+  const haEl = document.getElementById('filterHA');
+  haEl.options[1].textContent = t1Name + ' Home';
+  haEl.options[2].textContent = t1Name + ' Away';
+
   // Apply year filter to base set first (for scoreboard/bars/decades)
   let yearFiltered = currentMatches;
   if (fromYear) yearFiltered = yearFiltered.filter(m => m.year >= fromYear);
   if (toYear) yearFiltered = yearFiltered.filter(m => m.year <= toYear);
+  console.log('haFilter:', haFilter, 'before filter:', yearFiltered.length);
+  console.log('sample match objects:', JSON.stringify(yearFiltered.slice(0,2)));
+  if (haFilter !== 'all') yearFiltered = yearFiltered.filter(m => m.ha === haFilter);
+  console.log('after HA filter:', yearFiltered.length, 'sample ha values:', yearFiltered.slice(0,3).map(m=>m.ha));
+
   // Recalculate summary stats from year-filtered matches
   const w1 = yearFiltered.filter(m => m.result === 'Won').length;
   const w2 = yearFiltered.filter(m => m.result === 'Lost').length;
@@ -597,35 +619,6 @@ function renderTable() {
   document.getElementById('sbL1').className = 'sb-val';
   document.getElementById('sbD').textContent = d;
   document.getElementById('sbTotal').textContent = tot;
-
-  // Win %
-  const winPctEl = document.getElementById('sbWinPct');
-  const winPctLabelEl = document.getElementById('sbWinPctLabel');
-  winPctLabelEl.textContent = (TEAM_NAMES[t1] || t1) + ' Win %';
-  if (tot > 0) {
-    const wp = (w1 / tot * 100).toFixed(1);
-    winPctEl.textContent = wp + '%';
-    winPctEl.style.color = w1 > w2 ? 'var(--green)' : w1 < w2 ? 'var(--red)' : 'inherit';
-  } else {
-    winPctEl.textContent = '–';
-    winPctEl.style.color = 'inherit';
-  }
-
-  // W/L Ratio
-  const wlRatioEl = document.getElementById('sbWLRatio');
-  const wlRatioLabelEl = document.getElementById('sbWLRatioLabel');
-  wlRatioLabelEl.textContent = (TEAM_NAMES[t1] || t1) + ' W/L';
-  if (w2 > 0) {
-    const ratio = (w1 / w2).toFixed(2);
-    wlRatioEl.textContent = ratio;
-    wlRatioEl.style.color = w1 > w2 ? 'var(--green)' : w1 < w2 ? 'var(--red)' : 'inherit';
-  } else if (w1 > 0) {
-    wlRatioEl.textContent = '∞';
-    wlRatioEl.style.color = 'var(--green)';
-  } else {
-    wlRatioEl.textContent = '–';
-    wlRatioEl.style.color = 'inherit';
-  }
 
   // Bars
   setTimeout(() => {
@@ -689,10 +682,10 @@ function renderTable() {
     return `<tr>
       <td>${m.test}</td>
       <td>${m.year}</td>
-      <td class="left">${m.venue || '–'}</td>
+      <td class="left">${m.venue || 'â€”'}</td>
       <td style="font-weight:700;color:${haColor}">${haLabel}</td>
       <td><span class="result-badge ${m.result === 'Won' ? 'won' : m.result === 'Lost' ? 'lost' : 'draw'}">${m.result === 'Won' ? t1Name + ' won' : m.result === 'Lost' ? t2Name + ' won' : 'Draw'}</span></td>
-      <td style="color:var(--text2)">${m.margin || '–'}</td>
+      <td style="color:var(--text2)">${m.margin || 'â€”'}</td>
     </tr>`;
   }).join('');
 
@@ -732,70 +725,110 @@ function renderTable() {
 
 // Initial load
 updateResults();
+</script>
 
-// Share functionality
-function sharePage(){
-  const params = new URLSearchParams();
-  
-  // Capture selected countries
-  const team1 = document.getElementById('team1Select')?.value;
-  const team2 = document.getElementById('team2Select')?.value;
-  
-  if(team1) params.set('t1', team1);
-  if(team2) params.set('t2', team2);
-  
-  const shareUrl = window.location.origin + window.location.pathname + (params.toString() ? '?' + params.toString() : '');
-  
-  let shareTitle = 'Test Cricket Country Results';
-  let shareText = 'Head-to-head Test match records between nations';
-  
-  if(team1 && team2){
-    shareTitle = `${team1} vs ${team2} - Test Cricket`;
-    shareText = `Head-to-head Test match records: ${team1} vs ${team2}`;
-  }
-  
-  if(navigator.share && navigator.canShare && navigator.canShare({url: shareUrl})){
-    navigator.share({
-      title: shareTitle,
-      text: shareText,
-      url: shareUrl
-    }).catch(err => {
-      if(err.name !== 'AbortError'){
-        fallbackShare(shareUrl);
-      }
-    });
+</div><!-- end site-content -->
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDhQrnZkxPT1bWE-V5bl39EKJRptPUPSnI",
+  authDomain: "hitwicket-cba02.firebaseapp.com",
+  projectId: "hitwicket-cba02",
+  storageBucket: "hitwicket-cba02.firebasestorage.app",
+  messagingSenderId: "196915483829",
+  appId: "1:196915483829:web:071c47af79914aec88dafc"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const STORAGE_KEY = 'cricket_site_auth';
+const DEFAULT_PASSWORD = 'mylaptopismAI!';
+let sitePassword = DEFAULT_PASSWORD;
+
+const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+
+function togglePassword() {
+  const input = document.getElementById('passwordInput');
+  const icon = document.getElementById('eyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = eyeClosed;
   } else {
-    fallbackShare(shareUrl);
+    input.type = 'password';
+    icon.innerHTML = eyeOpen;
   }
 }
 
-function fallbackShare(url){
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(()=>{
-      showCopiedFeedback();
-    }).catch(()=>{
-      showShareDialog(url);
-    });
+async function loadPassword() {
+  try {
+    const doc = await db.collection('settings').doc('site').get();
+    if (doc.exists && doc.data().password) {
+      sitePassword = doc.data().password;
+    } else {
+      await db.collection('settings').doc('site').set({ password: DEFAULT_PASSWORD });
+    }
+  } catch (e) {
+    console.error('Error loading password:', e);
+  }
+}
+
+async function checkPassword() {
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const error = document.getElementById('passwordError');
+  
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  
+  if (!email) {
+    emailInput.classList.add('error');
+    setTimeout(() => emailInput.classList.remove('error'), 400);
+    return;
+  }
+  
+  await loadPassword();
+  
+  if (password === sitePassword) {
+    try {
+      await db.collection('logins').add({
+        email: email,
+        page: 'country-results.html',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (e) {
+      console.error('Error logging login:', e);
+    }
+    
+    sessionStorage.setItem(STORAGE_KEY, 'authenticated');
+    sessionStorage.setItem('cricket_user_email', email);
+    unlockSite();
   } else {
-    showShareDialog(url);
+    passwordInput.classList.add('error');
+    error.classList.add('show');
+    setTimeout(() => {
+      passwordInput.classList.remove('error');
+    }, 400);
   }
 }
 
-function showCopiedFeedback(){
-  const btn = document.querySelector('.share-btn');
-  const originalHTML = btn.innerHTML;
-  btn.innerHTML = '<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;stroke:currentColor;fill:none"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
-  btn.style.color = 'var(--green)';
-  btn.style.borderColor = 'var(--green)';
-  setTimeout(()=>{
-    btn.innerHTML = originalHTML;
-    btn.style.color = '';
-    btn.style.borderColor = '';
-  }, 2000);
+function unlockSite() {
+  document.getElementById('passwordOverlay').classList.add('hidden');
+  document.getElementById('siteContent').classList.add('unlocked');
+  setTimeout(() => {
+    document.getElementById('passwordOverlay').style.display = 'none';
+  }, 400);
 }
 
-function showShareDialog(url){
-  prompt('Copy this URL to share:', url);
+if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
+  unlockSite();
+} else {
+  document.getElementById('emailInput').focus();
 }
 </script>
 </body>
