@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cricket Stats - Automated Tests</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f4f5f7;--surface:#ffffff;
+  --border:#d8dce3;--text:#1a1e26;--text2:#5a6578;--text3:#8896a8;
+  --green:#1a9a60;--green-dim:rgba(26,154,96,0.10);
+  --red:#d04040;--red-dim:rgba(208,64,64,0.10);
+  --yellow:#d0a020;--yellow-dim:rgba(208,160,32,0.10);
+  --accent:#c08018;
+}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;padding:32px}
+.container{max-width:900px;margin:0 auto}
+.header{margin-bottom:32px}
+.header h1{font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:8px}
+.header p{color:var(--text2);font-size:14px}
+
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+.summary-value{font-family:'DM Serif Display',serif;font-size:36px;margin-bottom:4px}
+.summary-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.summary-card.passed .summary-value{color:var(--green)}
+.summary-card.failed .summary-value{color:var(--red)}
+.summary-card.pending .summary-value{color:var(--yellow)}
+
+.controls{display:flex;gap:12px;margin-bottom:24px}
+.btn{padding:12px 24px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#8a5810);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(192,128,24,0.3)}
+.btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text2)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+
+.test-group{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.test-group-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.test-group-header:hover{background:var(--bg)}
+.test-group-title{font-weight:600;font-size:14px}
+.test-group-status{font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px}
+.test-group-status.passed{background:var(--green-dim);color:var(--green)}
+.test-group-status.failed{background:var(--red-dim);color:var(--red)}
+.test-group-status.pending{background:var(--yellow-dim);color:var(--yellow)}
+.test-group-status.running{background:var(--yellow-dim);color:var(--yellow)}
+
+.test-list{padding:0;display:none}
+.test-group.expanded .test-list{display:block}
+.test-item{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-size:13px}
+.test-item:last-child{border-bottom:none}
+.test-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.test-icon.passed{background:var(--green-dim);color:var(--green)}
+.test-icon.failed{background:var(--red-dim);color:var(--red)}
+.test-icon.pending{background:var(--yellow-dim);color:var(--yellow)}
+.test-icon.running{background:var(--yellow-dim);color:var(--yellow);animation:pulse 1s infinite}
+.test-name{flex:1}
+.test-time{color:var(--text3);font-size:11px}
+.test-error{color:var(--red);font-size:11px;margin-top:4px;padding-left:32px}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+.log-panel{background:#1a1e26;border-radius:12px;padding:20px;margin-top:24px;max-height:300px;overflow-y:auto}
+.log-panel h3{color:#fff;font-size:12px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.log-entry{font-family:monospace;font-size:12px;padding:4px 0;border-bottom:1px solid #2d3340}
+.log-entry.info{color:#8896a8}
+.log-entry.success{color:#1a9a60}
+.log-entry.error{color:#d04040}
+.log-entry.warn{color:#d0a020}
+
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🧪 Cricket Stats - Test Suite</h1>
+    <p>Automated regression tests for your site</p>
+  </div>
+
+  <div class="summary">
+    <div class="summary-card" id="totalCard">
+      <div class="summary-value" id="totalTests">0</div>
+      <div class="summary-label">Total Tests</div>
+    </div>
+    <div class="summary-card passed" id="passedCard">
+      <div class="summary-value" id="passedTests">0</div>
+      <div class="summary-label">Passed</div>
+    </div>
+    <div class="summary-card failed" id="failedCard">
+      <div class="summary-value" id="failedTests">0</div>
+      <div class="summary-label">Failed</div>
+    </div>
+    <div class="summary-card pending" id="pendingCard">
+      <div class="summary-value" id="pendingTests">0</div>
+      <div class="summary-label">Pending</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" onclick="runAllTests()">▶ Run All Tests</button>
+    <button class="btn btn-secondary" onclick="clearResults()">Clear Results</button>
+  </div>
+
+  <div id="testGroups"></div>
+
+  <div class="log-panel">
+    <h3>Test Log</h3>
+    <div id="logEntries"></div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+// Test Framework
+const tests = [];
+let results = { passed: 0, failed: 0, pending: 0 };
+
+function describe(groupName, testFn) {
+  const group = { name: groupName, tests: [] };
+  const it = (testName, fn) => {
+    group.tests.push({ name: testName, fn, status: 'pending', error: null, time: null });
+  };
+  testFn(it);
+  tests.push(group);
+}
+
+function log(message, type = 'info') {
+  const logDiv = document.getElementById('logEntries');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry ' + type;
+  entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+  logDiv.appendChild(entry);
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function updateSummary() {
+  document.getElementById('totalTests').textContent = tests.reduce((sum, g) => sum + g.tests.length, 0);
+  document.getElementById('passedTests').textContent = results.passed;
+  document.getElementById('failedTests').textContent = results.failed;
+  document.getElementById('pendingTests').textContent = results.pending;
+}
+
+function renderTests() {
+  const container = document.getElementById('testGroups');
+  container.innerHTML = '';
+  
+  tests.forEach((group, gi) => {
+    const groupPassed = group.tests.filter(t => t.status === 'passed').length;
+    const groupFailed = group.tests.filter(t => t.status === 'failed').length;
+    const groupStatus = groupFailed > 0 ? 'failed' : (groupPassed === group.tests.length ? 'passed' : 'pending');
+    
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'test-group expanded';
+    groupDiv.innerHTML = `
+      <div class="test-group-header" onclick="this.parentElement.classList.toggle('expanded')">
+        <span class="test-group-title">${group.name}</span>
+        <span class="test-group-status ${groupStatus}">${groupPassed}/${group.tests.length} passed</span>
+      </div>
+      <div class="test-list">
+        ${group.tests.map((test, ti) => `
+          <div class="test-item" id="test-${gi}-${ti}">
+            <div class="test-icon ${test.status}">${test.status === 'passed' ? '✓' : test.status === 'failed' ? '✗' : '○'}</div>
+            <span class="test-name">${test.name}</span>
+            <span class="test-time">${test.time ? test.time + 'ms' : ''}</span>
+          </div>
+          ${test.error ? `<div class="test-error">${test.error}</div>` : ''}
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(groupDiv);
+  });
+  
+  updateSummary();
+}
+
+async function runAllTests() {
+  results = { passed: 0, failed: 0, pending: 0 };
+  tests.forEach(g => g.tests.forEach(t => { t.status = 'pending'; t.error = null; t.time = null; }));
+  results.pending = tests.reduce((sum, g) => sum + g.tests.length, 0);
+  renderTests();
+  log('Starting test run...', 'info');
+  
+  for (let gi = 0; gi < tests.length; gi++) {
+    const group = tests[gi];
+    log(`Running: ${group.name}`, 'info');
+    
+    for (let ti = 0; ti < group.tests.length; ti++) {
+      const test = group.tests[ti];
+      const testEl = document.getElementById(`test-${gi}-${ti}`);
+      if (testEl) testEl.querySelector('.test-icon').className = 'test-icon running';
+      
+      const start = performance.now();
+      try {
+        await test.fn();
+        test.status = 'passed';
+        test.time = Math.round(performance.now() - start);
+        results.passed++;
+        results.pending--;
+        log(`  ✓ ${test.name}`, 'success');
+      } catch (e) {
+        test.status = 'failed';
+        test.error = e.message;
+        test.time = Math.round(performance.now() - start);
+        results.failed++;
+        results.pending--;
+        log(`  ✗ ${test.name}: ${e.message}`, 'error');
+      }
+      renderTests();
+    }
+  }
+  
+  log(`Test run complete: ${results.passed} passed, ${results.failed} failed`, results.failed > 0 ? 'error' : 'success');
+}
+
+function clearResults() {
+  results = { passed: 0, failed: 0, pending: 0 };
+  tests.forEach(g => g.tests.forEach(t => { t.status = 'pending'; t.error = null; t.time = null; }));
+  results.pending = tests.reduce((sum, g) => sum + g.tests.length, 0);
+  document.getElementById('logEntries').innerHTML = '';
+  renderTests();
+}
+
+// Assertion helpers
+function assert(condition, message) {
+  if (!condition) throw new Error(message || 'Assertion failed');
+}
+
+function assertEqual(actual, expected, message) {
+  if (actual !== expected) {
+    throw new Error(message || `Expected "${expected}" but got "${actual}"`);
+  }
+}
+
+async function fetchPage(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status}`);
+  return await response.text();
+}
+
+// ==================== TEST DEFINITIONS ====================
+
+// Test Group 1: Page Loading
+describe('Page Loading', (it) => {
+  it('index.html loads successfully', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('<!DOCTYPE html>'), 'Should be valid HTML');
+    assert(html.includes('Test Cricket'), 'Should contain site title');
+  });
+  
+  it('batting-records.html loads successfully', async () => {
+    const html = await fetchPage('batting-records.html');
+    assert(html.includes('<!DOCTYPE html>'), 'Should be valid HTML');
+    assert(html.includes('Batting'), 'Should contain batting content');
+  });
+  
+  it('country-results.html loads successfully', async () => {
+    const html = await fetchPage('country-results.html');
+    assert(html.includes('<!DOCTYPE html>'), 'Should be valid HTML');
+    assert(html.includes('Country'), 'Should contain country content');
+  });
+  
+  it('simulation.html loads successfully', async () => {
+    const html = await fetchPage('simulation.html');
+    assert(html.includes('<!DOCTYPE html>'), 'Should be valid HTML');
+    assert(html.includes('Simulation'), 'Should contain simulation content');
+  });
+  
+  it('admin.html loads successfully', async () => {
+    const html = await fetchPage('admin.html');
+    assert(html.includes('<!DOCTYPE html>'), 'Should be valid HTML');
+    assert(html.includes('Admin'), 'Should contain admin content');
+  });
+});
+
+// Test Group 2: Data.js
+describe('Data.js Loading', (it) => {
+  it('data.js file exists and loads', async () => {
+    const response = await fetch('data.js');
+    assert(response.ok, 'data.js should exist');
+    const js = await response.text();
+    assert(js.includes('const D'), 'Should define D constant');
+  });
+  
+  it('data.js contains player data', async () => {
+    const js = await fetchPage('data.js');
+    assert(js.includes('"P"'), 'Should contain Players array');
+    assert(js.includes('"T"'), 'Should contain Teams array');
+  });
+  
+  it('data.js contains match data', async () => {
+    const js = await fetchPage('data.js');
+    assert(js.includes('"M"'), 'Should contain Matches data');
+    assert(js.includes('"G"'), 'Should contain Grounds data');
+  });
+});
+
+// Test Group 3: Authentication Components
+describe('Authentication Components', (it) => {
+  it('index.html has password overlay', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('password-overlay'), 'Should have password overlay');
+    assert(html.includes('passwordInput'), 'Should have password input');
+  });
+  
+  it('index.html has email input', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('emailInput'), 'Should have email input');
+    assert(html.includes('type="email"'), 'Should have email type input');
+  });
+  
+  it('index.html has show/hide password toggle', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('togglePassword'), 'Should have toggle password function');
+    assert(html.includes('eyeIcon'), 'Should have eye icon');
+  });
+  
+  it('all pages have consistent auth', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      assert(html.includes('password-overlay'), `${page} should have password overlay`);
+      assert(html.includes('emailInput'), `${page} should have email input`);
+    }
+  });
+});
+
+// Test Group 4: Firebase Integration
+describe('Firebase Integration', (it) => {
+  it('Firebase SDK is loaded in all pages', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html', 'admin.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      assert(html.includes('firebase-app-compat.js'), `${page} should include Firebase SDK`);
+      assert(html.includes('firebase-firestore-compat.js'), `${page} should include Firestore`);
+    }
+  });
+  
+  it('Firebase config is present', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('firebaseConfig'), 'Should have Firebase config');
+    assert(html.includes('apiKey'), 'Should have API key');
+    assert(html.includes('projectId'), 'Should have project ID');
+  });
+  
+  it('Firebase connection works', async () => {
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhQrnZkxPT1bWE-V5bl39EKJRptPUPSnI",
+      authDomain: "hitwicket-cba02.firebaseapp.com",
+      projectId: "hitwicket-cba02",
+      storageBucket: "hitwicket-cba02.firebasestorage.app",
+      messagingSenderId: "196915483829",
+      appId: "1:196915483829:web:071c47af79914aec88dafc"
+    };
+    
+    // Check if Firebase is already initialized
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    
+    // Try to read settings (this will verify connection)
+    const doc = await db.collection('settings').doc('site').get();
+    assert(true, 'Firebase connection successful');
+  });
+});
+
+// Test Group 5: Session Tracking
+describe('Session Tracking', (it) => {
+  it('Session tracking code exists in all pages', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      assert(html.includes('cricket_session_id'), `${page} should track session ID`);
+      assert(html.includes('beforeunload'), `${page} should handle page unload`);
+    }
+  });
+  
+  it('Sessions collection is accessible', async () => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp({
+        apiKey: "AIzaSyDhQrnZkxPT1bWE-V5bl39EKJRptPUPSnI",
+        authDomain: "hitwicket-cba02.firebaseapp.com",
+        projectId: "hitwicket-cba02",
+        storageBucket: "hitwicket-cba02.firebasestorage.app",
+        messagingSenderId: "196915483829",
+        appId: "1:196915483829:web:071c47af79914aec88dafc"
+      });
+    }
+    const db = firebase.firestore();
+    const snapshot = await db.collection('sessions').limit(1).get();
+    assert(true, 'Sessions collection accessible');
+  });
+});
+
+// Test Group 6: Admin Features
+describe('Admin Features', (it) => {
+  it('Admin page has login protection', async () => {
+    const html = await fetchPage('admin.html');
+    assert(html.includes('admin-login-overlay'), 'Should have admin login overlay');
+    assert(html.includes('adminPassword'), 'Should have admin password input');
+  });
+  
+  it('Admin page has password change feature', async () => {
+    const html = await fetchPage('admin.html');
+    assert(html.includes('changePassword'), 'Should have change password function');
+    assert(html.includes('newPassword'), 'Should have new password input');
+  });
+  
+  it('Admin page has user analytics', async () => {
+    const html = await fetchPage('admin.html');
+    assert(html.includes('analyticsContainer'), 'Should have analytics container');
+    assert(html.includes('User Analytics'), 'Should have user analytics section');
+  });
+  
+  it('Admin page shows session stats', async () => {
+    const html = await fetchPage('admin.html');
+    assert(html.includes('totalSessions'), 'Should show total sessions');
+    assert(html.includes('avgSessionTime'), 'Should show average session time');
+  });
+});
+
+// Test Group 7: Navigation
+describe('Navigation Links', (it) => {
+  it('index.html has correct navigation links', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('href="batting-records.html"'), 'Should link to batting records');
+    assert(html.includes('href="country-results.html"'), 'Should link to country results');
+    assert(html.includes('href="simulation.html"'), 'Should link to simulation');
+  });
+  
+  it('All pages link back to index', async () => {
+    const pages = ['batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      assert(html.includes('href="index.html"'), `${page} should link to index`);
+    }
+  });
+});
+
+// Test Group 8: CSS & Styling
+describe('CSS & Styling', (it) => {
+  it('Password overlay has correct styling', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('.password-overlay'), 'Should have overlay styles');
+    assert(html.includes('.password-box'), 'Should have box styles');
+  });
+  
+  it('Site content is hidden by default', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('.site-content{display:none}'), 'Site content should be hidden');
+    assert(html.includes('.site-content.unlocked{display:block}'), 'Unlocked content should show');
+  });
+});
+
+// Initialize
+renderTests();
+log('Test suite loaded. Click "Run All Tests" to start.', 'info');
+</script>
+</body>
+</html>
