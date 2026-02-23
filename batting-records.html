@@ -793,6 +793,15 @@ async function checkPassword() {
         page: 'batting-records.html',
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
+      
+      // Start session tracking
+      const sessionRef = await db.collection('sessions').add({
+        email: email,
+        startTime: firebase.firestore.FieldValue.serverTimestamp(),
+        page: 'batting-records.html'
+      });
+      sessionStorage.setItem('cricket_session_id', sessionRef.id);
+      sessionStorage.setItem('cricket_session_start', Date.now().toString());
     } catch (e) {
       console.error('Error logging login:', e);
     }
@@ -816,6 +825,23 @@ function unlockSite() {
     document.getElementById('passwordOverlay').style.display = 'none';
   }, 400);
 }
+
+// Track session end on page unload
+window.addEventListener('beforeunload', async () => {
+  const sessionId = sessionStorage.getItem('cricket_session_id');
+  const sessionStart = sessionStorage.getItem('cricket_session_start');
+  if (sessionId && sessionStart) {
+    const duration = Math.round((Date.now() - parseInt(sessionStart)) / 1000);
+    try {
+      await db.collection('sessions').doc(sessionId).update({
+        endTime: firebase.firestore.FieldValue.serverTimestamp(),
+        duration: duration
+      });
+    } catch (e) {
+      console.error('Error updating session:', e);
+    }
+  }
+});
 
 if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
   unlockSite();

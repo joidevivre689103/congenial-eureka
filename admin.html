@@ -113,6 +113,22 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       <div class="stat-value" id="todayLogins">0</div>
       <div class="stat-label">Today's Logins</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-value" id="totalSessions">0</div>
+      <div class="stat-label">Total Sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="avgSessionTime">0m</div>
+      <div class="stat-label">Avg Session Time</div>
+    </div>
+  </div>
+
+  <!-- User Analytics -->
+  <div class="card">
+    <div class="card-title">User Analytics</div>
+    <div id="analyticsContainer">
+      <div class="no-logins">Loading...</div>
+    </div>
   </div>
 
   <!-- Change Password -->
@@ -301,6 +317,11 @@ async function loadLogins() {
     const logins = [];
     snapshot.forEach(doc => logins.push({ id: doc.id, ...doc.data() }));
     
+    // Load sessions
+    const sessionsSnapshot = await db.collection('sessions').orderBy('startTime', 'desc').get();
+    const sessions = [];
+    sessionsSnapshot.forEach(doc => sessions.push({ id: doc.id, ...doc.data() }));
+    
     // Stats
     const uniqueEmails = new Set(logins.map(l => l.email)).size;
     const today = new Date().toDateString();
@@ -309,8 +330,75 @@ async function loadLogins() {
     document.getElementById('totalLogins').textContent = logins.length;
     document.getElementById('uniqueUsers').textContent = uniqueEmails;
     document.getElementById('todayLogins').textContent = todayLogins;
+    document.getElementById('totalSessions').textContent = sessions.length;
     
-    // Table
+    // Calculate average session time
+    const completedSessions = sessions.filter(s => s.duration);
+    const avgDuration = completedSessions.length > 0 
+      ? Math.round(completedSessions.reduce((sum, s) => sum + (s.duration || 0), 0) / completedSessions.length / 60)
+      : 0;
+    document.getElementById('avgSessionTime').textContent = avgDuration + 'm';
+    
+    // User Analytics - aggregate by email
+    const userStats = {};
+    logins.forEach(l => {
+      if (!l.email) return;
+      if (!userStats[l.email]) {
+        userStats[l.email] = { sessions: 0, totalTime: 0, lastSeen: null, dailyTime: {} };
+      }
+    });
+    
+    sessions.forEach(s => {
+      if (!s.email || !userStats[s.email]) return;
+      userStats[s.email].sessions++;
+      userStats[s.email].totalTime += (s.duration || 0);
+      
+      // Track daily time
+      if (s.startTime) {
+        const day = new Date(s.startTime.toDate()).toLocaleDateString();
+        if (!userStats[s.email].dailyTime[day]) {
+          userStats[s.email].dailyTime[day] = 0;
+        }
+        userStats[s.email].dailyTime[day] += (s.duration || 0);
+      }
+      
+      // Track last seen
+      if (s.startTime) {
+        const startDate = s.startTime.toDate();
+        if (!userStats[s.email].lastSeen || startDate > userStats[s.email].lastSeen) {
+          userStats[s.email].lastSeen = startDate;
+        }
+      }
+    });
+    
+    // User Analytics Table
+    const analyticsContainer = document.getElementById('analyticsContainer');
+    const userEmails = Object.keys(userStats);
+    if (userEmails.length === 0) {
+      analyticsContainer.innerHTML = '<div class="no-logins">No user analytics yet</div>';
+    } else {
+      let html = `<table class="logins-table">
+        <thead><tr><th>Email</th><th>Sessions</th><th>Total Time</th><th>Avg Time/Day</th><th>Last Seen</th></tr></thead>
+        <tbody>`;
+      userEmails.forEach(email => {
+        const stats = userStats[email];
+        const totalMins = Math.round(stats.totalTime / 60);
+        const daysActive = Object.keys(stats.dailyTime).length || 1;
+        const avgPerDay = Math.round(stats.totalTime / daysActive / 60);
+        const lastSeen = stats.lastSeen ? stats.lastSeen.toLocaleDateString() : 'N/A';
+        html += `<tr>
+          <td>${email}</td>
+          <td>${stats.sessions}</td>
+          <td>${formatDuration(stats.totalTime)}</td>
+          <td>${avgPerDay}m/day</td>
+          <td>${lastSeen}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      analyticsContainer.innerHTML = html;
+    }
+    
+    // Login History Table
     const container = document.getElementById('loginsContainer');
     if (logins.length === 0) {
       container.innerHTML = '<div class="no-logins">No logins recorded yet</div>';
@@ -331,6 +419,14 @@ async function loadLogins() {
     console.error('Error loading logins:', e);
     document.getElementById('loginsContainer').innerHTML = '<div class="no-logins">Error loading logins</div>';
   }
+}
+
+function formatDuration(seconds) {
+  if (!seconds || seconds < 60) return '<1m';
+  const hours = Math.floor(seconds / 3600);
+  const mins = Math.round((seconds % 3600) / 60);
+  if (hours > 0) return hours + 'h ' + mins + 'm';
+  return mins + 'm';
 }
 
 async function clearLogins() {
