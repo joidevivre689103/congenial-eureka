@@ -203,6 +203,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 }
 .wg-note svg{width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0}
 
+/* Apply suggested weights button */
+.wg-apply-suggested:hover{
+  background:rgba(40,112,208,0.15);border-color:var(--blue);
+}
+
 /* Grand Total */
 .total-weight{
   margin-top:20px;padding-top:20px;border-top:1px solid var(--border);
@@ -455,7 +460,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Era</label>
-        <select class="filter-select" id="eraFilter" onchange="updateResultsTable()">
+        <select class="filter-select" id="eraFilter" onchange="updateResultsTable(); updateInningsWeights()">
           <option value="all">All Eras</option>
           <option value="1877-1899">1877–1899</option>
           <option value="1900-1918">1900–1918</option>
@@ -509,26 +514,37 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <span class="wg-subtotal-label">Sub-total:</span>
           <span class="wg-subtotal-value" id="impactSubtotal">0 / 0%</span>
         </div>
+        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical innings totals <span id="inningsEraLabel">(All Eras)</span></span>
+        </div>
         <div class="weight-item disabled" id="impact1Item">
           <span class="wi-label">1st Innings</span>
+          <span class="wi-suggested" id="impact1Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="impact1" min="0" max="100" placeholder="0" onchange="updateSub('impact','1')">
           <span class="wi-unit">%</span>
         </div>
         <div class="weight-item disabled" id="impact2Item">
           <span class="wi-label">2nd Innings</span>
+          <span class="wi-suggested" id="impact2Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="impact2" min="0" max="100" placeholder="0" onchange="updateSub('impact','2')">
           <span class="wi-unit">%</span>
         </div>
         <div class="weight-item disabled" id="impact3Item">
           <span class="wi-label">3rd Innings</span>
+          <span class="wi-suggested" id="impact3Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="impact3" min="0" max="100" placeholder="0" onchange="updateSub('impact','3')">
           <span class="wi-unit">%</span>
         </div>
         <div class="weight-item disabled" id="impact4Item">
           <span class="wi-label">4th Innings</span>
+          <span class="wi-suggested" id="impact4Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="impact4" min="0" max="100" placeholder="0" onchange="updateSub('impact','4')">
           <span class="wi-unit">%</span>
         </div>
+        <button class="wg-apply-suggested" id="impactApplySuggested" onclick="applyImpactSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
+          Apply Suggested Weights
+        </button>
       </div>
 
       <!-- Home & Away -->
@@ -672,6 +688,58 @@ const labels = {
   result: { name: 'Result', win: 'Win', loss: 'Loss', draw: 'Draw' }
 };
 
+// Calculate innings weights from actual historical data
+// This is called after playerData is loaded
+function calculateInningsWeights(players) {
+  const totals = { '1': 0, '2': 0, '3': 0, '4': 0 };
+  
+  // Aggregate team runs for each innings
+  players.forEach(player => {
+    if (player.innings && player.innings.teamRuns) {
+      totals['1'] += player.innings.teamRuns['1'] || 0;
+      totals['2'] += player.innings.teamRuns['2'] || 0;
+      totals['3'] += player.innings.teamRuns['3'] || 0;
+      totals['4'] += player.innings.teamRuns['4'] || 0;
+    }
+  });
+  
+  const grandTotal = totals['1'] + totals['2'] + totals['3'] + totals['4'];
+  
+  if (grandTotal === 0) {
+    return { '1': 25, '2': 25, '3': 25, '4': 25 }; // Fallback to equal distribution
+  }
+  
+  // Calculate percentages (rounded to 1 decimal)
+  const percentages = {
+    '1': Math.round(totals['1'] / grandTotal * 1000) / 10,
+    '2': Math.round(totals['2'] / grandTotal * 1000) / 10,
+    '3': Math.round(totals['3'] / grandTotal * 1000) / 10,
+    '4': Math.round(totals['4'] / grandTotal * 1000) / 10
+  };
+  
+  return percentages;
+}
+
+// Filter players by era and calculate weights
+function getInningsWeightsForEra(eraFilter) {
+  let filteredPlayers = playerData;
+  
+  if (eraFilter !== 'all') {
+    const [eraStart, eraEnd] = eraFilter.split('-').map(Number);
+    filteredPlayers = playerData.filter(player => {
+      const playerFrom = player.from || 0;
+      const playerTo = player.to || 9999;
+      // Check if career overlaps with era
+      return !(playerTo < eraStart || playerFrom > eraEnd);
+    });
+  }
+  
+  return calculateInningsWeights(filteredPlayers);
+}
+
+// Store current innings weights
+let currentInningsWeights = { '1': 25, '2': 25, '3': 25, '4': 25 };
+
 const inputMap = {
   'avg-1': 'avg1', 'avg-2': 'avg2', 'avg-3': 'avg3', 'avg-4': 'avg4',
   'runs-1': 'runs1', 'runs-2': 'runs2', 'runs-3': 'runs3', 'runs-4': 'runs4',
@@ -716,6 +784,16 @@ function updateTotalNoAuto(group) {
     });
   }
   
+  // Show/hide apply suggested button for impact
+  if (group === 'impact') {
+    const applyBtn = document.getElementById('impactApplySuggested');
+    if (val > 0) {
+      applyBtn.style.display = 'block';
+    } else {
+      applyBtn.style.display = 'none';
+    }
+  }
+  
   updateSubtotal(group);
   updateGrandTotal();
   updateTags();
@@ -755,6 +833,16 @@ function updateTotal(group) {
   // If runs changed, also update impact
   if (group === 'runs') {
     // Impact no longer auto-distributes
+  }
+  
+  // Show/hide apply suggested button for impact
+  if (group === 'impact') {
+    const applyBtn = document.getElementById('impactApplySuggested');
+    if (val > 0) {
+      applyBtn.style.display = 'block';
+    } else {
+      applyBtn.style.display = 'none';
+    }
   }
   
   updateSubtotal(group);
@@ -163937,11 +164025,103 @@ function clearFilters() {
   document.getElementById('eraFilter').value = 'all';
   document.getElementById('playerFilter').value = '10';
   updateResultsTable();
+  updateInningsWeights();
 }
 
 // Initialize
 updateGrandTotal();
 updateResultsTable();
+
+// Calculate and display initial innings weights
+function updateInningsWeights() {
+  const eraFilter = document.getElementById('eraFilter').value;
+  currentInningsWeights = getInningsWeightsForEra(eraFilter);
+  
+  // Update suggested weight displays
+  document.getElementById('impact1Suggested').textContent = currentInningsWeights['1'].toFixed(1) + '%';
+  document.getElementById('impact2Suggested').textContent = currentInningsWeights['2'].toFixed(1) + '%';
+  document.getElementById('impact3Suggested').textContent = currentInningsWeights['3'].toFixed(1) + '%';
+  document.getElementById('impact4Suggested').textContent = currentInningsWeights['4'].toFixed(1) + '%';
+  
+  // Update era label
+  const eraLabel = document.getElementById('inningsEraLabel');
+  if (eraFilter === 'all') {
+    eraLabel.textContent = '(All Eras)';
+  } else {
+    eraLabel.textContent = '(' + eraFilter + ')';
+  }
+  
+  // Show apply button if impact category has a total
+  const applyBtn = document.getElementById('impactApplySuggested');
+  if (config.impact.total > 0) {
+    applyBtn.style.display = 'block';
+  }
+}
+
+// Apply suggested innings weights to Impact category
+function applyImpactSuggested() {
+  const total = config.impact.total;
+  if (total <= 0) {
+    alert('Please set an Impact category total first.');
+    return;
+  }
+  
+  // Calculate actual values based on total and percentages
+  // Round to whole numbers that sum to the total
+  const rawValues = {
+    '1': currentInningsWeights['1'] / 100 * total,
+    '2': currentInningsWeights['2'] / 100 * total,
+    '3': currentInningsWeights['3'] / 100 * total,
+    '4': currentInningsWeights['4'] / 100 * total
+  };
+  
+  // Round and adjust to ensure sum equals total
+  let values = {
+    '1': Math.round(rawValues['1']),
+    '2': Math.round(rawValues['2']),
+    '3': Math.round(rawValues['3']),
+    '4': Math.round(rawValues['4'])
+  };
+  
+  // Adjust for rounding errors
+  let sum = values['1'] + values['2'] + values['3'] + values['4'];
+  let diff = total - sum;
+  
+  // Add/subtract difference from largest value
+  if (diff !== 0) {
+    let maxKey = '1';
+    let maxVal = values['1'];
+    ['2', '3', '4'].forEach(k => {
+      if (values[k] > maxVal) {
+        maxVal = values[k];
+        maxKey = k;
+      }
+    });
+    values[maxKey] += diff;
+  }
+  
+  // Apply values to inputs
+  ['1', '2', '3', '4'].forEach(inn => {
+    config.impact.subs[inn] = values[inn];
+    const input = document.getElementById('impact' + inn);
+    const item = document.getElementById('impact' + inn + 'Item');
+    input.value = values[inn];
+    if (values[inn] > 0) {
+      item.classList.add('has-value');
+    }
+  });
+  
+  // Mark as manually edited to prevent auto-populate from overwriting
+  config.impact.manuallyEdited = { '1': true, '2': true, '3': true, '4': true };
+  
+  updateSubtotal('impact');
+  updateGrandTotal();
+  updateTags();
+  updatePreview();
+}
+
+// Initialize innings weights on page load
+updateInningsWeights();
 
 // Share functionality
 function sharePage(){
