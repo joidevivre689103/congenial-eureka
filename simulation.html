@@ -208,6 +208,35 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   background:rgba(40,112,208,0.15);border-color:var(--blue);
 }
 
+/* Era Multi-Select Dropdown */
+.era-multi-select{position:relative}
+.era-toggle-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:6px 12px;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:12px;color:var(--text);
+  min-width:120px;justify-content:space-between;
+}
+.era-toggle-btn:hover{border-color:var(--accent)}
+.era-toggle-btn svg{flex-shrink:0;stroke:var(--text3)}
+.era-dropdown{
+  position:absolute;top:100%;left:0;margin-top:4px;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.12);
+  padding:8px 0;min-width:160px;z-index:100;
+  display:none;
+}
+.era-dropdown.show{display:block}
+.era-option{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;cursor:pointer;font-size:12px;color:var(--text);
+  transition:background 0.15s;
+}
+.era-option:hover{background:var(--surface2)}
+.era-option input[type="checkbox"]{
+  width:14px;height:14px;accent-color:var(--accent);cursor:pointer;
+}
+
 /* Grand Total */
 .total-weight{
   margin-top:20px;padding-top:20px;border-top:1px solid var(--border);
@@ -460,15 +489,21 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Era</label>
-        <select class="filter-select" id="eraFilter" onchange="updateResultsTable(); updateInningsWeights(); updateVenueWeights(); updateResultWeights()">
-          <option value="all">All Eras</option>
-          <option value="1877-1899">1877–1899</option>
-          <option value="1900-1918">1900–1918</option>
-          <option value="1919-1939">1919–1939</option>
-          <option value="1945-1970">1945–1970</option>
-          <option value="1971-1999">1971–1999</option>
-          <option value="2000-2025">2000–2025</option>
-        </select>
+        <div class="era-multi-select" id="eraFilterContainer">
+          <button class="era-toggle-btn" id="eraToggleBtn" onclick="toggleEraDropdown()">
+            <span id="eraSelectedText">All Eras</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="era-dropdown" id="eraDropdown">
+            <label class="era-option"><input type="checkbox" value="all" checked onchange="handleEraChange(this)"> All Eras</label>
+            <label class="era-option"><input type="checkbox" value="1877-1899" onchange="handleEraChange(this)"> 1877–1899</label>
+            <label class="era-option"><input type="checkbox" value="1900-1918" onchange="handleEraChange(this)"> 1900–1918</label>
+            <label class="era-option"><input type="checkbox" value="1919-1939" onchange="handleEraChange(this)"> 1919–1939</label>
+            <label class="era-option"><input type="checkbox" value="1945-1970" onchange="handleEraChange(this)"> 1945–1970</label>
+            <label class="era-option"><input type="checkbox" value="1971-1999" onchange="handleEraChange(this)"> 1971–1999</label>
+            <label class="era-option"><input type="checkbox" value="2000-2025" onchange="handleEraChange(this)"> 2000–2025</label>
+          </div>
+        </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Players</label>
@@ -667,15 +702,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <th class="num" rowspan="2">Runs</th>
           <th class="num" rowspan="2">Avg</th>
           <th class="num" rowspan="2">SR</th>
-          <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Home</th>
-          <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Away</th>
+          <th class="num" colspan="2" style="text-align:center;border-bottom:1px solid var(--border)">Venue</th>
+          <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Match Result</th>
           <th class="num" rowspan="2">Points</th>
           <th class="num" rowspan="2">Rank</th>
         </tr>
         <tr>
-          <th class="num" style="font-size:9px">Win %</th>
-          <th class="num" style="font-size:9px">Draw %</th>
-          <th class="num" style="font-size:9px">Loss %</th>
+          <th class="num" style="font-size:9px">Home %</th>
+          <th class="num" style="font-size:9px">Away %</th>
           <th class="num" style="font-size:9px">Win %</th>
           <th class="num" style="font-size:9px">Draw %</th>
           <th class="num" style="font-size:9px">Loss %</th>
@@ -848,6 +882,38 @@ function getResultWeightsForEra(eraFilter) {
 
 // Store current result weights
 let currentResultWeights = { win: 33.3, draw: 33.3, loss: 33.4 };
+
+// Multi-era versions of weight calculation functions
+function filterPlayersByEras(selectedEras) {
+  if (selectedEras.includes('all')) {
+    return playerData;
+  }
+  
+  return playerData.filter(player => {
+    const playerFrom = player.from || 0;
+    const playerTo = player.to || 9999;
+    
+    return selectedEras.some(era => {
+      const [eraStart, eraEnd] = era.split('-').map(Number);
+      return !(playerTo < eraStart || playerFrom > eraEnd);
+    });
+  });
+}
+
+function getInningsWeightsForEras(selectedEras) {
+  const filteredPlayers = filterPlayersByEras(selectedEras);
+  return calculateInningsWeights(filteredPlayers);
+}
+
+function getVenueWeightsForEras(selectedEras) {
+  const filteredPlayers = filterPlayersByEras(selectedEras);
+  return calculateVenueWeights(filteredPlayers);
+}
+
+function getResultWeightsForEras(selectedEras) {
+  const filteredPlayers = filterPlayersByEras(selectedEras);
+  return calculateResultWeights(filteredPlayers);
+}
 
 const inputMap = {
   'avg-1': 'avg1', 'avg-2': 'avg2', 'avg-3': 'avg3', 'avg-4': 'avg4',
@@ -193382,28 +193448,25 @@ function updateResultsTable() {
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
   const minAvg = parseFloat(document.getElementById('avgFilter').value) || 0;
   const minSR = parseFloat(document.getElementById('srFilter').value) || 0;
-  const eraFilter = document.getElementById('eraFilter').value;
+  const selectedEras = getSelectedEras();
   const playerLimit = document.getElementById('playerFilter').value;
-  
-  // Parse era filter
-  let eraStart = 0, eraEnd = 9999;
-  if (eraFilter !== 'all') {
-    const [start, end] = eraFilter.split('-').map(Number);
-    eraStart = start;
-    eraEnd = end;
-  }
   
   // Filter players by stats and era
   const filteredByStats = playerData.filter(player => {
     // Stats filters
     if (player.runs < minRuns || player.avg < minAvg || player.sr < minSR) return false;
     
-    // Era filter: player's career must overlap with the selected era
-    if (eraFilter !== 'all') {
+    // Era filter: player's career must overlap with at least one selected era
+    if (!selectedEras.includes('all')) {
       const playerFrom = player.from || 0;
       const playerTo = player.to || 9999;
-      // Check if career overlaps with era
-      if (playerTo < eraStart || playerFrom > eraEnd) return false;
+      
+      const matchesEra = selectedEras.some(era => {
+        const [eraStart, eraEnd] = era.split('-').map(Number);
+        return !(playerTo < eraStart || playerFrom > eraEnd);
+      });
+      
+      if (!matchesEra) return false;
     }
     
     return true;
@@ -193426,6 +193489,23 @@ function updateResultsTable() {
   // Update player count
   document.getElementById('playerCount').textContent = limitedPlayers.length;
   
+  // Calculate venue and result percentages
+  const getVenuePct = (player, venue) => {
+    if (!player.venueRuns || !player.teamVenueRuns) return '—';
+    const playerRuns = player.venueRuns[venue] || 0;
+    const teamRuns = player.teamVenueRuns[venue] || 0;
+    if (teamRuns === 0) return '—';
+    return ((playerRuns / teamRuns) * 100).toFixed(1);
+  };
+  
+  const getResultPct = (player, result) => {
+    if (!player.resultRuns || !player.teamResultRuns) return '—';
+    const playerRuns = player.resultRuns[result] || 0;
+    const teamRuns = player.teamResultRuns[result] || 0;
+    if (teamRuns === 0) return '—';
+    return ((playerRuns / teamRuns) * 100).toFixed(1);
+  };
+  
   // Render table rows
   tbody.innerHTML = limitedPlayers.map((player, index) => `
     <tr>
@@ -193433,24 +193513,91 @@ function updateResultsTable() {
       <td class="num">${player.runs.toLocaleString()}</td>
       <td class="num">${player.avg.toFixed(2)}</td>
       <td class="num">${player.sr.toFixed(2)}</td>
-      <td class="num">${player.homeResultPct ? player.homeResultPct.win.toFixed(1) : '—'}</td>
-      <td class="num">${player.homeResultPct ? player.homeResultPct.draw.toFixed(1) : '—'}</td>
-      <td class="num">${player.homeResultPct ? player.homeResultPct.loss.toFixed(1) : '—'}</td>
-      <td class="num">${player.awayResultPct ? player.awayResultPct.win.toFixed(1) : '—'}</td>
-      <td class="num">${player.awayResultPct ? player.awayResultPct.draw.toFixed(1) : '—'}</td>
-      <td class="num">${player.awayResultPct ? player.awayResultPct.loss.toFixed(1) : '—'}</td>
+      <td class="num">${getVenuePct(player, 'home')}</td>
+      <td class="num">${getVenuePct(player, 'away')}</td>
+      <td class="num">${getResultPct(player, 'win')}</td>
+      <td class="num">${getResultPct(player, 'draw')}</td>
+      <td class="num">${getResultPct(player, 'loss')}</td>
       <td class="num points">${grandTotal > 0 ? player.points.toFixed(1) : '—'}</td>
       <td class="num">${index + 1}</td>
     </tr>
   `).join('');
 }
 
+// Era multi-select functions
+function toggleEraDropdown() {
+  const dropdown = document.getElementById('eraDropdown');
+  dropdown.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const container = document.getElementById('eraFilterContainer');
+  if (container && !container.contains(e.target)) {
+    document.getElementById('eraDropdown').classList.remove('show');
+  }
+});
+
+function getSelectedEras() {
+  const checkboxes = document.querySelectorAll('#eraDropdown input[type="checkbox"]:checked');
+  return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function handleEraChange(checkbox) {
+  const allCheckbox = document.querySelector('#eraDropdown input[value="all"]');
+  const eraCheckboxes = document.querySelectorAll('#eraDropdown input[type="checkbox"]:not([value="all"])');
+  
+  if (checkbox.value === 'all') {
+    // If "All Eras" is checked, uncheck all others
+    if (checkbox.checked) {
+      eraCheckboxes.forEach(cb => cb.checked = false);
+    }
+  } else {
+    // If any specific era is checked, uncheck "All Eras"
+    if (checkbox.checked) {
+      allCheckbox.checked = false;
+    }
+    
+    // If no eras selected, select "All Eras"
+    const anySelected = Array.from(eraCheckboxes).some(cb => cb.checked);
+    if (!anySelected) {
+      allCheckbox.checked = true;
+    }
+  }
+  
+  updateEraButtonText();
+  updateResultsTable();
+  updateInningsWeights();
+  updateVenueWeights();
+  updateResultWeights();
+}
+
+function updateEraButtonText() {
+  const selectedEras = getSelectedEras();
+  const textEl = document.getElementById('eraSelectedText');
+  
+  if (selectedEras.includes('all') || selectedEras.length === 0) {
+    textEl.textContent = 'All Eras';
+  } else if (selectedEras.length === 1) {
+    textEl.textContent = selectedEras[0];
+  } else {
+    textEl.textContent = selectedEras.length + ' Eras';
+  }
+}
+
 function clearFilters() {
   document.getElementById('runsFilter').value = '0';
   document.getElementById('avgFilter').value = '0';
   document.getElementById('srFilter').value = '0';
-  document.getElementById('eraFilter').value = 'all';
   document.getElementById('playerFilter').value = '10';
+  
+  // Reset era checkboxes
+  const allCheckbox = document.querySelector('#eraDropdown input[value="all"]');
+  const eraCheckboxes = document.querySelectorAll('#eraDropdown input[type="checkbox"]:not([value="all"])');
+  allCheckbox.checked = true;
+  eraCheckboxes.forEach(cb => cb.checked = false);
+  updateEraButtonText();
+  
   updateResultsTable();
   updateInningsWeights();
   updateVenueWeights();
@@ -193463,8 +193610,9 @@ updateResultsTable();
 
 // Calculate and display initial innings weights
 function updateInningsWeights() {
-  const eraFilter = document.getElementById('eraFilter').value;
-  currentInningsWeights = getInningsWeightsForEra(eraFilter);
+  const selectedEras = getSelectedEras();
+  const eraFilter = selectedEras.includes('all') ? 'all' : selectedEras.join(',');
+  currentInningsWeights = getInningsWeightsForEras(selectedEras);
   
   // Update suggested weight displays
   document.getElementById('impact1Suggested').textContent = currentInningsWeights['1'].toFixed(1) + '%';
@@ -193474,10 +193622,12 @@ function updateInningsWeights() {
   
   // Update era label
   const eraLabel = document.getElementById('inningsEraLabel');
-  if (eraFilter === 'all') {
+  if (selectedEras.includes('all')) {
     eraLabel.textContent = '(All Eras)';
+  } else if (selectedEras.length === 1) {
+    eraLabel.textContent = '(' + selectedEras[0] + ')';
   } else {
-    eraLabel.textContent = '(' + eraFilter + ')';
+    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
   }
   
   // Show apply button if impact category has a total
@@ -193489,8 +193639,8 @@ function updateInningsWeights() {
 
 // Calculate and display venue weights
 function updateVenueWeights() {
-  const eraFilter = document.getElementById('eraFilter').value;
-  currentVenueWeights = getVenueWeightsForEra(eraFilter);
+  const selectedEras = getSelectedEras();
+  currentVenueWeights = getVenueWeightsForEras(selectedEras);
   
   // Update suggested weight displays
   document.getElementById('haHomeSuggested').textContent = currentVenueWeights.home.toFixed(1) + '%';
@@ -193498,10 +193648,12 @@ function updateVenueWeights() {
   
   // Update era label
   const eraLabel = document.getElementById('venueEraLabel');
-  if (eraFilter === 'all') {
+  if (selectedEras.includes('all')) {
     eraLabel.textContent = '(All Eras)';
+  } else if (selectedEras.length === 1) {
+    eraLabel.textContent = '(' + selectedEras[0] + ')';
   } else {
-    eraLabel.textContent = '(' + eraFilter + ')';
+    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
   }
   
   // Show apply button if ha category has a total
@@ -193628,8 +193780,8 @@ updateResultWeights();
 
 // Calculate and display result weights
 function updateResultWeights() {
-  const eraFilter = document.getElementById('eraFilter').value;
-  currentResultWeights = getResultWeightsForEra(eraFilter);
+  const selectedEras = getSelectedEras();
+  currentResultWeights = getResultWeightsForEras(selectedEras);
   
   // Update suggested weight displays
   document.getElementById('resultWinSuggested').textContent = currentResultWeights.win.toFixed(1) + '%';
@@ -193638,10 +193790,12 @@ function updateResultWeights() {
   
   // Update era label
   const eraLabel = document.getElementById('resultEraLabel');
-  if (eraFilter === 'all') {
+  if (selectedEras.includes('all')) {
     eraLabel.textContent = '(All Eras)';
+  } else if (selectedEras.length === 1) {
+    eraLabel.textContent = '(' + selectedEras[0] + ')';
   } else {
-    eraLabel.textContent = '(' + eraFilter + ')';
+    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
   }
   
   // Show apply button if result category has a total
