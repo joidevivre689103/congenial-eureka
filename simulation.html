@@ -702,17 +702,22 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <th class="num" rowspan="2">Runs</th>
           <th class="num" rowspan="2">Avg</th>
           <th class="num" rowspan="2">SR</th>
+          <th class="num" colspan="4" style="text-align:center;border-bottom:1px solid var(--border)">Innings %</th>
           <th class="num" colspan="2" style="text-align:center;border-bottom:1px solid var(--border)">Venue</th>
           <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Match Result</th>
           <th class="num" rowspan="2">Points</th>
           <th class="num" rowspan="2">Rank</th>
         </tr>
         <tr>
-          <th class="num" style="font-size:9px">Home %</th>
-          <th class="num" style="font-size:9px">Away %</th>
-          <th class="num" style="font-size:9px">Win %</th>
-          <th class="num" style="font-size:9px">Draw %</th>
-          <th class="num" style="font-size:9px">Loss %</th>
+          <th class="num" style="font-size:9px">1st</th>
+          <th class="num" style="font-size:9px">2nd</th>
+          <th class="num" style="font-size:9px">3rd</th>
+          <th class="num" style="font-size:9px">4th</th>
+          <th class="num" style="font-size:9px">Home</th>
+          <th class="num" style="font-size:9px">Away</th>
+          <th class="num" style="font-size:9px">Win</th>
+          <th class="num" style="font-size:9px">Draw</th>
+          <th class="num" style="font-size:9px">Loss</th>
         </tr>
       </thead>
       <tbody id="resultsBody">
@@ -193489,6 +193494,15 @@ function updateResultsTable() {
   // Update player count
   document.getElementById('playerCount').textContent = limitedPlayers.length;
   
+  // Calculate innings percentage
+  const getInningsPct = (player, inn) => {
+    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
+    const playerRuns = player.innings.runs[inn] || 0;
+    const teamRuns = player.innings.teamRuns[inn] || 0;
+    if (teamRuns === 0) return '—';
+    return ((playerRuns / teamRuns) * 100).toFixed(1);
+  };
+  
   // Calculate venue and result percentages
   const getVenuePct = (player, venue) => {
     if (!player.venueRuns || !player.teamVenueRuns) return '—';
@@ -193513,6 +193527,10 @@ function updateResultsTable() {
       <td class="num">${player.runs.toLocaleString()}</td>
       <td class="num">${player.avg.toFixed(2)}</td>
       <td class="num">${player.sr.toFixed(2)}</td>
+      <td class="num">${getInningsPct(player, '1')}</td>
+      <td class="num">${getInningsPct(player, '2')}</td>
+      <td class="num">${getInningsPct(player, '3')}</td>
+      <td class="num">${getInningsPct(player, '4')}</td>
       <td class="num">${getVenuePct(player, 'home')}</td>
       <td class="num">${getVenuePct(player, 'away')}</td>
       <td class="num">${getResultPct(player, 'win')}</td>
