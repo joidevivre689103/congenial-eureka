@@ -670,6 +670,94 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </button>
       </div>
 
+      <!-- Total Runs -->
+      <div class="weight-group" id="runsGroup">
+        <div class="wg-header">
+          <span class="wg-title">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            Total Runs
+          </span>
+          <button class="wg-reset-btn" onclick="resetCategory('runs')">Reset</button>
+        </div>
+        <div class="wg-total-row">
+          <span class="wg-total-label">Category Total</span>
+          <input type="number" class="wg-total-input" id="runsTotal" min="0" max="100" placeholder="0" onchange="updateTotal('runs')" oninput="updateTotalNoAuto('runs')">
+          <span class="wg-total-unit">%</span>
+        </div>
+        <div class="wg-subtotal">
+          <span class="wg-subtotal-label">Sub-total:</span>
+          <span class="wg-subtotal-value" id="runsSubtotal">0 / 0%</span>
+        </div>
+        <div class="wg-note">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>Weight runs scored by innings</span>
+        </div>
+        <div class="weight-item disabled" id="runs1Item">
+          <span class="wi-label">1st Innings</span>
+          <input type="number" class="wi-input" id="runs1" min="0" max="100" placeholder="0" onchange="updateSub('runs','1')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="runs2Item">
+          <span class="wi-label">2nd Innings</span>
+          <input type="number" class="wi-input" id="runs2" min="0" max="100" placeholder="0" onchange="updateSub('runs','2')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="runs3Item">
+          <span class="wi-label">3rd Innings</span>
+          <input type="number" class="wi-input" id="runs3" min="0" max="100" placeholder="0" onchange="updateSub('runs','3')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="runs4Item">
+          <span class="wi-label">4th Innings</span>
+          <input type="number" class="wi-input" id="runs4" min="0" max="100" placeholder="0" onchange="updateSub('runs','4')">
+          <span class="wi-unit">%</span>
+        </div>
+      </div>
+
+      <!-- Average -->
+      <div class="weight-group" id="avgGroup">
+        <div class="wg-header">
+          <span class="wg-title">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            Average
+          </span>
+          <button class="wg-reset-btn" onclick="resetCategory('avg')">Reset</button>
+        </div>
+        <div class="wg-total-row">
+          <span class="wg-total-label">Category Total</span>
+          <input type="number" class="wg-total-input" id="avgTotal" min="0" max="100" placeholder="0" onchange="updateTotal('avg')" oninput="updateTotalNoAuto('avg')">
+          <span class="wg-total-unit">%</span>
+        </div>
+        <div class="wg-subtotal">
+          <span class="wg-subtotal-label">Sub-total:</span>
+          <span class="wg-subtotal-value" id="avgSubtotal">0 / 0%</span>
+        </div>
+        <div class="wg-note">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>Weight batting average by innings</span>
+        </div>
+        <div class="weight-item disabled" id="avg1Item">
+          <span class="wi-label">1st Innings</span>
+          <input type="number" class="wi-input" id="avg1" min="0" max="100" placeholder="0" onchange="updateSub('avg','1')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="avg2Item">
+          <span class="wi-label">2nd Innings</span>
+          <input type="number" class="wi-input" id="avg2" min="0" max="100" placeholder="0" onchange="updateSub('avg','2')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="avg3Item">
+          <span class="wi-label">3rd Innings</span>
+          <input type="number" class="wi-input" id="avg3" min="0" max="100" placeholder="0" onchange="updateSub('avg','3')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="avg4Item">
+          <span class="wi-label">4th Innings</span>
+          <input type="number" class="wi-input" id="avg4" min="0" max="100" placeholder="0" onchange="updateSub('avg','4')">
+          <span class="wi-unit">%</span>
+        </div>
+      </div>
+
       <!-- X Factor - Strike Rate -->
       <div class="weight-group" id="srGroup">
         <div class="wg-header">
@@ -765,7 +853,7 @@ const config = {
 const labels = {
   avg: { name: 'Average', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
   sr: { name: 'X Factor - Strike Rate' },
-  runs: { name: 'Runs', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
+  runs: { name: 'Total Runs', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
   impact: { name: 'Innings Impact', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
   ha: { name: 'Venue', home: 'Home', away: 'Away' },
   result: { name: 'Result', win: 'Win', loss: 'Loss', draw: 'Draw' }
