@@ -688,33 +688,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <input type="number" class="wg-total-input" id="runsTotal" min="0" max="100" placeholder="0" onchange="updateTotal('runs')" oninput="updateTotalNoAuto('runs')">
           <span class="wg-total-unit">%</span>
         </div>
-        <div class="wg-subtotal">
-          <span class="wg-subtotal-label">Sub-total:</span>
-          <span class="wg-subtotal-value" id="runsSubtotal">0 / 0%</span>
-        </div>
         <div class="wg-note">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Weight runs scored by innings</span>
-        </div>
-        <div class="weight-item disabled" id="runs1Item">
-          <span class="wi-label">1st Innings</span>
-          <input type="number" class="wi-input" id="runs1" min="0" max="100" placeholder="0" onchange="updateSub('runs','1')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="runs2Item">
-          <span class="wi-label">2nd Innings</span>
-          <input type="number" class="wi-input" id="runs2" min="0" max="100" placeholder="0" onchange="updateSub('runs','2')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="runs3Item">
-          <span class="wi-label">3rd Innings</span>
-          <input type="number" class="wi-input" id="runs3" min="0" max="100" placeholder="0" onchange="updateSub('runs','3')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="runs4Item">
-          <span class="wi-label">4th Innings</span>
-          <input type="number" class="wi-input" id="runs4" min="0" max="100" placeholder="0" onchange="updateSub('runs','4')">
-          <span class="wi-unit">%</span>
+          <span>Total Runs weight applies directly to player's overall runs</span>
         </div>
       </div>
 
@@ -732,33 +708,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <input type="number" class="wg-total-input" id="avgTotal" min="0" max="100" placeholder="0" onchange="updateTotal('avg')" oninput="updateTotalNoAuto('avg')">
           <span class="wg-total-unit">%</span>
         </div>
-        <div class="wg-subtotal">
-          <span class="wg-subtotal-label">Sub-total:</span>
-          <span class="wg-subtotal-value" id="avgSubtotal">0 / 0%</span>
-        </div>
         <div class="wg-note">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Weight batting average by innings</span>
-        </div>
-        <div class="weight-item disabled" id="avg1Item">
-          <span class="wi-label">1st Innings</span>
-          <input type="number" class="wi-input" id="avg1" min="0" max="100" placeholder="0" onchange="updateSub('avg','1')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="avg2Item">
-          <span class="wi-label">2nd Innings</span>
-          <input type="number" class="wi-input" id="avg2" min="0" max="100" placeholder="0" onchange="updateSub('avg','2')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="avg3Item">
-          <span class="wi-label">3rd Innings</span>
-          <input type="number" class="wi-input" id="avg3" min="0" max="100" placeholder="0" onchange="updateSub('avg','3')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="avg4Item">
-          <span class="wi-label">4th Innings</span>
-          <input type="number" class="wi-input" id="avg4" min="0" max="100" placeholder="0" onchange="updateSub('avg','4')">
-          <span class="wi-unit">%</span>
+          <span>Average weight applies directly to player's overall batting average</span>
         </div>
       </div>
 
@@ -846,18 +798,18 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 <script>
 // Configuration
 const config = {
-  avg: { total: 0, subs: { '1': 0, '2': 0, '3': 0, '4': 0 }, subKeys: ['1','2','3','4'] },
+  avg: { total: 0, subs: {}, subKeys: [] }, // No subs, total applies directly
   sr: { total: 0, subs: {}, subKeys: [] }, // No subs, total applies directly
-  runs: { total: 0, subs: { '1': 0, '2': 0, '3': 0, '4': 0 }, subKeys: ['1','2','3','4'] },
+  runs: { total: 0, subs: {}, subKeys: [] }, // No subs, total applies directly
   impact: { total: 0, subs: { '1': 0, '2': 0, '3': 0, '4': 0 }, subKeys: ['1','2','3','4'] },
   ha: { total: 0, subs: { home: 0, away: 0 }, subKeys: ['home','away'] },
   result: { total: 0, subs: { win: 0, loss: 0, draw: 0 }, subKeys: ['win','loss','draw'] }
 };
 
 const labels = {
-  avg: { name: 'Average', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
+  avg: { name: 'Average' },
   sr: { name: 'X Factor - Strike Rate' },
-  runs: { name: 'Total Runs', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
+  runs: { name: 'Total Runs' },
   impact: { name: 'Innings Impact', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
   ha: { name: 'Venue', home: 'Home', away: 'Away' },
   result: { name: 'Result', win: 'Win', loss: 'Loss', draw: 'Draw' }
@@ -193501,25 +193453,14 @@ function calculatePoints(player) {
     points += player.sr * (config.sr.total / 100);
   }
   
-  // Batting Average - each innings avg * innings weight (weight as decimal)
-  // e.g., avg=60, weight=3 -> 60 * 0.03 = 1.8 points
+  // Batting Average - uses total directly (no subs)
   if (config.avg.total > 0) {
-    ['1', '2', '3', '4'].forEach(inn => {
-      const weight = config.avg.subs[inn];
-      if (weight > 0) {
-        points += player.innings.avg[inn] * (weight / 100);
-      }
-    });
+    points += player.avg * (config.avg.total / 100);
   }
   
-  // Runs Scored - each innings runs * innings weight (weight as decimal)
+  // Total Runs - uses total directly (no subs)
   if (config.runs.total > 0) {
-    ['1', '2', '3', '4'].forEach(inn => {
-      const weight = config.runs.subs[inn];
-      if (weight > 0) {
-        points += player.innings.runs[inn] * (weight / 100);
-      }
-    });
+    points += player.runs * (config.runs.total / 100);
   }
   
   // Impact - (player innings runs / team innings runs) * innings weight
