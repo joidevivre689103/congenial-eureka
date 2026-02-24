@@ -468,6 +468,10 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <option value="45">45+</option>
           <option value="48">48+</option>
           <option value="50">50+</option>
+          <option value="51">51+</option>
+          <option value="52">52+</option>
+          <option value="53">53+</option>
+          <option value="54">54+</option>
           <option value="55">55+</option>
           <option value="60">60+</option>
         </select>
@@ -531,12 +535,12 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     </div>
 
     <div class="weights-grid">
-      <!-- Impact -->
+      <!-- Innings Impact -->
       <div class="weight-group" id="impactGroup">
         <div class="wg-header">
           <span class="wg-title">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            Impact
+            Innings Impact
           </span>
           <button class="wg-reset-btn" onclick="resetCategory('impact')">Reset</button>
         </div>
@@ -665,6 +669,26 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           Apply Suggested Weights
         </button>
       </div>
+
+      <!-- X Factor - Strike Rate -->
+      <div class="weight-group" id="srGroup">
+        <div class="wg-header">
+          <span class="wg-title">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            X Factor - Strike Rate
+          </span>
+          <button class="wg-reset-btn" onclick="resetCategory('sr')">Reset</button>
+        </div>
+        <div class="wg-total-row">
+          <span class="wg-total-label">Category Total</span>
+          <input type="number" class="wg-total-input" id="srTotal" min="0" max="100" placeholder="0" onchange="updateTotal('sr')" oninput="updateTotalNoAuto('sr')">
+          <span class="wg-total-unit">%</span>
+        </div>
+        <div class="wg-note">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>Strike Rate weight applies directly to player's overall SR</span>
+        </div>
+      </div>
     </div>
 
     <div class="total-weight">
@@ -702,7 +726,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <th class="num" rowspan="2">Runs</th>
           <th class="num" rowspan="2">Avg</th>
           <th class="num" rowspan="2">SR</th>
-          <th class="num" colspan="4" style="text-align:center;border-bottom:1px solid var(--border)">Innings %</th>
+          <th class="num" colspan="5" style="text-align:center;border-bottom:1px solid var(--border)">Innings %</th>
           <th class="num" colspan="2" style="text-align:center;border-bottom:1px solid var(--border)">Venue</th>
           <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Match Result</th>
           <th class="num" rowspan="2">Points</th>
@@ -713,6 +737,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <th class="num" style="font-size:9px">2nd</th>
           <th class="num" style="font-size:9px">3rd</th>
           <th class="num" style="font-size:9px">4th</th>
+          <th class="num" style="font-size:9px">Total</th>
           <th class="num" style="font-size:9px">Home</th>
           <th class="num" style="font-size:9px">Away</th>
           <th class="num" style="font-size:9px">Win</th>
@@ -739,9 +764,9 @@ const config = {
 
 const labels = {
   avg: { name: 'Average', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
-  sr: { name: 'Strike Rate' },
+  sr: { name: 'X Factor - Strike Rate' },
   runs: { name: 'Runs', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
-  impact: { name: 'Impact', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
+  impact: { name: 'Innings Impact', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
   ha: { name: 'Venue', home: 'Home', away: 'Away' },
   result: { name: 'Result', win: 'Win', loss: 'Loss', draw: 'Draw' }
 };
@@ -193503,6 +193528,19 @@ function updateResultsTable() {
     return ((playerRuns / teamRuns) * 100).toFixed(1);
   };
   
+  // Calculate total innings percentage (sum of all player runs / sum of all team runs)
+  const getTotalInningsPct = (player) => {
+    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
+    let totalPlayerRuns = 0;
+    let totalTeamRuns = 0;
+    ['1', '2', '3', '4'].forEach(inn => {
+      totalPlayerRuns += player.innings.runs[inn] || 0;
+      totalTeamRuns += player.innings.teamRuns[inn] || 0;
+    });
+    if (totalTeamRuns === 0) return '—';
+    return ((totalPlayerRuns / totalTeamRuns) * 100).toFixed(1);
+  };
+  
   // Calculate venue and result percentages
   const getVenuePct = (player, venue) => {
     if (!player.venueRuns || !player.teamVenueRuns) return '—';
@@ -193531,6 +193569,7 @@ function updateResultsTable() {
       <td class="num">${getInningsPct(player, '2')}</td>
       <td class="num">${getInningsPct(player, '3')}</td>
       <td class="num">${getInningsPct(player, '4')}</td>
+      <td class="num">${getTotalInningsPct(player)}</td>
       <td class="num">${getVenuePct(player, 'home')}</td>
       <td class="num">${getVenuePct(player, 'away')}</td>
       <td class="num">${getResultPct(player, 'win')}</td>
