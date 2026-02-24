@@ -69,6 +69,21 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .stat-card{background:var(--surface2);border-radius:8px;padding:16px;text-align:center}
 .stat-value{font-family:'DM Serif Display',serif;font-size:32px;color:var(--accent)}
 .stat-label{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* User Type Dropdown */
+.user-type-select{padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'Outfit',sans-serif;background:var(--surface);cursor:pointer;min-width:110px}
+.user-type-select:focus{outline:none;border-color:var(--accent)}
+.user-type-select.regular{background:var(--surface2);color:var(--text2)}
+.user-type-select.priority{background:rgba(59,130,246,0.1);color:#2563eb;border-color:#93c5fd}
+.user-type-select.admin{background:var(--accent-dim);color:#8a5810;border-color:var(--accent)}
+.user-type-select.superadmin{background:var(--green-dim);color:var(--green);border-color:var(--green)}
+.max-duration{font-weight:600;font-size:12px}
+.max-duration.regular{color:var(--text3)}
+.max-duration.priority{color:#2563eb}
+.max-duration.admin{color:#8a5810}
+.max-duration.superadmin{color:var(--green)}
+.saving-indicator{font-size:10px;color:var(--accent);margin-left:6px;display:none}
+.saving-indicator.show{display:inline}
 </style>
 </head>
 <body>
@@ -377,8 +392,12 @@ async function loadLogins() {
     if (userEmails.length === 0) {
       analyticsContainer.innerHTML = '<div class="no-logins">No user analytics yet</div>';
     } else {
+      // Load user types from Firestore
+      const userTypesDoc = await db.collection('settings').doc('userTypes').get();
+      const userTypes = userTypesDoc.exists ? userTypesDoc.data() : {};
+      
       let html = `<table class="logins-table">
-        <thead><tr><th>Email</th><th>Sessions</th><th>Total Time</th><th>Avg Time/Day</th><th>Last Seen</th></tr></thead>
+        <thead><tr><th>Email</th><th>User Type</th><th>Max Duration/Day</th><th>Sessions</th><th>Total Time</th><th>Avg Time/Day</th><th>Last Seen</th></tr></thead>
         <tbody>`;
       userEmails.forEach(email => {
         const stats = userStats[email];
@@ -386,8 +405,22 @@ async function loadLogins() {
         const daysActive = Object.keys(stats.dailyTime).length || 1;
         const avgPerDay = Math.round(stats.totalTime / daysActive / 60);
         const lastSeen = stats.lastSeen ? stats.lastSeen.toLocaleDateString() : 'N/A';
+        const emailKey = email.replace(/[.@]/g, '_');
+        const currentType = userTypes[emailKey] || 'regular';
+        const maxDuration = getMaxDuration(currentType);
+        
         html += `<tr>
           <td>${email}</td>
+          <td>
+            <select class="user-type-select ${currentType}" id="type_${emailKey}" onchange="updateUserType('${emailKey}', '${email}', this.value)">
+              <option value="regular" ${currentType === 'regular' ? 'selected' : ''}>Regular</option>
+              <option value="priority" ${currentType === 'priority' ? 'selected' : ''}>Priority</option>
+              <option value="admin" ${currentType === 'admin' ? 'selected' : ''}>Admin</option>
+              <option value="superadmin" ${currentType === 'superadmin' ? 'selected' : ''}>Super Admin</option>
+            </select>
+            <span class="saving-indicator" id="saving_${emailKey}">Saving...</span>
+          </td>
+          <td><span class="max-duration ${currentType}" id="duration_${emailKey}">${maxDuration}</span></td>
           <td>${stats.sessions}</td>
           <td>${formatDuration(stats.totalTime)}</td>
           <td>${avgPerDay}m/day</td>
@@ -418,6 +451,44 @@ async function loadLogins() {
   } catch (e) {
     console.error('Error loading logins:', e);
     document.getElementById('loginsContainer').innerHTML = '<div class="no-logins">Error loading logins</div>';
+  }
+}
+
+// User type duration mapping
+function getMaxDuration(userType) {
+  const durations = {
+    'regular': '30 mins',
+    'priority': '1 hour',
+    'admin': '2 hours',
+    'superadmin': '4 hours'
+  };
+  return durations[userType] || '30 mins';
+}
+
+async function updateUserType(emailKey, email, newType) {
+  const select = document.getElementById('type_' + emailKey);
+  const saving = document.getElementById('saving_' + emailKey);
+  const duration = document.getElementById('duration_' + emailKey);
+  
+  // Show saving indicator
+  saving.classList.add('show');
+  
+  try {
+    // Update Firestore
+    await db.collection('settings').doc('userTypes').set({
+      [emailKey]: newType
+    }, { merge: true });
+    
+    // Update UI
+    select.className = 'user-type-select ' + newType;
+    duration.className = 'max-duration ' + newType;
+    duration.textContent = getMaxDuration(newType);
+    
+    // Hide saving indicator
+    setTimeout(() => saving.classList.remove('show'), 500);
+  } catch (e) {
+    alert('Error updating user type: ' + e.message);
+    saving.classList.remove('show');
   }
 }
 
