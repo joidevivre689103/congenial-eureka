@@ -460,7 +460,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Era</label>
-        <select class="filter-select" id="eraFilter" onchange="updateResultsTable(); updateInningsWeights()">
+        <select class="filter-select" id="eraFilter" onchange="updateResultsTable(); updateInningsWeights(); updateVenueWeights(); updateResultWeights()">
           <option value="all">All Eras</option>
           <option value="1877-1899">1877–1899</option>
           <option value="1900-1918">1900–1918</option>
@@ -565,16 +565,25 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <span class="wg-subtotal-label">Sub-total:</span>
           <span class="wg-subtotal-value" id="haSubtotal">0 / 0%</span>
         </div>
+        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical venue totals <span id="venueEraLabel">(All Eras)</span></span>
+        </div>
         <div class="weight-item disabled" id="haHomeItem">
           <span class="wi-label">Home</span>
+          <span class="wi-suggested" id="haHomeSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="haHome" min="0" max="100" placeholder="0" onchange="updateSub('ha','home')">
           <span class="wi-unit">%</span>
         </div>
         <div class="weight-item disabled" id="haAwayItem">
           <span class="wi-label">Away</span>
+          <span class="wi-suggested" id="haAwaySuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="haAway" min="0" max="100" placeholder="0" onchange="updateSub('ha','away')">
           <span class="wi-unit">%</span>
         </div>
+        <button class="wg-apply-suggested" id="haApplySuggested" onclick="applyVenueSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
+          Apply Suggested Weights
+        </button>
       </div>
 
       <!-- Match Result -->
@@ -595,21 +604,31 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <span class="wg-subtotal-label">Sub-total:</span>
           <span class="wg-subtotal-value" id="resultSubtotal">0 / 0%</span>
         </div>
+        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical result totals <span id="resultEraLabel">(All Eras)</span></span>
+        </div>
         <div class="weight-item disabled" id="resultWinItem">
           <span class="wi-label">Win</span>
+          <span class="wi-suggested" id="resultWinSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="resultWin" min="0" max="100" placeholder="0" onchange="updateSub('result','win')">
           <span class="wi-unit">%</span>
         </div>
         <div class="weight-item disabled" id="resultDrawItem">
           <span class="wi-label">Draw</span>
+          <span class="wi-suggested" id="resultDrawSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="resultDraw" min="0" max="100" placeholder="0" onchange="updateSub('result','draw')">
           <span class="wi-unit">%</span>
         </div>
         <div class="weight-item disabled" id="resultLossItem">
           <span class="wi-label">Loss</span>
+          <span class="wi-suggested" id="resultLossSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
           <input type="number" class="wi-input" id="resultLoss" min="0" max="100" placeholder="0" onchange="updateSub('result','loss')">
           <span class="wi-unit">%</span>
         </div>
+        <button class="wg-apply-suggested" id="resultApplySuggested" onclick="applyResultSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
+          Apply Suggested Weights
+        </button>
       </div>
     </div>
 
@@ -740,6 +759,96 @@ function getInningsWeightsForEra(eraFilter) {
 // Store current innings weights
 let currentInningsWeights = { '1': 25, '2': 25, '3': 25, '4': 25 };
 
+// Calculate venue weights from actual historical data
+function calculateVenueWeights(players) {
+  let homeTotal = 0;
+  let awayTotal = 0;
+  
+  players.forEach(player => {
+    if (player.venueRuns) {
+      homeTotal += player.venueRuns.home || 0;
+      awayTotal += player.venueRuns.away || 0;
+    }
+  });
+  
+  const grandTotal = homeTotal + awayTotal;
+  
+  if (grandTotal === 0) {
+    return { home: 50, away: 50 };
+  }
+  
+  return {
+    home: Math.round(homeTotal / grandTotal * 1000) / 10,
+    away: Math.round(awayTotal / grandTotal * 1000) / 10
+  };
+}
+
+// Filter players by era and calculate venue weights
+function getVenueWeightsForEra(eraFilter) {
+  let filteredPlayers = playerData;
+  
+  if (eraFilter !== 'all') {
+    const [eraStart, eraEnd] = eraFilter.split('-').map(Number);
+    filteredPlayers = playerData.filter(player => {
+      const playerFrom = player.from || 0;
+      const playerTo = player.to || 9999;
+      return !(playerTo < eraStart || playerFrom > eraEnd);
+    });
+  }
+  
+  return calculateVenueWeights(filteredPlayers);
+}
+
+// Store current venue weights
+let currentVenueWeights = { home: 50, away: 50 };
+
+// Calculate result weights from actual historical data
+function calculateResultWeights(players) {
+  let winTotal = 0;
+  let drawTotal = 0;
+  let lossTotal = 0;
+  
+  players.forEach(player => {
+    if (player.resultRuns) {
+      winTotal += player.resultRuns.win || 0;
+      // Ties are treated as draws
+      drawTotal += (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
+      lossTotal += player.resultRuns.loss || 0;
+    }
+  });
+  
+  const grandTotal = winTotal + drawTotal + lossTotal;
+  
+  if (grandTotal === 0) {
+    return { win: 33.3, draw: 33.3, loss: 33.4 };
+  }
+  
+  return {
+    win: Math.round(winTotal / grandTotal * 1000) / 10,
+    draw: Math.round(drawTotal / grandTotal * 1000) / 10,
+    loss: Math.round(lossTotal / grandTotal * 1000) / 10
+  };
+}
+
+// Filter players by era and calculate result weights
+function getResultWeightsForEra(eraFilter) {
+  let filteredPlayers = playerData;
+  
+  if (eraFilter !== 'all') {
+    const [eraStart, eraEnd] = eraFilter.split('-').map(Number);
+    filteredPlayers = playerData.filter(player => {
+      const playerFrom = player.from || 0;
+      const playerTo = player.to || 9999;
+      return !(playerTo < eraStart || playerFrom > eraEnd);
+    });
+  }
+  
+  return calculateResultWeights(filteredPlayers);
+}
+
+// Store current result weights
+let currentResultWeights = { win: 33.3, draw: 33.3, loss: 33.4 };
+
 const inputMap = {
   'avg-1': 'avg1', 'avg-2': 'avg2', 'avg-3': 'avg3', 'avg-4': 'avg4',
   'runs-1': 'runs1', 'runs-2': 'runs2', 'runs-3': 'runs3', 'runs-4': 'runs4',
@@ -794,6 +903,26 @@ function updateTotalNoAuto(group) {
     }
   }
   
+  // Show/hide apply suggested button for ha
+  if (group === 'ha') {
+    const applyBtn = document.getElementById('haApplySuggested');
+    if (val > 0) {
+      applyBtn.style.display = 'block';
+    } else {
+      applyBtn.style.display = 'none';
+    }
+  }
+  
+  // Show/hide apply suggested button for result
+  if (group === 'result') {
+    const applyBtn = document.getElementById('resultApplySuggested');
+    if (val > 0) {
+      applyBtn.style.display = 'block';
+    } else {
+      applyBtn.style.display = 'none';
+    }
+  }
+  
   updateSubtotal(group);
   updateGrandTotal();
   updateTags();
@@ -838,6 +967,26 @@ function updateTotal(group) {
   // Show/hide apply suggested button for impact
   if (group === 'impact') {
     const applyBtn = document.getElementById('impactApplySuggested');
+    if (val > 0) {
+      applyBtn.style.display = 'block';
+    } else {
+      applyBtn.style.display = 'none';
+    }
+  }
+  
+  // Show/hide apply suggested button for ha
+  if (group === 'ha') {
+    const applyBtn = document.getElementById('haApplySuggested');
+    if (val > 0) {
+      applyBtn.style.display = 'block';
+    } else {
+      applyBtn.style.display = 'none';
+    }
+  }
+  
+  // Show/hide apply suggested button for result
+  if (group === 'result') {
+    const applyBtn = document.getElementById('resultApplySuggested');
     if (val > 0) {
       applyBtn.style.display = 'block';
     } else {
@@ -164026,6 +164175,8 @@ function clearFilters() {
   document.getElementById('playerFilter').value = '10';
   updateResultsTable();
   updateInningsWeights();
+  updateVenueWeights();
+  updateResultWeights();
 }
 
 // Initialize
@@ -164054,6 +164205,30 @@ function updateInningsWeights() {
   // Show apply button if impact category has a total
   const applyBtn = document.getElementById('impactApplySuggested');
   if (config.impact.total > 0) {
+    applyBtn.style.display = 'block';
+  }
+}
+
+// Calculate and display venue weights
+function updateVenueWeights() {
+  const eraFilter = document.getElementById('eraFilter').value;
+  currentVenueWeights = getVenueWeightsForEra(eraFilter);
+  
+  // Update suggested weight displays
+  document.getElementById('haHomeSuggested').textContent = currentVenueWeights.home.toFixed(1) + '%';
+  document.getElementById('haAwaySuggested').textContent = currentVenueWeights.away.toFixed(1) + '%';
+  
+  // Update era label
+  const eraLabel = document.getElementById('venueEraLabel');
+  if (eraFilter === 'all') {
+    eraLabel.textContent = '(All Eras)';
+  } else {
+    eraLabel.textContent = '(' + eraFilter + ')';
+  }
+  
+  // Show apply button if ha category has a total
+  const applyBtn = document.getElementById('haApplySuggested');
+  if (config.ha.total > 0) {
     applyBtn.style.display = 'block';
   }
 }
@@ -164120,8 +164295,138 @@ function applyImpactSuggested() {
   updatePreview();
 }
 
-// Initialize innings weights on page load
+// Apply suggested venue weights to Home & Away category
+function applyVenueSuggested() {
+  const total = config.ha.total;
+  if (total <= 0) {
+    alert('Please set a Home & Away category total first.');
+    return;
+  }
+  
+  // Calculate actual values based on total and percentages
+  const rawHome = currentVenueWeights.home / 100 * total;
+  const rawAway = currentVenueWeights.away / 100 * total;
+  
+  // Round and adjust to ensure sum equals total
+  let homeVal = Math.round(rawHome);
+  let awayVal = Math.round(rawAway);
+  
+  // Adjust for rounding errors
+  let sum = homeVal + awayVal;
+  let diff = total - sum;
+  
+  // Add/subtract difference from larger value
+  if (diff !== 0) {
+    if (homeVal >= awayVal) {
+      homeVal += diff;
+    } else {
+      awayVal += diff;
+    }
+  }
+  
+  // Apply values to inputs
+  config.ha.subs.home = homeVal;
+  config.ha.subs.away = awayVal;
+  
+  document.getElementById('haHome').value = homeVal;
+  document.getElementById('haAway').value = awayVal;
+  
+  if (homeVal > 0) document.getElementById('haHomeItem').classList.add('has-value');
+  if (awayVal > 0) document.getElementById('haAwayItem').classList.add('has-value');
+  
+  // Mark as manually edited
+  config.ha.manuallyEdited = { home: true, away: true };
+  
+  updateSubtotal('ha');
+  updateGrandTotal();
+  updateTags();
+  updatePreview();
+}
+
+// Initialize innings and venue weights on page load
 updateInningsWeights();
+updateVenueWeights();
+updateResultWeights();
+
+// Calculate and display result weights
+function updateResultWeights() {
+  const eraFilter = document.getElementById('eraFilter').value;
+  currentResultWeights = getResultWeightsForEra(eraFilter);
+  
+  // Update suggested weight displays
+  document.getElementById('resultWinSuggested').textContent = currentResultWeights.win.toFixed(1) + '%';
+  document.getElementById('resultDrawSuggested').textContent = currentResultWeights.draw.toFixed(1) + '%';
+  document.getElementById('resultLossSuggested').textContent = currentResultWeights.loss.toFixed(1) + '%';
+  
+  // Update era label
+  const eraLabel = document.getElementById('resultEraLabel');
+  if (eraFilter === 'all') {
+    eraLabel.textContent = '(All Eras)';
+  } else {
+    eraLabel.textContent = '(' + eraFilter + ')';
+  }
+  
+  // Show apply button if result category has a total
+  const applyBtn = document.getElementById('resultApplySuggested');
+  if (config.result.total > 0) {
+    applyBtn.style.display = 'block';
+  }
+}
+
+// Apply suggested result weights to Match Result category
+function applyResultSuggested() {
+  const total = config.result.total;
+  if (total <= 0) {
+    alert('Please set a Match Result category total first.');
+    return;
+  }
+  
+  // Calculate actual values based on total and percentages
+  const rawWin = currentResultWeights.win / 100 * total;
+  const rawDraw = currentResultWeights.draw / 100 * total;
+  const rawLoss = currentResultWeights.loss / 100 * total;
+  
+  // Round and adjust to ensure sum equals total
+  let winVal = Math.round(rawWin);
+  let drawVal = Math.round(rawDraw);
+  let lossVal = Math.round(rawLoss);
+  
+  // Adjust for rounding errors
+  let sum = winVal + drawVal + lossVal;
+  let diff = total - sum;
+  
+  // Add/subtract difference from largest value
+  if (diff !== 0) {
+    if (winVal >= drawVal && winVal >= lossVal) {
+      winVal += diff;
+    } else if (drawVal >= lossVal) {
+      drawVal += diff;
+    } else {
+      lossVal += diff;
+    }
+  }
+  
+  // Apply values to inputs
+  config.result.subs.win = winVal;
+  config.result.subs.draw = drawVal;
+  config.result.subs.loss = lossVal;
+  
+  document.getElementById('resultWin').value = winVal;
+  document.getElementById('resultDraw').value = drawVal;
+  document.getElementById('resultLoss').value = lossVal;
+  
+  if (winVal > 0) document.getElementById('resultWinItem').classList.add('has-value');
+  if (drawVal > 0) document.getElementById('resultDrawItem').classList.add('has-value');
+  if (lossVal > 0) document.getElementById('resultLossItem').classList.add('has-value');
+  
+  // Mark as manually edited
+  config.result.manuallyEdited = { win: true, draw: true, loss: true };
+  
+  updateSubtotal('result');
+  updateGrandTotal();
+  updateTags();
+  updatePreview();
+}
 
 // Share functionality
 function sharePage(){
