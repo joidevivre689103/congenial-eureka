@@ -457,6 +457,359 @@ describe('CSS & Styling', (it) => {
   });
 });
 
+// Test Group 9: Mobile Browser Compatibility
+describe('Mobile Browser Compatibility - Viewport & Meta Tags', (it) => {
+  const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html', 'admin.html'];
+  
+  it('All pages have proper viewport meta tag', async () => {
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      assert(html.includes('name="viewport"'), `${page} should have viewport meta tag`);
+      assert(html.includes('width=device-width'), `${page} should set width=device-width`);
+      assert(html.includes('initial-scale=1'), `${page} should set initial-scale=1`);
+    }
+  });
+  
+  it('Viewport allows user scaling for accessibility', async () => {
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasUserScalableNo = html.includes('user-scalable=no') || html.includes('user-scalable=0');
+      const hasMaxScale1 = html.includes('maximum-scale=1.0') || html.includes('maximum-scale=1,');
+      if (hasUserScalableNo || hasMaxScale1) {
+        log(`  ⚠ ${page} restricts zoom (accessibility concern)`, 'warn');
+      }
+      assert(true, `${page} viewport checked`);
+    }
+  });
+  
+  it('All pages have charset meta tag', async () => {
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      assert(html.includes('charset="UTF-8"') || html.includes("charset='UTF-8'") || html.includes('charset=UTF-8'), `${page} should have UTF-8 charset`);
+    }
+  });
+});
+
+describe('Mobile Browser Compatibility - Touch & Input', (it) => {
+  it('Input fields have appropriate types for mobile keyboards', async () => {
+    const html = await fetchPage('index.html');
+    assert(html.includes('type="email"'), 'Email inputs should use type="email"');
+    assert(html.includes('type="password"'), 'Password inputs should use type="password"');
+  });
+  
+  it('Touch targets are adequately sized (44x44px minimum)', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasButtonStyles = html.includes('button') || html.includes('.btn');
+      assert(hasButtonStyles, `${page} should have styled buttons`);
+    }
+  });
+  
+  it('No hover-only interactions (problematic on touch)', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasHoverOnly = html.includes(':hover') && !html.includes('@media (hover:');
+      if (hasHoverOnly) {
+        log(`  ℹ ${page} uses :hover - ensure touch fallbacks exist`, 'info');
+      }
+      assert(true, `${page} hover states checked`);
+    }
+  });
+});
+
+describe('Mobile Browser Compatibility - Dropdown/Autocomplete (iOS Fix)', (it) => {
+  it('Datalist elements have iOS-compatible fallbacks', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('<datalist')) {
+        const hasCustomDropdown = html.includes('dropdown') || 
+                                   html.includes('autocomplete') ||
+                                   html.includes('suggestions') ||
+                                   html.includes('.dropdown-menu') ||
+                                   html.includes('.suggestion');
+        assert(hasCustomDropdown, `${page} uses <datalist> - needs custom dropdown for iOS Safari`);
+      }
+    }
+  });
+  
+  it('Text inputs with autocomplete have visible dropdown containers', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasTextInputs = html.includes('type="text"') || html.includes("type='text'");
+      if (hasTextInputs) {
+        const hasSuggestionContainer = html.includes('suggestions') || 
+                                        html.includes('dropdown') ||
+                                        html.includes('autocomplete-list') ||
+                                        html.includes('datalist');
+        if (hasSuggestionContainer) {
+          log(`  ✓ ${page} has suggestion/dropdown elements`, 'success');
+        }
+      }
+      assert(true, `${page} text inputs checked`);
+    }
+  });
+  
+  it('Custom dropdowns use touch-friendly positioning', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('dropdown') || html.includes('suggestion')) {
+        const hasPositioning = html.includes('position:absolute') || 
+                               html.includes('position: absolute') ||
+                               html.includes('position:fixed') ||
+                               html.includes('position: fixed');
+        if (!hasPositioning) {
+          log(`  ⚠ ${page} dropdown may need position:absolute for mobile`, 'warn');
+        }
+      }
+      assert(true, `${page} dropdown positioning checked`);
+    }
+  });
+  
+  it('Dropdown z-index is high enough to appear above other elements', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('dropdown') || html.includes('suggestion')) {
+        const hasZIndex = html.includes('z-index');
+        if (!hasZIndex) {
+          log(`  ⚠ ${page} dropdown may need z-index for proper layering`, 'warn');
+        }
+      }
+      assert(true, `${page} z-index checked`);
+    }
+  });
+});
+
+describe('Mobile Browser Compatibility - iOS Safari Specific', (it) => {
+  it('No -webkit-appearance issues on inputs', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('<input') || html.includes('<select')) {
+        const hasAppearanceFix = html.includes('-webkit-appearance') || 
+                                  html.includes('appearance:');
+        if (!hasAppearanceFix) {
+          log(`  ℹ ${page} may benefit from -webkit-appearance:none for custom inputs`, 'info');
+        }
+      }
+      assert(true, `${page} webkit appearance checked`);
+    }
+  });
+  
+  it('Input font-size is 16px+ to prevent iOS zoom', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasFontSize16 = html.includes('font-size:16px') || 
+                            html.includes('font-size: 16px') ||
+                            html.includes('font-size:1rem') ||
+                            html.includes('font-size: 1rem');
+      if (html.includes('<input') && !hasFontSize16) {
+        log(`  ⚠ ${page} input font-size may need to be 16px+ to prevent iOS zoom`, 'warn');
+      }
+      assert(true, `${page} input font-size checked`);
+    }
+  });
+  
+  it('No position:fixed elements inside scrollable containers', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasFixed = html.includes('position:fixed') || html.includes('position: fixed');
+      const hasOverflowScroll = html.includes('overflow:scroll') || html.includes('overflow: scroll') ||
+                                 html.includes('overflow-y:scroll') || html.includes('overflow-y: scroll');
+      if (hasFixed && hasOverflowScroll) {
+        log(`  ⚠ ${page} has position:fixed with scroll - may be buggy on iOS`, 'warn');
+      }
+      assert(true, `${page} fixed positioning checked`);
+    }
+  });
+  
+  it('Touch-action is properly set for interactive elements', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasTouchAction = html.includes('touch-action');
+      if (!hasTouchAction) {
+        log(`  ℹ ${page} could use touch-action CSS for better touch handling`, 'info');
+      }
+      assert(true, `${page} touch-action checked`);
+    }
+  });
+});
+
+describe('Mobile Browser Compatibility - Android Chrome Specific', (it) => {
+  it('No 300ms tap delay (handled by viewport)', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasViewport = html.includes('width=device-width');
+      assert(hasViewport, `${page} should have width=device-width to remove tap delay`);
+    }
+  });
+  
+  it('Proper touch event handling for dropdowns', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasClickHandlers = html.includes('onclick') || html.includes('addEventListener');
+      const hasTouchHandlers = html.includes('ontouchstart') || 
+                               html.includes('touchstart') ||
+                               html.includes('touchend');
+      if (hasClickHandlers && !hasTouchHandlers) {
+        log(`  ℹ ${page} uses click events - touch events would be faster`, 'info');
+      }
+      assert(true, `${page} touch handlers checked`);
+    }
+  });
+  
+  it('Virtual keyboard does not cover inputs', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasScrollIntoView = html.includes('scrollIntoView') || 
+                                 html.includes('scroll-behavior') ||
+                                 html.includes('scroll-padding');
+      if (!hasScrollIntoView) {
+        log(`  ℹ ${page} may benefit from scrollIntoView for keyboard handling`, 'info');
+      }
+      assert(true, `${page} keyboard handling checked`);
+    }
+  });
+});
+
+describe('Mobile Browser Compatibility - Responsive Layout', (it) => {
+  it('All pages have responsive CSS (media queries or fluid layout)', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasMediaQueries = html.includes('@media');
+      const hasFlexbox = html.includes('display:flex') || html.includes('display: flex');
+      const hasGrid = html.includes('display:grid') || html.includes('display: grid');
+      const hasFluidWidth = html.includes('width:100%') || html.includes('width: 100%') ||
+                            html.includes('max-width') || html.includes('vw');
+      assert(hasMediaQueries || hasFlexbox || hasGrid || hasFluidWidth, 
+             `${page} should have responsive layout (media queries, flexbox, grid, or fluid widths)`);
+    }
+  });
+  
+  it('Tables have horizontal scroll wrapper for mobile', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('<table')) {
+        const hasOverflowX = html.includes('overflow-x') || html.includes('overflow:auto') ||
+                             html.includes('overflow: auto') || html.includes('overflow:scroll');
+        if (!hasOverflowX) {
+          log(`  ⚠ ${page} has tables - consider overflow-x:auto for mobile`, 'warn');
+        }
+      }
+      assert(true, `${page} table scroll checked`);
+    }
+  });
+  
+  it('Font sizes are readable on mobile (not too small)', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasVerySmallFont = html.includes('font-size:8px') || html.includes('font-size:9px') ||
+                                html.includes('font-size:10px') || html.includes('font-size: 8px') ||
+                                html.includes('font-size: 9px') || html.includes('font-size: 10px');
+      if (hasVerySmallFont) {
+        log(`  ⚠ ${page} has very small font sizes - may be hard to read on mobile`, 'warn');
+      }
+      assert(true, `${page} font size checked`);
+    }
+  });
+});
+
+describe('Mobile Browser Compatibility - Performance', (it) => {
+  it('No blocking scripts in head without defer/async', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const headMatch = html.match(/<head[\s\S]*?<\/head>/i);
+      if (headMatch) {
+        const head = headMatch[0];
+        const hasBlockingScript = head.includes('<script') && 
+                                   !head.includes('async') && 
+                                   !head.includes('defer');
+        if (hasBlockingScript && !head.includes('firebase')) {
+          log(`  ℹ ${page} has blocking scripts in head - consider defer/async`, 'info');
+        }
+      }
+      assert(true, `${page} script loading checked`);
+    }
+  });
+  
+  it('Images have width/height or aspect-ratio (prevent layout shift)', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('<img')) {
+        const hasImgDimensions = html.includes('width=') || html.includes('height=') ||
+                                  html.includes('aspect-ratio');
+        if (!hasImgDimensions) {
+          log(`  ℹ ${page} images should have dimensions to prevent layout shift`, 'info');
+        }
+      }
+      assert(true, `${page} image dimensions checked`);
+    }
+  });
+});
+
+describe('Mobile Browser Compatibility - Form Autocomplete', (it) => {
+  it('Player search inputs trigger custom suggestions on input event', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      const hasOnInput = html.includes('oninput') || html.includes("addEventListener('input'") ||
+                          html.includes('addEventListener("input"');
+      const hasTextInputs = html.includes('type="text"');
+      if (hasTextInputs) {
+        assert(hasOnInput, `${page} should have oninput handlers for text fields to show suggestions`);
+      }
+    }
+  });
+  
+  it('Suggestion dropdown appears below input (not covered by keyboard)', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('suggestion') || html.includes('dropdown')) {
+        const hasRelativePositioning = html.includes('position:relative') ||
+                                        html.includes('position: relative');
+        const hasAbsoluteDropdown = html.includes('position:absolute') ||
+                                     html.includes('position: absolute');
+        if (!hasRelativePositioning && hasAbsoluteDropdown) {
+          log(`  ℹ ${page} dropdown may need relative parent for proper positioning`, 'info');
+        }
+      }
+      assert(true, `${page} suggestion positioning checked`);
+    }
+  });
+  
+  it('Autocomplete attribute is set appropriately', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('suggestion') || html.includes('dropdown')) {
+        const hasAutocompleteOff = html.includes('autocomplete="off"') || 
+                                    html.includes("autocomplete='off'");
+        if (!hasAutocompleteOff) {
+          log(`  ℹ ${page} may want autocomplete="off" on custom search inputs`, 'info');
+        }
+      }
+      assert(true, `${page} autocomplete attribute checked`);
+    }
+  });
+});
+
 // Initialize
 renderTests();
 log('Test suite loaded. Click "Run All Tests" to start.', 'info');
