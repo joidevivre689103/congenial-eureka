@@ -360,9 +360,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
 /* Mobile phones (max-width: 767px) */
 @media(max-width:767px){
-  .header{padding:14px 16px}
+  .header{padding:14px 16px;padding-top:60px}
   .hdr-inner{flex-direction:column;align-items:flex-start;gap:10px}
-  .hdr-nav{position:absolute;top:14px;right:16px}
+  .hdr-nav{position:absolute;top:14px;right:16px;left:auto;z-index:10}
+  .brand{max-width:100%}
+  .brand h1{font-size:18px;line-height:1.2}
   .nav-link span{display:none}
   .nav-link{padding:8px 10px}
   .share-btn{padding:8px 10px;font-size:0}
@@ -379,6 +381,15 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .cmp-table tbody td{padding:7px 8px;font-size:11.5px}
   .cmp-table tbody td.player-cell{min-width:120px}
   .pc-name{font-size:13px}
+}
+@media(max-width:480px){
+  .header{padding-top:56px}
+  .hdr-nav{top:12px;right:12px;gap:4px}
+  .nav-link{padding:7px 8px}
+  .nav-link svg{width:14px;height:14px}
+  .brand h1{font-size:16px}
+  .brand-icon{width:32px;height:32px;font-size:12px}
+  .brand-sub{margin-left:44px;font-size:10.5px}
 }
 </style>
 </head>
