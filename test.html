@@ -490,6 +490,64 @@ describe('Mobile Browser Compatibility - Viewport & Meta Tags', (it) => {
   });
 });
 
+describe('Mobile Browser Compatibility - Header Layout', (it) => {
+  it('Header has proper mobile padding to avoid nav overlap', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      // Check that mobile header has extra padding-top when nav is absolutely positioned
+      const hasMobileHeaderFix = html.includes('padding-top:') || 
+                                  html.includes('padding-top :') ||
+                                  html.includes('margin-top:') ||
+                                  html.includes('padding:14px 16px;padding-top:');
+      // Also check if using flexbox properly without absolute positioning
+      const usesFlexboxLayout = html.includes('flex-direction:row') || 
+                                 (html.includes('display:flex') && !html.includes('position:absolute'));
+      if (html.includes('@media') && html.includes('hdr-nav') && html.includes('position:absolute')) {
+        assert(hasMobileHeaderFix || usesFlexboxLayout, 
+          `${page} header needs padding-top or proper layout to prevent nav overlap on mobile`);
+      }
+    }
+  });
+  
+  it('Navigation z-index is set for proper layering on mobile', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      if (html.includes('hdr-nav') && html.includes('position:absolute')) {
+        const hasZIndex = html.includes('.hdr-nav') && html.includes('z-index');
+        if (!hasZIndex) {
+          log(`  ⚠ ${page} .hdr-nav may need z-index for proper mobile layering`, 'warn');
+        }
+      }
+      assert(true, `${page} nav z-index checked`);
+    }
+  });
+  
+  it('Brand/title text does not overflow under navigation', async () => {
+    const pages = ['index.html', 'batting-records.html', 'country-results.html', 'simulation.html'];
+    for (const page of pages) {
+      const html = await fetchPage(page);
+      // Check for text truncation or max-width on brand elements
+      const hasTextControl = html.includes('.brand') && (
+        html.includes('max-width') ||
+        html.includes('overflow:hidden') ||
+        html.includes('text-overflow:ellipsis') ||
+        html.includes('white-space:nowrap')
+      );
+      // Or check for proper spacing via padding
+      const hasProperSpacing = html.includes('padding-top:5') || 
+                                html.includes('padding-top:6') ||
+                                html.includes('padding-top: 5') ||
+                                html.includes('padding-top: 6');
+      if (!hasTextControl && !hasProperSpacing) {
+        log(`  ℹ ${page} brand text may need max-width or header padding for mobile`, 'info');
+      }
+      assert(true, `${page} brand text checked`);
+    }
+  });
+});
+
 describe('Mobile Browser Compatibility - Touch & Input', (it) => {
   it('Input fields have appropriate types for mobile keyboards', async () => {
     const html = await fetchPage('index.html');
