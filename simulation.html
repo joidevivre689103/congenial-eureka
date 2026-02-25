@@ -421,6 +421,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </svg>
         <span>Share</span>
       </button>
+      <button class="share-btn export-btn" id="exportBtn" onclick="exportToExcel()">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Excel</span>
+      </button>
     </nav>
   </div>
 </header>
@@ -194001,7 +194009,145 @@ function showCopiedFeedback(){
 function showShareDialog(url){
   prompt('Copy this URL to share:', url);
 }
+
+// Export to Excel function
+function exportToExcel(){
+  const grandTotal = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
+  
+  // Get filtered players from results table
+  const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
+  const minAvg = parseFloat(document.getElementById('avgFilter').value) || 0;
+  const minSR = parseFloat(document.getElementById('srFilter').value) || 0;
+  const selectedEras = getSelectedEras();
+  const playerLimit = document.getElementById('playerFilter').value;
+  
+  // Filter players
+  const filteredByStats = playerData.filter(player => {
+    if (player.runs < minRuns || player.avg < minAvg || player.sr < minSR) return false;
+    if (!selectedEras.includes('all')) {
+      const playerFrom = player.from || 0;
+      const playerTo = player.to || 9999;
+      const matchesEra = selectedEras.some(era => {
+        const [eraStart, eraEnd] = era.split('-').map(Number);
+        return !(playerTo < eraStart || playerFrom > eraEnd);
+      });
+      if (!matchesEra) return false;
+    }
+    return true;
+  });
+  
+  // Calculate points
+  const playersWithPoints = filteredByStats.map(player => ({
+    ...player,
+    points: calculatePoints(player)
+  }));
+  
+  playersWithPoints.sort((a, b) => b.points - a.points);
+  
+  const limitedPlayers = playerLimit === 'all' 
+    ? playersWithPoints 
+    : playersWithPoints.slice(0, parseInt(playerLimit));
+  
+  if(limitedPlayers.length === 0){alert('No data to export');return;}
+  
+  // Helper functions
+  const getInningsPct = (player, inn) => {
+    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
+    const playerRuns = player.innings.runs[inn] || 0;
+    const teamRuns = player.innings.teamRuns[inn] || 0;
+    if (teamRuns === 0) return '—';
+    return ((playerRuns / teamRuns) * 100).toFixed(1);
+  };
+  
+  const getTotalInningsPct = (player) => {
+    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
+    let totalPlayerRuns = 0, totalTeamRuns = 0;
+    ['1', '2', '3', '4'].forEach(inn => {
+      totalPlayerRuns += player.innings.runs[inn] || 0;
+      totalTeamRuns += player.innings.teamRuns[inn] || 0;
+    });
+    if (totalTeamRuns === 0) return '—';
+    return ((totalPlayerRuns / totalTeamRuns) * 100).toFixed(1);
+  };
+  
+  const getVenuePct = (player, venue) => {
+    if (!player.venueRuns || !player.teamVenueRuns) return '—';
+    const playerRuns = player.venueRuns[venue] || 0;
+    const teamRuns = player.teamVenueRuns[venue] || 0;
+    if (teamRuns === 0) return '—';
+    return ((playerRuns / teamRuns) * 100).toFixed(1);
+  };
+  
+  const getResultPct = (player, result) => {
+    if (!player.resultRuns || !player.teamResultRuns) return '—';
+    const playerRuns = player.resultRuns[result] || 0;
+    const teamRuns = player.teamResultRuns[result] || 0;
+    if (teamRuns === 0) return '—';
+    return ((playerRuns / teamRuns) * 100).toFixed(1);
+  };
+  
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  
+  // Main results sheet
+  const resultsData = limitedPlayers.map((player, index) => ({
+    'Rank': index + 1,
+    'Player': player.name,
+    'Country': player.country || '—',
+    'Runs': player.runs,
+    'Average': player.avg.toFixed(2),
+    'Strike Rate': player.sr.toFixed(2),
+    '1st Inn %': getInningsPct(player, '1'),
+    '2nd Inn %': getInningsPct(player, '2'),
+    '3rd Inn %': getInningsPct(player, '3'),
+    '4th Inn %': getInningsPct(player, '4'),
+    'Total Inn %': getTotalInningsPct(player),
+    'Home %': getVenuePct(player, 'home'),
+    'Away %': getVenuePct(player, 'away'),
+    'Win %': getResultPct(player, 'win'),
+    'Draw %': getResultPct(player, 'draw'),
+    'Loss %': getResultPct(player, 'loss'),
+    'Points': grandTotal > 0 ? player.points.toFixed(1) : '—'
+  }));
+  const wsResults = XLSX.utils.json_to_sheet(resultsData);
+  wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:8},{wch:8},{wch:8},{wch:8},{wch:8},{wch:8}];
+  XLSX.utils.book_append_sheet(wb, wsResults, 'Simulation Results');
+  
+  // Weights configuration sheet
+  const weightsData = [
+    ['Weight Configuration', ''],
+    ['', ''],
+    ['Category', 'Weight %'],
+    ['Impact Total', config.impact.total],
+    ['  1st Innings', config.impact.subs['1']],
+    ['  2nd Innings', config.impact.subs['2']],
+    ['  3rd Innings', config.impact.subs['3']],
+    ['  4th Innings', config.impact.subs['4']],
+    ['Home/Away Total', config.ha.total],
+    ['  Home', config.ha.subs.home],
+    ['  Away', config.ha.subs.away],
+    ['Match Result Total', config.result.total],
+    ['  Win', config.result.subs.win],
+    ['  Draw', config.result.subs.draw],
+    ['  Loss', config.result.subs.loss],
+    ['Total Runs', config.runs.total],
+    ['Average', config.avg.total],
+    ['Strike Rate', config.sr.total],
+    ['', ''],
+    ['Grand Total', grandTotal + '%']
+  ];
+  const wsWeights = XLSX.utils.aoa_to_sheet(weightsData);
+  wsWeights['!cols'] = [{wch: 20}, {wch: 12}];
+  XLSX.utils.book_append_sheet(wb, wsWeights, 'Weights');
+  
+  // Generate filename
+  const fname = 'simulation_results.xlsx';
+  XLSX.writeFile(wb, fname);
+}
 </script>
+
+<!-- SheetJS for Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </div><!-- end site-content -->
 

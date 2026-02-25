@@ -360,6 +360,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </svg>
         <span>Share</span>
       </button>
+      <button class="nav-link export-btn" id="exportBtn" onclick="exportToExcel()" style="display:none">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Excel</span>
+      </button>
     </div>
   </div>
 </div>
@@ -753,11 +761,84 @@ function renderTable() {
   nextBtn.disabled = currentPage === totalPages || totalPages === 0;
   nextBtn.onclick = () => { currentPage++; renderTable(); };
   pagBtns.appendChild(nextBtn);
+  
+  // Show/hide export button
+  updateExportButton();
+}
+
+// Export to Excel function
+function exportToExcel(){
+  const t1 = parseInt(document.getElementById('t1Select').value);
+  const t2 = parseInt(document.getElementById('t2Select').value);
+  if(t1 < 0 || t2 < 0 || t1 === t2){alert('Please select two different countries');return;}
+  
+  const t1Name = TEAMS[t1];
+  const t2Name = TEAMS[t2];
+  const matches = filtered;
+  
+  if(matches.length === 0){alert('No matches to export');return;}
+  
+  // Calculate summary stats
+  const stats = calcStats(t1, t2);
+  
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  
+  // Summary sheet
+  const summaryData = [
+    ['Head-to-Head Summary', ''],
+    ['', ''],
+    ['Countries', t1Name + ' vs ' + t2Name],
+    ['Total Matches', stats.total],
+    ['', ''],
+    [t1Name + ' Wins', stats.t1w],
+    [t2Name + ' Wins', stats.t2w],
+    ['Draws', stats.draws],
+    ['Ties', stats.ties],
+    ['', ''],
+    [t1Name + ' Win %', stats.total > 0 ? ((stats.t1w/stats.total)*100).toFixed(1) + '%' : '—'],
+    [t2Name + ' Win %', stats.total > 0 ? ((stats.t2w/stats.total)*100).toFixed(1) + '%' : '—']
+  ];
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+  wsSummary['!cols'] = [{wch: 20}, {wch: 20}];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+  
+  // Match history sheet
+  const matchData = matches.map(m => ({
+    'Test #': m.test,
+    'Year': m.year,
+    'Venue': m.venue || '—',
+    'Home/Away': m.ha === 'home' ? 'Home' : m.ha === 'away' ? 'Away' : 'Neutral',
+    'Result': m.result === 'Won' ? t1Name + ' won' : m.result === 'Lost' ? t2Name + ' won' : 'Draw',
+    'Margin': m.margin || '—'
+  }));
+  const wsMatches = XLSX.utils.json_to_sheet(matchData);
+  wsMatches['!cols'] = [{wch: 8}, {wch: 6}, {wch: 30}, {wch: 10}, {wch: 20}, {wch: 20}];
+  XLSX.utils.book_append_sheet(wb, wsMatches, 'Matches');
+  
+  // Generate filename
+  const fname = t1Name.replace(/\s+/g, '_') + '_vs_' + t2Name.replace(/\s+/g, '_') + '.xlsx';
+  XLSX.writeFile(wb, fname);
+}
+
+// Show/hide export button based on results
+function updateExportButton(){
+  const btn = document.getElementById('exportBtn');
+  const t1 = parseInt(document.getElementById('t1Select').value);
+  const t2 = parseInt(document.getElementById('t2Select').value);
+  if(t1 >= 0 && t2 >= 0 && t1 !== t2 && filtered.length > 0){
+    btn.style.display = 'flex';
+  } else {
+    btn.style.display = 'none';
+  }
 }
 
 // Initial load
 updateResults();
 </script>
+
+<!-- SheetJS for Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </div><!-- end site-content -->
 

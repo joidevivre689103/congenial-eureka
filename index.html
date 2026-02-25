@@ -472,6 +472,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </svg>
         <span>Share</span>
       </button>
+      <button class="nav-link export-btn" id="exportBtn" onclick="exportToExcel()" style="display:none">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Excel</span>
+      </button>
     </div>
   </div>
 </div>
@@ -1514,7 +1522,94 @@ function showShareDialog(url, playerNames){
     showCopiedFeedback();
   }
 }
+
+// Export to Excel function
+function exportToExcel(){
+  const players = activeSel();
+  if(players.length < 2){alert('Select at least 2 players to export');return;}
+  
+  // Get filtered row sets
+  const f=getF(), any=f.opp.length||f.city||f.gnd||f.ha||f.inn||f.res||f.toss||f.together;
+  let rowSets = players.map(p=>getRows(p));
+  
+  // Calculate stats
+  const stats = players.map((p,i)=>agg(p,rowSets[i],any));
+  
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  
+  // Batting stats sheet
+  const battingData = stats.map(s => ({
+    'Player': s.name,
+    'Country': s.country,
+    'Tests': s.tests,
+    'Innings': s.inns,
+    'Not Outs': s.no,
+    'Runs': s.runs,
+    'Average': s.batAvg > 0 ? s.batAvg.toFixed(2) : '—',
+    'Strike Rate': s.sr ? s.sr.toFixed(2) : '—',
+    'High Score': s.hs,
+    '50s': s.fifties,
+    '100s': s.hundreds
+  }));
+  const wsBat = XLSX.utils.json_to_sheet(battingData);
+  wsBat['!cols'] = [{wch:25},{wch:12},{wch:6},{wch:8},{wch:10},{wch:8},{wch:10},{wch:12},{wch:10},{wch:6},{wch:6}];
+  XLSX.utils.book_append_sheet(wb, wsBat, 'Batting');
+  
+  // Bowling stats sheet
+  const bowlingData = stats.map(s => ({
+    'Player': s.name,
+    'Country': s.country,
+    'Overs': s.overs.toFixed(1),
+    'Maidens': s.mdns,
+    'Runs': s.bowlRuns,
+    'Wickets': s.wkts,
+    'Average': s.bowlAvg > 0 ? s.bowlAvg.toFixed(2) : '—',
+    'Economy': s.econ > 0 ? s.econ.toFixed(2) : '—',
+    'Best': s.bestBowl
+  }));
+  const wsBowl = XLSX.utils.json_to_sheet(bowlingData);
+  wsBowl['!cols'] = [{wch:25},{wch:12},{wch:8},{wch:8},{wch:8},{wch:8},{wch:10},{wch:10},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, wsBowl, 'Bowling');
+  
+  // Fielding & extras sheet
+  const fieldingData = stats.map(s => ({
+    'Player': s.name,
+    'Catches': s.catches,
+    'Stumpings': s.stumpings,
+    'Man of Match': s.mom
+  }));
+  const wsField = XLSX.utils.json_to_sheet(fieldingData);
+  wsField['!cols'] = [{wch:25},{wch:10},{wch:10},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsField, 'Fielding');
+  
+  // Generate filename
+  const playerNames = stats.map(s => s.name.split(' ').pop()).join('_vs_');
+  const fname = 'player_comparison_' + playerNames + '.xlsx';
+  XLSX.writeFile(wb, fname);
+}
+
+// Show/hide export button based on results
+function updateExportButton(){
+  const btn = document.getElementById('exportBtn');
+  const players = activeSel();
+  if(players.length >= 2){
+    btn.style.display = 'flex';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+// Override render to show export button
+const originalRender = render;
+render = function(){
+  originalRender();
+  updateExportButton();
+}
 </script>
+
+<!-- SheetJS for Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </div><!-- end site-content -->
 

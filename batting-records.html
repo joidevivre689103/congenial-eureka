@@ -349,6 +349,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </svg>
         <span>Share</span>
       </button>
+      <button class="nav-link export-btn" id="exportBtn" onclick="exportToExcel()" style="display:none">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Excel</span>
+      </button>
     </div>
   </div>
 </div>
@@ -747,9 +755,67 @@ function resetFilters(){
   applyFilters();
 }
 
+// Export to Excel function
+function exportToExcel(){
+  if(filtered.length===0){alert('No data to export');return;}
+  
+  // Prepare data for export
+  const exportData=filtered.map((p,i)=>({
+    'Rank':i+1,
+    'Player':p.fullName,
+    'Country':p.country,
+    'Career':p.from+'–'+p.to,
+    'Tests':p.tests,
+    'Innings':p.inns,
+    'Not Outs':p.no,
+    'Runs':p.runs,
+    'Average':p.avg?p.avg.toFixed(2):'—',
+    'Strike Rate':p.sr?p.sr.toFixed(2):'—',
+    'High Score':p.hs,
+    '50s':p.fifties,
+    '100s':p.hundreds,
+    'Ducks':p.ducks
+  }));
+  
+  // Create workbook and worksheet
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.json_to_sheet(exportData);
+  
+  // Set column widths
+  ws['!cols']=[{wch:6},{wch:25},{wch:12},{wch:12},{wch:8},{wch:8},{wch:10},{wch:10},{wch:10},{wch:12},{wch:10},{wch:6},{wch:6},{wch:6}];
+  
+  XLSX.utils.book_append_sheet(wb,ws,'Batting Records');
+  
+  // Generate filename with filter info
+  const f=getFilters();
+  let fname='batting_records';
+  if(f.country)fname+='_'+f.country.replace(/\s+/g,'_');
+  if(f.era)fname+='_'+f.era;
+  fname+='.xlsx';
+  
+  XLSX.writeFile(wb,fname);
+}
+
+// Show/hide export button based on results
+function updateExportButton(){
+  const btn=document.getElementById('exportBtn');
+  if(filtered.length>0){btn.style.display='flex';}
+  else{btn.style.display='none';}
+}
+
+// Modify renderTable to show export button
+const originalRenderTable=renderTable;
+renderTable=function(){
+  originalRenderTable();
+  updateExportButton();
+}
+
 // Initial render
 applyFilters();
 </script>
+
+<!-- SheetJS for Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </div><!-- end site-content -->
 
