@@ -548,12 +548,12 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     </div>
 
     <div class="weights-grid">
-      <!-- Innings Impact -->
-      <div class="weight-group" id="impactGroup">
+      <!-- Contribution Impact -->
+      <div class="weight-group" id="impactGroup" title="Measures what percentage of the team's runs came from this player in home vs away matches. Neutral venues are counted as away.">
         <div class="wg-header">
           <span class="wg-title">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            Innings Impact
+            Contribution Impact
           </span>
           <button class="wg-reset-btn" onclick="resetCategory('impact')">Reset</button>
         </div>
@@ -568,30 +568,18 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </div>
         <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical innings totals <span id="inningsEraLabel">(All Eras)</span></span>
+          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical home/away totals <span id="inningsEraLabel">(All Eras)</span></span>
         </div>
-        <div class="weight-item disabled" id="impact1Item">
-          <span class="wi-label">1st Innings</span>
-          <span class="wi-suggested" id="impact1Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="impact1" min="0" max="100" placeholder="0" onchange="updateSub('impact','1')">
+        <div class="weight-item disabled" id="impactHomeItem">
+          <span class="wi-label">Home</span>
+          <span class="wi-suggested" id="impactHomeSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
+          <input type="number" class="wi-input" id="impactHome" min="0" max="100" placeholder="0" onchange="updateSub('impact','home')">
           <span class="wi-unit">%</span>
         </div>
-        <div class="weight-item disabled" id="impact2Item">
-          <span class="wi-label">2nd Innings</span>
-          <span class="wi-suggested" id="impact2Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="impact2" min="0" max="100" placeholder="0" onchange="updateSub('impact','2')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="impact3Item">
-          <span class="wi-label">3rd Innings</span>
-          <span class="wi-suggested" id="impact3Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="impact3" min="0" max="100" placeholder="0" onchange="updateSub('impact','3')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="impact4Item">
-          <span class="wi-label">4th Innings</span>
-          <span class="wi-suggested" id="impact4Suggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="impact4" min="0" max="100" placeholder="0" onchange="updateSub('impact','4')">
+        <div class="weight-item disabled" id="impactAwayItem">
+          <span class="wi-label">Away</span>
+          <span class="wi-suggested" id="impactAwaySuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
+          <input type="number" class="wi-input" id="impactAway" min="0" max="100" placeholder="0" onchange="updateSub('impact','away')">
           <span class="wi-unit">%</span>
         </div>
         <button class="wg-apply-suggested" id="impactApplySuggested" onclick="applyImpactSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
@@ -599,116 +587,12 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </button>
       </div>
 
-      <!-- Home & Away -->
-      <div class="weight-group" id="haGroup">
-        <div class="wg-header">
-          <span class="wg-title">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Home & Away
-          </span>
-          <button class="wg-reset-btn" onclick="resetCategory('ha')">Reset</button>
-        </div>
-        <div class="wg-total-row">
-          <span class="wg-total-label">Category Total</span>
-          <input type="number" class="wg-total-input" id="haTotal" min="0" max="100" placeholder="0" onchange="updateTotal('ha')" oninput="updateTotalNoAuto('ha')">
-          <span class="wg-total-unit">%</span>
-        </div>
-        <div class="wg-subtotal">
-          <span class="wg-subtotal-label">Sub-total:</span>
-          <span class="wg-subtotal-value" id="haSubtotal">0 / 0%</span>
-        </div>
-        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical venue totals <span id="venueEraLabel">(All Eras)</span></span>
-        </div>
-        <div class="weight-item disabled" id="haHomeItem">
-          <span class="wi-label">Home</span>
-          <span class="wi-suggested" id="haHomeSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="haHome" min="0" max="100" placeholder="0" onchange="updateSub('ha','home')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="haAwayItem">
-          <span class="wi-label">Away</span>
-          <span class="wi-suggested" id="haAwaySuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="haAway" min="0" max="100" placeholder="0" onchange="updateSub('ha','away')">
-          <span class="wi-unit">%</span>
-        </div>
-        <button class="wg-apply-suggested" id="haApplySuggested" onclick="applyVenueSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
-          Apply Suggested Weights
-        </button>
-      </div>
-
-      <!-- Match Result -->
-      <div class="weight-group" id="resultGroup">
-        <div class="wg-header">
-          <span class="wg-title">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-            Match Result
-          </span>
-          <button class="wg-reset-btn" onclick="resetCategory('result')">Reset</button>
-        </div>
-        <div class="wg-total-row">
-          <span class="wg-total-label">Category Total</span>
-          <input type="number" class="wg-total-input" id="resultTotal" min="0" max="100" placeholder="0" onchange="updateTotal('result')" oninput="updateTotalNoAuto('result')">
-          <span class="wg-total-unit">%</span>
-        </div>
-        <div class="wg-subtotal">
-          <span class="wg-subtotal-label">Sub-total:</span>
-          <span class="wg-subtotal-value" id="resultSubtotal">0 / 0%</span>
-        </div>
-        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical result totals <span id="resultEraLabel">(All Eras)</span></span>
-        </div>
-        <div class="weight-item disabled" id="resultWinItem">
-          <span class="wi-label">Win</span>
-          <span class="wi-suggested" id="resultWinSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="resultWin" min="0" max="100" placeholder="0" onchange="updateSub('result','win')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="resultDrawItem">
-          <span class="wi-label">Draw</span>
-          <span class="wi-suggested" id="resultDrawSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="resultDraw" min="0" max="100" placeholder="0" onchange="updateSub('result','draw')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="resultLossItem">
-          <span class="wi-label">Loss</span>
-          <span class="wi-suggested" id="resultLossSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="resultLoss" min="0" max="100" placeholder="0" onchange="updateSub('result','loss')">
-          <span class="wi-unit">%</span>
-        </div>
-        <button class="wg-apply-suggested" id="resultApplySuggested" onclick="applyResultSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
-          Apply Suggested Weights
-        </button>
-      </div>
-
-      <!-- Total Runs -->
-      <div class="weight-group" id="runsGroup">
-        <div class="wg-header">
-          <span class="wg-title">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-            Total Runs
-          </span>
-          <button class="wg-reset-btn" onclick="resetCategory('runs')">Reset</button>
-        </div>
-        <div class="wg-total-row">
-          <span class="wg-total-label">Category Total</span>
-          <input type="number" class="wg-total-input" id="runsTotal" min="0" max="100" placeholder="0" onchange="updateTotal('runs')" oninput="updateTotalNoAuto('runs')">
-          <span class="wg-total-unit">%</span>
-        </div>
-        <div class="wg-note">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Total Runs weight applies directly to player's overall runs</span>
-        </div>
-      </div>
-
-      <!-- Average -->
-      <div class="weight-group" id="avgGroup">
+      <!-- Outcome Average -->
+      <div class="weight-group" id="avgGroup" title="Measures what percentage of the team's runs came from this player in wins, draws, and losses. Ties are counted as draws.">
         <div class="wg-header">
           <span class="wg-title">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-            Average
+            Outcome Average
           </span>
           <button class="wg-reset-btn" onclick="resetCategory('avg')">Reset</button>
         </div>
@@ -717,18 +601,43 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <input type="number" class="wg-total-input" id="avgTotal" min="0" max="100" placeholder="0" onchange="updateTotal('avg')" oninput="updateTotalNoAuto('avg')">
           <span class="wg-total-unit">%</span>
         </div>
-        <div class="wg-note">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Average weight applies directly to player's overall batting average</span>
+        <div class="wg-subtotal">
+          <span class="wg-subtotal-label">Sub-total:</span>
+          <span class="wg-subtotal-value" id="avgSubtotal">0 / 0%</span>
         </div>
+        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical result totals <span id="avgEraLabel">(All Eras)</span></span>
+        </div>
+        <div class="weight-item disabled" id="avgWinItem">
+          <span class="wi-label">Average in Wins</span>
+          <span class="wi-suggested" id="avgWinSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
+          <input type="number" class="wi-input" id="avgWin" min="0" max="100" placeholder="0" onchange="updateSub('avg','win')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="avgDrawItem">
+          <span class="wi-label">Average in Draws</span>
+          <span class="wi-suggested" id="avgDrawSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
+          <input type="number" class="wi-input" id="avgDraw" min="0" max="100" placeholder="0" onchange="updateSub('avg','draw')">
+          <span class="wi-unit">%</span>
+        </div>
+        <div class="weight-item disabled" id="avgLossItem">
+          <span class="wi-label">Average in Losses</span>
+          <span class="wi-suggested" id="avgLossSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
+          <input type="number" class="wi-input" id="avgLoss" min="0" max="100" placeholder="0" onchange="updateSub('avg','loss')">
+          <span class="wi-unit">%</span>
+        </div>
+        <button class="wg-apply-suggested" id="avgApplySuggested" onclick="applyAvgSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
+          Apply Suggested Weights
+        </button>
       </div>
 
-      <!-- X Factor - Strike Rate -->
-      <div class="weight-group" id="srGroup">
+      <!-- Speed (SR) -->
+      <div class="weight-group" id="srGroup" title="Rewards players with higher strike rates (runs per 100 balls). This measures scoring speed and attacking intent. The weight applies directly to the player's overall career strike rate.">
         <div class="wg-header">
           <span class="wg-title">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            X Factor - Strike Rate
+            Speed (SR)
           </span>
           <button class="wg-reset-btn" onclick="resetCategory('sr')">Reset</button>
         </div>
@@ -739,7 +648,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </div>
         <div class="wg-note">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Strike Rate weight applies directly to player's overall SR</span>
+          <span>Speed weight applies directly to player's overall strike rate</span>
         </div>
       </div>
     </div>
@@ -779,18 +688,12 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <th class="num" rowspan="2">Runs</th>
           <th class="num" rowspan="2">Avg</th>
           <th class="num" rowspan="2">SR</th>
-          <th class="num" colspan="5" style="text-align:center;border-bottom:1px solid var(--border)">Innings %</th>
-          <th class="num" colspan="2" style="text-align:center;border-bottom:1px solid var(--border)">Venue</th>
-          <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Match Result</th>
+          <th class="num" colspan="2" style="text-align:center;border-bottom:1px solid var(--border)">Impact %</th>
+          <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Outcome %</th>
           <th class="num" rowspan="2">Points</th>
           <th class="num" rowspan="2">Rank</th>
         </tr>
         <tr>
-          <th class="num" style="font-size:9px">1st</th>
-          <th class="num" style="font-size:9px">2nd</th>
-          <th class="num" style="font-size:9px">3rd</th>
-          <th class="num" style="font-size:9px">4th</th>
-          <th class="num" style="font-size:9px">Total</th>
           <th class="num" style="font-size:9px">Home</th>
           <th class="num" style="font-size:9px">Away</th>
           <th class="num" style="font-size:9px">Win</th>
@@ -807,50 +710,42 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 <script>
 // Configuration
 const config = {
-  avg: { total: 0, subs: {}, subKeys: [] }, // No subs, total applies directly
+  avg: { total: 0, subs: { win: 0, draw: 0, loss: 0 }, subKeys: ['win', 'draw', 'loss'] },
   sr: { total: 0, subs: {}, subKeys: [] }, // No subs, total applies directly
-  runs: { total: 0, subs: {}, subKeys: [] }, // No subs, total applies directly
-  impact: { total: 0, subs: { '1': 0, '2': 0, '3': 0, '4': 0 }, subKeys: ['1','2','3','4'] },
-  ha: { total: 0, subs: { home: 0, away: 0 }, subKeys: ['home','away'] },
-  result: { total: 0, subs: { win: 0, loss: 0, draw: 0 }, subKeys: ['win','loss','draw'] }
+  impact: { total: 0, subs: { home: 0, away: 0 }, subKeys: ['home','away'] }
 };
 
 const labels = {
-  avg: { name: 'Average' },
-  sr: { name: 'X Factor - Strike Rate' },
-  runs: { name: 'Total Runs' },
-  impact: { name: 'Innings Impact', '1': '1st Innings', '2': '2nd Innings', '3': '3rd Innings', '4': '4th Innings' },
-  ha: { name: 'Venue', home: 'Home', away: 'Away' },
-  result: { name: 'Result', win: 'Win', loss: 'Loss', draw: 'Draw' }
+  avg: { name: 'Outcome Average', win: 'Avg in Wins', draw: 'Avg in Draws', loss: 'Avg in Losses' },
+  sr: { name: 'Speed (SR)' },
+  impact: { name: 'Contribution Impact', home: 'Home', away: 'Away' }
 };
 
-// Calculate innings weights from actual historical data
+// Calculate impact weights from actual historical data (home/away)
+// Neutral venue is treated as away
 // This is called after playerData is loaded
 function calculateInningsWeights(players) {
-  const totals = { '1': 0, '2': 0, '3': 0, '4': 0 };
+  let homeTotal = 0;
+  let awayTotal = 0;
   
-  // Aggregate team runs for each innings
+  // Aggregate team runs for home and away (neutral counted as away)
   players.forEach(player => {
-    if (player.innings && player.innings.teamRuns) {
-      totals['1'] += player.innings.teamRuns['1'] || 0;
-      totals['2'] += player.innings.teamRuns['2'] || 0;
-      totals['3'] += player.innings.teamRuns['3'] || 0;
-      totals['4'] += player.innings.teamRuns['4'] || 0;
+    if (player.teamVenueRuns) {
+      homeTotal += player.teamVenueRuns.home || 0;
+      awayTotal += (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
     }
   });
   
-  const grandTotal = totals['1'] + totals['2'] + totals['3'] + totals['4'];
+  const grandTotal = homeTotal + awayTotal;
   
   if (grandTotal === 0) {
-    return { '1': 25, '2': 25, '3': 25, '4': 25 }; // Fallback to equal distribution
+    return { home: 50, away: 50 }; // Fallback to equal distribution
   }
   
   // Calculate percentages (rounded to 1 decimal)
   const percentages = {
-    '1': Math.round(totals['1'] / grandTotal * 1000) / 10,
-    '2': Math.round(totals['2'] / grandTotal * 1000) / 10,
-    '3': Math.round(totals['3'] / grandTotal * 1000) / 10,
-    '4': Math.round(totals['4'] / grandTotal * 1000) / 10
+    home: Math.round(homeTotal / grandTotal * 1000) / 10,
+    away: Math.round(awayTotal / grandTotal * 1000) / 10
   };
   
   return percentages;
@@ -873,8 +768,8 @@ function getInningsWeightsForEra(eraFilter) {
   return calculateInningsWeights(filteredPlayers);
 }
 
-// Store current innings weights
-let currentInningsWeights = { '1': 25, '2': 25, '3': 25, '4': 25 };
+// Store current impact weights (home/away)
+let currentInningsWeights = { home: 50, away: 50 };
 
 // Calculate venue weights from actual historical data
 function calculateVenueWeights(players) {
@@ -966,6 +861,9 @@ function getResultWeightsForEra(eraFilter) {
 // Store current result weights
 let currentResultWeights = { win: 33.3, draw: 33.3, loss: 33.4 };
 
+// Store current avg weights (based on result distribution)
+let currentAvgWeights = { win: 33.3, draw: 33.3, loss: 33.4 };
+
 // Multi-era versions of weight calculation functions
 function filterPlayersByEras(selectedEras) {
   if (selectedEras.includes('all')) {
@@ -998,20 +896,19 @@ function getResultWeightsForEras(selectedEras) {
   return calculateResultWeights(filteredPlayers);
 }
 
+function getAvgWeightsForEras(selectedEras) {
+  const filteredPlayers = filterPlayersByEras(selectedEras);
+  return calculateResultWeights(filteredPlayers); // Uses same distribution as result weights
+}
+
 const inputMap = {
-  'avg-1': 'avg1', 'avg-2': 'avg2', 'avg-3': 'avg3', 'avg-4': 'avg4',
-  'runs-1': 'runs1', 'runs-2': 'runs2', 'runs-3': 'runs3', 'runs-4': 'runs4',
-  'impact-1': 'impact1', 'impact-2': 'impact2', 'impact-3': 'impact3', 'impact-4': 'impact4',
-  'ha-home': 'haHome', 'ha-away': 'haAway',
-  'result-win': 'resultWin', 'result-loss': 'resultLoss', 'result-draw': 'resultDraw'
+  'avg-win': 'avgWin', 'avg-draw': 'avgDraw', 'avg-loss': 'avgLoss',
+  'impact-home': 'impactHome', 'impact-away': 'impactAway'
 };
 
 const itemMap = {
-  'avg-1': 'avg1Item', 'avg-2': 'avg2Item', 'avg-3': 'avg3Item', 'avg-4': 'avg4Item',
-  'runs-1': 'runs1Item', 'runs-2': 'runs2Item', 'runs-3': 'runs3Item', 'runs-4': 'runs4Item',
-  'impact-1': 'impact1Item', 'impact-2': 'impact2Item', 'impact-3': 'impact3Item', 'impact-4': 'impact4Item',
-  'ha-home': 'haHomeItem', 'ha-away': 'haAwayItem',
-  'result-win': 'resultWinItem', 'result-loss': 'resultLossItem', 'result-draw': 'resultDrawItem'
+  'avg-win': 'avgWinItem', 'avg-draw': 'avgDrawItem', 'avg-loss': 'avgLossItem',
+  'impact-home': 'impactHomeItem', 'impact-away': 'impactAwayItem'
 };
 
 function updateTotalNoAuto(group) {
@@ -193462,49 +193359,51 @@ function calculatePoints(player) {
     points += player.sr * (config.sr.total / 100);
   }
   
-  // Batting Average - uses total directly (no subs)
+  // Outcome Average - (player result runs / team result runs) * result weight
+  // Uses ratio-based scoring like Impact
+  // Tie is treated as draw
   if (config.avg.total > 0) {
-    points += player.avg * (config.avg.total / 100);
+    ['win', 'draw', 'loss'].forEach(result => {
+      const weight = config.avg.subs[result];
+      if (weight > 0 && player.teamResultRuns) {
+        let playerRuns, teamRuns;
+        if (result === 'draw') {
+          // Include tie runs in draw calculation
+          playerRuns = (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
+          teamRuns = (player.teamResultRuns.draw || 0) + (player.teamResultRuns.tie || 0);
+        } else {
+          playerRuns = player.resultRuns[result] || 0;
+          teamRuns = player.teamResultRuns[result] || 0;
+        }
+        if (teamRuns > 0) {
+          const avgRatio = playerRuns / teamRuns;
+          points += avgRatio * (weight / 100) * 100;
+        }
+      }
+    });
   }
   
-  // Total Runs - uses total directly (no subs)
-  if (config.runs.total > 0) {
-    points += player.runs * (config.runs.total / 100);
-  }
-  
-  // Impact - (player innings runs / team innings runs) * innings weight
-  // e.g., player runs=6150, team runs=48500, weight=10 -> (6150/48500) * 0.10 = 0.0127 * 100 = 1.27 points
+  // Impact - (player venue runs / team venue runs) * venue weight
+  // Neutral venue is treated as away
+  // e.g., player home runs=7216, team home runs=51868, weight=10 -> (7216/51868) * 0.10 * 100 = 1.39 points
   // Multiply by 100 to get reasonable point values
   if (config.impact.total > 0) {
-    ['1', '2', '3', '4'].forEach(inn => {
-      const weight = config.impact.subs[inn];
-      if (weight > 0 && player.innings.teamRuns[inn] > 0) {
-        const impactRatio = player.innings.runs[inn] / player.innings.teamRuns[inn];
-        points += impactRatio * (weight / 100) * 100;
-      }
-    });
-  }
-  
-  // Home/Away - (player venue runs / team venue runs) * venue weight
-  // e.g., home runs=7216, team home runs=51868, weight=15 -> (7216/51868) * 0.15 * 100 = 2.09 points
-  if (config.ha.total > 0) {
     ['home', 'away'].forEach(venue => {
-      const weight = config.ha.subs[venue];
-      if (weight > 0 && player.teamVenueRuns && player.teamVenueRuns[venue] > 0) {
-        const venueRatio = player.venueRuns[venue] / player.teamVenueRuns[venue];
-        points += venueRatio * (weight / 100) * 100;
-      }
-    });
-  }
-  
-  // Match Result - (player result runs / team result runs) * result weight
-  // e.g., win runs=6238, team win runs=40823, weight=8 -> (6238/40823) * 0.08 * 100 = 1.22 points
-  if (config.result.total > 0) {
-    ['win', 'draw', 'loss'].forEach(result => {
-      const weight = config.result.subs[result];
-      if (weight > 0 && player.teamResultRuns && player.teamResultRuns[result] > 0) {
-        const resultRatio = player.resultRuns[result] / player.teamResultRuns[result];
-        points += resultRatio * (weight / 100) * 100;
+      const weight = config.impact.subs[venue];
+      if (weight > 0 && player.teamVenueRuns) {
+        let playerRuns, teamRuns;
+        if (venue === 'away') {
+          // Include neutral venue runs in away calculation
+          playerRuns = (player.venueRuns.away || 0) + (player.venueRuns.neutral || 0);
+          teamRuns = (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
+        } else {
+          playerRuns = player.venueRuns[venue] || 0;
+          teamRuns = player.teamVenueRuns[venue] || 0;
+        }
+        if (teamRuns > 0) {
+          const impactRatio = playerRuns / teamRuns;
+          points += impactRatio * (weight / 100) * 100;
+        }
       }
     });
   }
@@ -193561,41 +193460,34 @@ function updateResultsTable() {
   // Update player count
   document.getElementById('playerCount').textContent = limitedPlayers.length;
   
-  // Calculate innings percentage
-  const getInningsPct = (player, inn) => {
-    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
-    const playerRuns = player.innings.runs[inn] || 0;
-    const teamRuns = player.innings.teamRuns[inn] || 0;
-    if (teamRuns === 0) return '—';
-    return ((playerRuns / teamRuns) * 100).toFixed(1);
-  };
-  
-  // Calculate total innings percentage (sum of all player runs / sum of all team runs)
-  const getTotalInningsPct = (player) => {
-    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
-    let totalPlayerRuns = 0;
-    let totalTeamRuns = 0;
-    ['1', '2', '3', '4'].forEach(inn => {
-      totalPlayerRuns += player.innings.runs[inn] || 0;
-      totalTeamRuns += player.innings.teamRuns[inn] || 0;
-    });
-    if (totalTeamRuns === 0) return '—';
-    return ((totalPlayerRuns / totalTeamRuns) * 100).toFixed(1);
-  };
-  
-  // Calculate venue and result percentages
-  const getVenuePct = (player, venue) => {
+  // Calculate impact percentage (home/away)
+  // Neutral venue is treated as away
+  const getImpactPct = (player, venue) => {
     if (!player.venueRuns || !player.teamVenueRuns) return '—';
-    const playerRuns = player.venueRuns[venue] || 0;
-    const teamRuns = player.teamVenueRuns[venue] || 0;
+    let playerRuns, teamRuns;
+    if (venue === 'away') {
+      playerRuns = (player.venueRuns.away || 0) + (player.venueRuns.neutral || 0);
+      teamRuns = (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
+    } else {
+      playerRuns = player.venueRuns[venue] || 0;
+      teamRuns = player.teamVenueRuns[venue] || 0;
+    }
     if (teamRuns === 0) return '—';
     return ((playerRuns / teamRuns) * 100).toFixed(1);
   };
   
-  const getResultPct = (player, result) => {
+  // Calculate outcome percentage (win/draw/loss)
+  // Tie is treated as draw
+  const getOutcomePct = (player, result) => {
     if (!player.resultRuns || !player.teamResultRuns) return '—';
-    const playerRuns = player.resultRuns[result] || 0;
-    const teamRuns = player.teamResultRuns[result] || 0;
+    let playerRuns, teamRuns;
+    if (result === 'draw') {
+      playerRuns = (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
+      teamRuns = (player.teamResultRuns.draw || 0) + (player.teamResultRuns.tie || 0);
+    } else {
+      playerRuns = player.resultRuns[result] || 0;
+      teamRuns = player.teamResultRuns[result] || 0;
+    }
     if (teamRuns === 0) return '—';
     return ((playerRuns / teamRuns) * 100).toFixed(1);
   };
@@ -193607,16 +193499,11 @@ function updateResultsTable() {
       <td class="num">${player.runs.toLocaleString()}</td>
       <td class="num">${player.avg.toFixed(2)}</td>
       <td class="num">${player.sr.toFixed(2)}</td>
-      <td class="num">${getInningsPct(player, '1')}</td>
-      <td class="num">${getInningsPct(player, '2')}</td>
-      <td class="num">${getInningsPct(player, '3')}</td>
-      <td class="num">${getInningsPct(player, '4')}</td>
-      <td class="num">${getTotalInningsPct(player)}</td>
-      <td class="num">${getVenuePct(player, 'home')}</td>
-      <td class="num">${getVenuePct(player, 'away')}</td>
-      <td class="num">${getResultPct(player, 'win')}</td>
-      <td class="num">${getResultPct(player, 'draw')}</td>
-      <td class="num">${getResultPct(player, 'loss')}</td>
+      <td class="num">${getImpactPct(player, 'home')}</td>
+      <td class="num">${getImpactPct(player, 'away')}</td>
+      <td class="num">${getOutcomePct(player, 'win')}</td>
+      <td class="num">${getOutcomePct(player, 'draw')}</td>
+      <td class="num">${getOutcomePct(player, 'loss')}</td>
       <td class="num points">${grandTotal > 0 ? player.points.toFixed(1) : '—'}</td>
       <td class="num">${index + 1}</td>
     </tr>
@@ -193669,6 +193556,7 @@ function handleEraChange(checkbox) {
   updateInningsWeights();
   updateVenueWeights();
   updateResultWeights();
+  updateAvgWeights();
 }
 
 function updateEraButtonText() {
@@ -193701,6 +193589,7 @@ function clearFilters() {
   updateInningsWeights();
   updateVenueWeights();
   updateResultWeights();
+  updateAvgWeights();
 }
 
 // Initialize
@@ -193714,10 +193603,8 @@ function updateInningsWeights() {
   currentInningsWeights = getInningsWeightsForEras(selectedEras);
   
   // Update suggested weight displays
-  document.getElementById('impact1Suggested').textContent = currentInningsWeights['1'].toFixed(1) + '%';
-  document.getElementById('impact2Suggested').textContent = currentInningsWeights['2'].toFixed(1) + '%';
-  document.getElementById('impact3Suggested').textContent = currentInningsWeights['3'].toFixed(1) + '%';
-  document.getElementById('impact4Suggested').textContent = currentInningsWeights['4'].toFixed(1) + '%';
+  document.getElementById('impactHomeSuggested').textContent = currentInningsWeights.home.toFixed(1) + '%';
+  document.getElementById('impactAwaySuggested').textContent = currentInningsWeights.away.toFixed(1) + '%';
   
   // Update era label
   const eraLabel = document.getElementById('inningsEraLabel');
@@ -193762,40 +193649,118 @@ function updateVenueWeights() {
   }
 }
 
-// Apply suggested innings weights to Impact category
+// Apply suggested impact weights to Impact category (home/away)
 function applyImpactSuggested() {
   const total = config.impact.total;
   if (total <= 0) {
-    alert('Please set an Impact category total first.');
+    alert('Please set a Contribution Impact category total first.');
     return;
   }
   
   // Calculate actual values based on total and percentages
   // Round to whole numbers that sum to the total
   const rawValues = {
-    '1': currentInningsWeights['1'] / 100 * total,
-    '2': currentInningsWeights['2'] / 100 * total,
-    '3': currentInningsWeights['3'] / 100 * total,
-    '4': currentInningsWeights['4'] / 100 * total
+    home: currentInningsWeights.home / 100 * total,
+    away: currentInningsWeights.away / 100 * total
   };
   
   // Round and adjust to ensure sum equals total
   let values = {
-    '1': Math.round(rawValues['1']),
-    '2': Math.round(rawValues['2']),
-    '3': Math.round(rawValues['3']),
-    '4': Math.round(rawValues['4'])
+    home: Math.round(rawValues.home),
+    away: Math.round(rawValues.away)
   };
   
   // Adjust for rounding errors
-  let sum = values['1'] + values['2'] + values['3'] + values['4'];
+  let sum = values.home + values.away;
+  let diff = total - sum;
+  
+  // Add/subtract difference from larger value
+  if (diff !== 0) {
+    if (values.home >= values.away) {
+      values.home += diff;
+    } else {
+      values.away += diff;
+    }
+  }
+  
+  // Apply values to inputs
+  ['home', 'away'].forEach(venue => {
+    config.impact.subs[venue] = values[venue];
+    const input = document.getElementById('impact' + venue.charAt(0).toUpperCase() + venue.slice(1));
+    const item = document.getElementById('impact' + venue.charAt(0).toUpperCase() + venue.slice(1) + 'Item');
+    input.value = values[venue];
+    if (values[venue] > 0) {
+      item.classList.add('has-value');
+    }
+  });
+  
+  // Mark as manually edited to prevent auto-populate from overwriting
+  config.impact.manuallyEdited = { home: true, away: true };
+  
+  updateSubtotal('impact');
+  updateGrandTotal();
+  updateTags();
+  updatePreview();
+}
+
+// Calculate and display avg weights (based on result distribution)
+function updateAvgWeights() {
+  const selectedEras = getSelectedEras();
+  currentAvgWeights = getAvgWeightsForEras(selectedEras);
+  
+  // Update suggested weight displays
+  document.getElementById('avgWinSuggested').textContent = currentAvgWeights.win.toFixed(1) + '%';
+  document.getElementById('avgDrawSuggested').textContent = currentAvgWeights.draw.toFixed(1) + '%';
+  document.getElementById('avgLossSuggested').textContent = currentAvgWeights.loss.toFixed(1) + '%';
+  
+  // Update era label
+  const eraLabel = document.getElementById('avgEraLabel');
+  if (selectedEras.includes('all')) {
+    eraLabel.textContent = '(All Eras)';
+  } else if (selectedEras.length === 1) {
+    eraLabel.textContent = '(' + selectedEras[0] + ')';
+  } else {
+    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
+  }
+  
+  // Show apply button if avg category has a total
+  const applyBtn = document.getElementById('avgApplySuggested');
+  if (config.avg.total > 0) {
+    applyBtn.style.display = 'block';
+  }
+}
+
+// Apply suggested avg weights to Outcome Average category
+function applyAvgSuggested() {
+  const total = config.avg.total;
+  if (total <= 0) {
+    alert('Please set an Outcome Average category total first.');
+    return;
+  }
+  
+  // Calculate actual values based on total and percentages
+  const rawValues = {
+    win: currentAvgWeights.win / 100 * total,
+    draw: currentAvgWeights.draw / 100 * total,
+    loss: currentAvgWeights.loss / 100 * total
+  };
+  
+  // Round and adjust to ensure sum equals total
+  let values = {
+    win: Math.round(rawValues.win),
+    draw: Math.round(rawValues.draw),
+    loss: Math.round(rawValues.loss)
+  };
+  
+  // Adjust for rounding errors
+  let sum = values.win + values.draw + values.loss;
   let diff = total - sum;
   
   // Add/subtract difference from largest value
   if (diff !== 0) {
-    let maxKey = '1';
-    let maxVal = values['1'];
-    ['2', '3', '4'].forEach(k => {
+    let maxKey = 'win';
+    let maxVal = values.win;
+    ['draw', 'loss'].forEach(k => {
       if (values[k] > maxVal) {
         maxVal = values[k];
         maxKey = k;
@@ -193805,26 +193770,24 @@ function applyImpactSuggested() {
   }
   
   // Apply values to inputs
-  ['1', '2', '3', '4'].forEach(inn => {
-    config.impact.subs[inn] = values[inn];
-    const input = document.getElementById('impact' + inn);
-    const item = document.getElementById('impact' + inn + 'Item');
-    input.value = values[inn];
-    if (values[inn] > 0) {
+  ['win', 'draw', 'loss'].forEach(result => {
+    config.avg.subs[result] = values[result];
+    const input = document.getElementById('avg' + result.charAt(0).toUpperCase() + result.slice(1));
+    const item = document.getElementById('avg' + result.charAt(0).toUpperCase() + result.slice(1) + 'Item');
+    input.value = values[result];
+    if (values[result] > 0) {
       item.classList.add('has-value');
     }
   });
   
   // Mark as manually edited to prevent auto-populate from overwriting
-  config.impact.manuallyEdited = { '1': true, '2': true, '3': true, '4': true };
+  config.avg.manuallyEdited = { win: true, draw: true, loss: true };
   
-  updateSubtotal('impact');
+  updateSubtotal('avg');
   updateGrandTotal();
   updateTags();
   updatePreview();
 }
-
-// Apply suggested venue weights to Home & Away category
 function applyVenueSuggested() {
   const total = config.ha.total;
   if (total <= 0) {
@@ -193876,6 +193839,7 @@ function applyVenueSuggested() {
 updateInningsWeights();
 updateVenueWeights();
 updateResultWeights();
+updateAvgWeights();
 
 // Calculate and display result weights
 function updateResultWeights() {
@@ -194051,37 +194015,32 @@ function exportToExcel(){
   if(limitedPlayers.length === 0){alert('No data to export');return;}
   
   // Helper functions
-  const getInningsPct = (player, inn) => {
-    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
-    const playerRuns = player.innings.runs[inn] || 0;
-    const teamRuns = player.innings.teamRuns[inn] || 0;
-    if (teamRuns === 0) return '—';
-    return ((playerRuns / teamRuns) * 100).toFixed(1);
-  };
-  
-  const getTotalInningsPct = (player) => {
-    if (!player.innings || !player.innings.runs || !player.innings.teamRuns) return '—';
-    let totalPlayerRuns = 0, totalTeamRuns = 0;
-    ['1', '2', '3', '4'].forEach(inn => {
-      totalPlayerRuns += player.innings.runs[inn] || 0;
-      totalTeamRuns += player.innings.teamRuns[inn] || 0;
-    });
-    if (totalTeamRuns === 0) return '—';
-    return ((totalPlayerRuns / totalTeamRuns) * 100).toFixed(1);
-  };
-  
-  const getVenuePct = (player, venue) => {
+  // Neutral venue is treated as away
+  const getImpactPct = (player, venue) => {
     if (!player.venueRuns || !player.teamVenueRuns) return '—';
-    const playerRuns = player.venueRuns[venue] || 0;
-    const teamRuns = player.teamVenueRuns[venue] || 0;
+    let playerRuns, teamRuns;
+    if (venue === 'away') {
+      playerRuns = (player.venueRuns.away || 0) + (player.venueRuns.neutral || 0);
+      teamRuns = (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
+    } else {
+      playerRuns = player.venueRuns[venue] || 0;
+      teamRuns = player.teamVenueRuns[venue] || 0;
+    }
     if (teamRuns === 0) return '—';
     return ((playerRuns / teamRuns) * 100).toFixed(1);
   };
   
-  const getResultPct = (player, result) => {
+  // Tie is treated as draw
+  const getOutcomePct = (player, result) => {
     if (!player.resultRuns || !player.teamResultRuns) return '—';
-    const playerRuns = player.resultRuns[result] || 0;
-    const teamRuns = player.teamResultRuns[result] || 0;
+    let playerRuns, teamRuns;
+    if (result === 'draw') {
+      playerRuns = (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
+      teamRuns = (player.teamResultRuns.draw || 0) + (player.teamResultRuns.tie || 0);
+    } else {
+      playerRuns = player.resultRuns[result] || 0;
+      teamRuns = player.teamResultRuns[result] || 0;
+    }
     if (teamRuns === 0) return '—';
     return ((playerRuns / teamRuns) * 100).toFixed(1);
   };
@@ -194097,20 +194056,15 @@ function exportToExcel(){
     'Runs': player.runs,
     'Average': player.avg.toFixed(2),
     'Strike Rate': player.sr.toFixed(2),
-    '1st Inn %': getInningsPct(player, '1'),
-    '2nd Inn %': getInningsPct(player, '2'),
-    '3rd Inn %': getInningsPct(player, '3'),
-    '4th Inn %': getInningsPct(player, '4'),
-    'Total Inn %': getTotalInningsPct(player),
-    'Home %': getVenuePct(player, 'home'),
-    'Away %': getVenuePct(player, 'away'),
-    'Win %': getResultPct(player, 'win'),
-    'Draw %': getResultPct(player, 'draw'),
-    'Loss %': getResultPct(player, 'loss'),
+    'Impact Home %': getImpactPct(player, 'home'),
+    'Impact Away %': getImpactPct(player, 'away'),
+    'Outcome Win %': getOutcomePct(player, 'win'),
+    'Outcome Draw %': getOutcomePct(player, 'draw'),
+    'Outcome Loss %': getOutcomePct(player, 'loss'),
     'Points': grandTotal > 0 ? player.points.toFixed(1) : '—'
   }));
   const wsResults = XLSX.utils.json_to_sheet(resultsData);
-  wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:8},{wch:8},{wch:8},{wch:8},{wch:8},{wch:8}];
+  wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:8}];
   XLSX.utils.book_append_sheet(wb, wsResults, 'Simulation Results');
   
   // Weights configuration sheet
@@ -194118,26 +194072,19 @@ function exportToExcel(){
     ['Weight Configuration', ''],
     ['', ''],
     ['Category', 'Weight %'],
-    ['Impact Total', config.impact.total],
-    ['  1st Innings', config.impact.subs['1']],
-    ['  2nd Innings', config.impact.subs['2']],
-    ['  3rd Innings', config.impact.subs['3']],
-    ['  4th Innings', config.impact.subs['4']],
-    ['Home/Away Total', config.ha.total],
-    ['  Home', config.ha.subs.home],
-    ['  Away', config.ha.subs.away],
-    ['Match Result Total', config.result.total],
-    ['  Win', config.result.subs.win],
-    ['  Draw', config.result.subs.draw],
-    ['  Loss', config.result.subs.loss],
-    ['Total Runs', config.runs.total],
-    ['Average', config.avg.total],
-    ['Strike Rate', config.sr.total],
+    ['Contribution Impact Total', config.impact.total],
+    ['  Home', config.impact.subs.home],
+    ['  Away', config.impact.subs.away],
+    ['Outcome Average Total', config.avg.total],
+    ['  Avg in Wins', config.avg.subs.win],
+    ['  Avg in Draws', config.avg.subs.draw],
+    ['  Avg in Losses', config.avg.subs.loss],
+    ['Speed (SR)', config.sr.total],
     ['', ''],
     ['Grand Total', grandTotal + '%']
   ];
   const wsWeights = XLSX.utils.aoa_to_sheet(weightsData);
-  wsWeights['!cols'] = [{wch: 20}, {wch: 12}];
+  wsWeights['!cols'] = [{wch: 25}, {wch: 12}];
   XLSX.utils.book_append_sheet(wb, wsWeights, 'Weights');
   
   // Generate filename
