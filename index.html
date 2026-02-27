@@ -217,6 +217,28 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 }
 .af-tag button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;line-height:1}
 
+/* Partnership Layout */
+.partnership-area{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;margin-bottom:18px}
+.partnership-group{flex:1 1 400px;max-width:500px}
+.partnership-label{
+  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:10px;text-align:center;
+}
+.partnership-cards{display:flex;gap:10px;align-items:stretch}
+.partnership-card{flex:1;min-width:160px;max-width:220px}
+.partnership-plus{
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:var(--text3);padding:0 4px;
+}
+.partnership-vs{
+  font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);
+  padding:10px 20px;flex-shrink:0;
+}
+@media(max-width:900px){
+  .partnership-area{flex-direction:column}
+  .partnership-vs{padding:5px 0}
+}
+
 /* Comparison */
 .comp{display:none}
 .comp.show{display:block}
@@ -485,6 +507,15 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 </div>
 
 <div class="main">
+  <div class="record-type-filter" style="margin-bottom:14px;">
+    <div class="fp-group" style="max-width:200px;">
+      <label>Record Type</label>
+      <select class="fp-select" id="fRecordType" onchange="handleRecordTypeChange()">
+        <option value="player" selected>Player</option>
+        <option value="partnerships">Partnerships</option>
+      </select>
+    </div>
+  </div>
   <div class="sel-area" id="selArea">
     <div class="sel-card" id="c1">
       <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
@@ -503,6 +534,55 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       <div class="sel-info" id="i2"><div class="si-name" id="n2"></div><div class="si-meta" id="m2"></div></div>
     </div>
     <button class="add-player-btn" id="addPlayerBtn" onclick="addPlayerSlot()"><span class="plus">+</span> Add Player</button>
+  </div>
+
+  <!-- Partnership Selection Area (hidden by default) -->
+  <div class="partnership-area" id="partnershipArea" style="display:none;">
+    <div class="partnership-group">
+      <div class="partnership-label">Partnership 1</div>
+      <div class="partnership-cards">
+        <div class="sel-card partnership-card" id="pc1a">
+          <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
+          <div class="sel-label" style="margin-left:18px">Player A</div>
+          <input class="sel-input" id="ps1a" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px1a" onclick="clearPartnershipPlayer('1a')">&times;</button>
+          <div class="dd" id="pd1a"></div>
+          <div class="sel-info" id="pi1a"><div class="si-name" id="pn1a"></div><div class="si-meta" id="pm1a"></div></div>
+        </div>
+        <div class="partnership-plus">&</div>
+        <div class="sel-card partnership-card" id="pc1b">
+          <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
+          <div class="sel-label" style="margin-left:18px">Player B</div>
+          <input class="sel-input" id="ps1b" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px1b" onclick="clearPartnershipPlayer('1b')">&times;</button>
+          <div class="dd" id="pd1b"></div>
+          <div class="sel-info" id="pi1b"><div class="si-name" id="pn1b"></div><div class="si-meta" id="pm1b"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="partnership-vs">VS</div>
+    <div class="partnership-group">
+      <div class="partnership-label">Partnership 2</div>
+      <div class="partnership-cards">
+        <div class="sel-card partnership-card" id="pc2a">
+          <div class="sel-pcolor" style="color:var(--p2);background:var(--p2)"></div>
+          <div class="sel-label" style="margin-left:18px">Player A</div>
+          <input class="sel-input" id="ps2a" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px2a" onclick="clearPartnershipPlayer('2a')">&times;</button>
+          <div class="dd" id="pd2a"></div>
+          <div class="sel-info" id="pi2a"><div class="si-name" id="pn2a"></div><div class="si-meta" id="pm2a"></div></div>
+        </div>
+        <div class="partnership-plus">&</div>
+        <div class="sel-card partnership-card" id="pc2b">
+          <div class="sel-pcolor" style="color:var(--p2);background:var(--p2)"></div>
+          <div class="sel-label" style="margin-left:18px">Player B</div>
+          <input class="sel-input" id="ps2b" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px2b" onclick="clearPartnershipPlayer('2b')">&times;</button>
+          <div class="dd" id="pd2b"></div>
+          <div class="sel-info" id="pi2b"><div class="si-name" id="pn2b"></div><div class="si-meta" id="pm2b"></div></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="filters-panel" id="filtersPanel">
@@ -532,6 +612,19 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     <div class="empty-ico">&#127951;</div>
     <h2>Select players to compare</h2>
     <p>Search from 3,253 Test cricketers. Compare up to 5 players with filters by opponent, venue, innings, result and more.</p>
+  </div>
+
+  <!-- Partnership Empty State -->
+  <div class="empty" id="partnershipEmptyState" style="display:none;">
+    <div class="empty-ico">&#129309;</div>
+    <h2>Select partnerships to compare</h2>
+    <p>Choose two players for each partnership to compare their batting partnership statistics when they played together.</p>
+  </div>
+
+  <!-- Partnership Results -->
+  <div class="comp" id="partnershipComp" style="display:none;">
+    <div id="partnershipFiltSummary"></div>
+    <div id="partnershipResults"></div>
   </div>
 
   <div class="comp" id="comp">
@@ -1605,6 +1698,296 @@ const originalRender = render;
 render = function(){
   originalRender();
   updateExportButton();
+}
+
+// ---- Partnership Mode ----
+let partnershipMode = false;
+let partnershipSel = {
+  '1a': null, '1b': null,
+  '2a': null, '2b': null
+};
+
+// Handle Record Type filter change
+function handleRecordTypeChange(){
+  const recordType = document.getElementById('fRecordType').value;
+  partnershipMode = (recordType === 'partnerships');
+  
+  // Toggle visibility of selection areas
+  document.getElementById('selArea').style.display = partnershipMode ? 'none' : 'flex';
+  document.getElementById('partnershipArea').style.display = partnershipMode ? 'flex' : 'none';
+  
+  // Toggle visibility of empty states
+  document.getElementById('emptyState').style.display = partnershipMode ? 'none' : 'block';
+  document.getElementById('partnershipEmptyState').style.display = partnershipMode ? 'block' : 'none';
+  
+  // Hide results
+  document.getElementById('comp').classList.remove('show');
+  document.getElementById('partnershipComp').style.display = 'none';
+  
+  // Hide filters panel when switching modes
+  document.getElementById('filtersPanel').classList.remove('show');
+  
+  // Initialize partnership search if not done
+  if(partnershipMode && !window.partnershipSearchInit){
+    initPartnershipSearch();
+    window.partnershipSearchInit = true;
+  }
+  
+  // Check if we should show results
+  if(partnershipMode && hasEnoughPartnerships()){
+    renderPartnerships();
+  }
+}
+
+function initPartnershipSearch(){
+  ['1a','1b','2a','2b'].forEach(slot => {
+    const inp = document.getElementById('ps'+slot);
+    const dd = document.getElementById('pd'+slot);
+    
+    inp.addEventListener('input', () => {
+      const q = inp.value.trim().toLowerCase();
+      if(q.length < 2){ dd.classList.remove('open'); return; }
+      
+      // Get already selected players to exclude
+      const already = Object.values(partnershipSel).filter(Boolean).map(p => p.id);
+      
+      const m = PLAYERS.filter(p => 
+        !already.includes(p.id) && 
+        (p.name.toLowerCase().includes(q) || 
+         p.fullName.toLowerCase().includes(q) || 
+         p.country.toLowerCase().includes(q))
+      ).slice(0, 15);
+      
+      dd.innerHTML = m.map(p => 
+        `<div class="dd-item" onclick="pickPartnershipPlayer('${slot}',${p.id})">
+          <span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span>
+          <span class="ct">${p.country}</span>
+        </div>`
+      ).join('');
+      dd.classList.add('open');
+    });
+    
+    inp.addEventListener('focus', () => {
+      if(inp.value.trim().length >= 2) dd.classList.add('open');
+    });
+    
+    document.addEventListener('click', e => {
+      if(!e.target.closest('#pc'+slot)) dd.classList.remove('open');
+    });
+  });
+}
+
+function pickPartnershipPlayer(slot, id){
+  const p = PLAYERS.find(x => x.id === id);
+  if(!p) return;
+  
+  partnershipSel[slot] = p;
+  document.getElementById('ps'+slot).value = '';
+  document.getElementById('pd'+slot).classList.remove('open');
+  document.getElementById('pn'+slot).textContent = p.fullName || p.name;
+  document.getElementById('pm'+slot).innerHTML = badge(p.country) + ` ${p.fromYear}–${p.toYear}`;
+  document.getElementById('pi'+slot).classList.add('show');
+  document.getElementById('px'+slot).classList.add('show');
+  
+  // Add active class based on partnership group
+  const groupNum = slot.charAt(0);
+  document.getElementById('pc'+slot).classList.add('active-'+groupNum);
+  
+  if(hasEnoughPartnerships()){
+    document.getElementById('partnershipEmptyState').style.display = 'none';
+    renderPartnerships();
+  }
+}
+
+function clearPartnershipPlayer(slot){
+  partnershipSel[slot] = null;
+  document.getElementById('pi'+slot).classList.remove('show');
+  document.getElementById('px'+slot).classList.remove('show');
+  document.getElementById('ps'+slot).value = '';
+  
+  const groupNum = slot.charAt(0);
+  document.getElementById('pc'+slot).classList.remove('active-'+groupNum);
+  
+  if(!hasEnoughPartnerships()){
+    document.getElementById('partnershipComp').style.display = 'none';
+    document.getElementById('partnershipEmptyState').style.display = 'block';
+  } else {
+    renderPartnerships();
+  }
+}
+
+function hasEnoughPartnerships(){
+  // Need both players in at least one partnership
+  const p1complete = partnershipSel['1a'] && partnershipSel['1b'];
+  const p2complete = partnershipSel['2a'] && partnershipSel['2b'];
+  return p1complete && p2complete;
+}
+
+// Calculate partnership stats for two players
+function calcPartnershipStats(playerA, playerB){
+  const idxA = SCD_IDX[playerA.id] || [];
+  const idxB = SCD_IDX[playerB.id] || [];
+  
+  // Build map of match+innings for player A
+  const aInnings = {};
+  idxA.forEach(i => {
+    const r = SCD[i];
+    const matchId = r[0];
+    const innNum = r[2];
+    const key = matchId + '_' + innNum;
+    // Only count if player actually batted (runs not null)
+    if(r[3] !== null && r[4] !== null){
+      aInnings[key] = {
+        matchId: matchId,
+        innings: innNum,
+        runs: typeof r[3] === 'number' ? r[3] : 0,
+        balls: typeof r[5] === 'number' ? r[5] : 0,
+        scdIdx: i
+      };
+    }
+  });
+  
+  // Find common innings where both batted
+  const commonInnings = [];
+  const testsPlayed = new Set();
+  
+  idxB.forEach(i => {
+    const r = SCD[i];
+    const matchId = r[0];
+    const innNum = r[2];
+    const key = matchId + '_' + innNum;
+    
+    // Only count if player B actually batted
+    if(r[3] !== null && r[4] !== null && aInnings[key]){
+      testsPlayed.add(matchId);
+      commonInnings.push({
+        matchId: matchId,
+        innings: innNum,
+        runsA: aInnings[key].runs,
+        ballsA: aInnings[key].balls,
+        runsB: typeof r[3] === 'number' ? r[3] : 0,
+        ballsB: typeof r[5] === 'number' ? r[5] : 0
+      });
+    }
+  });
+  
+  // Calculate combined stats
+  let totalRuns = 0;
+  let totalBalls = 0;
+  let dismissals = 0; // We'll approximate as number of innings (each innings ends with dismissal or declaration)
+  
+  commonInnings.forEach(inn => {
+    totalRuns += inn.runsA + inn.runsB;
+    totalBalls += inn.ballsA + inn.ballsB;
+    dismissals++; // Each common innings represents at least one partnership ending
+  });
+  
+  // Partnership average (runs per innings together)
+  const partnershipAvg = commonInnings.length > 0 ? totalRuns / commonInnings.length : 0;
+  
+  // Partnership strike rate
+  const partnershipSR = totalBalls > 0 ? (totalRuns / totalBalls) * 100 : null;
+  
+  return {
+    tests: testsPlayed.size,
+    innings: commonInnings.length,
+    runs: totalRuns,
+    average: partnershipAvg,
+    strikeRate: partnershipSR,
+    playerA: playerA,
+    playerB: playerB
+  };
+}
+
+function renderPartnerships(){
+  const p1a = partnershipSel['1a'];
+  const p1b = partnershipSel['1b'];
+  const p2a = partnershipSel['2a'];
+  const p2b = partnershipSel['2b'];
+  
+  const stats1 = calcPartnershipStats(p1a, p1b);
+  const stats2 = calcPartnershipStats(p2a, p2b);
+  
+  const partnerships = [stats1, stats2];
+  
+  // Build comparison table
+  const cols = [
+    {key:'tests', label:'Tests Together', higher:true},
+    {key:'innings', label:'Innings Together', higher:true},
+    {key:'runs', label:'Partnership Runs', higher:true},
+    {key:'average', label:'Partnership Avg', higher:true},
+    {key:'strikeRate', label:'Partnership SR', higher:true}
+  ];
+  
+  // Pre-compute best values
+  const bestVals = {};
+  cols.forEach(c => {
+    const vals = partnerships.map(s => typeof s[c.key] === 'number' ? s[c.key] : 0);
+    bestVals[c.key] = Math.max(...vals);
+  });
+  
+  // Build header
+  let hdr = '<th>Partnership</th>';
+  cols.forEach(c => {
+    hdr += `<th>${c.label}</th>`;
+  });
+  
+  // Build rows
+  let rows = '';
+  partnerships.forEach((s, idx) => {
+    const pColor = idx === 0 ? 'p1' : 'p2';
+    const pNames = `${s.playerA.name} & ${s.playerB.name}`;
+    const pCountry = s.playerA.country === s.playerB.country ? s.playerA.country : `${s.playerA.country} / ${s.playerB.country}`;
+    
+    let row = `<td class="player-cell" style="border-left:3px solid var(--${pColor})">
+      <span class="pc-name">${pNames}</span>
+      <span class="pc-meta">${pCountry}</span>
+    </td>`;
+    
+    cols.forEach(c => {
+      const v = s[c.key];
+      const n = typeof v === 'number' ? v : 0;
+      let cls = '';
+      
+      // Highlight best value
+      if(bestVals[c.key] !== undefined){
+        const allSame = partnerships.every(os => {
+          const ov = typeof os[c.key] === 'number' ? os[c.key] : 0;
+          return ov === n;
+        });
+        if(!allSame && n > 0){
+          cls = n === bestVals[c.key] ? 'best' : 'worse';
+        }
+      }
+      
+      // Format value
+      let display;
+      if(c.key === 'average'){
+        display = n > 0 ? n.toFixed(2) : '—';
+      } else if(c.key === 'strikeRate'){
+        display = v !== null && v > 0 ? v.toFixed(2) : '—';
+      } else {
+        display = n > 0 ? n.toLocaleString() : '—';
+      }
+      
+      row += `<td class="${cls}">${display}</td>`;
+    });
+    
+    rows += `<tr class="${pColor}-row">${row}</tr>`;
+  });
+  
+  const html = `
+    <div class="tbl-wrap">
+      <table class="cmp-table">
+        <thead><tr>${hdr}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <p class="foot-note">* Partnership stats show combined batting when both players batted in the same innings. Strike rate only shown when balls faced data is available.</p>
+  `;
+  
+  document.getElementById('partnershipResults').innerHTML = html;
+  document.getElementById('partnershipComp').style.display = 'block';
 }
 </script>
 
