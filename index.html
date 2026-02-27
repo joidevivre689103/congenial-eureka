@@ -538,7 +538,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
   <!-- Partnership Selection Area (hidden by default) -->
   <div class="partnership-area" id="partnershipArea" style="display:none;">
-    <div class="partnership-group">
+    <div class="partnership-group" id="pg1">
       <div class="partnership-label">Partnership 1</div>
       <div class="partnership-cards">
         <div class="sel-card partnership-card" id="pc1a">
@@ -560,8 +560,8 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </div>
       </div>
     </div>
-    <div class="partnership-vs">VS</div>
-    <div class="partnership-group">
+    <div class="partnership-vs" id="pvs1">VS</div>
+    <div class="partnership-group" id="pg2">
       <div class="partnership-label">Partnership 2</div>
       <div class="partnership-cards">
         <div class="sel-card partnership-card" id="pc2a">
@@ -583,6 +583,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </div>
       </div>
     </div>
+    <button class="add-player-btn" id="addPartnershipBtn" onclick="addPartnershipSlot()"><span class="plus">+</span> Add Partnership</button>
   </div>
 
   <div class="filters-panel" id="filtersPanel">
@@ -1702,10 +1703,17 @@ render = function(){
 
 // ---- Partnership Mode ----
 let partnershipMode = false;
+let partnershipSlotCount = 2; // Start with 2 partnerships visible
+const MAX_PARTNERSHIPS = 4;
 let partnershipSel = {
   '1a': null, '1b': null,
-  '2a': null, '2b': null
+  '2a': null, '2b': null,
+  '3a': null, '3b': null,
+  '4a': null, '4b': null
 };
+
+// Partnership colors matching player colors
+const PCOLORS = ['p1', 'p2', 'p3', 'p4'];
 
 // Handle Record Type filter change
 function handleRecordTypeChange(){
@@ -1729,7 +1737,7 @@ function handleRecordTypeChange(){
   
   // Initialize partnership search if not done
   if(partnershipMode && !window.partnershipSearchInit){
-    initPartnershipSearch();
+    initPartnershipSearch(['1a','1b','2a','2b']);
     window.partnershipSearchInit = true;
   }
   
@@ -1739,8 +1747,61 @@ function handleRecordTypeChange(){
   }
 }
 
-function initPartnershipSearch(){
-  ['1a','1b','2a','2b'].forEach(slot => {
+function addPartnershipSlot(){
+  if(partnershipSlotCount >= MAX_PARTNERSHIPS) return;
+  partnershipSlotCount++;
+  const n = partnershipSlotCount;
+  const pColor = PCOLORS[n-1];
+  
+  const area = document.getElementById('partnershipArea');
+  const btn = document.getElementById('addPartnershipBtn');
+  
+  // Add VS divider
+  const vs = document.createElement('div');
+  vs.className = 'partnership-vs';
+  vs.id = 'pvs' + (n-1);
+  vs.textContent = 'VS';
+  area.insertBefore(vs, btn);
+  
+  // Add partnership group
+  const group = document.createElement('div');
+  group.className = 'partnership-group';
+  group.id = 'pg' + n;
+  group.innerHTML = `
+    <div class="partnership-label">Partnership ${n}</div>
+    <div class="partnership-cards">
+      <div class="sel-card partnership-card" id="pc${n}a">
+        <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
+        <div class="sel-label" style="margin-left:18px">Player A</div>
+        <input class="sel-input" id="ps${n}a" placeholder="Search player..." autocomplete="off">
+        <button class="sel-clear" id="px${n}a" onclick="clearPartnershipPlayer('${n}a')">&times;</button>
+        <div class="dd" id="pd${n}a"></div>
+        <div class="sel-info" id="pi${n}a"><div class="si-name" id="pn${n}a"></div><div class="si-meta" id="pm${n}a"></div></div>
+      </div>
+      <div class="partnership-plus">&</div>
+      <div class="sel-card partnership-card" id="pc${n}b">
+        <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
+        <div class="sel-label" style="margin-left:18px">Player B</div>
+        <input class="sel-input" id="ps${n}b" placeholder="Search player..." autocomplete="off">
+        <button class="sel-clear" id="px${n}b" onclick="clearPartnershipPlayer('${n}b')">&times;</button>
+        <div class="dd" id="pd${n}b"></div>
+        <div class="sel-info" id="pi${n}b"><div class="si-name" id="pn${n}b"></div><div class="si-meta" id="pm${n}b"></div></div>
+      </div>
+    </div>
+  `;
+  area.insertBefore(group, btn);
+  
+  // Initialize search for new slots
+  initPartnershipSearch([n+'a', n+'b']);
+  
+  // Hide button if max reached
+  if(partnershipSlotCount >= MAX_PARTNERSHIPS){
+    btn.style.display = 'none';
+  }
+}
+
+function initPartnershipSearch(slots){
+  slots.forEach(slot => {
     const inp = document.getElementById('ps'+slot);
     const dd = document.getElementById('pd'+slot);
     
@@ -1748,11 +1809,14 @@ function initPartnershipSearch(){
       const q = inp.value.trim().toLowerCase();
       if(q.length < 2){ dd.classList.remove('open'); return; }
       
-      // Get already selected players to exclude
-      const already = Object.values(partnershipSel).filter(Boolean).map(p => p.id);
+      // Only exclude the other player in the SAME partnership
+      const partnershipNum = slot.charAt(0);
+      const otherSlot = slot.charAt(1) === 'a' ? partnershipNum + 'b' : partnershipNum + 'a';
+      const partnerInSameGroup = partnershipSel[otherSlot];
+      const excludeIds = partnerInSameGroup ? [partnerInSameGroup.id] : [];
       
       const m = PLAYERS.filter(p => 
-        !already.includes(p.id) && 
+        !excludeIds.includes(p.id) && 
         (p.name.toLowerCase().includes(q) || 
          p.fullName.toLowerCase().includes(q) || 
          p.country.toLowerCase().includes(q))
@@ -1817,10 +1881,29 @@ function clearPartnershipPlayer(slot){
 }
 
 function hasEnoughPartnerships(){
-  // Need both players in at least one partnership
-  const p1complete = partnershipSel['1a'] && partnershipSel['1b'];
-  const p2complete = partnershipSel['2a'] && partnershipSel['2b'];
-  return p1complete && p2complete;
+  // Need at least 2 complete partnerships
+  let completeCount = 0;
+  for(let i = 1; i <= partnershipSlotCount; i++){
+    if(partnershipSel[i+'a'] && partnershipSel[i+'b']){
+      completeCount++;
+    }
+  }
+  return completeCount >= 2;
+}
+
+// Get all complete partnerships
+function getCompletePartnerships(){
+  const partnerships = [];
+  for(let i = 1; i <= partnershipSlotCount; i++){
+    if(partnershipSel[i+'a'] && partnershipSel[i+'b']){
+      partnerships.push({
+        num: i,
+        playerA: partnershipSel[i+'a'],
+        playerB: partnershipSel[i+'b']
+      });
+    }
+  }
+  return partnerships;
 }
 
 // Calculate partnership stats for two players
@@ -1900,15 +1983,16 @@ function calcPartnershipStats(playerA, playerB){
 }
 
 function renderPartnerships(){
-  const p1a = partnershipSel['1a'];
-  const p1b = partnershipSel['1b'];
-  const p2a = partnershipSel['2a'];
-  const p2b = partnershipSel['2b'];
+  const completePartnerships = getCompletePartnerships();
   
-  const stats1 = calcPartnershipStats(p1a, p1b);
-  const stats2 = calcPartnershipStats(p2a, p2b);
+  if(completePartnerships.length < 2) return;
   
-  const partnerships = [stats1, stats2];
+  // Calculate stats for all partnerships
+  const partnerships = completePartnerships.map(p => {
+    const stats = calcPartnershipStats(p.playerA, p.playerB);
+    stats.num = p.num;
+    return stats;
+  });
   
   // Build comparison table
   const cols = [
@@ -1935,7 +2019,7 @@ function renderPartnerships(){
   // Build rows
   let rows = '';
   partnerships.forEach((s, idx) => {
-    const pColor = idx === 0 ? 'p1' : 'p2';
+    const pColor = PCOLORS[s.num - 1];
     const pNames = `${s.playerA.name} & ${s.playerB.name}`;
     const pCountry = s.playerA.country === s.playerB.country ? s.playerA.country : `${s.playerA.country} / ${s.playerB.country}`;
     
