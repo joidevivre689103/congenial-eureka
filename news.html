@@ -1212,7 +1212,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       heroMain.innerHTML = `
         <div class="hero-category">${escapeHTML(categoryLabel)}</div>
         <h2 class="hero-headline">
-          <a href="#">${escapeHTML(heroArticle.headline)}</a>
+          <a href="article.html?id=${heroArticle.id}">${escapeHTML(heroArticle.headline)}</a>
         </h2>
         <p class="hero-summary">${escapeHTML(heroArticle.summary)}</p>
         <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
@@ -1235,7 +1235,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     sidebarSection.innerHTML = titleHTML + mostRead.map((a, i) => `
       <div class="sidebar-item">
         <span class="sidebar-item-num">${i + 1}</span>
-        <h4 class="sidebar-item-headline"><a href="#">${escapeHTML(a.headline)}</a></h4>
+        <h4 class="sidebar-item-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
         <div class="sidebar-item-meta">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))} • ${a.readTime} min</div>
       </div>
     `).join('');
@@ -1268,7 +1268,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         <div class="analysis-card-image" style="background:${colors[i % colors.length]};"></div>
         <div class="analysis-card-content">
           <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
-          <h3 class="analysis-card-headline"><a href="#">${escapeHTML(a.headline)}</a></h3>
+          <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
           <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
           <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span></div>
         </div>
@@ -1302,7 +1302,7 @@ function renderColumn(colEl, title, articles) {
     <article class="article-card">
       <div class="article-card-image" style="background:${gradients[0]};"></div>
       <h4 class="article-card-headline">
-        <a href="#">${escapeHTML(lead.headline)}</a>
+        <a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a>
       </h4>
       <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
       <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read</div>
@@ -1315,7 +1315,7 @@ function renderColumn(colEl, title, articles) {
       <article class="article-mini">
         <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
         <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">${escapeHTML(a.headline)}</a></h4>
+          <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
           <div class="article-mini-meta">${timeAgo(a.date)}</div>
         </div>
       </article>
