@@ -1716,7 +1716,7 @@ let partnershipSel = {
 };
 
 // Partnership colors matching player colors
-const PCOLORS = ['p1', 'p2', 'p3', 'p4'];
+const PARTNERSHIP_COLORS = ['p1', 'p2', 'p3', 'p4'];
 
 // Handle Record Type filter change
 function handleRecordTypeChange(){
@@ -1767,7 +1767,7 @@ function addPartnershipSlot(){
   if(partnershipSlotCount >= MAX_PARTNERSHIPS) return;
   partnershipSlotCount++;
   const n = partnershipSlotCount;
-  const pColor = PCOLORS[n-1];
+  const pColor = PARTNERSHIP_COLORS[n-1];
   
   const area = document.getElementById('partnershipArea');
   const btn = document.getElementById('addPartnershipBtn');
@@ -2035,7 +2035,7 @@ function renderPartnerships(){
   // Build rows
   let rows = '';
   partnerships.forEach((s, idx) => {
-    const pColor = PCOLORS[s.num - 1];
+    const pColor = PARTNERSHIP_COLORS[s.num - 1];
     const pNames = `${s.playerA.name} & ${s.playerB.name}`;
     const pCountry = s.playerA.country === s.playerB.country ? s.playerA.country : `${s.playerA.country} / ${s.playerB.country}`;
     
