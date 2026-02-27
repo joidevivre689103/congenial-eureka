@@ -1141,6 +1141,216 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
   });
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CMS INTEGRATION — Load published content from localStorage
+// ═══════════════════════════════════════════════════════════════════════════
+(function loadCMSContent() {
+  let cmsData;
+  try {
+    const raw = localStorage.getItem('cricketTimesCMS');
+    if (!raw) return; // No CMS data yet, keep default content
+    cmsData = JSON.parse(raw);
+  } catch(e) {
+    return; // Parse error, keep defaults
+  }
+
+  const { articles, tickerItems, liveScores } = cmsData;
+
+  // ─── TICKER ───
+  if (tickerItems && tickerItems.length > 0) {
+    const tickerContent = document.querySelector('.ticker-content');
+    if (tickerContent) {
+      tickerContent.textContent = tickerItems.join(' • ');
+    }
+  }
+
+  // ─── LIVE SCORES ───
+  if (liveScores && liveScores.length > 0) {
+    const scoresContainer = document.querySelector('.live-scores');
+    if (scoresContainer) {
+      const header = scoresContainer.querySelector('.live-scores-header').outerHTML;
+      const cardsHTML = liveScores.map(score => `
+        <div class="score-card">
+          <div class="score-match">${escapeHTML(score.match)}</div>
+          <div class="score-teams">
+            <div class="score-team">
+              <span class="score-team-name">${escapeHTML(score.team1.name)}</span>
+              <span class="score-team-score">${escapeHTML(score.team1.score)}</span>
+            </div>
+            <div class="score-team">
+              <span class="score-team-name">${escapeHTML(score.team2.name)}</span>
+              <span class="score-team-score">${escapeHTML(score.team2.score)}</span>
+            </div>
+          </div>
+          <div class="score-status">${escapeHTML(score.status)}</div>
+        </div>
+      `).join('');
+      scoresContainer.innerHTML = header + cardsHTML;
+    }
+  }
+
+  // ─── ARTICLES ───
+  if (!articles || articles.length === 0) return;
+
+  // Categorize articles by placement and category
+  const heroArticle = articles.find(a => a.placement === 'hero');
+  const featuredArticles = articles.filter(a => a.placement === 'featured');
+  const standardArticles = articles.filter(a => a.placement === 'standard');
+
+  // Group by category
+  const newsCat = articles.filter(a => a.category === 'news');
+  const featuresCat = articles.filter(a => a.category === 'features');
+  const opinionCat = articles.filter(a => a.category === 'opinion');
+  const analysisCat = articles.filter(a => a.category === 'analysis');
+
+  // ─── HERO SECTION ───
+  if (heroArticle) {
+    const heroMain = document.querySelector('.hero-main');
+    if (heroMain) {
+      const categoryLabel = heroArticle.category.charAt(0).toUpperCase() + heroArticle.category.slice(1);
+      heroMain.innerHTML = `
+        <div class="hero-category">${escapeHTML(categoryLabel)}</div>
+        <h2 class="hero-headline">
+          <a href="#">${escapeHTML(heroArticle.headline)}</a>
+        </h2>
+        <p class="hero-summary">${escapeHTML(heroArticle.summary)}</p>
+        <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
+        <div class="hero-meta">
+          <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
+          <span class="hero-time">${heroArticle.readTime} min read</span>
+          <span>${formatArticleDate(heroArticle.date)}</span>
+        </div>
+      `;
+    }
+  }
+
+  // ─── MOST READ SIDEBAR ───
+  // Use top 4 articles by most recent
+  const mostRead = articles.slice(0, 4);
+  const sidebarSection = document.querySelector('.sidebar-section');
+  if (sidebarSection && mostRead.length > 0) {
+    const titleEl = sidebarSection.querySelector('.sidebar-title');
+    const titleHTML = titleEl ? titleEl.outerHTML : '<h3 class="sidebar-title">Most Read</h3>';
+    sidebarSection.innerHTML = titleHTML + mostRead.map((a, i) => `
+      <div class="sidebar-item">
+        <span class="sidebar-item-num">${i + 1}</span>
+        <h4 class="sidebar-item-headline"><a href="#">${escapeHTML(a.headline)}</a></h4>
+        <div class="sidebar-item-meta">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))} • ${a.readTime} min</div>
+      </div>
+    `).join('');
+  }
+
+  // ─── THREE COLUMN CONTENT GRID ───
+  const contentCols = document.querySelectorAll('.content-col');
+  if (contentCols.length >= 3) {
+    // Column 1: Latest News
+    renderColumn(contentCols[0], 'Latest News', newsCat.length > 0 ? newsCat : standardArticles);
+
+    // Column 2: Features
+    renderColumn(contentCols[1], 'Features', featuresCat.length > 0 ? featuresCat : featuredArticles);
+
+    // Column 3: Opinion
+    renderColumn(contentCols[2], 'Opinion', opinionCat.length > 0 ? opinionCat : articles.slice(-3));
+  }
+
+  // ─── ANALYSIS SECTION ───
+  const analysisGrid = document.querySelector('.analysis-grid');
+  const analysisArticles = analysisCat.length > 0 ? analysisCat : articles.filter(a => a.readTime >= 10);
+  if (analysisGrid && analysisArticles.length > 0) {
+    const colors = [
+      'linear-gradient(135deg,#2a4048,#1a3038)',
+      'linear-gradient(135deg,#483828,#382818)',
+      'linear-gradient(135deg,#384838,#283828)'
+    ];
+    analysisGrid.innerHTML = analysisArticles.slice(0, 3).map((a, i) => `
+      <article class="analysis-card">
+        <div class="analysis-card-image" style="background:${colors[i % colors.length]};"></div>
+        <div class="analysis-card-content">
+          <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
+          <h3 class="analysis-card-headline"><a href="#">${escapeHTML(a.headline)}</a></h3>
+          <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
+          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span></div>
+        </div>
+      </article>
+    `).join('');
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderColumn(colEl, title, articles) {
+  if (!articles || articles.length === 0) return;
+
+  const gradients = [
+    'linear-gradient(135deg,#3a4a5a,#2a3a48)',
+    'linear-gradient(135deg,#4a5a4a,#3a4a38)',
+    'linear-gradient(135deg,#5a4a4a,#4a3a38)',
+    'linear-gradient(135deg,#4a4a5a,#38384a)',
+    'linear-gradient(135deg,#504a40,#403a30)'
+  ];
+
+  // First article gets full card treatment
+  const lead = articles[0];
+  const rest = articles.slice(1, 5);
+
+  let html = `<h3 class="col-header">${escapeHTML(title)}</h3>`;
+
+  // Lead article card
+  html += `
+    <article class="article-card">
+      <div class="article-card-image" style="background:${gradients[0]};"></div>
+      <h4 class="article-card-headline">
+        <a href="#">${escapeHTML(lead.headline)}</a>
+      </h4>
+      <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
+      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read</div>
+    </article>
+  `;
+
+  // Mini articles
+  rest.forEach((a, i) => {
+    html += `
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">${escapeHTML(a.headline)}</a></h4>
+          <div class="article-mini-meta">${timeAgo(a.date)}</div>
+        </div>
+      </article>
+    `;
+  });
+
+  colEl.innerHTML = html;
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function formatArticleDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - d;
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffHrs < 1) return 'Just now';
+  if (diffHrs < 24) return diffHrs + ' hours ago';
+  if (diffDays === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 </script>
 
 </body>

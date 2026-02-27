@@ -947,6 +947,10 @@ textarea.form-input{
           <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           View Live Site
         </a>
+        <a href="#" class="nav-item" onclick="event.preventDefault(); persistToLocalStorage(); showToast('success','Pushed to Live','All published content is now live on the site.');" style="color:var(--green)">
+          <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Push All to Live
+        </a>
       </div>
     </nav>
     
@@ -1556,14 +1560,15 @@ function saveArticle(status) {
     if (index !== -1) {
       articles[index] = { ...articles[index], ...articleData };
     }
-    showToast('success', 'Article Updated', status === 'published' ? 'Changes are now live.' : 'Draft saved.');
+    showToast('success', 'Article Updated', status === 'published' ? 'Changes are now live on the site.' : 'Draft saved.');
   } else {
     // Create new
     articleData.id = nextArticleId++;
     articles.unshift(articleData);
-    showToast('success', 'Article Created', status === 'published' ? 'Article is now live.' : 'Draft saved.');
+    showToast('success', 'Article Created', status === 'published' ? 'Article is now live on the site.' : 'Draft saved.');
   }
   
+  persistToLocalStorage();
   closeModal();
   renderArticles();
   updateStats();
@@ -1576,7 +1581,8 @@ function deleteArticle() {
     closeModal();
     renderArticles();
     updateStats();
-    showToast('success', 'Article Deleted', 'The article has been removed.');
+    persistToLocalStorage();
+    showToast('success', 'Article Deleted', 'The article has been removed from the live site.');
   }
 }
 
@@ -1657,8 +1663,8 @@ function removeTickerItem(index) {
 }
 
 function saveTicker() {
-  // In production, this would save to backend
-  showToast('success', 'Ticker Updated', 'Breaking news headlines have been saved.');
+  persistToLocalStorage();
+  showToast('success', 'Ticker Updated', 'Breaking news headlines have been saved and pushed live.');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1730,8 +1736,8 @@ function removeScoreCard(id) {
 }
 
 function saveScores() {
-  // In production, this would save to backend
-  showToast('success', 'Scores Updated', 'Live scores have been saved.');
+  persistToLocalStorage();
+  showToast('success', 'Scores Updated', 'Live scores have been saved and pushed live.');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1774,6 +1780,62 @@ function showToast(type, title, message) {
   }, 3000);
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// LOCALSTORAGE PERSISTENCE (Bridge to news.html)
+// ═══════════════════════════════════════════════════════════════════════════
+function persistToLocalStorage() {
+  const publishedArticles = articles.filter(a => a.status === 'published');
+  const payload = {
+    articles: publishedArticles,
+    tickerItems: tickerItems,
+    liveScores: liveScores,
+    lastUpdated: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem('cricketTimesCMS', JSON.stringify(payload));
+  } catch(e) {
+    console.warn('Could not save to localStorage:', e);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('cricketTimesCMS_editorState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (state.articles) articles = state.articles;
+      if (state.tickerItems) tickerItems = state.tickerItems;
+      if (state.liveScores) liveScores = state.liveScores;
+      if (state.nextArticleId) nextArticleId = state.nextArticleId;
+      if (state.nextScoreId) nextScoreId = state.nextScoreId;
+    }
+  } catch(e) {
+    console.warn('Could not load from localStorage:', e);
+  }
+}
+
+function saveEditorState() {
+  try {
+    localStorage.setItem('cricketTimesCMS_editorState', JSON.stringify({
+      articles,
+      tickerItems,
+      liveScores,
+      nextArticleId,
+      nextScoreId
+    }));
+  } catch(e) {}
+}
+
+// Wrap persistToLocalStorage to also save editor state
+const _originalPersist = persistToLocalStorage;
+persistToLocalStorage = function() {
+  _originalPersist();
+  saveEditorState();
+};
+
+// Load saved editor state on init
+loadFromLocalStorage();
+
 // Close modal on overlay click
 document.getElementById('articleModal').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeModal();
@@ -1786,6 +1848,9 @@ document.addEventListener('keydown', (e) => {
 
 // Initialize
 renderArticles();
+
+// Push initial data to localStorage so news.html has content
+persistToLocalStorage();
 </script>
 
 </body>
