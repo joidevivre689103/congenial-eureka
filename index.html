@@ -41,6 +41,7 @@ html{scroll-behavior:smooth}
   --green:#1a9a60;--green-dim:rgba(26,154,96,0.10);
   --red:#d04040;
   --p1:#c08018;--p2:#1a9a60;--p3:#2870d0;--p4:#c04060;--p5:#8050d0;
+  --p6:#d06020;--p7:#10a0a0;--p8:#6040c0;--p9:#c02080;--p10:#508030;
 }
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:rgba(0,0,0,0.1);touch-action:manipulation}
 
@@ -99,6 +100,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .sel-card.active-3{border-color:var(--p3)}
 .sel-card.active-4{border-color:var(--p4)}
 .sel-card.active-5{border-color:var(--p5)}
+.sel-card.active-6{border-color:var(--p6)}
+.sel-card.active-7{border-color:var(--p7)}
+.sel-card.active-8{border-color:var(--p8)}
+.sel-card.active-9{border-color:var(--p9)}
+.sel-card.active-10{border-color:var(--p10)}
 .sel-label{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
 .sel-input{
   width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;
@@ -219,27 +225,37 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .af-tag button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;line-height:1}
 
 /* Partnership Layout */
-.partnership-area{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;margin-bottom:18px}
+.partnership-area{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:flex-start;margin-bottom:18px}
 .partnership-area.hidden{display:none !important}
 .empty.hidden{display:none !important}
-.partnership-group{flex:1 1 400px;max-width:500px}
+.partnership-group{flex:0 0 auto;min-width:340px}
 .partnership-label{
-  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--text3);margin-bottom:10px;text-align:center;
+  font-family:'DM Serif Display',serif;font-size:15px;font-weight:600;
+  color:var(--text);margin-bottom:12px;text-align:center;
+  padding:6px 16px;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;display:inline-block;width:100%;box-sizing:border-box;
 }
-.partnership-cards{display:flex;gap:10px;align-items:stretch}
-.partnership-card{flex:1;min-width:160px;max-width:220px}
+.partnership-group:nth-child(4n+1) .partnership-label{border-left:3px solid var(--p1);color:var(--p1)}
+.partnership-group:nth-child(4n+3) .partnership-label{border-left:3px solid var(--p2);color:var(--p2)}
+.partnership-group:nth-child(4n+5) .partnership-label{border-left:3px solid var(--p3);color:var(--p3)}
+.partnership-group:nth-child(4n+7) .partnership-label{border-left:3px solid var(--p4);color:var(--p4)}
+.partnership-cards{display:flex;gap:8px;align-items:flex-start}
+.partnership-card{flex:1;min-width:150px;max-width:180px}
+.partnership-card .sel-input{font-size:12px;padding:7px 10px}
 .partnership-plus{
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:700;color:var(--text3);padding:0 4px;
+  font-size:16px;font-weight:700;color:var(--text3);padding:0 2px;
+  margin-top:35px;
 }
 .partnership-vs{
-  font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);
-  padding:10px 20px;flex-shrink:0;
+  font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);
+  font-weight:600;padding:0 10px;display:flex;align-items:center;
+  margin-top:30px;
 }
 @media(max-width:900px){
-  .partnership-area{flex-direction:column}
-  .partnership-vs{padding:5px 0}
+  .partnership-area{flex-direction:column;align-items:stretch}
+  .partnership-group{min-width:100%}
+  .partnership-vs{justify-content:center;margin-top:0;padding:8px 0}
 }
 
 /* Comparison */
@@ -315,6 +331,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .cmp-table tbody tr.p3-row td.player-cell{border-left:3px solid var(--p3)}
 .cmp-table tbody tr.p4-row td.player-cell{border-left:3px solid var(--p4)}
 .cmp-table tbody tr.p5-row td.player-cell{border-left:3px solid var(--p5)}
+.cmp-table tbody tr.p6-row td.player-cell{border-left:3px solid var(--p6)}
+.cmp-table tbody tr.p7-row td.player-cell{border-left:3px solid var(--p7)}
+.cmp-table tbody tr.p8-row td.player-cell{border-left:3px solid var(--p8)}
+.cmp-table tbody tr.p9-row td.player-cell{border-left:3px solid var(--p9)}
+.cmp-table tbody tr.p10-row td.player-cell{border-left:3px solid var(--p10)}
 
 /* Cell value highlighting */
 .cmp-table tbody td.best{color:var(--green)}
@@ -542,7 +563,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   <!-- Partnership Selection Area (hidden by default) -->
   <div class="partnership-area hidden" id="partnershipArea">
     <div class="partnership-group" id="pg1">
-      <div class="partnership-label">Partnership 1</div>
+      <div class="partnership-label" style="border-left:3px solid var(--p1);color:var(--p1)">Partnership 1</div>
       <div class="partnership-cards">
         <div class="sel-card partnership-card" id="pc1a">
           <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
@@ -563,9 +584,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         </div>
       </div>
     </div>
-    <div class="partnership-vs" id="pvs1">VS</div>
+    <div class="partnership-vs">VS</div>
     <div class="partnership-group" id="pg2">
-      <div class="partnership-label">Partnership 2</div>
+      <div class="partnership-label" style="border-left:3px solid var(--p2);color:var(--p2)">Partnership 2</div>
       <div class="partnership-cards">
         <div class="sel-card partnership-card" id="pc2a">
           <div class="sel-pcolor" style="color:var(--p2);background:var(--p2)"></div>
@@ -677,9 +698,9 @@ function isHome(ptIdx,meta){
   return'away';
 }
 
-const PCOLORS=['var(--p1)','var(--p2)','var(--p3)','var(--p4)','var(--p5)'];
-const MAX_PLAYERS=5;
-let sel=[null,null,null,null,null];
+const PCOLORS=['var(--p1)','var(--p2)','var(--p3)','var(--p4)','var(--p5)','var(--p6)','var(--p7)','var(--p8)','var(--p9)','var(--p10)'];
+const MAX_PLAYERS=10;
+let sel=[null,null,null,null,null,null,null,null,null,null];
 let slotCount=2; // visible slots
 
 function initSearch(n){
@@ -1784,7 +1805,7 @@ function addPartnershipSlot(){
   group.className = 'partnership-group';
   group.id = 'pg' + n;
   group.innerHTML = `
-    <div class="partnership-label">Partnership ${n}</div>
+    <div class="partnership-label" style="border-left:3px solid var(--${pColor});color:var(--${pColor})">Partnership ${n}</div>
     <div class="partnership-cards">
       <div class="sel-card partnership-card" id="pc${n}a">
         <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
