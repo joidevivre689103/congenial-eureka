@@ -87,6 +87,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
 /* Player Selection */
 .sel-area{display:flex;flex-wrap:wrap;gap:12px;align-items:start;margin-bottom:18px}
+.sel-area.hidden{display:none !important}
 .sel-card{
   background:var(--surface);border:1px solid var(--border);border-radius:11px;
   padding:14px 16px;position:relative;transition:border-color 0.25s;
@@ -219,6 +220,8 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
 /* Partnership Layout */
 .partnership-area{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;margin-bottom:18px}
+.partnership-area.hidden{display:none !important}
+.empty.hidden{display:none !important}
 .partnership-group{flex:1 1 400px;max-width:500px}
 .partnership-label{
   font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
@@ -537,7 +540,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   </div>
 
   <!-- Partnership Selection Area (hidden by default) -->
-  <div class="partnership-area" id="partnershipArea" style="display:none;">
+  <div class="partnership-area hidden" id="partnershipArea">
     <div class="partnership-group" id="pg1">
       <div class="partnership-label">Partnership 1</div>
       <div class="partnership-cards">
@@ -616,7 +619,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   </div>
 
   <!-- Partnership Empty State -->
-  <div class="empty" id="partnershipEmptyState" style="display:none;">
+  <div class="empty hidden" id="partnershipEmptyState">
     <div class="empty-ico">&#129309;</div>
     <h2>Select partnerships to compare</h2>
     <p>Choose two players for each partnership to compare their batting partnership statistics when they played together.</p>
@@ -1720,13 +1723,26 @@ function handleRecordTypeChange(){
   const recordType = document.getElementById('fRecordType').value;
   partnershipMode = (recordType === 'partnerships');
   
-  // Toggle visibility of selection areas
-  document.getElementById('selArea').style.display = partnershipMode ? 'none' : 'flex';
-  document.getElementById('partnershipArea').style.display = partnershipMode ? 'flex' : 'none';
+  // Toggle visibility of selection areas using class
+  const selArea = document.getElementById('selArea');
+  const partnershipArea = document.getElementById('partnershipArea');
+  const emptyState = document.getElementById('emptyState');
+  const partnershipEmptyState = document.getElementById('partnershipEmptyState');
   
-  // Toggle visibility of empty states
-  document.getElementById('emptyState').style.display = partnershipMode ? 'none' : 'block';
-  document.getElementById('partnershipEmptyState').style.display = partnershipMode ? 'block' : 'none';
+  if(partnershipMode){
+    selArea.classList.add('hidden');
+    partnershipArea.classList.remove('hidden');
+    partnershipArea.style.display = 'flex';
+    emptyState.classList.add('hidden');
+    partnershipEmptyState.classList.remove('hidden');
+    partnershipEmptyState.style.display = 'block';
+  } else {
+    selArea.classList.remove('hidden');
+    partnershipArea.classList.add('hidden');
+    emptyState.classList.remove('hidden');
+    emptyState.style.display = 'block';
+    partnershipEmptyState.classList.add('hidden');
+  }
   
   // Hide results
   document.getElementById('comp').classList.remove('show');
