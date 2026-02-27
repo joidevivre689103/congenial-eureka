@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Cricket Times — Test Cricket News & Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#faf9f7;
+  --surface:#ffffff;
+  --surface2:#f5f4f2;
+  --surface3:#eceae6;
+  --border:#d8d4cc;
+  --border2:#c8c4bc;
+  --text:#1a1a18;
+  --text2:#4a4a46;
+  --text3:#7a7a74;
+  --accent:#a03020;
+  --accent-hover:#801810;
+  --accent-dim:rgba(160,48,32,0.08);
+  --gold:#c08018;
+  --gold-dim:rgba(192,128,24,0.10);
+  --green:#1a6848;
+  --blue:#1a4878;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Source Serif 4',Georgia,serif;
+  min-height:100vh;
+  line-height:1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MASTHEAD
+═══════════════════════════════════════════════════════════════════════════ */
+.masthead{
+  text-align:center;
+  padding:20px 24px 16px;
+  border-bottom:2px solid var(--text);
+  position:relative;
+}
+.masthead-date{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-bottom:8px;
+}
+.masthead-logo{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,8vw,58px);
+  font-weight:700;
+  letter-spacing:-1px;
+  line-height:1.1;
+}
+.masthead-logo span{
+  color:var(--accent);
+}
+.masthead-tagline{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-top:6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════════════════════════ */
+.nav-bar{
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.nav-inner{
+  max-width:1400px;
+  margin:0 auto;
+  padding:0 24px;
+  display:flex;
+  justify-content:center;
+  gap:0;
+}
+.nav-link{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  color:var(--text2);
+  text-decoration:none;
+  padding:14px 20px;
+  position:relative;
+  transition:color 0.2s;
+}
+.nav-link:hover{
+  color:var(--accent);
+}
+.nav-link.active{
+  color:var(--accent);
+}
+.nav-link.active::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:20px;
+  right:20px;
+  height:2px;
+  background:var(--accent);
+}
+.nav-link.external::after{
+  content:'↗';
+  font-size:10px;
+  margin-left:4px;
+  opacity:0.6;
+}
+
+@media(max-width:900px){
+  .nav-inner{
+    overflow-x:auto;
+    justify-content:flex-start;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .nav-inner::-webkit-scrollbar{display:none}
+  .nav-link{
+    white-space:nowrap;
+    padding:12px 14px;
+    font-size:11px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════════════════════════════════ */
+.main{
+  max-width:1400px;
+  margin:0 auto;
+  padding:0 24px;
+}
+
+/* ─── BREAKING TICKER ─── */
+.ticker{
+  background:var(--accent);
+  color:#fff;
+  padding:10px 24px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  overflow:hidden;
+}
+.ticker-label{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  background:rgba(255,255,255,0.2);
+  padding:4px 10px;
+  border-radius:3px;
+  flex-shrink:0;
+}
+.ticker-content{
+  font-size:13px;
+  font-weight:500;
+  white-space:nowrap;
+  animation:scroll-left 30s linear infinite;
+}
+@keyframes scroll-left{
+  0%{transform:translateX(100%)}
+  100%{transform:translateX(-100%)}
+}
+
+/* ─── HERO SECTION ─── */
+.hero-section{
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:0;
+  border-bottom:1px solid var(--border);
+  padding:32px 0;
+}
+
+.hero-main{
+  padding-right:32px;
+  border-right:1px solid var(--border);
+}
+.hero-category{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:12px;
+}
+.hero-headline{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,5vw,48px);
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:-0.5px;
+  margin-bottom:16px;
+}
+.hero-headline a{
+  color:inherit;
+  text-decoration:none;
+}
+.hero-headline a:hover{
+  text-decoration:underline;
+  text-decoration-thickness:2px;
+  text-underline-offset:4px;
+}
+.hero-summary{
+  font-size:18px;
+  line-height:1.6;
+  color:var(--text2);
+  margin-bottom:20px;
+}
+.hero-image{
+  width:100%;
+  aspect-ratio:16/10;
+  object-fit:cover;
+  border-radius:4px;
+  margin-bottom:16px;
+  background:var(--surface3);
+}
+.hero-meta{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  color:var(--text3);
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+.hero-author{
+  font-weight:600;
+  color:var(--text2);
+}
+.hero-time{
+  opacity:0.8;
+}
+
+/* ─── SIDEBAR ─── */
+.hero-sidebar{
+  padding-left:24px;
+}
+.sidebar-section{
+  margin-bottom:28px;
+}
+.sidebar-title{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  color:var(--text3);
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:16px;
+}
+.sidebar-item{
+  padding:12px 0;
+  border-bottom:1px solid var(--surface3);
+}
+.sidebar-item:last-child{border-bottom:none}
+.sidebar-item-num{
+  font-family:'Playfair Display',serif;
+  font-size:28px;
+  font-weight:700;
+  color:var(--surface3);
+  float:left;
+  margin-right:12px;
+  line-height:1;
+}
+.sidebar-item-headline{
+  font-family:'Playfair Display',serif;
+  font-size:15px;
+  font-weight:600;
+  line-height:1.35;
+}
+.sidebar-item-headline a{
+  color:inherit;
+  text-decoration:none;
+}
+.sidebar-item-headline a:hover{
+  color:var(--accent);
+}
+.sidebar-item-meta{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--text3);
+  margin-top:4px;
+}
+
+/* ─── LIVE SCORES WIDGET ─── */
+.live-scores{
+  background:var(--text);
+  color:#fff;
+  border-radius:6px;
+  padding:16px;
+  margin-top:4px;
+}
+.live-scores-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:14px;
+}
+.live-dot{
+  width:8px;
+  height:8px;
+  background:#e04040;
+  border-radius:50%;
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.4}
+}
+.live-scores-title{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+}
+.score-card{
+  background:rgba(255,255,255,0.08);
+  border-radius:4px;
+  padding:12px;
+  margin-bottom:10px;
+}
+.score-card:last-child{margin-bottom:0}
+.score-match{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  opacity:0.6;
+  margin-bottom:8px;
+}
+.score-teams{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.score-team{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.score-team-name{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:600;
+}
+.score-team-score{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:var(--gold);
+}
+.score-status{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  color:rgba(255,255,255,0.5);
+  margin-top:8px;
+}
+
+@media(max-width:900px){
+  .hero-section{
+    grid-template-columns:1fr;
+  }
+  .hero-main{
+    padding-right:0;
+    border-right:none;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:24px;
+  }
+  .hero-sidebar{
+    padding-left:0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTENT GRID (3 Columns)
+═══════════════════════════════════════════════════════════════════════════ */
+.content-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:0;
+  padding:32px 0;
+  border-bottom:1px solid var(--border);
+}
+.content-col{
+  padding:0 24px;
+  border-right:1px solid var(--border);
+}
+.content-col:first-child{padding-left:0}
+.content-col:last-child{border-right:none;padding-right:0}
+
+.col-header{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  color:var(--accent);
+  padding-bottom:12px;
+  border-bottom:2px solid var(--accent);
+  margin-bottom:20px;
+}
+
+.article-card{
+  margin-bottom:24px;
+}
+.article-card:last-child{margin-bottom:0}
+.article-card-image{
+  width:100%;
+  aspect-ratio:16/10;
+  object-fit:cover;
+  border-radius:3px;
+  margin-bottom:12px;
+  background:var(--surface3);
+}
+.article-card-headline{
+  font-family:'Playfair Display',serif;
+  font-size:18px;
+  font-weight:600;
+  line-height:1.3;
+  margin-bottom:8px;
+}
+.article-card-headline a{
+  color:inherit;
+  text-decoration:none;
+}
+.article-card-headline a:hover{
+  color:var(--accent);
+}
+.article-card-summary{
+  font-size:14px;
+  line-height:1.55;
+  color:var(--text2);
+  margin-bottom:10px;
+}
+.article-card-meta{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--text3);
+}
+
+.article-mini{
+  display:flex;
+  gap:14px;
+  padding:14px 0;
+  border-top:1px solid var(--surface3);
+}
+.article-mini:first-of-type{border-top:none}
+.article-mini-image{
+  width:80px;
+  height:60px;
+  object-fit:cover;
+  border-radius:3px;
+  flex-shrink:0;
+  background:var(--surface3);
+}
+.article-mini-content{flex:1}
+.article-mini-headline{
+  font-family:'Playfair Display',serif;
+  font-size:14px;
+  font-weight:600;
+  line-height:1.35;
+}
+.article-mini-headline a{
+  color:inherit;
+  text-decoration:none;
+}
+.article-mini-headline a:hover{color:var(--accent)}
+.article-mini-meta{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  color:var(--text3);
+  margin-top:4px;
+}
+
+@media(max-width:900px){
+  .content-grid{
+    grid-template-columns:1fr;
+  }
+  .content-col{
+    padding:0;
+    border-right:none;
+    padding-bottom:28px;
+    margin-bottom:28px;
+    border-bottom:1px solid var(--border);
+  }
+  .content-col:last-child{
+    margin-bottom:0;
+    padding-bottom:0;
+    border-bottom:none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANALYSIS SECTION (Featured Essays)
+═══════════════════════════════════════════════════════════════════════════ */
+.analysis-section{
+  padding:40px 0;
+  border-bottom:1px solid var(--border);
+}
+.section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+.section-title{
+  font-family:'Playfair Display',serif;
+  font-size:26px;
+  font-weight:700;
+}
+.section-link{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  color:var(--accent);
+  text-decoration:none;
+}
+.section-link:hover{text-decoration:underline}
+
+.analysis-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:28px;
+}
+.analysis-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.analysis-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.08);
+}
+.analysis-card-image{
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  background:var(--surface3);
+}
+.analysis-card-content{
+  padding:20px;
+}
+.analysis-card-category{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:10px;
+}
+.analysis-card-headline{
+  font-family:'Playfair Display',serif;
+  font-size:20px;
+  font-weight:600;
+  line-height:1.3;
+  margin-bottom:10px;
+}
+.analysis-card-headline a{
+  color:inherit;
+  text-decoration:none;
+}
+.analysis-card-headline a:hover{color:var(--accent)}
+.analysis-card-excerpt{
+  font-size:14px;
+  line-height:1.55;
+  color:var(--text2);
+  margin-bottom:14px;
+}
+.analysis-card-author{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text);
+}
+.analysis-card-author span{
+  color:var(--text3);
+  font-weight:400;
+}
+
+@media(max-width:900px){
+  .analysis-grid{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATS PROMO SECTION
+═══════════════════════════════════════════════════════════════════════════ */
+.stats-promo{
+  padding:48px 0;
+  background:linear-gradient(180deg,var(--surface2) 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--border);
+}
+.stats-promo-inner{
+  max-width:1400px;
+  margin:0 auto;
+  padding:0 24px;
+}
+.stats-header{
+  text-align:center;
+  margin-bottom:36px;
+}
+.stats-header h2{
+  font-family:'Playfair Display',serif;
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.stats-header p{
+  font-size:16px;
+  color:var(--text2);
+}
+
+.stats-cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:24px;
+  text-align:center;
+  text-decoration:none;
+  color:inherit;
+  transition:all 0.25s;
+}
+.stat-card:hover{
+  border-color:var(--gold);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(192,128,24,0.12);
+}
+.stat-card-icon{
+  width:48px;
+  height:48px;
+  margin:0 auto 16px;
+  background:var(--gold-dim);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.stat-card-icon svg{
+  width:24px;
+  height:24px;
+  stroke:var(--gold);
+  fill:none;
+  stroke-width:2;
+}
+.stat-card-title{
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.stat-card-desc{
+  font-size:13px;
+  color:var(--text3);
+  line-height:1.45;
+}
+
+@media(max-width:900px){
+  .stats-cards{
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+  .stat-card{padding:18px}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════════════════════════ */
+.footer{
+  background:var(--text);
+  color:rgba(255,255,255,0.7);
+  padding:48px 24px 32px;
+}
+.footer-inner{
+  max-width:1400px;
+  margin:0 auto;
+}
+.footer-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding-bottom:32px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  margin-bottom:24px;
+}
+.footer-brand{
+  font-family:'Playfair Display',serif;
+  font-size:28px;
+  font-weight:700;
+  color:#fff;
+}
+.footer-nav{
+  display:flex;
+  gap:32px;
+}
+.footer-nav a{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:500;
+  color:rgba(255,255,255,0.6);
+  text-decoration:none;
+}
+.footer-nav a:hover{color:#fff}
+
+.footer-bottom{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:rgba(255,255,255,0.4);
+  display:flex;
+  justify-content:space-between;
+}
+
+@media(max-width:900px){
+  .footer-top{
+    flex-direction:column;
+    gap:24px;
+  }
+  .footer-nav{
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .footer-bottom{
+    flex-direction:column;
+    gap:8px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MASTHEAD
+═══════════════════════════════════════════════════════════════════════════ -->
+<header class="masthead">
+  <div class="masthead-date">Friday, February 27, 2026</div>
+  <h1 class="masthead-logo">Cricket <span>Times</span></h1>
+  <div class="masthead-tagline">The Definitive Voice of Test Cricket</div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════════════════════════════════════════ -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a href="news.html" class="nav-link active">Stories</a>
+    <a href="#analysis" class="nav-link">Analysis</a>
+    <a href="country-results.html" class="nav-link external">Countries</a>
+    <a href="batting-records.html" class="nav-link external">Batting</a>
+    <a href="#" class="nav-link">Bowling</a>
+    <a href="index.html" class="nav-link external">Compare</a>
+    <a href="simulation.html" class="nav-link external">Simulation</a>
+    <a href="#" class="nav-link">Share</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     BREAKING NEWS TICKER
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="ticker">
+  <span class="ticker-label">Breaking</span>
+  <span class="ticker-content">
+    England announce squad for upcoming Ashes series • Virat Kohli surpasses 9,000 Test runs • Australia clinch Border-Gavaskar Trophy 3-1 • ICC announces new Test Championship cycle format • Ben Stokes hints at potential return to red-ball cricket
+  </span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════════════════ -->
+<main class="main">
+  
+  <!-- ─── HERO SECTION ─── -->
+  <section class="hero-section">
+    <article class="hero-main">
+      <div class="hero-category">Test Cricket</div>
+      <h2 class="hero-headline">
+        <a href="#">India's Dominance at Home: How Spin Bowling Has Redefined Test Cricket Strategy</a>
+      </h2>
+      <p class="hero-summary">
+        A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack 
+        has forced visiting teams to fundamentally rethink their approach to subcontinent tours. 
+        From Ashwin's artistry to Jadeja's relentless accuracy, the numbers tell a compelling story.
+      </p>
+      <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
+      <div class="hero-meta">
+        <span class="hero-author">By Rahul Dravid</span>
+        <span class="hero-time">12 min read</span>
+        <span>February 27, 2026</span>
+      </div>
+    </article>
+    
+    <aside class="hero-sidebar">
+      <!-- Most Read -->
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Most Read</h3>
+        <div class="sidebar-item">
+          <span class="sidebar-item-num">1</span>
+          <h4 class="sidebar-item-headline"><a href="#">Smith's technique evolution: The making of a modern master</a></h4>
+          <div class="sidebar-item-meta">Analysis • 8 min</div>
+        </div>
+        <div class="sidebar-item">
+          <span class="sidebar-item-num">2</span>
+          <h4 class="sidebar-item-headline"><a href="#">Why the Duke ball behaves differently in English conditions</a></h4>
+          <div class="sidebar-item-meta">Science • 5 min</div>
+        </div>
+        <div class="sidebar-item">
+          <span class="sidebar-item-num">3</span>
+          <h4 class="sidebar-item-headline"><a href="#">The forgotten art of defensive batting</a></h4>
+          <div class="sidebar-item-meta">Opinion • 6 min</div>
+        </div>
+        <div class="sidebar-item">
+          <span class="sidebar-item-num">4</span>
+          <h4 class="sidebar-item-headline"><a href="#">Root equals Tendulkar's century tally</a></h4>
+          <div class="sidebar-item-meta">News • 3 min</div>
+        </div>
+      </div>
+      
+      <!-- Live Scores -->
+      <div class="live-scores">
+        <div class="live-scores-header">
+          <span class="live-dot"></span>
+          <span class="live-scores-title">Live Scores</span>
+        </div>
+        <div class="score-card">
+          <div class="score-match">3rd Test • Day 2 • Johannesburg</div>
+          <div class="score-teams">
+            <div class="score-team">
+              <span class="score-team-name">South Africa</span>
+              <span class="score-team-score">284 & 45/2</span>
+            </div>
+            <div class="score-team">
+              <span class="score-team-name">England</span>
+              <span class="score-team-score">312</span>
+            </div>
+          </div>
+          <div class="score-status">SA lead by 17 runs</div>
+        </div>
+        <div class="score-card">
+          <div class="score-match">1st Test • Day 4 • Karachi</div>
+          <div class="score-teams">
+            <div class="score-team">
+              <span class="score-team-name">Pakistan</span>
+              <span class="score-team-score">388 & 156/4</span>
+            </div>
+            <div class="score-team">
+              <span class="score-team-name">New Zealand</span>
+              <span class="score-team-score">421</span>
+            </div>
+          </div>
+          <div class="score-status">PAK lead by 123 runs</div>
+        </div>
+      </div>
+    </aside>
+  </section>
+  
+  <!-- ─── THREE COLUMN CONTENT ─── -->
+  <section class="content-grid">
+    
+    <!-- Column 1: Latest News -->
+    <div class="content-col">
+      <h3 class="col-header">Latest News</h3>
+      
+      <article class="article-card">
+        <div class="article-card-image" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48);"></div>
+        <h4 class="article-card-headline">
+          <a href="#">England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination</a>
+        </h4>
+        <p class="article-card-summary">
+          The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.
+        </p>
+        <div class="article-card-meta">2 hours ago</div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#4a5a4a,#3a4a38);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">Warner's farewell century seals dominant win</a></h4>
+          <div class="article-mini-meta">4 hours ago</div>
+        </div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#5a4a4a,#4a3a38);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">Bumrah ruled out of remaining series with back injury</a></h4>
+          <div class="article-mini-meta">6 hours ago</div>
+        </div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#4a4a5a,#38384a);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">ICC confirms DRS technology upgrade for 2027</a></h4>
+          <div class="article-mini-meta">Yesterday</div>
+        </div>
+      </article>
+    </div>
+    
+    <!-- Column 2: Features -->
+    <div class="content-col">
+      <h3 class="col-header">Features</h3>
+      
+      <article class="article-card">
+        <div class="article-card-image" style="background:linear-gradient(135deg,#5a5040,#4a4030);"></div>
+        <h4 class="article-card-headline">
+          <a href="#">The Numbers Behind Bradman: Why His Records May Never Be Broken</a>
+        </h4>
+        <p class="article-card-summary">
+          Statistical analysis reveals just how far ahead of his peers the Don truly was, and why modern cricket's evolution makes his feats even more remarkable.
+        </p>
+        <div class="article-card-meta">Analysis • 15 min read</div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#404a50,#303a40);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">Inside the mind of a Test opener</a></h4>
+          <div class="article-mini-meta">Interview • 10 min</div>
+        </div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#504a40,#403a30);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">How data analytics is transforming field placements</a></h4>
+          <div class="article-mini-meta">Technology • 8 min</div>
+        </div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#405040,#304030);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">The lost art of leg spin in Test cricket</a></h4>
+          <div class="article-mini-meta">History • 12 min</div>
+        </div>
+      </article>
+    </div>
+    
+    <!-- Column 3: Opinion -->
+    <div class="content-col">
+      <h3 class="col-header">Opinion</h3>
+      
+      <article class="article-card">
+        <div class="article-card-image" style="background:linear-gradient(135deg,#604850,#503840);"></div>
+        <h4 class="article-card-headline">
+          <a href="#">Test Cricket's Survival Depends on Embracing Change, Not Fighting It</a>
+        </h4>
+        <p class="article-card-summary">
+          The game's oldest format must evolve or risk becoming a museum piece. Here's what needs to happen.
+        </p>
+        <div class="article-card-meta">Michael Holding • Opinion</div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#484858,#383848);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">Why we need more day-night Tests</a></h4>
+          <div class="article-mini-meta">Ian Chappell</div>
+        </div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#585048,#484038);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">The case against impact player rules in Test</a></h4>
+          <div class="article-mini-meta">Ricky Ponting</div>
+        </div>
+      </article>
+      
+      <article class="article-mini">
+        <div class="article-mini-image" style="background:linear-gradient(135deg,#485848,#384838);"></div>
+        <div class="article-mini-content">
+          <h4 class="article-mini-headline"><a href="#">Pitch preparation needs standardization</a></h4>
+          <div class="article-mini-meta">Sunil Gavaskar</div>
+        </div>
+      </article>
+    </div>
+  </section>
+  
+  <!-- ─── ANALYSIS SECTION ─── -->
+  <section class="analysis-section" id="analysis">
+    <div class="section-header">
+      <h2 class="section-title">Deep Analysis</h2>
+      <a href="#" class="section-link">View all analysis →</a>
+    </div>
+    
+    <div class="analysis-grid">
+      <article class="analysis-card">
+        <div class="analysis-card-image" style="background:linear-gradient(135deg,#2a4048,#1a3038);"></div>
+        <div class="analysis-card-content">
+          <div class="analysis-card-category">Statistical Deep Dive</div>
+          <h3 class="analysis-card-headline"><a href="#">Home vs Away: The Growing Disparity in Modern Test Cricket</a></h3>
+          <p class="analysis-card-excerpt">Our analysis of 500 Tests reveals home advantage has never been stronger. What's driving this trend?</p>
+          <div class="analysis-card-author">Dr. Sarah Williams <span>• 20 min read</span></div>
+        </div>
+      </article>
+      
+      <article class="analysis-card">
+        <div class="analysis-card-image" style="background:linear-gradient(135deg,#483828,#382818);"></div>
+        <div class="analysis-card-content">
+          <div class="analysis-card-category">Tactical Breakdown</div>
+          <h3 class="analysis-card-headline"><a href="#">Reverse Swing Mastery: Comparing Techniques Across Eras</a></h3>
+          <p class="analysis-card-excerpt">From Waqar to Bumrah, how has the art of reverse swing evolved and what makes today's exponents different?</p>
+          <div class="analysis-card-author">Wasim Akram <span>• 18 min read</span></div>
+        </div>
+      </article>
+      
+      <article class="analysis-card">
+        <div class="analysis-card-image" style="background:linear-gradient(135deg,#384838,#283828);"></div>
+        <div class="analysis-card-content">
+          <div class="analysis-card-category">Performance Metrics</div>
+          <h3 class="analysis-card-headline"><a href="#">The True Cost of Strike Rate: When Aggressive Play Backfires</a></h3>
+          <p class="analysis-card-excerpt">Examining the correlation between batting strike rates and match outcomes across different conditions.</p>
+          <div class="analysis-card-author">Jonathan Liew <span>• 14 min read</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STATS PROMO SECTION
+═══════════════════════════════════════════════════════════════════════════ -->
+<section class="stats-promo">
+  <div class="stats-promo-inner">
+    <div class="stats-header">
+      <h2>Explore Test Cricket Statistics</h2>
+      <p>Comprehensive data and analysis tools covering every Test match ever played</p>
+    </div>
+    
+    <div class="stats-cards">
+      <a href="country-results.html" class="stat-card">
+        <div class="stat-card-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h3 class="stat-card-title">Countries</h3>
+        <p class="stat-card-desc">Head-to-head records and historical results between nations</p>
+      </a>
+      
+      <a href="batting-records.html" class="stat-card">
+        <div class="stat-card-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </div>
+        <h3 class="stat-card-title">Batting Records</h3>
+        <p class="stat-card-desc">All-time batting leaders with advanced filtering options</p>
+      </a>
+      
+      <a href="index.html" class="stat-card">
+        <div class="stat-card-icon">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 class="stat-card-title">Player Compare</h3>
+        <p class="stat-card-desc">Side-by-side statistical comparison of any two players</p>
+      </a>
+      
+      <a href="simulation.html" class="stat-card">
+        <div class="stat-card-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3 class="stat-card-title">Simulation</h3>
+        <p class="stat-card-desc">Custom weighted rankings based on your criteria</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">Cricket Times</div>
+      <nav class="footer-nav">
+        <a href="news.html">Stories</a>
+        <a href="#analysis">Analysis</a>
+        <a href="country-results.html">Countries</a>
+        <a href="batting-records.html">Batting</a>
+        <a href="#">Bowling</a>
+        <a href="index.html">Compare</a>
+        <a href="simulation.html">Simulation</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Cricket Times. All rights reserved.</span>
+      <span>Statistics powered by comprehensive Test cricket databases</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Dynamic date in masthead
+const dateEl = document.querySelector('.masthead-date');
+const now = new Date();
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+dateEl.textContent = now.toLocaleDateString('en-US', options);
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (href === '#') return;
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

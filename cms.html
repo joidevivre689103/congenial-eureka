@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cricket Times — Content Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;
+  --surface:#1a1d24;
+  --surface2:#252830;
+  --surface3:#2f333d;
+  --border:#3a3f4a;
+  --border2:#4a505c;
+  --text:#f0f2f5;
+  --text2:#a0a8b8;
+  --text3:#6a7080;
+  --accent:#3b82f6;
+  --accent-hover:#2563eb;
+  --accent-dim:rgba(59,130,246,0.15);
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,0.15);
+  --yellow:#eab308;
+  --yellow-dim:rgba(234,179,8,0.15);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.15);
+  --orange:#f97316;
+  --purple:#a855f7;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  min-height:100vh;
+  line-height:1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════════════════════════════ */
+.app{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  min-height:100vh;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:20px 0;
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+}
+.sidebar-brand{
+  padding:0 20px 20px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:20px;
+}
+.sidebar-brand h1{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:-0.3px;
+}
+.sidebar-brand span{
+  color:var(--accent);
+}
+.sidebar-brand p{
+  font-size:11px;
+  color:var(--text3);
+  margin-top:4px;
+}
+
+.sidebar-nav{
+  flex:1;
+  padding:0 12px;
+}
+.nav-section{
+  margin-bottom:24px;
+}
+.nav-section-title{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--text3);
+  padding:0 8px;
+  margin-bottom:8px;
+}
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:8px;
+  color:var(--text2);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.nav-item:hover{
+  background:var(--surface2);
+  color:var(--text);
+}
+.nav-item.active{
+  background:var(--accent-dim);
+  color:var(--accent);
+}
+.nav-item svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  flex-shrink:0;
+}
+.nav-item-badge{
+  margin-left:auto;
+  background:var(--surface3);
+  padding:2px 8px;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:600;
+  color:var(--text3);
+}
+.nav-item.active .nav-item-badge{
+  background:var(--accent);
+  color:#fff;
+}
+
+.sidebar-footer{
+  padding:16px 20px;
+  border-top:1px solid var(--border);
+}
+.sidebar-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.sidebar-avatar{
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+}
+.sidebar-user-info h4{
+  font-size:13px;
+  font-weight:600;
+}
+.sidebar-user-info p{
+  font-size:11px;
+  color:var(--text3);
+}
+
+/* ─── MAIN CONTENT ─── */
+.main{
+  padding:24px 32px;
+  overflow-y:auto;
+}
+.main-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+.main-title{
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-0.3px;
+}
+.main-actions{
+  display:flex;
+  gap:12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 18px;
+  border-radius:8px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s;
+  border:none;
+  text-decoration:none;
+}
+.btn svg{
+  width:16px;
+  height:16px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+}
+.btn-primary{
+  background:var(--accent);
+  color:#fff;
+}
+.btn-primary:hover{
+  background:var(--accent-hover);
+}
+.btn-secondary{
+  background:var(--surface2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{
+  background:var(--surface3);
+  border-color:var(--border2);
+}
+.btn-ghost{
+  background:transparent;
+  color:var(--text2);
+}
+.btn-ghost:hover{
+  background:var(--surface2);
+  color:var(--text);
+}
+.btn-danger{
+  background:var(--red-dim);
+  color:var(--red);
+}
+.btn-danger:hover{
+  background:var(--red);
+  color:#fff;
+}
+.btn-sm{
+  padding:6px 12px;
+  font-size:12px;
+}
+.btn-sm svg{
+  width:14px;
+  height:14px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATS CARDS
+═══════════════════════════════════════════════════════════════════════════ */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:28px;
+}
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px;
+}
+.stat-card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:12px;
+}
+.stat-card-icon{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.stat-card-icon svg{
+  width:20px;
+  height:20px;
+  stroke-width:2;
+  fill:none;
+}
+.stat-card-icon.blue{background:var(--accent-dim)}
+.stat-card-icon.blue svg{stroke:var(--accent)}
+.stat-card-icon.green{background:var(--green-dim)}
+.stat-card-icon.green svg{stroke:var(--green)}
+.stat-card-icon.yellow{background:var(--yellow-dim)}
+.stat-card-icon.yellow svg{stroke:var(--yellow)}
+.stat-card-icon.purple{background:rgba(168,85,247,0.15)}
+.stat-card-icon.purple svg{stroke:var(--purple)}
+
+.stat-card-trend{
+  font-size:11px;
+  font-weight:600;
+  padding:3px 8px;
+  border-radius:6px;
+}
+.stat-card-trend.up{background:var(--green-dim);color:var(--green)}
+.stat-card-trend.down{background:var(--red-dim);color:var(--red)}
+
+.stat-card-value{
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+  margin-bottom:4px;
+}
+.stat-card-label{
+  font-size:13px;
+  color:var(--text3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTENT TABLE
+═══════════════════════════════════════════════════════════════════════════ */
+.content-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+.panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+}
+.panel-title{
+  font-size:15px;
+  font-weight:600;
+}
+.panel-tabs{
+  display:flex;
+  gap:4px;
+}
+.panel-tab{
+  padding:8px 14px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text3);
+  cursor:pointer;
+  transition:all 0.15s;
+  border:none;
+  background:none;
+}
+.panel-tab:hover{
+  color:var(--text);
+  background:var(--surface2);
+}
+.panel-tab.active{
+  color:var(--accent);
+  background:var(--accent-dim);
+}
+
+.panel-filters{
+  display:flex;
+  gap:12px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface2);
+}
+.filter-search{
+  flex:1;
+  position:relative;
+}
+.filter-search svg{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:16px;
+  height:16px;
+  stroke:var(--text3);
+  fill:none;
+  stroke-width:2;
+}
+.filter-search input{
+  width:100%;
+  padding:10px 12px 10px 40px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+.filter-search input::placeholder{color:var(--text3)}
+.filter-search input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.filter-select{
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+  cursor:pointer;
+}
+.filter-select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.content-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.content-table th{
+  text-align:left;
+  padding:12px 16px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  color:var(--text3);
+  background:var(--surface2);
+  border-bottom:1px solid var(--border);
+}
+.content-table td{
+  padding:16px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+.content-table tr:last-child td{border-bottom:none}
+.content-table tr:hover td{background:var(--surface2)}
+
+.article-cell{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.article-thumb{
+  width:64px;
+  height:44px;
+  border-radius:6px;
+  object-fit:cover;
+  flex-shrink:0;
+  background:var(--surface3);
+}
+.article-info h4{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:4px;
+  line-height:1.35;
+}
+.article-info p{
+  font-size:12px;
+  color:var(--text3);
+}
+
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:600;
+}
+.status-badge::before{
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
+}
+.status-badge.published{background:var(--green-dim);color:var(--green)}
+.status-badge.published::before{background:var(--green)}
+.status-badge.draft{background:var(--yellow-dim);color:var(--yellow)}
+.status-badge.draft::before{background:var(--yellow)}
+.status-badge.scheduled{background:var(--accent-dim);color:var(--accent)}
+.status-badge.scheduled::before{background:var(--accent)}
+.status-badge.archived{background:var(--surface3);color:var(--text3)}
+.status-badge.archived::before{background:var(--text3)}
+
+.placement-badge{
+  padding:4px 10px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:600;
+  background:var(--surface3);
+  color:var(--text2);
+}
+.placement-badge.hero{background:var(--purple);color:#fff}
+.placement-badge.featured{background:var(--orange);color:#fff}
+
+.table-actions{
+  display:flex;
+  gap:6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(4px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  opacity:0;
+  visibility:hidden;
+  transition:all 0.2s;
+}
+.modal-overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+.modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  width:100%;
+  max-width:720px;
+  max-height:90vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  transform:scale(0.95);
+  transition:transform 0.2s;
+}
+.modal-overlay.active .modal{
+  transform:scale(1);
+}
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+}
+.modal-header h2{
+  font-size:18px;
+  font-weight:700;
+}
+.modal-close{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  border:none;
+  background:var(--surface2);
+  color:var(--text2);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.15s;
+}
+.modal-close:hover{
+  background:var(--red-dim);
+  color:var(--red);
+}
+.modal-close svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+}
+
+.modal-body{
+  padding:24px;
+  overflow-y:auto;
+  flex:1;
+}
+
+.form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-bottom:20px;
+}
+.form-row.full{
+  grid-template-columns:1fr;
+}
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.form-label{
+  font-size:12px;
+  font-weight:600;
+  color:var(--text2);
+}
+.form-label span{
+  color:var(--red);
+}
+.form-input{
+  padding:12px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:14px;
+  transition:all 0.15s;
+}
+.form-input:focus{
+  outline:none;
+  border-color:var(--accent);
+  background:var(--surface);
+}
+.form-input::placeholder{color:var(--text3)}
+
+textarea.form-input{
+  min-height:100px;
+  resize:vertical;
+  line-height:1.5;
+}
+
+.form-select{
+  padding:12px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:14px;
+  cursor:pointer;
+}
+.form-select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.image-upload{
+  border:2px dashed var(--border);
+  border-radius:10px;
+  padding:32px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.image-upload:hover{
+  border-color:var(--accent);
+  background:var(--accent-dim);
+}
+.image-upload svg{
+  width:40px;
+  height:40px;
+  stroke:var(--text3);
+  fill:none;
+  stroke-width:1.5;
+  margin-bottom:12px;
+}
+.image-upload p{
+  font-size:13px;
+  color:var(--text2);
+  margin-bottom:4px;
+}
+.image-upload span{
+  font-size:11px;
+  color:var(--text3);
+}
+.image-upload.has-image{
+  padding:0;
+  border:none;
+  position:relative;
+}
+.image-upload.has-image img{
+  width:100%;
+  border-radius:10px;
+}
+.image-upload.has-image .remove-image{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:28px;
+  height:28px;
+  border-radius:6px;
+  background:var(--red);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.image-upload.has-image .remove-image svg{
+  width:16px;
+  height:16px;
+  stroke:#fff;
+  margin:0;
+}
+
+.modal-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 24px;
+  border-top:1px solid var(--border);
+  background:var(--surface2);
+}
+.modal-footer-left{
+  display:flex;
+  gap:12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIVE SCORES EDITOR
+═══════════════════════════════════════════════════════════════════════════ */
+.scores-editor{
+  display:none;
+}
+.scores-editor.active{
+  display:block;
+}
+
+.score-match-card{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:16px;
+}
+.score-match-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+.score-match-title{
+  font-size:14px;
+  font-weight:600;
+}
+.score-teams-editor{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.score-team-row{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:12px;
+  align-items:center;
+}
+.score-team-row input{
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+.score-team-row input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+.score-status-row{
+  margin-top:12px;
+}
+.score-status-row input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TICKER EDITOR
+═══════════════════════════════════════════════════════════════════════════ */
+.ticker-editor{
+  display:none;
+}
+.ticker-editor.active{
+  display:block;
+}
+.ticker-items{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.ticker-item{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.ticker-item input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+.ticker-item input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+═══════════════════════════════════════════════════════════════════════════ */
+.toast-container{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  z-index:2000;
+}
+.toast{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  animation:slideIn 0.3s ease;
+}
+@keyframes slideIn{
+  from{transform:translateX(100%);opacity:0}
+  to{transform:translateX(0);opacity:1}
+}
+.toast-icon{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.toast-icon svg{
+  width:18px;
+  height:18px;
+  stroke-width:2;
+  fill:none;
+}
+.toast-icon.success{background:var(--green-dim)}
+.toast-icon.success svg{stroke:var(--green)}
+.toast-icon.error{background:var(--red-dim)}
+.toast-icon.error svg{stroke:var(--red)}
+
+.toast-content h4{
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:2px;
+}
+.toast-content p{
+  font-size:12px;
+  color:var(--text3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════════════════ */
+@media(max-width:1200px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{
+    position:fixed;
+    left:-260px;
+    width:260px;
+    z-index:500;
+    transition:left 0.3s;
+  }
+  .sidebar.open{left:0}
+  .main{padding:16px}
+  .stats-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .panel-filters{flex-wrap:wrap}
+  .filter-search{min-width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Cricket <span>Times</span></h1>
+      <p>Content Management</p>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Content</div>
+        <a href="#" class="nav-item active" data-view="articles">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Articles
+          <span class="nav-item-badge">24</span>
+        </a>
+        <a href="#" class="nav-item" data-view="ticker">
+          <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Breaking News
+        </a>
+        <a href="#" class="nav-item" data-view="scores">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Live Scores
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Organization</div>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Categories
+        </a>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Tags
+        </a>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Authors
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Settings</div>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          Layout Editor
+        </a>
+        <a href="news.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Live Site
+        </a>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">ED</div>
+        <div class="sidebar-user-info">
+          <h4>Editor</h4>
+          <p>Administrator</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <main class="main">
+    <!-- ARTICLES VIEW -->
+    <div id="articles-view">
+      <div class="main-header">
+        <h1 class="main-title">Articles</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import
+          </button>
+          <button class="btn btn-primary" onclick="openModal('create')">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Article
+          </button>
+        </div>
+      </div>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon blue">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <span class="stat-card-trend up">+12%</span>
+          </div>
+          <div class="stat-card-value">24</div>
+          <div class="stat-card-label">Total Articles</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon green">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value">18</div>
+          <div class="stat-card-label">Published</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon yellow">
+              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value">4</div>
+          <div class="stat-card-label">Drafts</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon purple">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value">2</div>
+          <div class="stat-card-label">Scheduled</div>
+        </div>
+      </div>
+      
+      <!-- Content Panel -->
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">All Content</h2>
+          <div class="panel-tabs">
+            <button class="panel-tab active" data-filter="all">All</button>
+            <button class="panel-tab" data-filter="published">Published</button>
+            <button class="panel-tab" data-filter="draft">Drafts</button>
+            <button class="panel-tab" data-filter="scheduled">Scheduled</button>
+          </div>
+        </div>
+        
+        <div class="panel-filters">
+          <div class="filter-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search articles..." id="searchInput" oninput="filterArticles()">
+          </div>
+          <select class="filter-select" id="categoryFilter" onchange="filterArticles()">
+            <option value="">All Categories</option>
+            <option value="news">News</option>
+            <option value="analysis">Analysis</option>
+            <option value="features">Features</option>
+            <option value="opinion">Opinion</option>
+          </select>
+          <select class="filter-select" id="placementFilter" onchange="filterArticles()">
+            <option value="">All Placements</option>
+            <option value="hero">Hero</option>
+            <option value="featured">Featured</option>
+            <option value="standard">Standard</option>
+          </select>
+        </div>
+        
+        <table class="content-table">
+          <thead>
+            <tr>
+              <th>Article</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Placement</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="articlesTable">
+            <!-- Articles populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- TICKER VIEW -->
+    <div id="ticker-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Breaking News Ticker</h1>
+        <div class="main-actions">
+          <button class="btn btn-primary" onclick="saveTicker()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Ticker Items</h2>
+          <button class="btn btn-sm btn-secondary" onclick="addTickerItem()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Item
+          </button>
+        </div>
+        <div style="padding:20px">
+          <p style="font-size:13px;color:var(--text3);margin-bottom:16px">
+            Add headlines that will scroll across the breaking news ticker. Each item should be concise.
+          </p>
+          <div class="ticker-items" id="tickerItems">
+            <!-- Ticker items populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SCORES VIEW -->
+    <div id="scores-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Live Scores</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary" onclick="addScoreCard()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Match
+          </button>
+          <button class="btn btn-primary" onclick="saveScores()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Current Matches</h2>
+        </div>
+        <div style="padding:20px" id="scoresEditor">
+          <!-- Score cards populated by JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CREATE/EDIT MODAL
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="articleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Create New Article</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <input type="hidden" id="articleId">
+      
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Headline <span>*</span></label>
+          <input type="text" class="form-input" id="articleHeadline" placeholder="Enter article headline...">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category <span>*</span></label>
+          <select class="form-select" id="articleCategory">
+            <option value="news">News</option>
+            <option value="analysis">Analysis</option>
+            <option value="features">Features</option>
+            <option value="opinion">Opinion</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Author</label>
+          <input type="text" class="form-input" id="articleAuthor" placeholder="Author name">
+        </div>
+      </div>
+      
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Summary</label>
+          <textarea class="form-input" id="articleSummary" placeholder="Brief summary for article cards..."></textarea>
+        </div>
+      </div>
+      
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Full Content</label>
+          <textarea class="form-input" id="articleContent" placeholder="Full article content..." style="min-height:180px"></textarea>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Placement</label>
+          <select class="form-select" id="articlePlacement">
+            <option value="standard">Standard</option>
+            <option value="featured">Featured (Column Top)</option>
+            <option value="hero">Hero (Main Story)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Read Time (minutes)</label>
+          <input type="number" class="form-input" id="articleReadTime" placeholder="e.g., 8" min="1">
+        </div>
+      </div>
+      
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Featured Image</label>
+          <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <p>Click to upload image</p>
+            <span>PNG, JPG up to 5MB</span>
+          </div>
+          <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <div class="modal-footer-left">
+        <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteArticle()" style="display:none">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Delete
+        </button>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-secondary" onclick="saveArticle('draft')">Save as Draft</button>
+        <button class="btn btn-primary" onclick="saveArticle('published')">Publish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA STORE (In production, this would connect to a backend/database)
+// ═══════════════════════════════════════════════════════════════════════════
+let articles = [
+  {
+    id: 1,
+    headline: "India's Dominance at Home: How Spin Bowling Has Redefined Test Cricket Strategy",
+    summary: "A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack has forced visiting teams to fundamentally rethink their approach to subcontinent tours.",
+    content: "",
+    category: "analysis",
+    author: "Rahul Dravid",
+    status: "published",
+    placement: "hero",
+    readTime: 12,
+    image: null,
+    date: "2026-02-27"
+  },
+  {
+    id: 2,
+    headline: "England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination",
+    summary: "The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.",
+    content: "",
+    category: "news",
+    author: "Staff",
+    status: "published",
+    placement: "featured",
+    readTime: 5,
+    image: null,
+    date: "2026-02-27"
+  },
+  {
+    id: 3,
+    headline: "The Numbers Behind Bradman: Why His Records May Never Be Broken",
+    summary: "Statistical analysis reveals just how far ahead of his peers the Don truly was.",
+    content: "",
+    category: "features",
+    author: "Dr. Sarah Williams",
+    status: "published",
+    placement: "featured",
+    readTime: 15,
+    image: null,
+    date: "2026-02-26"
+  },
+  {
+    id: 4,
+    headline: "Test Cricket's Survival Depends on Embracing Change, Not Fighting It",
+    summary: "The game's oldest format must evolve or risk becoming a museum piece.",
+    content: "",
+    category: "opinion",
+    author: "Michael Holding",
+    status: "published",
+    placement: "featured",
+    readTime: 8,
+    image: null,
+    date: "2026-02-26"
+  },
+  {
+    id: 5,
+    headline: "Smith's technique evolution: The making of a modern master",
+    summary: "An in-depth look at how Steve Smith reinvented his batting technique.",
+    content: "",
+    category: "analysis",
+    author: "Mark Taylor",
+    status: "published",
+    placement: "standard",
+    readTime: 10,
+    image: null,
+    date: "2026-02-25"
+  },
+  {
+    id: 6,
+    headline: "Warner's farewell century seals dominant win",
+    summary: "David Warner bows out of Test cricket with a memorable hundred.",
+    content: "",
+    category: "news",
+    author: "Staff",
+    status: "published",
+    placement: "standard",
+    readTime: 4,
+    image: null,
+    date: "2026-02-27"
+  },
+  {
+    id: 7,
+    headline: "Upcoming: Preview of the Ashes Series",
+    summary: "Everything you need to know about the upcoming Ashes.",
+    content: "",
+    category: "features",
+    author: "Jonathan Liew",
+    status: "draft",
+    placement: "standard",
+    readTime: 12,
+    image: null,
+    date: "2026-02-28"
+  },
+  {
+    id: 8,
+    headline: "ICC Announces New Test Championship Format",
+    summary: "Major changes coming to the World Test Championship cycle.",
+    content: "",
+    category: "news",
+    author: "Staff",
+    status: "scheduled",
+    placement: "standard",
+    readTime: 6,
+    image: null,
+    date: "2026-03-01"
+  }
+];
+
+let tickerItems = [
+  "England announce squad for upcoming Ashes series",
+  "Virat Kohli surpasses 9,000 Test runs",
+  "Australia clinch Border-Gavaskar Trophy 3-1",
+  "ICC announces new Test Championship cycle format",
+  "Ben Stokes hints at potential return to red-ball cricket"
+];
+
+let liveScores = [
+  {
+    id: 1,
+    match: "3rd Test • Day 2 • Johannesburg",
+    team1: { name: "South Africa", score: "284 & 45/2" },
+    team2: { name: "England", score: "312" },
+    status: "SA lead by 17 runs"
+  },
+  {
+    id: 2,
+    match: "1st Test • Day 4 • Karachi",
+    team1: { name: "Pakistan", score: "388 & 156/4" },
+    team2: { name: "New Zealand", score: "421" },
+    status: "PAK lead by 123 runs"
+  }
+];
+
+let nextArticleId = 9;
+let nextScoreId = 3;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════════════════════════════════════════
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const view = item.dataset.view;
+    
+    // Update nav active state
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    
+    // Show correct view
+    document.getElementById('articles-view').style.display = view === 'articles' ? 'block' : 'none';
+    document.getElementById('ticker-view').style.display = view === 'ticker' ? 'block' : 'none';
+    document.getElementById('scores-view').style.display = view === 'scores' ? 'block' : 'none';
+    
+    // Initialize views
+    if (view === 'ticker') renderTickerEditor();
+    if (view === 'scores') renderScoresEditor();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ARTICLES MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+function renderArticles(filteredArticles = null) {
+  const data = filteredArticles || articles;
+  const tbody = document.getElementById('articlesTable');
+  
+  tbody.innerHTML = data.map(article => `
+    <tr data-id="${article.id}" data-status="${article.status}" data-category="${article.category}" data-placement="${article.placement}">
+      <td>
+        <div class="article-cell">
+          <div class="article-thumb" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48)"></div>
+          <div class="article-info">
+            <h4>${article.headline}</h4>
+            <p>${article.author} • ${article.readTime} min read</p>
+          </div>
+        </div>
+      </td>
+      <td><span style="text-transform:capitalize">${article.category}</span></td>
+      <td><span class="status-badge ${article.status}">${article.status}</span></td>
+      <td><span class="placement-badge ${article.placement}">${article.placement}</span></td>
+      <td>${formatDate(article.date)}</td>
+      <td>
+        <div class="table-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editArticle(${article.id})">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="duplicateArticle(${article.id})">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterArticles() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const category = document.getElementById('categoryFilter').value;
+  const placement = document.getElementById('placementFilter').value;
+  const statusTab = document.querySelector('.panel-tab.active').dataset.filter;
+  
+  let filtered = articles.filter(article => {
+    const matchSearch = article.headline.toLowerCase().includes(search) || 
+                       article.author.toLowerCase().includes(search);
+    const matchCategory = !category || article.category === category;
+    const matchPlacement = !placement || article.placement === placement;
+    const matchStatus = statusTab === 'all' || article.status === statusTab;
+    
+    return matchSearch && matchCategory && matchPlacement && matchStatus;
+  });
+  
+  renderArticles(filtered);
+}
+
+// Tab filtering
+document.querySelectorAll('.panel-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    filterArticles();
+  });
+});
+
+function openModal(mode, articleId = null) {
+  const modal = document.getElementById('articleModal');
+  const title = document.getElementById('modalTitle');
+  const deleteBtn = document.getElementById('deleteBtn');
+  
+  // Reset form
+  document.getElementById('articleId').value = '';
+  document.getElementById('articleHeadline').value = '';
+  document.getElementById('articleCategory').value = 'news';
+  document.getElementById('articleAuthor').value = '';
+  document.getElementById('articleSummary').value = '';
+  document.getElementById('articleContent').value = '';
+  document.getElementById('articlePlacement').value = 'standard';
+  document.getElementById('articleReadTime').value = '';
+  resetImageUpload();
+  
+  if (mode === 'edit' && articleId) {
+    const article = articles.find(a => a.id === articleId);
+    if (article) {
+      title.textContent = 'Edit Article';
+      deleteBtn.style.display = 'flex';
+      
+      document.getElementById('articleId').value = article.id;
+      document.getElementById('articleHeadline').value = article.headline;
+      document.getElementById('articleCategory').value = article.category;
+      document.getElementById('articleAuthor').value = article.author;
+      document.getElementById('articleSummary').value = article.summary;
+      document.getElementById('articleContent').value = article.content;
+      document.getElementById('articlePlacement').value = article.placement;
+      document.getElementById('articleReadTime').value = article.readTime;
+    }
+  } else {
+    title.textContent = 'Create New Article';
+    deleteBtn.style.display = 'none';
+  }
+  
+  modal.classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('articleModal').classList.remove('active');
+}
+
+function editArticle(id) {
+  openModal('edit', id);
+}
+
+function duplicateArticle(id) {
+  const article = articles.find(a => a.id === id);
+  if (article) {
+    const newArticle = {
+      ...article,
+      id: nextArticleId++,
+      headline: article.headline + ' (Copy)',
+      status: 'draft',
+      date: new Date().toISOString().split('T')[0]
+    };
+    articles.unshift(newArticle);
+    renderArticles();
+    updateStats();
+    showToast('success', 'Article Duplicated', 'A copy has been created as a draft.');
+  }
+}
+
+function saveArticle(status) {
+  const id = document.getElementById('articleId').value;
+  const headline = document.getElementById('articleHeadline').value.trim();
+  const category = document.getElementById('articleCategory').value;
+  const author = document.getElementById('articleAuthor').value.trim() || 'Staff';
+  const summary = document.getElementById('articleSummary').value.trim();
+  const content = document.getElementById('articleContent').value.trim();
+  const placement = document.getElementById('articlePlacement').value;
+  const readTime = parseInt(document.getElementById('articleReadTime').value) || 5;
+  
+  if (!headline) {
+    showToast('error', 'Validation Error', 'Headline is required.');
+    return;
+  }
+  
+  const articleData = {
+    headline,
+    category,
+    author,
+    summary,
+    content,
+    placement,
+    readTime,
+    status,
+    date: new Date().toISOString().split('T')[0],
+    image: null
+  };
+  
+  if (id) {
+    // Update existing
+    const index = articles.findIndex(a => a.id === parseInt(id));
+    if (index !== -1) {
+      articles[index] = { ...articles[index], ...articleData };
+    }
+    showToast('success', 'Article Updated', status === 'published' ? 'Changes are now live.' : 'Draft saved.');
+  } else {
+    // Create new
+    articleData.id = nextArticleId++;
+    articles.unshift(articleData);
+    showToast('success', 'Article Created', status === 'published' ? 'Article is now live.' : 'Draft saved.');
+  }
+  
+  closeModal();
+  renderArticles();
+  updateStats();
+}
+
+function deleteArticle() {
+  const id = parseInt(document.getElementById('articleId').value);
+  if (id && confirm('Are you sure you want to delete this article?')) {
+    articles = articles.filter(a => a.id !== id);
+    closeModal();
+    renderArticles();
+    updateStats();
+    showToast('success', 'Article Deleted', 'The article has been removed.');
+  }
+}
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const upload = document.getElementById('imageUpload');
+      upload.classList.add('has-image');
+      upload.innerHTML = `
+        <img src="${e.target.result}" alt="Preview">
+        <button class="remove-image" onclick="event.stopPropagation(); resetImageUpload()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      `;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function resetImageUpload() {
+  const upload = document.getElementById('imageUpload');
+  upload.classList.remove('has-image');
+  upload.innerHTML = `
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    <p>Click to upload image</p>
+    <span>PNG, JPG up to 5MB</span>
+  `;
+  document.getElementById('imageInput').value = '';
+}
+
+function updateStats() {
+  const total = articles.length;
+  const published = articles.filter(a => a.status === 'published').length;
+  const drafts = articles.filter(a => a.status === 'draft').length;
+  const scheduled = articles.filter(a => a.status === 'scheduled').length;
+  
+  const cards = document.querySelectorAll('.stat-card-value');
+  if (cards.length >= 4) {
+    cards[0].textContent = total;
+    cards[1].textContent = published;
+    cards[2].textContent = drafts;
+    cards[3].textContent = scheduled;
+  }
+  
+  // Update nav badge
+  document.querySelector('.nav-item[data-view="articles"] .nav-item-badge').textContent = total;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TICKER MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+function renderTickerEditor() {
+  const container = document.getElementById('tickerItems');
+  container.innerHTML = tickerItems.map((item, index) => `
+    <div class="ticker-item">
+      <input type="text" value="${item}" onchange="updateTickerItem(${index}, this.value)">
+      <button class="btn btn-ghost btn-sm" onclick="removeTickerItem(${index})">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--red)"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function addTickerItem() {
+  tickerItems.push('New breaking news headline...');
+  renderTickerEditor();
+}
+
+function updateTickerItem(index, value) {
+  tickerItems[index] = value;
+}
+
+function removeTickerItem(index) {
+  tickerItems.splice(index, 1);
+  renderTickerEditor();
+}
+
+function saveTicker() {
+  // In production, this would save to backend
+  showToast('success', 'Ticker Updated', 'Breaking news headlines have been saved.');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE SCORES MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+function renderScoresEditor() {
+  const container = document.getElementById('scoresEditor');
+  container.innerHTML = liveScores.map(score => `
+    <div class="score-match-card" data-id="${score.id}">
+      <div class="score-match-header">
+        <input type="text" class="form-input" value="${score.match}" 
+               onchange="updateScore(${score.id}, 'match', this.value)" 
+               style="background:var(--surface);max-width:300px">
+        <button class="btn btn-danger btn-sm" onclick="removeScoreCard(${score.id})">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Remove
+        </button>
+      </div>
+      <div class="score-teams-editor">
+        <div class="score-team-row">
+          <input type="text" value="${score.team1.name}" placeholder="Team 1 Name"
+                 onchange="updateScore(${score.id}, 'team1Name', this.value)">
+          <input type="text" value="${score.team1.score}" placeholder="Score"
+                 onchange="updateScore(${score.id}, 'team1Score', this.value)">
+        </div>
+        <div class="score-team-row">
+          <input type="text" value="${score.team2.name}" placeholder="Team 2 Name"
+                 onchange="updateScore(${score.id}, 'team2Name', this.value)">
+          <input type="text" value="${score.team2.score}" placeholder="Score"
+                 onchange="updateScore(${score.id}, 'team2Score', this.value)">
+        </div>
+        <div class="score-status-row">
+          <input type="text" value="${score.status}" placeholder="Match status..."
+                 onchange="updateScore(${score.id}, 'status', this.value)">
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addScoreCard() {
+  liveScores.push({
+    id: nextScoreId++,
+    match: "New Match • Day 1",
+    team1: { name: "Team A", score: "0/0" },
+    team2: { name: "Team B", score: "" },
+    status: "Match in progress"
+  });
+  renderScoresEditor();
+}
+
+function updateScore(id, field, value) {
+  const score = liveScores.find(s => s.id === id);
+  if (score) {
+    switch(field) {
+      case 'match': score.match = value; break;
+      case 'team1Name': score.team1.name = value; break;
+      case 'team1Score': score.team1.score = value; break;
+      case 'team2Name': score.team2.name = value; break;
+      case 'team2Score': score.team2.score = value; break;
+      case 'status': score.status = value; break;
+    }
+  }
+}
+
+function removeScoreCard(id) {
+  liveScores = liveScores.filter(s => s.id !== id);
+  renderScoresEditor();
+}
+
+function saveScores() {
+  // In production, this would save to backend
+  showToast('success', 'Scores Updated', 'Live scores have been saved.');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (date.toDateString() === today.toDateString()) return 'Today';
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function showToast(type, title, message) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <div class="toast-icon ${type}">
+      <svg viewBox="0 0 24 24">
+        ${type === 'success' 
+          ? '<polyline points="20 6 9 17 4 12"/>' 
+          : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}
+      </svg>
+    </div>
+    <div class="toast-content">
+      <h4>${title}</h4>
+      <p>${message}</p>
+    </div>
+  `;
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideIn 0.3s ease reverse';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Close modal on overlay click
+document.getElementById('articleModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Initialize
+renderArticles();
+</script>
+
+</body>
+</html>
