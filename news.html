@@ -1275,7 +1275,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
           <span class="hero-time">${heroArticle.readTime} min read</span>
           <span>${formatArticleDate(heroArticle.date)}</span>
-          ${heroArticle.audioEnabled !== false && heroArticle.audioData ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}
+          ${heroArticle.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}
         </div>
       `;
     }
@@ -1326,7 +1326,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
           <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
           <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
-          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span> ${a.audioEnabled !== false && a.audioData ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
+          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span> ${a.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
         </div>
       </article>
     `).join('');
@@ -1361,7 +1361,7 @@ function renderColumn(colEl, title, articles) {
         <a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a>
       </h4>
       <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
-      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read ${lead.audioEnabled !== false && lead.audioData ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
+      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read ${lead.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
     </article>
   `;
 
@@ -1372,7 +1372,7 @@ function renderColumn(colEl, title, articles) {
         <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-          <div class="article-mini-meta">${timeAgo(a.date)} ${a.audioEnabled !== false && a.audioData ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
+          <div class="article-mini-meta">${timeAgo(a.date)} ${a.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
         </div>
       </article>
     `;
@@ -1474,7 +1474,7 @@ function toggleArticleAudio(btn) {
     
     btn.style.borderColor = 'var(--gold)';
     btn.style.color = 'var(--gold)';
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> No audio yet';
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Audio coming soon';
     setTimeout(() => {
       btn.style.borderColor = '';
       btn.style.color = '';
