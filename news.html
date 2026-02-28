@@ -1184,37 +1184,6 @@ const now = new Date();
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 dateEl.textContent = now.toLocaleDateString('en-US', options);
 
-// ─── AUDIO DEBUG: Show localStorage status ───
-(function audioDebug() {
-  const cmsRaw = localStorage.getItem('cricketTimesCMS');
-  const hasCMS = !!cmsRaw;
-  let articleCount = 0, audioKeyCount = 0, audioKeys = [];
-  
-  if (hasCMS) {
-    try { articleCount = JSON.parse(cmsRaw).articles.length; } catch(e) {}
-  }
-  
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && (key.startsWith('cricketTimesAudio_') || key.startsWith('cricketTimesEditorAudio_'))) {
-      audioKeyCount++;
-      audioKeys.push(key);
-    }
-  }
-  
-  if (!hasCMS || audioKeyCount === 0) {
-    const banner = document.createElement('div');
-    banner.style.cssText = 'background:#1a4878;color:#fff;padding:10px 24px;font-family:Inter,sans-serif;font-size:12px;text-align:center;cursor:pointer';
-    banner.innerHTML = !hasCMS 
-      ? '⚠️ <b>No CMS data found.</b> Open cms.html first, publish articles, and click "Push All to Live". Then refresh this page. <span style="opacity:0.6">(click to dismiss)</span>'
-      : `⚠️ <b>CMS has ${articleCount} articles but no audio keys found.</b> Generate audio in CMS → Audio Settings. Keys found: ${audioKeys.join(', ') || 'none'}. <span style="opacity:0.6">(click to dismiss)</span>`;
-    banner.onclick = () => banner.remove();
-    document.body.insertBefore(banner, document.body.firstChild);
-  } else {
-    console.log('[Audio] CMS articles:', articleCount, 'Audio keys:', audioKeys);
-  }
-})();
-
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
@@ -1456,18 +1425,16 @@ function resetBtn(btn) {
 }
 
 function getAudioForButton(btn) {
-  // Find the article headline from the nearest article element
+  // Find the article's CMS ID and check for stored audio
   const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
-  if (!article) { console.warn('[Audio] No parent article found for button'); return null; }
+  if (!article) return null;
 
   const headlineEl = article.querySelector(
     '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
   );
-  if (!headlineEl) { console.warn('[Audio] No headline element found'); return null; }
+  if (!headlineEl) return null;
   const headline = headlineEl.textContent.trim();
-  console.log('[Audio] Looking for audio for:', headline);
 
-  // Strategy 1: Look up by article ID from CMS data, then fetch separate audio key
   try {
     const raw = localStorage.getItem('cricketTimesCMS');
     if (raw) {
@@ -1475,93 +1442,141 @@ function getAudioForButton(btn) {
       if (cmsData.articles) {
         const match = cmsData.articles.find(a => a.headline === headline);
         if (match) {
-          console.log('[Audio] Found article id:', match.id, 'audioEnabled:', match.audioEnabled, 'hasAudio:', match.hasAudio);
-          
-          if (match.audioEnabled !== false) {
-            // Check dedicated audio key
-            const audioKey = 'cricketTimesAudio_' + match.id;
-            const audioData = localStorage.getItem(audioKey);
-            if (audioData) { console.log('[Audio] Found audio in key:', audioKey, '(' + (audioData.length/1024).toFixed(0) + 'KB)'); return audioData; }
-
-            // Check editor audio key
-            const editorKey = 'cricketTimesEditorAudio_' + match.id;
-            const editorAudio = localStorage.getItem(editorKey);
-            if (editorAudio) { console.log('[Audio] Found audio in editor key:', editorKey); return editorAudio; }
-            
-            // Check if audioData was inlined in the payload (older format)
-            if (match.audioData) { console.log('[Audio] Found inline audioData'); return match.audioData; }
+          // Check dedicated audio keys
+          const keys = ['cricketTimesAudio_' + match.id, 'cricketTimesEditorAudio_' + match.id];
+          for (const k of keys) {
+            const d = localStorage.getItem(k);
+            if (d && d.startsWith('data:audio')) return d;
           }
-        } else {
-          console.warn('[Audio] No headline match in CMS data. CMS headlines:', cmsData.articles.map(a => a.headline.substring(0, 40)));
-        }
-      }
-    } else {
-      console.warn('[Audio] No cricketTimesCMS in localStorage');
-    }
-  } catch(e) { console.error('[Audio] Error reading CMS data:', e); }
-
-  // Strategy 2: Brute-force scan all localStorage keys for any audio
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.startsWith('cricketTimesAudio_') || key.startsWith('cricketTimesEditorAudio_'))) {
-        const val = localStorage.getItem(key);
-        if (val && val.startsWith('data:audio')) {
-          console.log('[Audio] Found audio key by scan:', key);
-          // We have SOME audio - return it as a fallback
-          return val;
+          if (match.audioData) return match.audioData;
         }
       }
     }
   } catch(e) {}
-
-  console.warn('[Audio] No audio found for:', headline);
   return null;
 }
+
+function getArticleText(btn) {
+  const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
+  if (!article) return '';
+
+  const headlineEl = article.querySelector(
+    '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
+  );
+  const headline = headlineEl ? headlineEl.textContent.trim() : '';
+
+  const summaryEl = article.querySelector(
+    '.hero-summary, .article-card-summary, .analysis-card-excerpt'
+  );
+  const summary = summaryEl ? summaryEl.textContent.trim() : '';
+
+  // Try CMS full content
+  if (headline) {
+    try {
+      const raw = localStorage.getItem('cricketTimesCMS');
+      if (raw) {
+        const cmsData = JSON.parse(raw);
+        if (cmsData.articles) {
+          const match = cmsData.articles.find(a => a.headline === headline);
+          if (match && match.content && match.content.trim().length > 10) {
+            return headline + '. ' + match.content.trim();
+          }
+          if (match && match.summary) {
+            return headline + '. ' + match.summary.trim();
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  if (summary) return headline + '. ' + summary;
+  return headline || '';
+}
+
+let currentUtterance = null;
 
 function toggleArticleAudio(btn) {
   // If currently playing this one → stop
   if (btn.classList.contains('playing')) {
     if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
+    if (currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; }
     resetBtn(btn);
     currentAudioBtn = null;
     return;
   }
 
   // Stop any other playing audio
-  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
+  if (currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; }
   if (currentAudioBtn && currentAudioBtn !== btn) { resetBtn(currentAudioBtn); }
 
+  // Priority 1: Stored audio file from CMS (ElevenLabs cloned voice)
   const audioSrc = getAudioForButton(btn);
-  if (!audioSrc) {
-    // No CMS audio — show a friendly message
-    const article = btn.closest('article, .hero-main, .analysis-card');
-    const headlineEl = article ? article.querySelector('.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a') : null;
-    const title = headlineEl ? headlineEl.textContent.trim().substring(0, 50) : 'this article';
-    
-    btn.style.borderColor = 'var(--gold)';
-    btn.style.color = 'var(--gold)';
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Audio coming soon';
-    setTimeout(() => {
-      btn.style.borderColor = '';
-      btn.style.color = '';
-      btn.innerHTML = AUDIO_ICON_LISTEN;
-    }, 2000);
+  if (audioSrc) {
+    const audio = new Audio(audioSrc);
+    currentAudio = audio;
+    currentAudioBtn = btn;
+    btn.classList.add('playing');
+    btn.innerHTML = AUDIO_ICON_PLAYING;
+    audio.addEventListener('ended', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
+    audio.addEventListener('error', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
+    audio.play().catch(() => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
     return;
   }
 
-  // Play the audio
-  const audio = new Audio(audioSrc);
-  currentAudio = audio;
-  currentAudioBtn = btn;
+  // Priority 2: Browser Text-to-Speech (works without any API)
+  const text = getArticleText(btn);
+  if (!text) {
+    btn.style.borderColor = 'var(--gold)'; btn.style.color = 'var(--gold)';
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> No content';
+    setTimeout(() => { btn.style.borderColor = ''; btn.style.color = ''; btn.innerHTML = AUDIO_ICON_LISTEN; }, 2000);
+    return;
+  }
+
+  if (!window.speechSynthesis) {
+    btn.style.borderColor = 'var(--red)'; btn.style.color = 'var(--red)';
+    btn.innerHTML = 'Not supported';
+    setTimeout(() => { btn.style.borderColor = ''; btn.style.color = ''; btn.innerHTML = AUDIO_ICON_LISTEN; }, 2000);
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95;
+  utterance.pitch = 1.0;
+
+  // Pick a good English voice
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    const preferred = voices.find(v => v.name.includes('Google UK English')) ||
+                      voices.find(v => v.name.includes('Google US English')) ||
+                      voices.find(v => v.name.includes('Samantha')) ||
+                      voices.find(v => v.lang.startsWith('en') && v.localService) ||
+                      voices.find(v => v.lang.startsWith('en'));
+    if (preferred) utterance.voice = preferred;
+  }
 
   btn.classList.add('playing');
   btn.innerHTML = AUDIO_ICON_PLAYING;
+  currentAudioBtn = btn;
+  currentUtterance = utterance;
 
-  audio.addEventListener('ended', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
-  audio.addEventListener('error', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
+  // Chrome workaround: keep speech alive past 15s
+  let resumeTimer = setInterval(() => {
+    if (!window.speechSynthesis.speaking) { clearInterval(resumeTimer); }
+    else { window.speechSynthesis.pause(); window.speechSynthesis.resume(); }
+  }, 10000);
 
-  audio.play().catch(() => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
+  utterance.onend = () => { clearInterval(resumeTimer); resetBtn(btn); currentAudioBtn = null; currentUtterance = null; };
+  utterance.onerror = (e) => { clearInterval(resumeTimer); if (e.error !== 'canceled') console.warn('TTS error:', e.error); resetBtn(btn); currentAudioBtn = null; currentUtterance = null; };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// Pre-load voices
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  window.speechSynthesis.getVoices();
 }
 </script>
 
