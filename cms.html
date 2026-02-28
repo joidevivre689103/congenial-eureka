@@ -2153,8 +2153,29 @@ function showToast(type, title, message) {
 // ═══════════════════════════════════════════════════════════════════════════
 function persistToLocalStorage() {
   const publishedArticles = articles.filter(a => a.status === 'published');
+  
+  // Store audio data SEPARATELY per article (avoids localStorage quota on main payload)
+  publishedArticles.forEach(a => {
+    const audioKey = 'cricketTimesAudio_' + a.id;
+    try {
+      if (a.audioData) {
+        localStorage.setItem(audioKey, a.audioData);
+      } else {
+        localStorage.removeItem(audioKey);
+      }
+    } catch(e) {
+      console.warn('Could not save audio for article ' + a.id + ':', e);
+    }
+  });
+  
+  // Main payload WITHOUT audioData (keeps it small)
+  const articlesForPayload = publishedArticles.map(a => {
+    const { audioData, ...rest } = a;
+    return { ...rest, hasAudio: !!audioData };
+  });
+  
   const payload = {
-    articles: publishedArticles,
+    articles: articlesForPayload,
     tickerItems: tickerItems,
     liveScores: liveScores,
     lastUpdated: new Date().toISOString()
@@ -2171,7 +2192,25 @@ function loadFromLocalStorage() {
     const saved = localStorage.getItem('cricketTimesCMS_editorState');
     if (saved) {
       const state = JSON.parse(saved);
-      if (state.articles) articles = state.articles;
+      if (state.articles) {
+        articles = state.articles;
+        // Restore audioData from separate keys
+        articles.forEach(a => {
+          const audioKey = 'cricketTimesEditorAudio_' + a.id;
+          try {
+            const audioData = localStorage.getItem(audioKey);
+            if (audioData) {
+              a.audioData = audioData;
+            } else if (a.hasAudio) {
+              // Try the published audio key as fallback
+              const pubKey = 'cricketTimesAudio_' + a.id;
+              const pubAudio = localStorage.getItem(pubKey);
+              if (pubAudio) a.audioData = pubAudio;
+            }
+          } catch(e) {}
+          delete a.hasAudio;
+        });
+      }
       if (state.tickerItems) tickerItems = state.tickerItems;
       if (state.liveScores) liveScores = state.liveScores;
       if (state.nextArticleId) nextArticleId = state.nextArticleId;
@@ -2184,8 +2223,25 @@ function loadFromLocalStorage() {
 
 function saveEditorState() {
   try {
+    // Save audio data separately per article
+    articles.forEach(a => {
+      const audioKey = 'cricketTimesEditorAudio_' + a.id;
+      try {
+        if (a.audioData) {
+          localStorage.setItem(audioKey, a.audioData);
+        } else {
+          localStorage.removeItem(audioKey);
+        }
+      } catch(e) {}
+    });
+    
+    // Save editor state WITHOUT audioData
+    const articlesWithoutAudio = articles.map(a => {
+      const { audioData, ...rest } = a;
+      return { ...rest, hasAudio: !!audioData };
+    });
     localStorage.setItem('cricketTimesCMS_editorState', JSON.stringify({
-      articles,
+      articles: articlesWithoutAudio,
       tickerItems,
       liveScores,
       nextArticleId,

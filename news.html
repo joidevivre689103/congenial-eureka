@@ -1442,8 +1442,14 @@ function getAudioForButton(btn) {
       const cmsData = JSON.parse(raw);
       if (cmsData.articles) {
         const match = cmsData.articles.find(a => a.headline === headline);
-        if (match && match.audioEnabled !== false && match.audioData) {
-          return match.audioData;
+        if (match && match.audioEnabled !== false) {
+          // Audio is stored in a separate localStorage key per article
+          const audioKey = 'cricketTimesAudio_' + match.id;
+          const audioData = localStorage.getItem(audioKey);
+          if (audioData) return audioData;
+          
+          // Fallback: check if audioData was inlined (older format)
+          if (match.audioData) return match.audioData;
         }
       }
     }
