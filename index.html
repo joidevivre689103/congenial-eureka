@@ -17,12 +17,12 @@
 .input-group{position:relative;margin-bottom:12px;text-align:left}
 .input-group input{width:100%;padding:12px 16px;border:2px solid #d8dce3;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s}
 .input-group input[type="password"],.input-group input[type="text"]:not([type="email"]){padding-right:44px}
-.input-group input:focus{border-color:#c08018}
+.input-group input:focus{border-color:#a03020}
 .input-group input.error{border-color:#d04040;animation:shake 0.4s}
 .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8896a8;padding:4px}
 .toggle-pw:hover{color:#5a6578}
 .toggle-pw svg{width:20px;height:20px}
-.password-box button.submit-btn{width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#c08018,#8a5810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+.password-box button.submit-btn{width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#a03020,#801810);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
 .password-box button.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,128,24,0.35)}
 .password-box button.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
 .password-error{color:#d04040;font-size:12px;margin-top:10px;opacity:0;transition:opacity 0.2s}
@@ -34,10 +34,11 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 :root{
-  --bg:#f4f5f7;--surface:#ffffff;--surface2:#f0f1f4;--surface3:#e8eaef;
-  --border:#d8dce3;--border2:#c8cdd6;
-  --text:#1a1e26;--text2:#5a6578;--text3:#8896a8;
-  --accent:#c08018;--accent-dim:rgba(192,128,24,0.10);--accent-glow:rgba(192,128,24,0.06);
+  --bg:#faf9f7;--surface:#ffffff;--surface2:#f5f4f2;--surface3:#eceae6;
+  --border:#d8d4cc;--border2:#c8c4bc;
+  --text:#1a1a18;--text2:#4a4a46;--text3:#7a7a74;
+  --accent:#a03020;--accent-hover:#801810;--accent-dim:rgba(160,48,32,0.08);--accent-glow:rgba(160,48,32,0.06);
+  --gold:#c08018;--gold-dim:rgba(192,128,24,0.10);--green:#1a6848;--blue:#1a4878;
   --green:#1a9a60;--green-dim:rgba(26,154,96,0.10);
   --red:#d04040;
   --p1:#c08018;--p2:#1a9a60;--p3:#2870d0;--p4:#c04060;--p5:#8050d0;
@@ -56,10 +57,10 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .brand{display:flex;align-items:center;gap:12px}
 .brand-icon{
   width:36px;height:36px;border-radius:8px;
-  background:linear-gradient(135deg,var(--accent),#8a5810);
+  background:linear-gradient(135deg,var(--accent),#801810);
   display:flex;align-items:center;justify-content:center;
   font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.5px;
-  box-shadow:0 3px 14px rgba(192,128,24,0.30);
+  box-shadow:0 3px 14px rgba(160,48,32,0.30);
 }
 .brand h1{font-family:'DM Serif Display',serif;font-size:21px;letter-spacing:-0.3px}
 .brand-sub{font-size:11.5px;color:var(--text3);margin-top:2px;margin-left:48px}
@@ -437,7 +438,40 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .brand-icon{width:32px;height:32px;font-size:12px}
   .brand-sub{margin-left:44px;font-size:10.5px}
 }
+
+.header{display:none !important}
+header.header{display:none !important}
+
+/* ═══ Cricket Times Masthead & Nav ═══ */
+.ct-masthead{text-align:center;padding:20px 24px 16px;border-bottom:2px solid var(--text);position:relative;background:var(--bg)}
+.ct-masthead-date{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.ct-masthead-logo{font-family:'Playfair Display',serif;font-size:clamp(36px,8vw,58px);font-weight:700;letter-spacing:-1px;line-height:1.1}
+.ct-masthead-logo a{text-decoration:none;color:inherit}
+.ct-masthead-logo span{color:var(--accent)}
+.ct-masthead-tagline{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-top:6px}
+.ct-nav-bar{border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+.ct-nav-inner{max-width:1400px;margin:0 auto;padding:0 24px;display:flex;justify-content:center;gap:0}
+.ct-nav-link{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text2);text-decoration:none;padding:14px 20px;position:relative;transition:color 0.2s}
+.ct-nav-link:hover{color:var(--accent)}
+.ct-nav-link.active{color:var(--accent)}
+.ct-nav-link.active::after{content:'';position:absolute;bottom:0;left:20px;right:20px;height:2px;background:var(--accent)}
+@media(max-width:900px){
+  .ct-nav-inner{overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .ct-nav-inner::-webkit-scrollbar{display:none}
+  .ct-nav-link{white-space:nowrap;padding:12px 14px;font-size:11px}
+}
+.ct-footer{background:var(--text);color:rgba(255,255,255,0.7);padding:48px 24px 32px;margin-top:60px}
+.ct-footer-inner{max-width:1400px;margin:0 auto}
+.ct-footer-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:24px}
+.ct-footer-brand{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#fff}
+.ct-footer-nav{display:flex;gap:32px}
+.ct-footer-nav a{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:rgba(255,255,255,0.6);text-decoration:none}
+.ct-footer-nav a:hover{color:#fff}
+.ct-footer-bottom{font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);display:flex;justify-content:space-between}
+@media(max-width:900px){.ct-footer-top{flex-direction:column;gap:24px}.ct-footer-nav{flex-wrap:wrap;gap:16px}.ct-footer-bottom{flex-direction:column;gap:8px}}
+
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -464,6 +498,22 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 </div>
 
 <div class="site-content" id="siteContent">
+<header class="ct-masthead">
+  <div class="ct-masthead-date" id="ctDate"></div>
+  <div class="ct-masthead-logo"><a href="news.html">Cricket <span>Times</span></a></div>
+  <div class="ct-masthead-tagline">The Definitive Voice of Test Cricket</div>
+</header>
+<nav class="ct-nav-bar">
+  <div class="ct-nav-inner">
+    <a href="news.html" class="ct-nav-link">Stories</a>
+    <a href="country-results.html" class="ct-nav-link">Countries</a>
+    <a href="batting-records.html" class="ct-nav-link">Batting</a>
+    <a href="index.html" class="ct-nav-link active">Compare</a>
+    <a href="simulation.html" class="ct-nav-link">Simulation</a>
+  </div>
+</nav>
+<script>(function(){var d=document.getElementById('ctDate');if(d)d.textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})})()</script>
+
 <div class="header">
   <div class="hdr-inner">
     <div class="brand">
@@ -2115,6 +2165,24 @@ function renderPartnerships(){
 <!-- SheetJS for Excel Export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+<footer class="ct-footer">
+  <div class="ct-footer-inner">
+    <div class="ct-footer-top">
+      <div class="ct-footer-brand">Cricket Times</div>
+      <nav class="ct-footer-nav">
+        <a href="news.html">Stories</a>
+        <a href="country-results.html">Countries</a>
+        <a href="batting-records.html">Batting</a>
+        <a href="index.html">Compare</a>
+        <a href="simulation.html">Simulation</a>
+      </nav>
+    </div>
+    <div class="ct-footer-bottom">
+      <span>&copy; 2026 Cricket Times. All rights reserved.</span>
+      <span>Statistics powered by comprehensive Test cricket databases</span>
+    </div>
+  </div>
+</footer>
 </div><!-- end site-content -->
 
 <!-- Firebase -->
