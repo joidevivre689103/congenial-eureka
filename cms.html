@@ -1220,6 +1220,19 @@ textarea.form-input{
           </div>
         </div>
       </div>
+      
+      <div class="content-panel" style="margin-top:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">Audio Storage Diagnostic</h2>
+          <button class="btn btn-sm btn-secondary" onclick="runAudioDiagnostic()">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Check Storage
+          </button>
+        </div>
+        <div style="padding:20px">
+          <pre id="audioDiagOutput" style="font-size:12px;color:var(--text2);background:var(--bg);padding:16px;border-radius:8px;border:1px solid var(--border);white-space:pre-wrap;max-height:300px;overflow-y:auto">Click "Check Storage" to inspect localStorage audio keys.</pre>
+        </div>
+      </div>
     </div>
   </main>
 </div>
@@ -1999,6 +2012,51 @@ async function generateAllAudio() {
   progressText.textContent = `Done! Generated audio for ${done} of ${pending.length} articles.`;
   renderArticles();
   showToast('success', 'Bulk Generation Complete', `${done} articles now have audio narration.`);
+}
+
+function runAudioDiagnostic() {
+  const out = document.getElementById('audioDiagOutput');
+  let lines = [];
+  
+  lines.push('=== ARTICLES IN MEMORY ===');
+  articles.forEach(a => {
+    lines.push(`  ID:${a.id} | "${a.headline.substring(0,45)}..." | audio:${a.audioEnabled!==false?'ON':'OFF'} | hasData:${!!a.audioData} | dataSize:${a.audioData ? (a.audioData.length/1024).toFixed(0)+'KB' : 'none'}`);
+  });
+  
+  lines.push('');
+  lines.push('=== LOCALSTORAGE KEYS ===');
+  const allKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    allKeys.push(localStorage.key(i));
+  }
+  allKeys.sort().forEach(key => {
+    const val = localStorage.getItem(key);
+    const size = val ? (val.length / 1024).toFixed(0) + 'KB' : '0KB';
+    const isAudio = key.startsWith('cricketTimesAudio_') || key.startsWith('cricketTimesEditorAudio_');
+    const preview = isAudio && val ? val.substring(0, 30) + '...' : '';
+    lines.push(`  ${key} (${size}) ${isAudio ? '🔊 ' + preview : ''}`);
+  });
+  
+  lines.push('');
+  lines.push('=== CMS PAYLOAD CHECK ===');
+  try {
+    const raw = localStorage.getItem('cricketTimesCMS');
+    if (raw) {
+      const data = JSON.parse(raw);
+      lines.push(`  Articles in payload: ${data.articles ? data.articles.length : 0}`);
+      if (data.articles) {
+        data.articles.forEach(a => {
+          lines.push(`    ID:${a.id} | hasAudio flag:${a.hasAudio} | audioData inline:${!!a.audioData} | "${a.headline.substring(0,40)}..."`);
+        });
+      }
+    } else {
+      lines.push('  ⚠️ cricketTimesCMS key NOT FOUND in localStorage');
+    }
+  } catch(e) {
+    lines.push('  ⚠️ Error parsing: ' + e.message);
+  }
+  
+  out.textContent = lines.join('\n');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

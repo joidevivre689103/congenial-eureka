@@ -1184,6 +1184,37 @@ const now = new Date();
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 dateEl.textContent = now.toLocaleDateString('en-US', options);
 
+// ─── AUDIO DEBUG: Show localStorage status ───
+(function audioDebug() {
+  const cmsRaw = localStorage.getItem('cricketTimesCMS');
+  const hasCMS = !!cmsRaw;
+  let articleCount = 0, audioKeyCount = 0, audioKeys = [];
+  
+  if (hasCMS) {
+    try { articleCount = JSON.parse(cmsRaw).articles.length; } catch(e) {}
+  }
+  
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.startsWith('cricketTimesAudio_') || key.startsWith('cricketTimesEditorAudio_'))) {
+      audioKeyCount++;
+      audioKeys.push(key);
+    }
+  }
+  
+  if (!hasCMS || audioKeyCount === 0) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:#1a4878;color:#fff;padding:10px 24px;font-family:Inter,sans-serif;font-size:12px;text-align:center;cursor:pointer';
+    banner.innerHTML = !hasCMS 
+      ? '⚠️ <b>No CMS data found.</b> Open cms.html first, publish articles, and click "Push All to Live". Then refresh this page. <span style="opacity:0.6">(click to dismiss)</span>'
+      : `⚠️ <b>CMS has ${articleCount} articles but no audio keys found.</b> Generate audio in CMS → Audio Settings. Keys found: ${audioKeys.join(', ') || 'none'}. <span style="opacity:0.6">(click to dismiss)</span>`;
+    banner.onclick = () => banner.remove();
+    document.body.insertBefore(banner, document.body.firstChild);
+  } else {
+    console.log('[Audio] CMS articles:', articleCount, 'Audio keys:', audioKeys);
+  }
+})();
+
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
@@ -1426,36 +1457,66 @@ function resetBtn(btn) {
 
 function getAudioForButton(btn) {
   // Find the article headline from the nearest article element
-  const article = btn.closest('article, .hero-main, .analysis-card');
-  if (!article) return null;
+  const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
+  if (!article) { console.warn('[Audio] No parent article found for button'); return null; }
 
   const headlineEl = article.querySelector(
     '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
   );
-  if (!headlineEl) return null;
+  if (!headlineEl) { console.warn('[Audio] No headline element found'); return null; }
   const headline = headlineEl.textContent.trim();
+  console.log('[Audio] Looking for audio for:', headline);
 
-  // Look up the CMS audioData for this article
+  // Strategy 1: Look up by article ID from CMS data, then fetch separate audio key
   try {
     const raw = localStorage.getItem('cricketTimesCMS');
     if (raw) {
       const cmsData = JSON.parse(raw);
       if (cmsData.articles) {
         const match = cmsData.articles.find(a => a.headline === headline);
-        if (match && match.audioEnabled !== false) {
-          // Audio is stored in a separate localStorage key per article
-          const audioKey = 'cricketTimesAudio_' + match.id;
-          const audioData = localStorage.getItem(audioKey);
-          if (audioData) return audioData;
+        if (match) {
+          console.log('[Audio] Found article id:', match.id, 'audioEnabled:', match.audioEnabled, 'hasAudio:', match.hasAudio);
           
-          // Fallback: check if audioData was inlined (older format)
-          if (match.audioData) return match.audioData;
+          if (match.audioEnabled !== false) {
+            // Check dedicated audio key
+            const audioKey = 'cricketTimesAudio_' + match.id;
+            const audioData = localStorage.getItem(audioKey);
+            if (audioData) { console.log('[Audio] Found audio in key:', audioKey, '(' + (audioData.length/1024).toFixed(0) + 'KB)'); return audioData; }
+
+            // Check editor audio key
+            const editorKey = 'cricketTimesEditorAudio_' + match.id;
+            const editorAudio = localStorage.getItem(editorKey);
+            if (editorAudio) { console.log('[Audio] Found audio in editor key:', editorKey); return editorAudio; }
+            
+            // Check if audioData was inlined in the payload (older format)
+            if (match.audioData) { console.log('[Audio] Found inline audioData'); return match.audioData; }
+          }
+        } else {
+          console.warn('[Audio] No headline match in CMS data. CMS headlines:', cmsData.articles.map(a => a.headline.substring(0, 40)));
+        }
+      }
+    } else {
+      console.warn('[Audio] No cricketTimesCMS in localStorage');
+    }
+  } catch(e) { console.error('[Audio] Error reading CMS data:', e); }
+
+  // Strategy 2: Brute-force scan all localStorage keys for any audio
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('cricketTimesAudio_') || key.startsWith('cricketTimesEditorAudio_'))) {
+        const val = localStorage.getItem(key);
+        if (val && val.startsWith('data:audio')) {
+          console.log('[Audio] Found audio key by scan:', key);
+          // We have SOME audio - return it as a fallback
+          return val;
         }
       }
     }
   } catch(e) {}
 
-  return null; // No audio available
+  console.warn('[Audio] No audio found for:', headline);
+  return null;
 }
 
 function toggleArticleAudio(btn) {
