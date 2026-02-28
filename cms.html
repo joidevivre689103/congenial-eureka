@@ -1924,7 +1924,7 @@ async function callElevenLabs(text) {
     try { errDetail = await response.text(); } catch(e) {}
     
     if (response.status === 401) {
-      throw new Error('API key rejected (401). Make sure you copied the full key from elevenlabs.io → Profile → API Keys. Key starts with: "' + apiKey.substring(0, 6) + '..."');
+      throw new Error(`Auth failed (401): ${errDetail.substring(0, 200)}. Key: "${apiKey.substring(0, 8)}...". Make sure your key has "Text to Speech" permission enabled at elevenlabs.io → Developers → API Keys → Edit key.`);
     }
     if (response.status === 422) {
       throw new Error('Invalid request (422). The Voice ID may be wrong, or the text is too short. Detail: ' + errDetail.substring(0, 200));
@@ -1943,9 +1943,8 @@ async function callElevenLabs(text) {
 
 async function testVoice() {
   const resultDiv = document.getElementById('testVoiceResult');
-  const player = document.getElementById('testAudioPlayer');
   resultDiv.style.display = 'block';
-  player.src = '';
+  resultDiv.innerHTML = '<div style="font-size:12px;color:var(--text3)">Generating test audio with your voice...</div>';
 
   const s = getAudioSettings();
   const apiKey = (s.apiKey || '').trim();
@@ -1954,40 +1953,17 @@ async function testVoice() {
   if (!apiKey) { showToast('error', 'No API Key', 'Enter your API key first.'); return; }
   if (!voiceId) { showToast('error', 'No Voice ID', 'Enter your Voice ID first.'); return; }
 
-  // Step 1: Validate API key with a simple GET request to /v1/user
-  showToast('success', 'Step 1/2', 'Validating API key...');
-  try {
-    const userResp = await fetch('https://api.elevenlabs.io/v1/user', {
-      headers: { 'xi-api-key': apiKey }
-    });
-    if (!userResp.ok) {
-      const body = await userResp.text();
-      showToast('error', `API Key Invalid (${userResp.status})`, `Key starts with "${apiKey.substring(0, 6)}...". Response: ${body.substring(0, 150)}`);
-      resultDiv.innerHTML = `<pre style="font-size:11px;color:var(--red);white-space:pre-wrap">API Key Validation Failed (${userResp.status}):\n${body.substring(0, 500)}\n\nYour key: ${apiKey.substring(0, 8)}...\nMake sure you copied it from: elevenlabs.io → left sidebar → API Keys</pre>`;
-      return;
-    }
-    const userData = await userResp.json();
-    const charLeft = userData.subscription ? userData.subscription.character_count : '?';
-    const charLimit = userData.subscription ? userData.subscription.character_limit : '?';
-    showToast('success', 'API Key Valid', `Logged in. Characters used: ${charLeft} / ${charLimit}`);
-  } catch(networkErr) {
-    showToast('error', 'Network Error', 'Cannot reach ElevenLabs API. ' + networkErr.message);
-    resultDiv.innerHTML = `<pre style="font-size:11px;color:var(--red);white-space:pre-wrap">Network Error: ${networkErr.message}\n\nThis often happens when running from a file:// URL.\nTry serving via a local server:\n  python3 -m http.server 8000\nThen open http://localhost:8000/cms.html</pre>`;
-    return;
-  }
-
-  // Step 2: Generate test speech
-  showToast('success', 'Step 2/2', 'Generating test audio with your voice...');
+  showToast('success', 'Generating...', 'Calling ElevenLabs TTS API...');
   try {
     const audioData = await callElevenLabs('This is a test of the Cricket Times audio narration. Your cloned voice is now ready for article playback.');
+    resultDiv.innerHTML = '<div style="margin-bottom:8px"><audio controls style="width:100%;height:36px"></audio></div><span style="color:var(--green);font-size:12px;font-weight:600">✓ Voice test successful! Your audio is working.</span>';
+    const player = resultDiv.querySelector('audio');
     player.src = audioData;
     player.play();
-    resultDiv.innerHTML = '<div style="margin-bottom:8px"><audio id="testAudioPlayer" controls style="width:100%;height:36px"></audio></div><span style="color:var(--green);font-size:12px">✓ Voice test successful! Your audio is working.</span>';
-    resultDiv.querySelector('audio').src = audioData;
-    resultDiv.querySelector('audio').play();
+    showToast('success', 'Voice Test Passed', 'Audio generated successfully with your voice.');
   } catch(err) {
-    showToast('error', 'Voice Test Failed', err.message);
-    resultDiv.innerHTML = `<pre style="font-size:11px;color:var(--red);white-space:pre-wrap">TTS Error: ${err.message}</pre>`;
+    resultDiv.innerHTML = '<pre style="font-size:11px;color:var(--red);white-space:pre-wrap;background:var(--surface);padding:12px;border-radius:8px;border:1px solid var(--red)">' + err.message + '</pre>';
+    showToast('error', 'Voice Test Failed', err.message.substring(0, 100));
   }
 }
 
