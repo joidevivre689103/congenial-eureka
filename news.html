@@ -1275,7 +1275,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
           <span class="hero-time">${heroArticle.readTime} min read</span>
           <span>${formatArticleDate(heroArticle.date)}</span>
-          ${heroArticle.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}
+          ${heroArticle.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${heroArticle.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
         </div>
       `;
     }
@@ -1326,7 +1326,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
           <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
           <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
-          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span> ${a.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
+          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span> ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
         </div>
       </article>
     `).join('');
@@ -1361,7 +1361,7 @@ function renderColumn(colEl, title, articles) {
         <a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a>
       </h4>
       <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
-      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read ${lead.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
+      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read ${lead.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${lead.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
     </article>
   `;
 
@@ -1372,7 +1372,7 @@ function renderColumn(colEl, title, articles) {
         <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-          <div class="article-mini-meta">${timeAgo(a.date)} ${a.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}</div>
+          <div class="article-mini-meta">${timeAgo(a.date)} ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
         </div>
       </article>
     `;
@@ -1425,7 +1425,19 @@ function resetBtn(btn) {
 }
 
 function getAudioForButton(btn) {
-  // Find the article's CMS ID and check for stored audio
+  // Priority 1: Direct article ID on the button (set by CMS dynamic rendering)
+  const articleId = btn.getAttribute('data-article-id');
+  if (articleId) {
+    const keys = ['cricketTimesAudio_' + articleId, 'cricketTimesEditorAudio_' + articleId];
+    for (const k of keys) {
+      try {
+        const d = localStorage.getItem(k);
+        if (d && d.startsWith('data:audio')) return d;
+      } catch(e) {}
+    }
+  }
+
+  // Priority 2: Match by headline in CMS data
   const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
   if (!article) return null;
 
@@ -1441,12 +1453,13 @@ function getAudioForButton(btn) {
       const cmsData = JSON.parse(raw);
       if (cmsData.articles) {
         const match = cmsData.articles.find(a => a.headline === headline);
-        if (match) {
-          // Check dedicated audio keys
+        if (match && match.audioEnabled !== false) {
           const keys = ['cricketTimesAudio_' + match.id, 'cricketTimesEditorAudio_' + match.id];
           for (const k of keys) {
-            const d = localStorage.getItem(k);
-            if (d && d.startsWith('data:audio')) return d;
+            try {
+              const d = localStorage.getItem(k);
+              if (d && d.startsWith('data:audio')) return d;
+            } catch(e) {}
           }
           if (match.audioData) return match.audioData;
         }
