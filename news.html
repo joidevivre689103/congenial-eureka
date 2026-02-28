@@ -702,8 +702,8 @@ body{
 .audio-listen-btn{
   display:inline-flex;
   align-items:center;
-  gap:6px;
-  padding:6px 12px;
+  gap:5px;
+  padding:5px 12px;
   border-radius:20px;
   border:1px solid var(--border);
   background:var(--surface);
@@ -713,7 +713,8 @@ body{
   font-weight:600;
   cursor:pointer;
   transition:all 0.2s;
-  margin-top:10px;
+  white-space:nowrap;
+  vertical-align:middle;
 }
 .audio-listen-btn:hover{
   background:var(--accent-dim);
@@ -724,6 +725,11 @@ body{
   background:var(--accent);
   border-color:var(--accent);
   color:#fff;
+  animation:audio-pulse 1.5s ease-in-out infinite;
+}
+@keyframes audio-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(160,48,32,0.3)}
+  50%{box-shadow:0 0 0 6px rgba(160,48,32,0)}
 }
 .audio-listen-btn svg{
   width:14px;
@@ -733,13 +739,26 @@ body{
   stroke-width:2;
   flex-shrink:0;
 }
-.hero-meta .audio-listen-btn{
-  margin-top:0;
-  margin-left:auto;
+.audio-listen-btn .audio-bars{
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  height:14px;
 }
-.article-card-meta .audio-listen-btn,
-.analysis-card-author .audio-listen-btn{
-  margin-top:6px;
+.audio-listen-btn .audio-bars span{
+  display:block;
+  width:2px;
+  background:currentColor;
+  border-radius:1px;
+  animation:audio-bar 0.8s ease-in-out infinite;
+}
+.audio-listen-btn .audio-bars span:nth-child(1){height:4px;animation-delay:0s}
+.audio-listen-btn .audio-bars span:nth-child(2){height:8px;animation-delay:0.15s}
+.audio-listen-btn .audio-bars span:nth-child(3){height:12px;animation-delay:0.3s}
+.audio-listen-btn .audio-bars span:nth-child(4){height:6px;animation-delay:0.45s}
+@keyframes audio-bar{
+  0%,100%{transform:scaleY(1)}
+  50%{transform:scaleY(0.3)}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -864,6 +883,10 @@ body{
         <span class="hero-author">By Rahul Dravid</span>
         <span class="hero-time">12 min read</span>
         <span>February 27, 2026</span>
+        <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)">
+          <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          Listen
+        </button>
       </div>
     </article>
     
@@ -946,14 +969,19 @@ body{
         <p class="article-card-summary">
           The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.
         </p>
-        <div class="article-card-meta">2 hours ago</div>
+        <div class="article-card-meta">2 hours ago
+          <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:8px">
+            <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            Listen
+          </button>
+        </div>
       </article>
       
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#4a5a4a,#3a4a38);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">Warner's farewell century seals dominant win</a></h4>
-          <div class="article-mini-meta">4 hours ago</div>
+          <div class="article-mini-meta">4 hours ago <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
       
@@ -961,7 +989,7 @@ body{
         <div class="article-mini-image" style="background:linear-gradient(135deg,#5a4a4a,#4a3a38);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">Bumrah ruled out of remaining series with back injury</a></h4>
-          <div class="article-mini-meta">6 hours ago</div>
+          <div class="article-mini-meta">6 hours ago <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
       
@@ -969,7 +997,7 @@ body{
         <div class="article-mini-image" style="background:linear-gradient(135deg,#4a4a5a,#38384a);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">ICC confirms DRS technology upgrade for 2027</a></h4>
-          <div class="article-mini-meta">Yesterday</div>
+          <div class="article-mini-meta">Yesterday <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
     </div>
@@ -986,14 +1014,19 @@ body{
         <p class="article-card-summary">
           Statistical analysis reveals just how far ahead of his peers the Don truly was, and why modern cricket's evolution makes his feats even more remarkable.
         </p>
-        <div class="article-card-meta">Analysis • 15 min read</div>
+        <div class="article-card-meta">Analysis • 15 min read
+          <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:8px">
+            <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            Listen
+          </button>
+        </div>
       </article>
       
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#404a50,#303a40);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">Inside the mind of a Test opener</a></h4>
-          <div class="article-mini-meta">Interview • 10 min</div>
+          <div class="article-mini-meta">Interview • 10 min <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
       
@@ -1001,7 +1034,7 @@ body{
         <div class="article-mini-image" style="background:linear-gradient(135deg,#504a40,#403a30);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">How data analytics is transforming field placements</a></h4>
-          <div class="article-mini-meta">Technology • 8 min</div>
+          <div class="article-mini-meta">Technology • 8 min <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
       
@@ -1009,7 +1042,7 @@ body{
         <div class="article-mini-image" style="background:linear-gradient(135deg,#405040,#304030);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">The lost art of leg spin in Test cricket</a></h4>
-          <div class="article-mini-meta">History • 12 min</div>
+          <div class="article-mini-meta">History • 12 min <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
     </div>
@@ -1026,14 +1059,19 @@ body{
         <p class="article-card-summary">
           The game's oldest format must evolve or risk becoming a museum piece. Here's what needs to happen.
         </p>
-        <div class="article-card-meta">Michael Holding • Opinion</div>
+        <div class="article-card-meta">Michael Holding • Opinion
+          <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:8px">
+            <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            Listen
+          </button>
+        </div>
       </article>
       
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#484858,#383848);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">Why we need more day-night Tests</a></h4>
-          <div class="article-mini-meta">Ian Chappell</div>
+          <div class="article-mini-meta">Ian Chappell <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
       
@@ -1041,7 +1079,7 @@ body{
         <div class="article-mini-image" style="background:linear-gradient(135deg,#585048,#484038);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">The case against impact player rules in Test</a></h4>
-          <div class="article-mini-meta">Ricky Ponting</div>
+          <div class="article-mini-meta">Ricky Ponting <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
       
@@ -1049,7 +1087,7 @@ body{
         <div class="article-mini-image" style="background:linear-gradient(135deg,#485848,#384838);"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="#">Pitch preparation needs standardization</a></h4>
-          <div class="article-mini-meta">Sunil Gavaskar</div>
+          <div class="article-mini-meta">Sunil Gavaskar <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
     </div>
@@ -1069,7 +1107,12 @@ body{
           <div class="analysis-card-category">Statistical Deep Dive</div>
           <h3 class="analysis-card-headline"><a href="#">Home vs Away: The Growing Disparity in Modern Test Cricket</a></h3>
           <p class="analysis-card-excerpt">Our analysis of 500 Tests reveals home advantage has never been stronger. What's driving this trend?</p>
-          <div class="analysis-card-author">Dr. Sarah Williams <span>• 20 min read</span></div>
+          <div class="analysis-card-author">Dr. Sarah Williams <span>• 20 min read</span>
+            <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-top:8px;display:flex">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Listen
+            </button>
+          </div>
         </div>
       </article>
       
@@ -1079,7 +1122,12 @@ body{
           <div class="analysis-card-category">Tactical Breakdown</div>
           <h3 class="analysis-card-headline"><a href="#">Reverse Swing Mastery: Comparing Techniques Across Eras</a></h3>
           <p class="analysis-card-excerpt">From Waqar to Bumrah, how has the art of reverse swing evolved and what makes today's exponents different?</p>
-          <div class="analysis-card-author">Wasim Akram <span>• 18 min read</span></div>
+          <div class="analysis-card-author">Wasim Akram <span>• 18 min read</span>
+            <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-top:8px;display:flex">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Listen
+            </button>
+          </div>
         </div>
       </article>
       
@@ -1089,7 +1137,12 @@ body{
           <div class="analysis-card-category">Performance Metrics</div>
           <h3 class="analysis-card-headline"><a href="#">The True Cost of Strike Rate: When Aggressive Play Backfires</a></h3>
           <p class="analysis-card-excerpt">Examining the correlation between batting strike rates and match outcomes across different conditions.</p>
-          <div class="analysis-card-author">Jonathan Liew <span>• 14 min read</span></div>
+          <div class="analysis-card-author">Jonathan Liew <span>• 14 min read</span>
+            <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-top:8px;display:flex">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Listen
+            </button>
+          </div>
         </div>
       </article>
     </div>
@@ -1266,7 +1319,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
           <span class="hero-time">${heroArticle.readTime} min read</span>
           <span>${formatArticleDate(heroArticle.date)}</span>
-          ${heroArticle.audioEnabled !== false ? `<button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(heroArticle.headline)}')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
+          ${heroArticle.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}
         </div>
       `;
     }
@@ -1318,7 +1371,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
           <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
           <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span>
-            ${a.audioEnabled !== false ? `<button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(a.headline)}')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
+            ${a.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-top:8px;display:flex"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : ''}
           </div>
         </div>
       </article>
@@ -1347,6 +1400,7 @@ function renderColumn(colEl, title, articles) {
   let html = `<h3 class="col-header">${escapeHTML(title)}</h3>`;
 
   // Lead article card
+  const leadAudioBtn = lead.audioEnabled !== false ? '<button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:8px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : '';
   html += `
     <article class="article-card">
       <div class="article-card-image" style="background:${gradients[0]};"></div>
@@ -1354,20 +1408,19 @@ function renderColumn(colEl, title, articles) {
         <a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a>
       </h4>
       <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
-      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read
-        ${lead.audioEnabled !== false ? `<button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(lead.headline)}')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
-      </div>
+      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read ${leadAudioBtn}</div>
     </article>
   `;
 
   // Mini articles
   rest.forEach((a, i) => {
+    const miniAudioBtn = a.audioEnabled !== false ? ' <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)" style="margin-left:6px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>' : '';
     html += `
       <article class="article-mini">
         <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-          <div class="article-mini-meta">${timeAgo(a.date)}${a.audioEnabled !== false ? ` <button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(a.headline)}')" style="margin-top:4px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
+          <div class="article-mini-meta">${timeAgo(a.date)}${miniAudioBtn}</div>
         </div>
       </article>
     `;
@@ -1404,87 +1457,152 @@ function timeAgo(dateStr) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ARTICLE AUDIO (Text-to-Speech)
+// ARTICLE AUDIO — Text-to-Speech using Web Speech API
 // ═══════════════════════════════════════════════════════════════════════════
-let currentAudioBtn = null;
-let currentUtterance = null;
+const AUDIO_ICON_LISTEN = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+const AUDIO_ICON_PLAYING = '<span class="audio-bars"><span></span><span></span><span></span><span></span></span> Playing';
+const AUDIO_ICON_STOP = '<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg> Stop';
 
-function toggleArticleAudio(btn, headline) {
-  // If this button is already playing, stop it
+let currentAudioBtn = null;
+
+function resetAudioBtn(btn) {
+  if (!btn) return;
+  btn.classList.remove('playing');
+  btn.innerHTML = AUDIO_ICON_LISTEN;
+}
+
+function getArticleText(btn) {
+  // Walk up from button to find the nearest article container
+  const article = btn.closest('article, .hero-main');
+  if (!article) return '';
+
+  // Get headline
+  const headlineEl = article.querySelector(
+    '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
+  );
+  const headline = headlineEl ? headlineEl.textContent.trim() : '';
+
+  // Get summary/excerpt
+  const summaryEl = article.querySelector(
+    '.hero-summary, .article-card-summary, .analysis-card-excerpt'
+  );
+  const summary = summaryEl ? summaryEl.textContent.trim() : '';
+
+  // Try to find full content from CMS localStorage data
+  if (headline) {
+    try {
+      const raw = localStorage.getItem('cricketTimesCMS');
+      if (raw) {
+        const cmsData = JSON.parse(raw);
+        if (cmsData.articles) {
+          const match = cmsData.articles.find(a => a.headline === headline);
+          if (match) {
+            if (match.content && match.content.trim().length > 10) {
+              return headline + '. ' + match.content.trim();
+            }
+            if (match.summary && match.summary.trim()) {
+              return headline + '. ' + match.summary.trim();
+            }
+          }
+        }
+      }
+    } catch(e) { /* localStorage unavailable or parse error */ }
+  }
+
+  // Fall back to what's visible on the page
+  if (summary) return headline + '. ' + summary;
+  return headline || 'No article text available.';
+}
+
+function toggleArticleAudio(btn) {
+  // Check browser support
+  if (!window.speechSynthesis) {
+    alert('Sorry, your browser does not support text-to-speech audio. Try Chrome, Safari, or Edge.');
+    return;
+  }
+
+  // If this button is already playing → stop
   if (btn.classList.contains('playing')) {
     window.speechSynthesis.cancel();
-    btn.classList.remove('playing');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+    resetAudioBtn(btn);
     currentAudioBtn = null;
-    currentUtterance = null;
     return;
   }
 
-  // Stop any other playing audio
-  if (currentAudioBtn) {
+  // Stop any other currently playing audio
+  if (currentAudioBtn && currentAudioBtn !== btn) {
     window.speechSynthesis.cancel();
-    currentAudioBtn.classList.remove('playing');
-    currentAudioBtn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+    resetAudioBtn(currentAudioBtn);
   }
 
-  // Find the article text to read — use the summary from the nearest article context
-  let textToRead = '';
-  const articleEl = btn.closest('article') || btn.closest('.hero-main');
-  if (articleEl) {
-    const summaryEl = articleEl.querySelector('.hero-summary, .article-card-summary, .analysis-card-excerpt');
-    if (summaryEl) {
-      textToRead = headline + '. ' + summaryEl.textContent.trim();
-    } else {
-      textToRead = headline;
-    }
-  } else {
-    textToRead = headline;
-  }
-
-  // Also try to find full content from CMS data
-  try {
-    const raw = localStorage.getItem('cricketTimesCMS');
-    if (raw) {
-      const cmsData = JSON.parse(raw);
-      const match = cmsData.articles.find(a => a.headline === headline);
-      if (match && match.content && match.content.trim()) {
-        textToRead = match.headline + '. ' + match.content.trim();
-      } else if (match && match.summary) {
-        textToRead = match.headline + '. ' + match.summary;
-      }
-    }
-  } catch(e) {}
-
-  if (!window.speechSynthesis) {
-    alert('Text-to-speech is not supported in this browser.');
+  // Get text to speak
+  const text = getArticleText(btn);
+  if (!text) {
+    alert('No article content found to read.');
     return;
   }
 
-  const utterance = new SpeechSynthesisUtterance(textToRead);
+  // Chrome has a bug where speechSynthesis stops after ~15s unless we
+  // periodically call resume(). This workaround handles that.
+  window.speechSynthesis.cancel(); // Clear any queued speech
+
+  const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 0.95;
-  utterance.pitch = 1;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+
+  // Try to pick a good English voice
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    const preferred = voices.find(v => v.name.includes('Google UK English')) ||
+                      voices.find(v => v.name.includes('Google US English')) ||
+                      voices.find(v => v.name.includes('Samantha')) ||
+                      voices.find(v => v.lang.startsWith('en') && v.localService) ||
+                      voices.find(v => v.lang.startsWith('en'));
+    if (preferred) utterance.voice = preferred;
+  }
 
   // Set playing state
   btn.classList.add('playing');
-  btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause';
+  btn.innerHTML = AUDIO_ICON_PLAYING;
   currentAudioBtn = btn;
-  currentUtterance = utterance;
+
+  // Chrome resume workaround — keeps speech going past 15s
+  let resumeInterval = null;
+  resumeInterval = setInterval(() => {
+    if (!window.speechSynthesis.speaking) {
+      clearInterval(resumeInterval);
+    } else {
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+    }
+  }, 10000);
 
   utterance.onend = () => {
-    btn.classList.remove('playing');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+    clearInterval(resumeInterval);
+    resetAudioBtn(btn);
     currentAudioBtn = null;
-    currentUtterance = null;
   };
 
-  utterance.onerror = () => {
-    btn.classList.remove('playing');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+  utterance.onerror = (e) => {
+    clearInterval(resumeInterval);
+    // 'canceled' is expected when user clicks stop
+    if (e.error !== 'canceled') {
+      console.warn('Speech error:', e.error);
+    }
+    resetAudioBtn(btn);
     currentAudioBtn = null;
-    currentUtterance = null;
   };
 
   window.speechSynthesis.speak(utterance);
+}
+
+// Ensure voices are loaded (some browsers load them async)
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices(); // Cache voices
+  };
+  window.speechSynthesis.getVoices();
 }
 </script>
 
