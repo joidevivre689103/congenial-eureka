@@ -1068,6 +1068,7 @@ textarea.form-input{
               <th>Category</th>
               <th>Status</th>
               <th>Placement</th>
+              <th>Audio</th>
               <th>Date</th>
               <th>Actions</th>
             </tr>
@@ -1207,6 +1208,20 @@ textarea.form-input{
       
       <div class="form-row full">
         <div class="form-group">
+          <label class="form-label" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+            <span style="position:relative;display:inline-flex;align-items:center">
+              <input type="checkbox" id="articleAudioEnabled" checked
+                style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+            </span>
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--text2);fill:none;stroke-width:2;flex-shrink:0"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            Enable Audio
+            <span style="font-weight:400;color:var(--text3);font-size:11px">— Allow listeners to hear this article read aloud on the live site</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-row full">
+        <div class="form-group">
           <label class="form-label">Featured Image</label>
           <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -1252,6 +1267,7 @@ let articles = [
     placement: "hero",
     readTime: 12,
     image: null,
+    audioEnabled: true,
     date: "2026-02-27"
   },
   {
@@ -1265,6 +1281,7 @@ let articles = [
     placement: "featured",
     readTime: 5,
     image: null,
+    audioEnabled: true,
     date: "2026-02-27"
   },
   {
@@ -1278,6 +1295,7 @@ let articles = [
     placement: "featured",
     readTime: 15,
     image: null,
+    audioEnabled: true,
     date: "2026-02-26"
   },
   {
@@ -1291,6 +1309,7 @@ let articles = [
     placement: "featured",
     readTime: 8,
     image: null,
+    audioEnabled: true,
     date: "2026-02-26"
   },
   {
@@ -1304,6 +1323,7 @@ let articles = [
     placement: "standard",
     readTime: 10,
     image: null,
+    audioEnabled: true,
     date: "2026-02-25"
   },
   {
@@ -1317,6 +1337,7 @@ let articles = [
     placement: "standard",
     readTime: 4,
     image: null,
+    audioEnabled: true,
     date: "2026-02-27"
   },
   {
@@ -1330,6 +1351,7 @@ let articles = [
     placement: "standard",
     readTime: 12,
     image: null,
+    audioEnabled: true,
     date: "2026-02-28"
   },
   {
@@ -1343,6 +1365,7 @@ let articles = [
     placement: "standard",
     readTime: 6,
     image: null,
+    audioEnabled: true,
     date: "2026-03-01"
   }
 ];
@@ -1419,6 +1442,16 @@ function renderArticles(filteredArticles = null) {
       <td><span style="text-transform:capitalize">${article.category}</span></td>
       <td><span class="status-badge ${article.status}">${article.status}</span></td>
       <td><span class="placement-badge ${article.placement}">${article.placement}</span></td>
+      <td>
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:${article.audioEnabled !== false ? 'var(--green)' : 'var(--text3)'}">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
+            ${article.audioEnabled !== false 
+              ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>' 
+              : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'}
+          </svg>
+          ${article.audioEnabled !== false ? 'On' : 'Off'}
+        </span>
+      </td>
       <td>${formatDate(article.date)}</td>
       <td>
         <div class="table-actions">
@@ -1476,6 +1509,7 @@ function openModal(mode, articleId = null) {
   document.getElementById('articleContent').value = '';
   document.getElementById('articlePlacement').value = 'standard';
   document.getElementById('articleReadTime').value = '';
+  document.getElementById('articleAudioEnabled').checked = true;
   resetImageUpload();
   
   if (mode === 'edit' && articleId) {
@@ -1492,6 +1526,7 @@ function openModal(mode, articleId = null) {
       document.getElementById('articleContent').value = article.content;
       document.getElementById('articlePlacement').value = article.placement;
       document.getElementById('articleReadTime').value = article.readTime;
+      document.getElementById('articleAudioEnabled').checked = article.audioEnabled !== false;
     }
   } else {
     title.textContent = 'Create New Article';
@@ -1535,6 +1570,7 @@ function saveArticle(status) {
   const content = document.getElementById('articleContent').value.trim();
   const placement = document.getElementById('articlePlacement').value;
   const readTime = parseInt(document.getElementById('articleReadTime').value) || 5;
+  const audioEnabled = document.getElementById('articleAudioEnabled').checked;
   
   if (!headline) {
     showToast('error', 'Validation Error', 'Headline is required.');
@@ -1549,6 +1585,7 @@ function saveArticle(status) {
     content,
     placement,
     readTime,
+    audioEnabled,
     status,
     date: new Date().toISOString().split('T')[0],
     image: null

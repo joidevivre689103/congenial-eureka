@@ -697,6 +697,52 @@ body{
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   AUDIO LISTEN BUTTON
+═══════════════════════════════════════════════════════════════════════════ */
+.audio-listen-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text2);
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s;
+  margin-top:10px;
+}
+.audio-listen-btn:hover{
+  background:var(--accent-dim);
+  border-color:var(--accent);
+  color:var(--accent);
+}
+.audio-listen-btn.playing{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+.audio-listen-btn svg{
+  width:14px;
+  height:14px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  flex-shrink:0;
+}
+.hero-meta .audio-listen-btn{
+  margin-top:0;
+  margin-left:auto;
+}
+.article-card-meta .audio-listen-btn,
+.analysis-card-author .audio-listen-btn{
+  margin-top:6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    FOOTER
 ═══════════════════════════════════════════════════════════════════════════ */
 .footer{
@@ -1220,6 +1266,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
           <span class="hero-time">${heroArticle.readTime} min read</span>
           <span>${formatArticleDate(heroArticle.date)}</span>
+          ${heroArticle.audioEnabled !== false ? `<button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(heroArticle.headline)}')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
         </div>
       `;
     }
@@ -1270,7 +1317,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
           <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
           <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
           <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
-          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span></div>
+          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span>
+            ${a.audioEnabled !== false ? `<button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(a.headline)}')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
+          </div>
         </div>
       </article>
     `).join('');
@@ -1305,7 +1354,9 @@ function renderColumn(colEl, title, articles) {
         <a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a>
       </h4>
       <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
-      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read</div>
+      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read
+        ${lead.audioEnabled !== false ? `<button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(lead.headline)}')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
+      </div>
     </article>
   `;
 
@@ -1316,7 +1367,7 @@ function renderColumn(colEl, title, articles) {
         <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
         <div class="article-mini-content">
           <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-          <div class="article-mini-meta">${timeAgo(a.date)}</div>
+          <div class="article-mini-meta">${timeAgo(a.date)}${a.audioEnabled !== false ? ` <button class="audio-listen-btn" onclick="toggleArticleAudio(this, '${escapeHTML(a.headline)}')" style="margin-top:4px"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
         </div>
       </article>
     `;
@@ -1350,6 +1401,90 @@ function timeAgo(dateStr) {
   if (diffHrs < 24) return diffHrs + ' hours ago';
   if (diffDays === 1) return 'Yesterday';
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ARTICLE AUDIO (Text-to-Speech)
+// ═══════════════════════════════════════════════════════════════════════════
+let currentAudioBtn = null;
+let currentUtterance = null;
+
+function toggleArticleAudio(btn, headline) {
+  // If this button is already playing, stop it
+  if (btn.classList.contains('playing')) {
+    window.speechSynthesis.cancel();
+    btn.classList.remove('playing');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+    currentAudioBtn = null;
+    currentUtterance = null;
+    return;
+  }
+
+  // Stop any other playing audio
+  if (currentAudioBtn) {
+    window.speechSynthesis.cancel();
+    currentAudioBtn.classList.remove('playing');
+    currentAudioBtn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+  }
+
+  // Find the article text to read — use the summary from the nearest article context
+  let textToRead = '';
+  const articleEl = btn.closest('article') || btn.closest('.hero-main');
+  if (articleEl) {
+    const summaryEl = articleEl.querySelector('.hero-summary, .article-card-summary, .analysis-card-excerpt');
+    if (summaryEl) {
+      textToRead = headline + '. ' + summaryEl.textContent.trim();
+    } else {
+      textToRead = headline;
+    }
+  } else {
+    textToRead = headline;
+  }
+
+  // Also try to find full content from CMS data
+  try {
+    const raw = localStorage.getItem('cricketTimesCMS');
+    if (raw) {
+      const cmsData = JSON.parse(raw);
+      const match = cmsData.articles.find(a => a.headline === headline);
+      if (match && match.content && match.content.trim()) {
+        textToRead = match.headline + '. ' + match.content.trim();
+      } else if (match && match.summary) {
+        textToRead = match.headline + '. ' + match.summary;
+      }
+    }
+  } catch(e) {}
+
+  if (!window.speechSynthesis) {
+    alert('Text-to-speech is not supported in this browser.');
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(textToRead);
+  utterance.rate = 0.95;
+  utterance.pitch = 1;
+
+  // Set playing state
+  btn.classList.add('playing');
+  btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause';
+  currentAudioBtn = btn;
+  currentUtterance = utterance;
+
+  utterance.onend = () => {
+    btn.classList.remove('playing');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+    currentAudioBtn = null;
+    currentUtterance = null;
+  };
+
+  utterance.onerror = () => {
+    btn.classList.remove('playing');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+    currentAudioBtn = null;
+    currentUtterance = null;
+  };
+
+  window.speechSynthesis.speak(utterance);
 }
 </script>
 
