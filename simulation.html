@@ -492,8 +492,8 @@ header.header{display:none !important}
   <div class="info-panel">
     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
     <div class="info-text">
-      <strong>How weights work:</strong> Set a weight percentage for Runs, Average, and Strike Rate. 
-      All weights must sum to 100%. When two weights are set, the third auto-fills.
+      <strong>How weights work:</strong> Each model has its own factor weights that must sum to 100% within that model. 
+      Batting models use Runs, Average and Strike Rate. Bowling models use Wickets, Average, Strike Rate and Economy.
     </div>
   </div>
 
@@ -725,84 +725,32 @@ header.header{display:none !important}
 
   <div class="weights-panel">
     <div class="wp-header">
-      <span class="wp-title">Factor Weights</span>
+      <span class="wp-title">Model Weights</span>
       <div class="wp-actions">
         <button class="wp-reset" onclick="resetWeights()">Reset All</button>
         <button class="wp-apply" onclick="applyWeights()">Apply Weights</button>
       </div>
     </div>
 
-    <div class="weights-grid">
-      <!-- Runs -->
-      <div class="weight-group" id="runsGroup" title="Weights the player's total career runs. Higher weight means more importance on run accumulation.">
-        <div class="wg-header">
-          <span class="wg-title">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-            Runs
-          </span>
-          <button class="wg-reset-btn" onclick="resetCategory('runs')">Reset</button>
-        </div>
-        <div class="wg-total-row">
-          <span class="wg-total-label">Weight</span>
-          <input type="number" class="wg-total-input" id="runsTotal" min="0" max="100" placeholder="0" onchange="updateTotal('runs')" oninput="updateTotalNoAuto('runs')">
-          <span class="wg-total-unit">%</span>
-        </div>
-        <div class="wg-note">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Applies directly to player's total career runs scored</span>
-        </div>
-      </div>
-
-      <!-- Average -->
-      <div class="weight-group" id="avgGroup" title="Weights the player's batting average. Higher weight means more importance on consistency.">
-        <div class="wg-header">
-          <span class="wg-title">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            Average
-          </span>
-          <button class="wg-reset-btn" onclick="resetCategory('avg')">Reset</button>
-        </div>
-        <div class="wg-total-row">
-          <span class="wg-total-label">Weight</span>
-          <input type="number" class="wg-total-input" id="avgTotal" min="0" max="100" placeholder="0" onchange="updateTotal('avg')" oninput="updateTotalNoAuto('avg')">
-          <span class="wg-total-unit">%</span>
-        </div>
-        <div class="wg-note">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Applies directly to player's overall batting average</span>
-        </div>
-      </div>
-
-      <!-- Strike Rate -->
-      <div class="weight-group" id="srGroup" title="Rewards players with higher strike rates (runs per 100 balls). This measures scoring speed and attacking intent.">
-        <div class="wg-header">
-          <span class="wg-title">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Strike Rate
-          </span>
-          <button class="wg-reset-btn" onclick="resetCategory('sr')">Reset</button>
-        </div>
-        <div class="wg-total-row">
-          <span class="wg-total-label">Weight</span>
-          <input type="number" class="wg-total-input" id="srTotal" min="0" max="100" placeholder="0" onchange="updateTotal('sr')" oninput="updateTotalNoAuto('sr')">
-          <span class="wg-total-unit">%</span>
-        </div>
-        <div class="wg-note">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Applies directly to player's overall strike rate</span>
-        </div>
-      </div>
+    <div style="margin-bottom:16px">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);fill:none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Batting Models
+      </span>
+    </div>
+    <div class="weights-grid" style="margin-bottom:20px" id="battingModelsGrid">
     </div>
 
-    <div class="total-weight">
-      <div>
-        <span class="tw-label">Grand Total</span>
-        <div class="tw-value" id="grandTotal">0%</div>
-      </div>
-      <span class="tw-status invalid" id="grandStatus">Needs to equal 100%</span>
+    <div style="margin-bottom:16px">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--blue);fill:none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Bowling Models
+      </span>
+    </div>
+    <div class="weights-grid" id="bowlingModelsGrid">
     </div>
 
-    <div class="active-weights" id="activeTags"></div>
+    <div class="active-weights" id="activeTags" style="margin-top:20px"></div>
   </div>
 
   <div class="preview-panel">
@@ -840,175 +788,221 @@ header.header{display:none !important}
 </main>
 
 <script>
-// Configuration - simple weights with no sub-weights
-const config = {
-  runs: { total: 0, subs: {}, subKeys: [] },
-  avg: { total: 0, subs: {}, subKeys: [] },
-  sr: { total: 0, subs: {}, subKeys: [] }
+// Model definitions
+const battingModels = {
+  tencliffe15: { name: 'Tencliffe15', factors: ['runs','average','strikeRate'] },
+  bradlar99: { name: 'Bradlar99', factors: ['runs','average','strikeRate'] },
+  harjosh86: { name: 'Harjosh86', factors: ['runs','average','strikeRate'] }
 };
-
-const labels = {
-  runs: { name: 'Runs' },
-  avg: { name: 'Average' },
-  sr: { name: 'Strike Rate' }
+const bowlingModels = {
+  sharan7080: { name: 'Sharan7080', factors: ['wickets','average','strikeRate','economy'] },
+  dale20: { name: 'Dale20', factors: ['wickets','average','strikeRate','economy'] },
+  mal40: { name: 'Mal40', factors: ['wickets','average','strikeRate','economy'] },
+  bap25: { name: 'Bap2.5', factors: ['wickets','average','strikeRate','economy'] }
 };
+const allModels = { ...battingModels, ...bowlingModels };
 
+const factorLabels = { runs: 'Runs', average: 'Average', strikeRate: 'Strike Rate', wickets: 'Wickets', economy: 'Economy' };
+
+// Config: each model has a weight per factor
+const config = {};
+for (const [key, model] of Object.entries(allModels)) {
+  config[key] = {};
+  model.factors.forEach(f => { config[key][f] = 0; });
+}
+
+// Render model cards
+function renderModelCards() {
+  const batGrid = document.getElementById('battingModelsGrid');
+  const bowlGrid = document.getElementById('bowlingModelsGrid');
+  batGrid.innerHTML = '';
+  bowlGrid.innerHTML = '';
+
+  function buildCard(key, model, accentColor) {
+    const isBowl = !!bowlingModels[key];
+    const iconSvg = isBowl
+      ? '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
+      : '<path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>';
+    let html = `<div class="weight-group" id="${key}Group">
+      <div class="wg-header">
+        <span class="wg-title"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>${model.name}</span>
+        <button class="wg-reset-btn" onclick="resetCategory('${key}')">Reset</button>
+      </div>`;
+    model.factors.forEach(f => {
+      html += `<div class="weight-item" id="${key}_${f}_item" style="margin-bottom:6px">
+        <span class="wi-label">${factorLabels[f]}</span>
+        <input type="number" class="wi-input" id="${key}_${f}" min="0" max="100" placeholder="0" value="" oninput="onFactorInput('${key}','${f}')">
+        <span class="wi-unit">%</span>
+      </div>`;
+    });
+    html += `<div class="wg-subtotal" style="margin-top:8px">
+        <span class="wg-subtotal-label">Total:</span>
+        <span class="wg-subtotal-value" id="${key}_subtotal">0 / 100%</span>
+      </div>`;
+    html += '</div>';
+    return html;
+  }
+
+  for (const [key, model] of Object.entries(battingModels)) {
+    batGrid.innerHTML += buildCard(key, model, 'accent');
+  }
+  for (const [key, model] of Object.entries(bowlingModels)) {
+    bowlGrid.innerHTML += buildCard(key, model, 'blue');
+  }
+}
+
+function onFactorInput(model, factor) {
+  const input = document.getElementById(`${model}_${factor}`);
+  let val = parseInt(input.value) || 0;
+  if (val < 0) val = 0;
+  if (val > 100) { val = 100; input.value = 100; }
+  config[model][factor] = val;
+
+  // Check total doesn't exceed 100
+  const total = Object.values(config[model]).reduce((s, v) => s + v, 0);
+  if (total > 100) {
+    const excess = total - 100;
+    val = Math.max(0, val - excess);
+    config[model][factor] = val;
+    input.value = val;
+  }
+
+  // Update subtotal display
+  updateModelSubtotal(model);
+
+  // Highlight filled items
+  const item = document.getElementById(`${model}_${factor}_item`);
+  if (val > 0) { item.classList.add('has-value'); } else { item.classList.remove('has-value'); }
+
+  updateTags();
+  updatePreview();
+  if (typeof updateResultsTable === 'function') updateResultsTable();
+}
+
+function updateModelSubtotal(model) {
+  const total = Object.values(config[model]).reduce((s, v) => s + v, 0);
+  const el = document.getElementById(`${model}_subtotal`);
+  const groupEl = document.getElementById(`${model}Group`);
+  if (!el) return;
+  el.textContent = `${total} / 100%`;
+  if (total === 0) {
+    el.className = 'wg-subtotal-value';
+    groupEl.classList.remove('has-error');
+  } else if (total === 100) {
+    el.className = 'wg-subtotal-value valid';
+    groupEl.classList.remove('has-error');
+  } else {
+    el.className = 'wg-subtotal-value invalid';
+    groupEl.classList.add('has-error');
+  }
+}
+
+// Legacy compat stubs
 const inputMap = {};
 const itemMap = {};
-
-function updateTotalNoAuto(group) {
-  const input = document.getElementById(group + 'Total');
-  let val = parseInt(input.value) || 0;
-  if (val < 0) val = 0;
-  if (val > 100) val = 100;
-  config[group].total = val;
-  
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
-}
-
-function updateTotal(group) {
-  const input = document.getElementById(group + 'Total');
-  let val = parseInt(input.value) || 0;
-  if (val < 0) val = 0;
-  if (val > 100) val = 100;
-  config[group].total = val;
-  
-  // Auto-calculate third category when two are filled
-  autoCalculateThirdCategory(group);
-  
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
-}
-
-function autoCalculateThirdCategory(changedGroup) {
-  const categoryGroups = ['runs', 'avg', 'sr'];
-  if (!categoryGroups.includes(changedGroup)) return;
-  
-  const vals = {};
-  categoryGroups.forEach(g => { vals[g] = config[g].total; });
-  
-  const emptyGroups = categoryGroups.filter(g => vals[g] === 0);
-  const filledGroups = categoryGroups.filter(g => vals[g] > 0);
-  
-  if (emptyGroups.length !== 1 || filledGroups.length !== 2) return;
-  
-  const sumOfTwo = filledGroups.reduce((s, g) => s + vals[g], 0);
-  const remaining = 100 - sumOfTwo;
-  
-  if (remaining < 0 || remaining > 100) return;
-  
-  const emptyGroup = emptyGroups[0];
-  config[emptyGroup].total = remaining;
-  document.getElementById(emptyGroup + 'Total').value = remaining;
-}
-
-function updateSub() {} // No-op, no sub-weights
-
-function updateSubtotal() {} // No-op, no sub-weights
-
+function updateTotalNoAuto() {}
+function updateTotal() {}
+function autoCalculateThirdCategory() {}
+function updateSub() {}
+function updateSubtotal() {}
 function updateGrandTotal() {
-  const total = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
-  document.getElementById('grandTotal').textContent = total + '%';
-  
-  const status = document.getElementById('grandStatus');
-  if (total === 100) {
-    status.textContent = 'Valid configuration';
-    status.className = 'tw-status valid';
-  } else if (total === 0) {
-    status.textContent = 'Needs to equal 100%';
-    status.className = 'tw-status invalid';
-  } else if (total < 100) {
-    status.textContent = (100 - total) + '% remaining';
-    status.className = 'tw-status invalid';
-  } else {
-    status.textContent = (total - 100) + '% over limit';
-    status.className = 'tw-status invalid';
-  }
-  
-  // Update results table with new weights
-  if (typeof updateResultsTable === 'function') {
-    updateResultsTable();
-  }
+  if (typeof updateResultsTable === 'function') updateResultsTable();
 }
 
 function updateTags() {
   const tags = [];
-  
-  for (const [group, cfg] of Object.entries(config)) {
-    if (cfg.total > 0) {
-      tags.push(`<span class="aw-tag">${labels[group].name}: <span class="aw-val">${cfg.total}%</span><button onclick="clearGroup('${group}')">&times;</button></span>`);
+  for (const [model, factors] of Object.entries(config)) {
+    for (const [factor, val] of Object.entries(factors)) {
+      if (val > 0) {
+        const modelName = allModels[model].name;
+        tags.push(`<span class="aw-tag">${modelName} — ${factorLabels[factor]}: <span class="aw-val">${val}%</span><button onclick="clearFactor('${model}','${factor}')">&times;</button></span>`);
+      }
     }
   }
-  
   document.getElementById('activeTags').innerHTML = tags.join('');
 }
 
 function updatePreview() {
-  const total = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
   const empty = document.getElementById('previewEmpty');
   const content = document.getElementById('previewContent');
-  
-  if (total === 0) {
+  const anyActive = Object.values(config).some(m => Object.values(m).some(v => v > 0));
+
+  if (!anyActive) {
     empty.style.display = 'block';
     content.style.display = 'none';
     return;
   }
-  
   empty.style.display = 'none';
   content.style.display = 'grid';
-  
+
   let html = '';
-  for (const [group, cfg] of Object.entries(config)) {
-    if (cfg.total > 0) {
-      html += `<div class="preview-card"><div class="pc-label">${labels[group].name}</div><div class="pc-value">${cfg.total}%</div><div class="pc-sub">Overall</div></div>`;
+  for (const [model, factors] of Object.entries(config)) {
+    const total = Object.values(factors).reduce((s, v) => s + v, 0);
+    if (total > 0) {
+      const modelName = allModels[model].name;
+      const detail = Object.entries(factors).filter(([,v]) => v > 0).map(([f,v]) => `${factorLabels[f]} ${v}%`).join(', ');
+      html += `<div class="preview-card"><div class="pc-label">${modelName}</div><div class="pc-value">${total}%</div><div class="pc-sub">${detail}</div></div>`;
     }
   }
-  
   content.innerHTML = html;
 }
 
-function clearGroup(group) {
-  document.getElementById(group + 'Total').value = '';
-  config[group].total = 0;
-  updateGrandTotal();
+function clearFactor(model, factor) {
+  config[model][factor] = 0;
+  const input = document.getElementById(`${model}_${factor}`);
+  if (input) input.value = '';
+  const item = document.getElementById(`${model}_${factor}_item`);
+  if (item) item.classList.remove('has-value');
+  updateModelSubtotal(model);
   updateTags();
   updatePreview();
+  if (typeof updateResultsTable === 'function') updateResultsTable();
 }
 
-function resetCategory(group) {
-  document.getElementById(group + 'Total').value = '';
-  config[group].total = 0;
-  
-  updateGrandTotal();
+function clearGroup(group) {
+  resetCategory(group);
+}
+
+function resetCategory(model) {
+  if (!config[model]) return;
+  for (const factor of Object.keys(config[model])) {
+    config[model][factor] = 0;
+    const input = document.getElementById(`${model}_${factor}`);
+    if (input) input.value = '';
+    const item = document.getElementById(`${model}_${factor}_item`);
+    if (item) item.classList.remove('has-value');
+  }
+  updateModelSubtotal(model);
   updateTags();
   updatePreview();
+  if (typeof updateResultsTable === 'function') updateResultsTable();
 }
 
 function resetWeights() {
-  for (const [group, cfg] of Object.entries(config)) {
-    document.getElementById(group + 'Total').value = '';
-    cfg.total = 0;
+  for (const model of Object.keys(config)) {
+    resetCategory(model);
   }
-  
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
 }
 
 function applyWeights() {
-  const grandTotal = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
-  
-  if (grandTotal !== 100) {
-    alert('Category totals must sum to 100%. Currently at ' + grandTotal + '%');
+  // Validate each model: if any factor is set, total should be exactly 100
+  const errors = [];
+  for (const [model, factors] of Object.entries(config)) {
+    const total = Object.values(factors).reduce((s, v) => s + v, 0);
+    if (total > 0 && total !== 100) {
+      errors.push(`${allModels[model].name}: ${total}% (should be 100%)`);
+    }
+  }
+  if (errors.length > 0) {
+    alert('Each active model\'s factors must sum to 100%:\n\n' + errors.join('\n'));
     return;
   }
-  
   console.log('Applied configuration:', config);
   alert('Weights applied successfully!\n\nConfiguration saved. Ready to run simulation.');
 }
+
+// Render cards on load
+renderModelCards();
 
 // Player data from actual Test cricket database
 const playerData = [
@@ -192943,19 +192937,14 @@ const playerData = [
 function calculatePoints(player) {
   let points = 0;
   
-  // Runs weight - applies directly to player's total runs
-  if (config.runs.total > 0) {
-    points += player.runs * (config.runs.total / 100);
-  }
-  
-  // Average weight - applies directly to player's batting average
-  if (config.avg.total > 0) {
-    points += player.avg * (config.avg.total / 100);
-  }
-  
-  // Strike Rate weight - applies directly to player's strike rate
-  if (config.sr.total > 0) {
-    points += player.sr * (config.sr.total / 100);
+  // Each model's factors contribute to the score
+  for (const [model, factors] of Object.entries(config)) {
+    for (const [factor, weight] of Object.entries(factors)) {
+      if (weight > 0) {
+        const modelScore = player.modelScores ? (player.modelScores[model] ? (player.modelScores[model][factor] || 0) : 0) : 0;
+        points += modelScore * (weight / 100);
+      }
+    }
   }
   
   return points;
@@ -192963,7 +192952,7 @@ function calculatePoints(player) {
 
 function updateResultsTable() {
   const tbody = document.getElementById('resultsBody');
-  const grandTotal = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
+  const anyWeightsSet = Object.values(config).some(m => Object.values(m).some(v => v > 0));
   
   // Get batting stat filters
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
@@ -193065,7 +193054,7 @@ function updateResultsTable() {
       <td class="num">${player.runs.toLocaleString()}</td>
       <td class="num">${player.avg.toFixed(2)}</td>
       <td class="num">${player.sr.toFixed(2)}</td>
-      <td class="num points">${grandTotal > 0 ? player.points.toFixed(1) : '—'}</td>
+      <td class="num points">${anyWeightsSet ? player.points.toFixed(1) : '—'}</td>
       <td class="num">${index + 1}</td>
     </tr>
   `).join('');
@@ -193309,7 +193298,7 @@ function showShareDialog(url){
 
 // Export to Excel function
 function exportToExcel(){
-  const grandTotal = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
+  const anyWeightsSet = Object.values(config).some(m => Object.values(m).some(v => v > 0));
   
   // Get filtered players from results table (batting)
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
@@ -193395,7 +193384,7 @@ function exportToExcel(){
     'Runs': player.runs,
     'Average': player.avg.toFixed(2),
     'Strike Rate': player.sr.toFixed(2),
-    'Points': grandTotal > 0 ? player.points.toFixed(1) : '—'
+    'Points': anyWeightsSet ? player.points.toFixed(1) : '—'
   }));
   const wsResults = XLSX.utils.json_to_sheet(resultsData);
   wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:8}];
@@ -193403,17 +193392,21 @@ function exportToExcel(){
   
   // Weights configuration sheet
   const weightsData = [
-    ['Weight Configuration', ''],
-    ['', ''],
-    ['Category', 'Weight %'],
-    ['Runs', config.runs.total],
-    ['Average', config.avg.total],
-    ['Strike Rate', config.sr.total],
-    ['', ''],
-    ['Grand Total', grandTotal + '%']
+    ['Weight Configuration', '', ''],
+    ['', '', ''],
+    ['Model', 'Factor', 'Weight %']
   ];
+  for (const [model, factors] of Object.entries(config)) {
+    const modelName = allModels[model].name;
+    let first = true;
+    for (const [factor, val] of Object.entries(factors)) {
+      weightsData.push([first ? modelName : '', factorLabels[factor], val]);
+      first = false;
+    }
+    weightsData.push(['', '', '']);
+  }
   const wsWeights = XLSX.utils.aoa_to_sheet(weightsData);
-  wsWeights['!cols'] = [{wch: 25}, {wch: 12}];
+  wsWeights['!cols'] = [{wch: 18}, {wch: 14}, {wch: 10}];
   XLSX.utils.book_append_sheet(wb, wsWeights, 'Weights');
   
   // Generate filename
