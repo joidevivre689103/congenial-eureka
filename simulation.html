@@ -492,13 +492,37 @@ header.header{display:none !important}
   <div class="info-panel">
     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
     <div class="info-text">
-      <strong>How weights work:</strong> Set a total weight for each category, then distribute that total among the sub-options. 
-      All category totals must sum to 100%, and each category's sub-options must sum to its total.
+      <strong>How weights work:</strong> Set a weight percentage for Runs, Average, and Strike Rate. 
+      All weights must sum to 100%. When two weights are set, the third auto-fills.
     </div>
   </div>
 
-  <!-- Player Filter -->
-  <div class="filter-panel">
+  <!-- Player Type & Model Type Filter -->
+  <div class="filter-panel" style="border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0;padding-bottom:14px">
+    <div style="margin-bottom:12px">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">Simulation Setup</span>
+    </div>
+    <div class="filter-row" style="flex-wrap:wrap;gap:16px 24px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Player Type</label>
+        <select class="filter-select" id="playerTypeFilter" onchange="handlePlayerTypeChange()">
+          <option value="batter">Batter</option>
+          <option value="bowler">Bowler</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Model Type</label>
+        <select class="filter-select" id="modelTypeFilter" onchange="updateResultsTable()">
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batting Filter -->
+  <div class="filter-panel" style="border-radius:0;margin-bottom:0;padding-bottom:14px;border-top:1px dashed var(--border)">
+    <div style="margin-bottom:12px">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">Batting Filters</span>
+    </div>
     <div class="filter-row" style="flex-wrap:wrap;gap:16px 24px">
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Runs</label>
@@ -588,6 +612,117 @@ header.header{display:none !important}
     </div>
   </div>
 
+  <!-- Bowling Filter -->
+  <div class="filter-panel" style="border-top:1px dashed var(--border);border-top-left-radius:0;border-top-right-radius:0;padding-top:14px">
+    <div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">Bowling Filters</span>
+      <span style="font-size:9px;color:var(--text3);font-weight:500;background:var(--surface2);padding:2px 8px;border-radius:4px">Optional</span>
+    </div>
+    <div class="filter-row" style="flex-wrap:wrap;gap:16px 24px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Wickets</label>
+        <select class="filter-select" id="bowlWktsFilter" onchange="updateResultsTable()">
+          <option value="0">No Minimum</option>
+          <option value="50">50+</option>
+          <option value="100">100+</option>
+          <option value="150">150+</option>
+          <option value="200">200+</option>
+          <option value="250">250+</option>
+          <option value="300">300+</option>
+          <option value="350">350+</option>
+          <option value="400">400+</option>
+          <option value="450">450+</option>
+          <option value="500">500+</option>
+          <option value="550">550+</option>
+          <option value="600">600+</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Bowl Avg</label>
+        <select class="filter-select" id="bowlAvgFilter" onchange="updateResultsTable()">
+          <option value="0">No Maximum</option>
+          <option value="20">20 &amp; under</option>
+          <option value="22">22 &amp; under</option>
+          <option value="24">24 &amp; under</option>
+          <option value="26">26 &amp; under</option>
+          <option value="28">28 &amp; under</option>
+          <option value="30">30 &amp; under</option>
+          <option value="32">32 &amp; under</option>
+          <option value="34">34 &amp; under</option>
+          <option value="36">36 &amp; under</option>
+          <option value="38">38 &amp; under</option>
+          <option value="40">40 &amp; under</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Bowl SR</label>
+        <select class="filter-select" id="bowlSRFilter" onchange="updateResultsTable()">
+          <option value="0">No Maximum</option>
+          <option value="35">35 &amp; under</option>
+          <option value="40">40 &amp; under</option>
+          <option value="45">45 &amp; under</option>
+          <option value="50">50 &amp; under</option>
+          <option value="55">55 &amp; under</option>
+          <option value="60">60 &amp; under</option>
+          <option value="65">65 &amp; under</option>
+          <option value="70">70 &amp; under</option>
+          <option value="75">75 &amp; under</option>
+          <option value="80">80 &amp; under</option>
+          <option value="85">85 &amp; under</option>
+          <option value="90">90 &amp; under</option>
+          <option value="95">95 &amp; under</option>
+          <option value="100">100 &amp; under</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Econ</label>
+        <select class="filter-select" id="bowlEconFilter" onchange="updateResultsTable()">
+          <option value="0">No Maximum</option>
+          <option value="2">2.0 &amp; under</option>
+          <option value="2.5">2.5 &amp; under</option>
+          <option value="3">3.0 &amp; under</option>
+          <option value="3.5">3.5 &amp; under</option>
+          <option value="4">4.0 &amp; under</option>
+          <option value="4.5">4.5 &amp; under</option>
+          <option value="5">5.0 &amp; under</option>
+          <option value="5.5">5.5 &amp; under</option>
+          <option value="6">6.0 &amp; under</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Era</label>
+        <div class="era-multi-select" id="bowlEraFilterContainer">
+          <button class="era-toggle-btn" id="bowlEraToggleBtn" onclick="toggleBowlEraDropdown()">
+            <span id="bowlEraSelectedText">All Eras</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="era-dropdown" id="bowlEraDropdown">
+            <label class="era-option"><input type="checkbox" value="all" checked onchange="handleBowlEraChange(this)"> All Eras</label>
+            <label class="era-option"><input type="checkbox" value="1877-1899" onchange="handleBowlEraChange(this)"> 1877–1899</label>
+            <label class="era-option"><input type="checkbox" value="1900-1918" onchange="handleBowlEraChange(this)"> 1900–1918</label>
+            <label class="era-option"><input type="checkbox" value="1919-1939" onchange="handleBowlEraChange(this)"> 1919–1939</label>
+            <label class="era-option"><input type="checkbox" value="1945-1970" onchange="handleBowlEraChange(this)"> 1945–1970</label>
+            <label class="era-option"><input type="checkbox" value="1971-1999" onchange="handleBowlEraChange(this)"> 1971–1999</label>
+            <label class="era-option"><input type="checkbox" value="2000-2025" onchange="handleBowlEraChange(this)"> 2000–2025</label>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="filter-label">Players</label>
+        <select class="filter-select" id="bowlPlayerFilter" onchange="updateResultsTable()">
+          <option value="5">Top 5</option>
+          <option value="10" selected>Top 10</option>
+          <option value="20">Top 20</option>
+          <option value="25">Top 25</option>
+          <option value="50">Top 50</option>
+          <option value="100">Top 100</option>
+          <option value="all">All</option>
+        </select>
+      </div>
+      <button class="wp-reset" onclick="clearBowlFilters()" style="margin-left:auto">Clear Filters</button>
+    </div>
+  </div>
+
   <div class="weights-panel">
     <div class="wp-header">
       <span class="wp-title">Factor Weights</span>
@@ -598,107 +733,63 @@ header.header{display:none !important}
     </div>
 
     <div class="weights-grid">
-      <!-- Contribution Impact -->
-      <div class="weight-group" id="impactGroup" title="Measures what percentage of the team's runs came from this player in home vs away matches. Neutral venues are counted as away.">
-        <div class="wg-header">
-          <span class="wg-title">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            Contribution Impact
-          </span>
-          <button class="wg-reset-btn" onclick="resetCategory('impact')">Reset</button>
-        </div>
-        <div class="wg-total-row">
-          <span class="wg-total-label">Category Total</span>
-          <input type="number" class="wg-total-input" id="impactTotal" min="0" max="100" placeholder="0" onchange="updateTotal('impact')" oninput="updateTotalNoAuto('impact')">
-          <span class="wg-total-unit">%</span>
-        </div>
-        <div class="wg-subtotal">
-          <span class="wg-subtotal-label">Sub-total:</span>
-          <span class="wg-subtotal-value" id="impactSubtotal">0 / 0%</span>
-        </div>
-        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical home/away totals <span id="inningsEraLabel">(All Eras)</span></span>
-        </div>
-        <div class="weight-item disabled" id="impactHomeItem">
-          <span class="wi-label">Home</span>
-          <span class="wi-suggested" id="impactHomeSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="impactHome" min="0" max="100" placeholder="0" onchange="updateSub('impact','home')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="impactAwayItem">
-          <span class="wi-label">Away</span>
-          <span class="wi-suggested" id="impactAwaySuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="impactAway" min="0" max="100" placeholder="0" onchange="updateSub('impact','away')">
-          <span class="wi-unit">%</span>
-        </div>
-        <button class="wg-apply-suggested" id="impactApplySuggested" onclick="applyImpactSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
-          Apply Suggested Weights
-        </button>
-      </div>
-
-      <!-- Outcome Average -->
-      <div class="weight-group" id="avgGroup" title="Measures what percentage of the team's runs came from this player in wins, draws, and losses. Ties are counted as draws.">
+      <!-- Runs -->
+      <div class="weight-group" id="runsGroup" title="Weights the player's total career runs. Higher weight means more importance on run accumulation.">
         <div class="wg-header">
           <span class="wg-title">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-            Outcome Average
+            Runs
+          </span>
+          <button class="wg-reset-btn" onclick="resetCategory('runs')">Reset</button>
+        </div>
+        <div class="wg-total-row">
+          <span class="wg-total-label">Weight</span>
+          <input type="number" class="wg-total-input" id="runsTotal" min="0" max="100" placeholder="0" onchange="updateTotal('runs')" oninput="updateTotalNoAuto('runs')">
+          <span class="wg-total-unit">%</span>
+        </div>
+        <div class="wg-note">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>Applies directly to player's total career runs scored</span>
+        </div>
+      </div>
+
+      <!-- Average -->
+      <div class="weight-group" id="avgGroup" title="Weights the player's batting average. Higher weight means more importance on consistency.">
+        <div class="wg-header">
+          <span class="wg-title">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            Average
           </span>
           <button class="wg-reset-btn" onclick="resetCategory('avg')">Reset</button>
         </div>
         <div class="wg-total-row">
-          <span class="wg-total-label">Category Total</span>
+          <span class="wg-total-label">Weight</span>
           <input type="number" class="wg-total-input" id="avgTotal" min="0" max="100" placeholder="0" onchange="updateTotal('avg')" oninput="updateTotalNoAuto('avg')">
           <span class="wg-total-unit">%</span>
         </div>
-        <div class="wg-subtotal">
-          <span class="wg-subtotal-label">Sub-total:</span>
-          <span class="wg-subtotal-value" id="avgSubtotal">0 / 0%</span>
+        <div class="wg-note">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>Applies directly to player's overall batting average</span>
         </div>
-        <div class="wg-note" style="margin-bottom:10px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3)">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--blue);fill:none;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          <span style="font-size:10px;color:var(--blue)">Suggested weights based on historical result totals <span id="avgEraLabel">(All Eras)</span></span>
-        </div>
-        <div class="weight-item disabled" id="avgWinItem">
-          <span class="wi-label">Average in Wins</span>
-          <span class="wi-suggested" id="avgWinSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="avgWin" min="0" max="100" placeholder="0" onchange="updateSub('avg','win')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="avgDrawItem">
-          <span class="wi-label">Average in Draws</span>
-          <span class="wi-suggested" id="avgDrawSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="avgDraw" min="0" max="100" placeholder="0" onchange="updateSub('avg','draw')">
-          <span class="wi-unit">%</span>
-        </div>
-        <div class="weight-item disabled" id="avgLossItem">
-          <span class="wi-label">Average in Losses</span>
-          <span class="wi-suggested" id="avgLossSuggested" style="font-size:10px;color:var(--blue);margin-left:auto;margin-right:8px">—%</span>
-          <input type="number" class="wi-input" id="avgLoss" min="0" max="100" placeholder="0" onchange="updateSub('avg','loss')">
-          <span class="wi-unit">%</span>
-        </div>
-        <button class="wg-apply-suggested" id="avgApplySuggested" onclick="applyAvgSuggested()" style="width:100%;margin-top:10px;padding:8px 12px;background:var(--blue-dim);border:1px solid rgba(40,112,208,0.3);border-radius:6px;color:var(--blue);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;display:none">
-          Apply Suggested Weights
-        </button>
       </div>
 
-      <!-- Speed (SR) -->
-      <div class="weight-group" id="srGroup" title="Rewards players with higher strike rates (runs per 100 balls). This measures scoring speed and attacking intent. The weight applies directly to the player's overall career strike rate.">
+      <!-- Strike Rate -->
+      <div class="weight-group" id="srGroup" title="Rewards players with higher strike rates (runs per 100 balls). This measures scoring speed and attacking intent.">
         <div class="wg-header">
           <span class="wg-title">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Speed (SR)
+            Strike Rate
           </span>
           <button class="wg-reset-btn" onclick="resetCategory('sr')">Reset</button>
         </div>
         <div class="wg-total-row">
-          <span class="wg-total-label">Category Total</span>
+          <span class="wg-total-label">Weight</span>
           <input type="number" class="wg-total-input" id="srTotal" min="0" max="100" placeholder="0" onchange="updateTotal('sr')" oninput="updateTotalNoAuto('sr')">
           <span class="wg-total-unit">%</span>
         </div>
         <div class="wg-note">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Speed weight applies directly to player's overall strike rate</span>
+          <span>Applies directly to player's overall strike rate</span>
         </div>
       </div>
     </div>
@@ -734,21 +825,12 @@ header.header{display:none !important}
     <table class="results-table">
       <thead>
         <tr>
-          <th rowspan="2">Player</th>
-          <th class="num" rowspan="2">Runs</th>
-          <th class="num" rowspan="2">Avg</th>
-          <th class="num" rowspan="2">SR</th>
-          <th class="num" colspan="2" style="text-align:center;border-bottom:1px solid var(--border)">Impact %</th>
-          <th class="num" colspan="3" style="text-align:center;border-bottom:1px solid var(--border)">Outcome %</th>
-          <th class="num" rowspan="2">Points</th>
-          <th class="num" rowspan="2">Rank</th>
-        </tr>
-        <tr>
-          <th class="num" style="font-size:9px">Home</th>
-          <th class="num" style="font-size:9px">Away</th>
-          <th class="num" style="font-size:9px">Win</th>
-          <th class="num" style="font-size:9px">Draw</th>
-          <th class="num" style="font-size:9px">Loss</th>
+          <th>Player</th>
+          <th class="num">Runs</th>
+          <th class="num">Avg</th>
+          <th class="num">SR</th>
+          <th class="num">Points</th>
+          <th class="num">Rank</th>
         </tr>
       </thead>
       <tbody id="resultsBody">
@@ -758,268 +840,29 @@ header.header{display:none !important}
 </main>
 
 <script>
-// Configuration
+// Configuration - simple weights with no sub-weights
 const config = {
-  avg: { total: 0, subs: { win: 0, draw: 0, loss: 0 }, subKeys: ['win', 'draw', 'loss'] },
-  sr: { total: 0, subs: {}, subKeys: [] }, // No subs, total applies directly
-  impact: { total: 0, subs: { home: 0, away: 0 }, subKeys: ['home','away'] }
+  runs: { total: 0, subs: {}, subKeys: [] },
+  avg: { total: 0, subs: {}, subKeys: [] },
+  sr: { total: 0, subs: {}, subKeys: [] }
 };
 
 const labels = {
-  avg: { name: 'Outcome Average', win: 'Avg in Wins', draw: 'Avg in Draws', loss: 'Avg in Losses' },
-  sr: { name: 'Speed (SR)' },
-  impact: { name: 'Contribution Impact', home: 'Home', away: 'Away' }
+  runs: { name: 'Runs' },
+  avg: { name: 'Average' },
+  sr: { name: 'Strike Rate' }
 };
 
-// Calculate impact weights from actual historical data (home/away)
-// Neutral venue is treated as away
-// This is called after playerData is loaded
-function calculateInningsWeights(players) {
-  let homeTotal = 0;
-  let awayTotal = 0;
-  
-  // Aggregate team runs for home and away (neutral counted as away)
-  players.forEach(player => {
-    if (player.teamVenueRuns) {
-      homeTotal += player.teamVenueRuns.home || 0;
-      awayTotal += (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
-    }
-  });
-  
-  const grandTotal = homeTotal + awayTotal;
-  
-  if (grandTotal === 0) {
-    return { home: 50, away: 50 }; // Fallback to equal distribution
-  }
-  
-  // Calculate percentages (rounded to 1 decimal)
-  const percentages = {
-    home: Math.round(homeTotal / grandTotal * 1000) / 10,
-    away: Math.round(awayTotal / grandTotal * 1000) / 10
-  };
-  
-  return percentages;
-}
-
-// Filter players by era and calculate weights
-function getInningsWeightsForEra(eraFilter) {
-  let filteredPlayers = playerData;
-  
-  if (eraFilter !== 'all') {
-    const [eraStart, eraEnd] = eraFilter.split('-').map(Number);
-    filteredPlayers = playerData.filter(player => {
-      const playerFrom = player.from || 0;
-      const playerTo = player.to || 9999;
-      // Check if career overlaps with era
-      return !(playerTo < eraStart || playerFrom > eraEnd);
-    });
-  }
-  
-  return calculateInningsWeights(filteredPlayers);
-}
-
-// Store current impact weights (home/away)
-let currentInningsWeights = { home: 50, away: 50 };
-
-// Calculate venue weights from actual historical data
-function calculateVenueWeights(players) {
-  let homeTotal = 0;
-  let awayTotal = 0;
-  
-  players.forEach(player => {
-    if (player.venueRuns) {
-      homeTotal += player.venueRuns.home || 0;
-      awayTotal += player.venueRuns.away || 0;
-    }
-  });
-  
-  const grandTotal = homeTotal + awayTotal;
-  
-  if (grandTotal === 0) {
-    return { home: 50, away: 50 };
-  }
-  
-  return {
-    home: Math.round(homeTotal / grandTotal * 1000) / 10,
-    away: Math.round(awayTotal / grandTotal * 1000) / 10
-  };
-}
-
-// Filter players by era and calculate venue weights
-function getVenueWeightsForEra(eraFilter) {
-  let filteredPlayers = playerData;
-  
-  if (eraFilter !== 'all') {
-    const [eraStart, eraEnd] = eraFilter.split('-').map(Number);
-    filteredPlayers = playerData.filter(player => {
-      const playerFrom = player.from || 0;
-      const playerTo = player.to || 9999;
-      return !(playerTo < eraStart || playerFrom > eraEnd);
-    });
-  }
-  
-  return calculateVenueWeights(filteredPlayers);
-}
-
-// Store current venue weights
-let currentVenueWeights = { home: 50, away: 50 };
-
-// Calculate result weights from actual historical data
-function calculateResultWeights(players) {
-  let winTotal = 0;
-  let drawTotal = 0;
-  let lossTotal = 0;
-  
-  players.forEach(player => {
-    if (player.resultRuns) {
-      winTotal += player.resultRuns.win || 0;
-      // Ties are treated as draws
-      drawTotal += (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
-      lossTotal += player.resultRuns.loss || 0;
-    }
-  });
-  
-  const grandTotal = winTotal + drawTotal + lossTotal;
-  
-  if (grandTotal === 0) {
-    return { win: 33.3, draw: 33.3, loss: 33.4 };
-  }
-  
-  return {
-    win: Math.round(winTotal / grandTotal * 1000) / 10,
-    draw: Math.round(drawTotal / grandTotal * 1000) / 10,
-    loss: Math.round(lossTotal / grandTotal * 1000) / 10
-  };
-}
-
-// Filter players by era and calculate result weights
-function getResultWeightsForEra(eraFilter) {
-  let filteredPlayers = playerData;
-  
-  if (eraFilter !== 'all') {
-    const [eraStart, eraEnd] = eraFilter.split('-').map(Number);
-    filteredPlayers = playerData.filter(player => {
-      const playerFrom = player.from || 0;
-      const playerTo = player.to || 9999;
-      return !(playerTo < eraStart || playerFrom > eraEnd);
-    });
-  }
-  
-  return calculateResultWeights(filteredPlayers);
-}
-
-// Store current result weights
-let currentResultWeights = { win: 33.3, draw: 33.3, loss: 33.4 };
-
-// Store current avg weights (based on result distribution)
-let currentAvgWeights = { win: 33.3, draw: 33.3, loss: 33.4 };
-
-// Multi-era versions of weight calculation functions
-function filterPlayersByEras(selectedEras) {
-  if (selectedEras.includes('all')) {
-    return playerData;
-  }
-  
-  return playerData.filter(player => {
-    const playerFrom = player.from || 0;
-    const playerTo = player.to || 9999;
-    
-    return selectedEras.some(era => {
-      const [eraStart, eraEnd] = era.split('-').map(Number);
-      return !(playerTo < eraStart || playerFrom > eraEnd);
-    });
-  });
-}
-
-function getInningsWeightsForEras(selectedEras) {
-  const filteredPlayers = filterPlayersByEras(selectedEras);
-  return calculateInningsWeights(filteredPlayers);
-}
-
-function getVenueWeightsForEras(selectedEras) {
-  const filteredPlayers = filterPlayersByEras(selectedEras);
-  return calculateVenueWeights(filteredPlayers);
-}
-
-function getResultWeightsForEras(selectedEras) {
-  const filteredPlayers = filterPlayersByEras(selectedEras);
-  return calculateResultWeights(filteredPlayers);
-}
-
-function getAvgWeightsForEras(selectedEras) {
-  const filteredPlayers = filterPlayersByEras(selectedEras);
-  return calculateResultWeights(filteredPlayers); // Uses same distribution as result weights
-}
-
-const inputMap = {
-  'avg-win': 'avgWin', 'avg-draw': 'avgDraw', 'avg-loss': 'avgLoss',
-  'impact-home': 'impactHome', 'impact-away': 'impactAway'
-};
-
-const itemMap = {
-  'avg-win': 'avgWinItem', 'avg-draw': 'avgDrawItem', 'avg-loss': 'avgLossItem',
-  'impact-home': 'impactHomeItem', 'impact-away': 'impactAwayItem'
-};
+const inputMap = {};
+const itemMap = {};
 
 function updateTotalNoAuto(group) {
-  // Update config and UI without auto-calculating third category
-  // This is called on every keystroke (oninput)
   const input = document.getElementById(group + 'Total');
   let val = parseInt(input.value) || 0;
   if (val < 0) val = 0;
   if (val > 100) val = 100;
   config[group].total = val;
   
-  // Enable/disable sub-items
-  const subKeys = config[group].subKeys;
-  if (subKeys.length > 0 && !config[group].auto) {
-    subKeys.forEach(key => {
-      const itemId = itemMap[`${group}-${key}`];
-      if (itemId) {
-        const item = document.getElementById(itemId);
-        if (config[group].total > 0) {
-          item.classList.remove('disabled');
-        } else {
-          item.classList.add('disabled');
-          config[group].subs[key] = 0;
-          const inputId = inputMap[`${group}-${key}`];
-          if (inputId) document.getElementById(inputId).value = '';
-        }
-      }
-    });
-  }
-  
-  // Show/hide apply suggested button for impact
-  if (group === 'impact') {
-    const applyBtn = document.getElementById('impactApplySuggested');
-    if (val > 0) {
-      applyBtn.style.display = 'block';
-    } else {
-      applyBtn.style.display = 'none';
-    }
-  }
-  
-  // Show/hide apply suggested button for ha
-  if (group === 'ha') {
-    const applyBtn = document.getElementById('haApplySuggested');
-    if (val > 0) {
-      applyBtn.style.display = 'block';
-    } else {
-      applyBtn.style.display = 'none';
-    }
-  }
-  
-  // Show/hide apply suggested button for result
-  if (group === 'result') {
-    const applyBtn = document.getElementById('resultApplySuggested');
-    if (val > 0) {
-      applyBtn.style.display = 'block';
-    } else {
-      applyBtn.style.display = 'none';
-    }
-  }
-  
-  updateSubtotal(group);
   updateGrandTotal();
   updateTags();
   updatePreview();
@@ -1035,254 +878,36 @@ function updateTotal(group) {
   // Auto-calculate third category when two are filled
   autoCalculateThirdCategory(group);
   
-  // Enable/disable sub-items
-  const subKeys = config[group].subKeys;
-  if (subKeys.length > 0 && !config[group].auto) {
-    subKeys.forEach(key => {
-      const itemId = itemMap[`${group}-${key}`];
-      if (itemId) {
-        const item = document.getElementById(itemId);
-        if (config[group].total > 0) {
-          item.classList.remove('disabled');
-        } else {
-          item.classList.add('disabled');
-          // Reset sub values
-          config[group].subs[key] = 0;
-          const inputId = inputMap[`${group}-${key}`];
-          if (inputId) document.getElementById(inputId).value = '';
-        }
-      }
-    });
-  }
-  
-  // If runs changed, also update impact
-  if (group === 'runs') {
-    // Impact no longer auto-distributes
-  }
-  
-  // Show/hide apply suggested button for impact
-  if (group === 'impact') {
-    const applyBtn = document.getElementById('impactApplySuggested');
-    if (val > 0) {
-      applyBtn.style.display = 'block';
-    } else {
-      applyBtn.style.display = 'none';
-    }
-  }
-  
-  // Show/hide apply suggested button for ha
-  if (group === 'ha') {
-    const applyBtn = document.getElementById('haApplySuggested');
-    if (val > 0) {
-      applyBtn.style.display = 'block';
-    } else {
-      applyBtn.style.display = 'none';
-    }
-  }
-  
-  // Show/hide apply suggested button for result
-  if (group === 'result') {
-    const applyBtn = document.getElementById('resultApplySuggested');
-    if (val > 0) {
-      applyBtn.style.display = 'block';
-    } else {
-      applyBtn.style.display = 'none';
-    }
-  }
-  
-  updateSubtotal(group);
   updateGrandTotal();
   updateTags();
   updatePreview();
 }
 
 function autoCalculateThirdCategory(changedGroup) {
-  // The three visible category groups with totals
-  const categoryGroups = ['impact', 'ha', 'result'];
-  
-  // Only proceed if the changed group is one of these
+  const categoryGroups = ['runs', 'avg', 'sr'];
   if (!categoryGroups.includes(changedGroup)) return;
   
-  // Get current values directly from config
-  const impactVal = config.impact.total;
-  const haVal = config.ha.total;
-  const resultVal = config.result.total;
+  const vals = {};
+  categoryGroups.forEach(g => { vals[g] = config[g].total; });
   
-  // Find which group is empty (has 0 value)
-  const emptyGroups = [];
-  const filledGroups = [];
+  const emptyGroups = categoryGroups.filter(g => vals[g] === 0);
+  const filledGroups = categoryGroups.filter(g => vals[g] > 0);
   
-  if (impactVal === 0) emptyGroups.push('impact');
-  else filledGroups.push({ group: 'impact', val: impactVal });
-  
-  if (haVal === 0) emptyGroups.push('ha');
-  else filledGroups.push({ group: 'ha', val: haVal });
-  
-  if (resultVal === 0) emptyGroups.push('result');
-  else filledGroups.push({ group: 'result', val: resultVal });
-  
-  // Only auto-calculate if exactly 1 group is empty and 2 are filled
   if (emptyGroups.length !== 1 || filledGroups.length !== 2) return;
   
-  const sumOfTwo = filledGroups[0].val + filledGroups[1].val;
+  const sumOfTwo = filledGroups.reduce((s, g) => s + vals[g], 0);
   const remaining = 100 - sumOfTwo;
   
-  // Only auto-fill if remaining is valid
   if (remaining < 0 || remaining > 100) return;
   
   const emptyGroup = emptyGroups[0];
-  
-  // Set the value
   config[emptyGroup].total = remaining;
   document.getElementById(emptyGroup + 'Total').value = remaining;
-  
-  // Enable sub-items and update
-  if (emptyGroup === 'impact') {
-    ['1', '2', '3', '4'].forEach(key => {
-      const itemId = itemMap[`impact-${key}`];
-      if (itemId && remaining > 0) {
-        document.getElementById(itemId).classList.remove('disabled');
-      }
-    });
-  } else if (emptyGroup === 'ha') {
-    ['home', 'away'].forEach(key => {
-      const itemId = itemMap[`ha-${key}`];
-      if (itemId && remaining > 0) {
-        document.getElementById(itemId).classList.remove('disabled');
-      }
-    });
-  } else if (emptyGroup === 'result') {
-    ['win', 'draw', 'loss'].forEach(key => {
-      const itemId = itemMap[`result-${key}`];
-      if (itemId && remaining > 0) {
-        document.getElementById(itemId).classList.remove('disabled');
-      }
-    });
-  }
-  
-  updateSubtotal(emptyGroup);
 }
 
-function updateSub(group, key) {
-  const inputId = inputMap[`${group}-${key}`];
-  const itemId = itemMap[`${group}-${key}`];
-  const input = document.getElementById(inputId);
-  const item = document.getElementById(itemId);
-  
-  let val = parseInt(input.value) || 0;
-  if (val < 0) val = 0;
-  
-  // Calculate current subtotal of OTHER sub-fields (excluding this one)
-  const otherSubsTotal = Object.entries(config[group].subs)
-    .filter(([k, v]) => k !== key)
-    .reduce((sum, [k, v]) => sum + v, 0);
-  
-  // Cap value so subtotal doesn't exceed category total
-  const categoryTotal = config[group].total;
-  if (categoryTotal > 0) {
-    const maxAllowed = categoryTotal - otherSubsTotal;
-    if (val > maxAllowed) {
-      val = Math.max(0, maxAllowed);
-      input.value = val;
-    }
-  }
-  
-  config[group].subs[key] = val;
-  
-  // Mark this field as manually edited
-  if (!config[group].manuallyEdited) {
-    config[group].manuallyEdited = {};
-  }
-  config[group].manuallyEdited[key] = true;
-  
-  if (val > 0) {
-    item.classList.add('has-value');
-  } else {
-    item.classList.remove('has-value');
-    // If set to 0, remove from manually edited
-    config[group].manuallyEdited[key] = false;
-  }
-  
-  // If runs changed, update impact
-  if (group === 'runs') {
-    // Impact no longer auto-distributes
-  }
-  
-  // Auto-populate last remaining sub-field (only if it wasn't manually edited before)
-  autoPopulateLastSub(group, key);
-  
-  updateSubtotal(group);
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
-}
+function updateSub() {} // No-op, no sub-weights
 
-function autoPopulateLastSub(group, changedKey) {
-  const cfg = config[group];
-  const categoryTotal = cfg.total;
-  
-  // Skip if no category total or if it's an auto group like impact
-  if (categoryTotal === 0 || cfg.auto) return;
-  
-  const subKeys = cfg.subKeys;
-  if (subKeys.length < 2) return;
-  
-  // Find which subs have been manually edited and which haven't
-  const manuallyEdited = cfg.manuallyEdited || {};
-  
-  // Find subs that are zero AND were never manually edited
-  const unfilledSubs = subKeys.filter(k => cfg.subs[k] === 0 && !manuallyEdited[k]);
-  
-  // Find subs that have values or were manually edited
-  const filledOrEditedSubs = subKeys.filter(k => cfg.subs[k] > 0 || manuallyEdited[k]);
-  
-  // Only auto-populate if exactly one sub is unfilled and all others are filled/edited
-  if (unfilledSubs.length === 1 && filledOrEditedSubs.length === subKeys.length - 1) {
-    const filledTotal = subKeys.reduce((sum, k) => sum + cfg.subs[k], 0);
-    const remaining = categoryTotal - filledTotal;
-    
-    if (remaining >= 0) {
-      const emptyKey = unfilledSubs[0];
-      cfg.subs[emptyKey] = remaining;
-      
-      // Update the input field
-      const inputId = inputMap[`${group}-${emptyKey}`];
-      const itemId = itemMap[`${group}-${emptyKey}`];
-      if (inputId) {
-        document.getElementById(inputId).value = remaining;
-      }
-      if (itemId && remaining > 0) {
-        document.getElementById(itemId).classList.add('has-value');
-      }
-    }
-  }
-}
-
-function updateSubtotal(group) {
-  const cfg = config[group];
-  const subKeys = cfg.subKeys;
-  
-  if (subKeys.length === 0) return; // sr has no subs
-  
-  const subTotal = Object.values(cfg.subs).reduce((a, b) => a + b, 0);
-  const target = cfg.total;
-  const el = document.getElementById(group + 'Subtotal');
-  const groupEl = document.getElementById(group + 'Group');
-  
-  if (el) {
-    el.textContent = `${subTotal} / ${target}%`;
-    if (target === 0) {
-      el.className = 'wg-subtotal-value';
-      groupEl.classList.remove('has-error');
-    } else if (subTotal === target) {
-      el.className = 'wg-subtotal-value valid';
-      groupEl.classList.remove('has-error');
-    } else {
-      el.className = 'wg-subtotal-value invalid';
-      groupEl.classList.add('has-error');
-    }
-  }
-}
+function updateSubtotal() {} // No-op, no sub-weights
 
 function updateGrandTotal() {
   const total = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
@@ -1314,17 +939,7 @@ function updateTags() {
   
   for (const [group, cfg] of Object.entries(config)) {
     if (cfg.total > 0) {
-      if (cfg.subKeys.length === 0) {
-        // Strike rate - no subs
-        tags.push(`<span class="aw-tag">${labels[group].name}: <span class="aw-val">${cfg.total}%</span><button onclick="clearGroup('${group}')">&times;</button></span>`);
-      } else {
-        for (const [key, val] of Object.entries(cfg.subs)) {
-          if (val > 0) {
-            const keyLabel = labels[group][key];
-            tags.push(`<span class="aw-tag">${labels[group].name} (${keyLabel}): <span class="aw-val">${val}%</span><button onclick="clearSub('${group}','${key}')">&times;</button></span>`);
-          }
-        }
-      }
+      tags.push(`<span class="aw-tag">${labels[group].name}: <span class="aw-val">${cfg.total}%</span><button onclick="clearGroup('${group}')">&times;</button></span>`);
     }
   }
   
@@ -1348,15 +963,7 @@ function updatePreview() {
   let html = '';
   for (const [group, cfg] of Object.entries(config)) {
     if (cfg.total > 0) {
-      if (cfg.subKeys.length === 0) {
-        html += `<div class="preview-card"><div class="pc-label">${labels[group].name}</div><div class="pc-value">${cfg.total}%</div><div class="pc-sub">Overall</div></div>`;
-      } else {
-        for (const [key, val] of Object.entries(cfg.subs)) {
-          if (val > 0) {
-            html += `<div class="preview-card"><div class="pc-label">${labels[group].name}</div><div class="pc-value">${val}%</div><div class="pc-sub">${labels[group][key]}</div></div>`;
-          }
-        }
-      }
+      html += `<div class="preview-card"><div class="pc-label">${labels[group].name}</div><div class="pc-value">${cfg.total}%</div><div class="pc-sub">Overall</div></div>`;
     }
   }
   
@@ -1366,50 +973,15 @@ function updatePreview() {
 function clearGroup(group) {
   document.getElementById(group + 'Total').value = '';
   config[group].total = 0;
-  updateTotal(group);
-}
-
-function clearSub(group, key) {
-  if (config[group].auto) {
-    // For auto groups like impact, clear the total
-    clearGroup(group);
-    return;
-  }
-  
-  const inputId = inputMap[`${group}-${key}`];
-  const itemId = itemMap[`${group}-${key}`];
-  
-  if (inputId) document.getElementById(inputId).value = '';
-  if (itemId) document.getElementById(itemId).classList.remove('has-value');
-  config[group].subs[key] = 0;
-  
-  updateSubtotal(group);
   updateGrandTotal();
   updateTags();
   updatePreview();
 }
 
 function resetCategory(group) {
-  const cfg = config[group];
-  
-  // Reset category total
   document.getElementById(group + 'Total').value = '';
-  cfg.total = 0;
-  cfg.manuallyEdited = {};
+  config[group].total = 0;
   
-  // Reset all sub-values
-  cfg.subKeys.forEach(key => {
-    cfg.subs[key] = 0;
-    const inputId = inputMap[`${group}-${key}`];
-    const itemId = itemMap[`${group}-${key}`];
-    if (inputId) document.getElementById(inputId).value = '';
-    if (itemId) {
-      document.getElementById(itemId).classList.remove('has-value');
-      document.getElementById(itemId).classList.add('disabled');
-    }
-  });
-  
-  updateSubtotal(group);
   updateGrandTotal();
   updateTags();
   updatePreview();
@@ -1419,20 +991,6 @@ function resetWeights() {
   for (const [group, cfg] of Object.entries(config)) {
     document.getElementById(group + 'Total').value = '';
     cfg.total = 0;
-    cfg.manuallyEdited = {}; // Reset manually edited tracking
-    
-    cfg.subKeys.forEach(key => {
-      cfg.subs[key] = 0;
-      const inputId = inputMap[`${group}-${key}`];
-      const itemId = itemMap[`${group}-${key}`];
-      if (inputId) document.getElementById(inputId).value = '';
-      if (itemId) {
-        document.getElementById(itemId).classList.remove('has-value');
-        document.getElementById(itemId).classList.add('disabled');
-      }
-    });
-    
-    updateSubtotal(group);
   }
   
   updateGrandTotal();
@@ -1445,25 +1003,6 @@ function applyWeights() {
   
   if (grandTotal !== 100) {
     alert('Category totals must sum to 100%. Currently at ' + grandTotal + '%');
-    return;
-  }
-  
-  // Check all subtotals match
-  let valid = true;
-  let errors = [];
-  
-  for (const [group, cfg] of Object.entries(config)) {
-    if (cfg.total > 0 && cfg.subKeys.length > 0) {
-      const subTotal = Object.values(cfg.subs).reduce((a, b) => a + b, 0);
-      if (subTotal !== cfg.total) {
-        valid = false;
-        errors.push(`${labels[group].name}: sub-total ${subTotal}% ≠ category total ${cfg.total}%`);
-      }
-    }
-  }
-  
-  if (!valid) {
-    alert('Sub-totals must match category totals:\n\n' + errors.join('\n'));
     return;
   }
   
@@ -193404,58 +192943,19 @@ const playerData = [
 function calculatePoints(player) {
   let points = 0;
   
-  // Strike Rate - uses total directly (no subs)
+  // Runs weight - applies directly to player's total runs
+  if (config.runs.total > 0) {
+    points += player.runs * (config.runs.total / 100);
+  }
+  
+  // Average weight - applies directly to player's batting average
+  if (config.avg.total > 0) {
+    points += player.avg * (config.avg.total / 100);
+  }
+  
+  // Strike Rate weight - applies directly to player's strike rate
   if (config.sr.total > 0) {
     points += player.sr * (config.sr.total / 100);
-  }
-  
-  // Outcome Average - (player result runs / team result runs) * result weight
-  // Uses ratio-based scoring like Impact
-  // Tie is treated as draw
-  if (config.avg.total > 0) {
-    ['win', 'draw', 'loss'].forEach(result => {
-      const weight = config.avg.subs[result];
-      if (weight > 0 && player.teamResultRuns) {
-        let playerRuns, teamRuns;
-        if (result === 'draw') {
-          // Include tie runs in draw calculation
-          playerRuns = (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
-          teamRuns = (player.teamResultRuns.draw || 0) + (player.teamResultRuns.tie || 0);
-        } else {
-          playerRuns = player.resultRuns[result] || 0;
-          teamRuns = player.teamResultRuns[result] || 0;
-        }
-        if (teamRuns > 0) {
-          const avgRatio = playerRuns / teamRuns;
-          points += avgRatio * (weight / 100) * 100;
-        }
-      }
-    });
-  }
-  
-  // Impact - (player venue runs / team venue runs) * venue weight
-  // Neutral venue is treated as away
-  // e.g., player home runs=7216, team home runs=51868, weight=10 -> (7216/51868) * 0.10 * 100 = 1.39 points
-  // Multiply by 100 to get reasonable point values
-  if (config.impact.total > 0) {
-    ['home', 'away'].forEach(venue => {
-      const weight = config.impact.subs[venue];
-      if (weight > 0 && player.teamVenueRuns) {
-        let playerRuns, teamRuns;
-        if (venue === 'away') {
-          // Include neutral venue runs in away calculation
-          playerRuns = (player.venueRuns.away || 0) + (player.venueRuns.neutral || 0);
-          teamRuns = (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
-        } else {
-          playerRuns = player.venueRuns[venue] || 0;
-          teamRuns = player.teamVenueRuns[venue] || 0;
-        }
-        if (teamRuns > 0) {
-          const impactRatio = playerRuns / teamRuns;
-          points += impactRatio * (weight / 100) * 100;
-        }
-      }
-    });
   }
   
   return points;
@@ -193465,19 +192965,27 @@ function updateResultsTable() {
   const tbody = document.getElementById('resultsBody');
   const grandTotal = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
   
-  // Get stat filters
+  // Get batting stat filters
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
   const minAvg = parseFloat(document.getElementById('avgFilter').value) || 0;
   const minSR = parseFloat(document.getElementById('srFilter').value) || 0;
   const selectedEras = getSelectedEras();
   const playerLimit = document.getElementById('playerFilter').value;
   
-  // Filter players by stats and era
+  // Get bowling stat filters
+  const minBowlWkts = parseFloat(document.getElementById('bowlWktsFilter').value) || 0;
+  const maxBowlAvg = parseFloat(document.getElementById('bowlAvgFilter').value) || 0;
+  const maxBowlSR = parseFloat(document.getElementById('bowlSRFilter').value) || 0;
+  const maxBowlEcon = parseFloat(document.getElementById('bowlEconFilter').value) || 0;
+  const selectedBowlEras = typeof getSelectedBowlEras === 'function' ? getSelectedBowlEras() : ['all'];
+  const bowlPlayerLimit = document.getElementById('bowlPlayerFilter') ? document.getElementById('bowlPlayerFilter').value : 'all';
+  
+  // Filter players by batting stats and era
   const filteredByStats = playerData.filter(player => {
-    // Stats filters
+    // Batting stats filters
     if (player.runs < minRuns || player.avg < minAvg || player.sr < minSR) return false;
     
-    // Era filter: player's career must overlap with at least one selected era
+    // Batting era filter: player's career must overlap with at least one selected era
     if (!selectedEras.includes('all')) {
       const playerFrom = player.from || 0;
       const playerTo = player.to || 9999;
@@ -193488,6 +192996,41 @@ function updateResultsTable() {
       });
       
       if (!matchesEra) return false;
+    }
+    
+    // Bowling filters (only apply if any bowling filter is active)
+    const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
+    
+    if (bowlFiltersActive) {
+      const bowlWkts = player.bowlWkts || 0;
+      const bowlAvg = player.bowlAvg || 0;
+      const bowlSR = player.bowlSR || 0;
+      const bowlEcon = player.bowlEcon || 0;
+      
+      // Wickets minimum
+      if (minBowlWkts > 0 && bowlWkts < minBowlWkts) return false;
+      
+      // Bowling average maximum (lower is better) - only filter if player has bowling data
+      if (maxBowlAvg > 0 && (bowlWkts === 0 || bowlAvg > maxBowlAvg)) return false;
+      
+      // Bowling strike rate maximum (lower is better) - only filter if player has bowling data
+      if (maxBowlSR > 0 && (bowlWkts === 0 || bowlSR > maxBowlSR)) return false;
+      
+      // Economy rate maximum (lower is better) - only filter if player has bowling data
+      if (maxBowlEcon > 0 && (bowlWkts === 0 || bowlEcon > maxBowlEcon)) return false;
+      
+      // Bowling era filter
+      if (!selectedBowlEras.includes('all')) {
+        const playerFrom = player.from || 0;
+        const playerTo = player.to || 9999;
+        
+        const matchesBowlEra = selectedBowlEras.some(era => {
+          const [eraStart, eraEnd] = era.split('-').map(Number);
+          return !(playerTo < eraStart || playerFrom > eraEnd);
+        });
+        
+        if (!matchesBowlEra) return false;
+      }
     }
     
     return true;
@@ -193502,45 +193045,18 @@ function updateResultsTable() {
   // Sort by points descending
   playersWithPoints.sort((a, b) => b.points - a.points);
   
-  // Apply player limit filter (Top N or All)
-  const limitedPlayers = playerLimit === 'all' 
+  // Apply player limit filter - use the more restrictive of batting and bowling limits
+  let effectiveLimit = playerLimit;
+  if (bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
+    effectiveLimit = bowlPlayerLimit;
+  }
+  
+  const limitedPlayers = effectiveLimit === 'all' 
     ? playersWithPoints 
-    : playersWithPoints.slice(0, parseInt(playerLimit));
+    : playersWithPoints.slice(0, parseInt(effectiveLimit));
   
   // Update player count
   document.getElementById('playerCount').textContent = limitedPlayers.length;
-  
-  // Calculate impact percentage (home/away)
-  // Neutral venue is treated as away
-  const getImpactPct = (player, venue) => {
-    if (!player.venueRuns || !player.teamVenueRuns) return '—';
-    let playerRuns, teamRuns;
-    if (venue === 'away') {
-      playerRuns = (player.venueRuns.away || 0) + (player.venueRuns.neutral || 0);
-      teamRuns = (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
-    } else {
-      playerRuns = player.venueRuns[venue] || 0;
-      teamRuns = player.teamVenueRuns[venue] || 0;
-    }
-    if (teamRuns === 0) return '—';
-    return ((playerRuns / teamRuns) * 100).toFixed(1);
-  };
-  
-  // Calculate outcome percentage (win/draw/loss)
-  // Tie is treated as draw
-  const getOutcomePct = (player, result) => {
-    if (!player.resultRuns || !player.teamResultRuns) return '—';
-    let playerRuns, teamRuns;
-    if (result === 'draw') {
-      playerRuns = (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
-      teamRuns = (player.teamResultRuns.draw || 0) + (player.teamResultRuns.tie || 0);
-    } else {
-      playerRuns = player.resultRuns[result] || 0;
-      teamRuns = player.teamResultRuns[result] || 0;
-    }
-    if (teamRuns === 0) return '—';
-    return ((playerRuns / teamRuns) * 100).toFixed(1);
-  };
   
   // Render table rows
   tbody.innerHTML = limitedPlayers.map((player, index) => `
@@ -193549,11 +193065,6 @@ function updateResultsTable() {
       <td class="num">${player.runs.toLocaleString()}</td>
       <td class="num">${player.avg.toFixed(2)}</td>
       <td class="num">${player.sr.toFixed(2)}</td>
-      <td class="num">${getImpactPct(player, 'home')}</td>
-      <td class="num">${getImpactPct(player, 'away')}</td>
-      <td class="num">${getOutcomePct(player, 'win')}</td>
-      <td class="num">${getOutcomePct(player, 'draw')}</td>
-      <td class="num">${getOutcomePct(player, 'loss')}</td>
       <td class="num points">${grandTotal > 0 ? player.points.toFixed(1) : '—'}</td>
       <td class="num">${index + 1}</td>
     </tr>
@@ -193603,10 +193114,6 @@ function handleEraChange(checkbox) {
   
   updateEraButtonText();
   updateResultsTable();
-  updateInningsWeights();
-  updateVenueWeights();
-  updateResultWeights();
-  updateAvgWeights();
 }
 
 function updateEraButtonText() {
@@ -193636,342 +193143,118 @@ function clearFilters() {
   updateEraButtonText();
   
   updateResultsTable();
-  updateInningsWeights();
-  updateVenueWeights();
-  updateResultWeights();
-  updateAvgWeights();
+}
+
+// Player Type & Model Type functions
+const modelOptions = {
+  batter: [
+    { value: 'Tencliffe15', label: 'Tencliffe15' },
+    { value: 'Bradlar99', label: 'Bradlar99' },
+    { value: 'Harjosh86', label: 'Harjosh86' }
+  ],
+  bowler: [
+    { value: 'Sharan7080', label: 'Sharan7080' },
+    { value: 'Dale20', label: 'Dale20' },
+    { value: 'Mal40', label: 'Mal40' },
+    { value: 'Bap2.5', label: 'Bap2.5' }
+  ]
+};
+
+function handlePlayerTypeChange() {
+  const playerType = document.getElementById('playerTypeFilter').value;
+  const modelSelect = document.getElementById('modelTypeFilter');
+  
+  // Clear and repopulate model options
+  modelSelect.innerHTML = '';
+  const options = modelOptions[playerType] || [];
+  options.forEach(opt => {
+    const option = document.createElement('option');
+    option.value = opt.value;
+    option.textContent = opt.label;
+    modelSelect.appendChild(option);
+  });
+  
+  updateResultsTable();
+}
+
+// Initialize model dropdown on load
+handlePlayerTypeChange();
+
+// Bowling filter functions
+function toggleBowlEraDropdown() {
+  const dropdown = document.getElementById('bowlEraDropdown');
+  dropdown.classList.toggle('show');
+}
+
+// Close bowling era dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const container = document.getElementById('bowlEraFilterContainer');
+  if (container && !container.contains(e.target)) {
+    document.getElementById('bowlEraDropdown').classList.remove('show');
+  }
+});
+
+function getSelectedBowlEras() {
+  const checkboxes = document.querySelectorAll('#bowlEraDropdown input[type="checkbox"]:checked');
+  return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function handleBowlEraChange(checkbox) {
+  const allCheckbox = document.querySelector('#bowlEraDropdown input[value="all"]');
+  const eraCheckboxes = document.querySelectorAll('#bowlEraDropdown input[type="checkbox"]:not([value="all"])');
+  
+  if (checkbox.value === 'all') {
+    if (checkbox.checked) {
+      eraCheckboxes.forEach(cb => cb.checked = false);
+    }
+  } else {
+    if (checkbox.checked) {
+      allCheckbox.checked = false;
+    }
+    
+    const anySelected = Array.from(eraCheckboxes).some(cb => cb.checked);
+    if (!anySelected) {
+      allCheckbox.checked = true;
+    }
+  }
+  
+  updateBowlEraButtonText();
+  updateResultsTable();
+}
+
+function updateBowlEraButtonText() {
+  const selectedEras = getSelectedBowlEras();
+  const textEl = document.getElementById('bowlEraSelectedText');
+  
+  if (selectedEras.includes('all') || selectedEras.length === 0) {
+    textEl.textContent = 'All Eras';
+  } else if (selectedEras.length === 1) {
+    textEl.textContent = selectedEras[0];
+  } else {
+    textEl.textContent = selectedEras.length + ' Eras';
+  }
+}
+
+function clearBowlFilters() {
+  document.getElementById('bowlWktsFilter').value = '0';
+  document.getElementById('bowlAvgFilter').value = '0';
+  document.getElementById('bowlSRFilter').value = '0';
+  document.getElementById('bowlEconFilter').value = '0';
+  document.getElementById('bowlPlayerFilter').value = '10';
+  
+  // Reset bowling era checkboxes
+  const allCheckbox = document.querySelector('#bowlEraDropdown input[value="all"]');
+  const eraCheckboxes = document.querySelectorAll('#bowlEraDropdown input[type="checkbox"]:not([value="all"])');
+  allCheckbox.checked = true;
+  eraCheckboxes.forEach(cb => cb.checked = false);
+  updateBowlEraButtonText();
+  
+  updateResultsTable();
 }
 
 // Initialize
 updateGrandTotal();
 updateResultsTable();
-
-// Calculate and display initial innings weights
-function updateInningsWeights() {
-  const selectedEras = getSelectedEras();
-  const eraFilter = selectedEras.includes('all') ? 'all' : selectedEras.join(',');
-  currentInningsWeights = getInningsWeightsForEras(selectedEras);
-  
-  // Update suggested weight displays
-  document.getElementById('impactHomeSuggested').textContent = currentInningsWeights.home.toFixed(1) + '%';
-  document.getElementById('impactAwaySuggested').textContent = currentInningsWeights.away.toFixed(1) + '%';
-  
-  // Update era label
-  const eraLabel = document.getElementById('inningsEraLabel');
-  if (selectedEras.includes('all')) {
-    eraLabel.textContent = '(All Eras)';
-  } else if (selectedEras.length === 1) {
-    eraLabel.textContent = '(' + selectedEras[0] + ')';
-  } else {
-    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
-  }
-  
-  // Show apply button if impact category has a total
-  const applyBtn = document.getElementById('impactApplySuggested');
-  if (config.impact.total > 0) {
-    applyBtn.style.display = 'block';
-  }
-}
-
-// Calculate and display venue weights
-function updateVenueWeights() {
-  const selectedEras = getSelectedEras();
-  currentVenueWeights = getVenueWeightsForEras(selectedEras);
-  
-  // Update suggested weight displays
-  document.getElementById('haHomeSuggested').textContent = currentVenueWeights.home.toFixed(1) + '%';
-  document.getElementById('haAwaySuggested').textContent = currentVenueWeights.away.toFixed(1) + '%';
-  
-  // Update era label
-  const eraLabel = document.getElementById('venueEraLabel');
-  if (selectedEras.includes('all')) {
-    eraLabel.textContent = '(All Eras)';
-  } else if (selectedEras.length === 1) {
-    eraLabel.textContent = '(' + selectedEras[0] + ')';
-  } else {
-    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
-  }
-  
-  // Show apply button if ha category has a total
-  const applyBtn = document.getElementById('haApplySuggested');
-  if (config.ha.total > 0) {
-    applyBtn.style.display = 'block';
-  }
-}
-
-// Apply suggested impact weights to Impact category (home/away)
-function applyImpactSuggested() {
-  const total = config.impact.total;
-  if (total <= 0) {
-    alert('Please set a Contribution Impact category total first.');
-    return;
-  }
-  
-  // Calculate actual values based on total and percentages
-  // Round to whole numbers that sum to the total
-  const rawValues = {
-    home: currentInningsWeights.home / 100 * total,
-    away: currentInningsWeights.away / 100 * total
-  };
-  
-  // Round and adjust to ensure sum equals total
-  let values = {
-    home: Math.round(rawValues.home),
-    away: Math.round(rawValues.away)
-  };
-  
-  // Adjust for rounding errors
-  let sum = values.home + values.away;
-  let diff = total - sum;
-  
-  // Add/subtract difference from larger value
-  if (diff !== 0) {
-    if (values.home >= values.away) {
-      values.home += diff;
-    } else {
-      values.away += diff;
-    }
-  }
-  
-  // Apply values to inputs
-  ['home', 'away'].forEach(venue => {
-    config.impact.subs[venue] = values[venue];
-    const input = document.getElementById('impact' + venue.charAt(0).toUpperCase() + venue.slice(1));
-    const item = document.getElementById('impact' + venue.charAt(0).toUpperCase() + venue.slice(1) + 'Item');
-    input.value = values[venue];
-    if (values[venue] > 0) {
-      item.classList.add('has-value');
-    }
-  });
-  
-  // Mark as manually edited to prevent auto-populate from overwriting
-  config.impact.manuallyEdited = { home: true, away: true };
-  
-  updateSubtotal('impact');
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
-}
-
-// Calculate and display avg weights (based on result distribution)
-function updateAvgWeights() {
-  const selectedEras = getSelectedEras();
-  currentAvgWeights = getAvgWeightsForEras(selectedEras);
-  
-  // Update suggested weight displays
-  document.getElementById('avgWinSuggested').textContent = currentAvgWeights.win.toFixed(1) + '%';
-  document.getElementById('avgDrawSuggested').textContent = currentAvgWeights.draw.toFixed(1) + '%';
-  document.getElementById('avgLossSuggested').textContent = currentAvgWeights.loss.toFixed(1) + '%';
-  
-  // Update era label
-  const eraLabel = document.getElementById('avgEraLabel');
-  if (selectedEras.includes('all')) {
-    eraLabel.textContent = '(All Eras)';
-  } else if (selectedEras.length === 1) {
-    eraLabel.textContent = '(' + selectedEras[0] + ')';
-  } else {
-    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
-  }
-  
-  // Show apply button if avg category has a total
-  const applyBtn = document.getElementById('avgApplySuggested');
-  if (config.avg.total > 0) {
-    applyBtn.style.display = 'block';
-  }
-}
-
-// Apply suggested avg weights to Outcome Average category
-function applyAvgSuggested() {
-  const total = config.avg.total;
-  if (total <= 0) {
-    alert('Please set an Outcome Average category total first.');
-    return;
-  }
-  
-  // Calculate actual values based on total and percentages
-  const rawValues = {
-    win: currentAvgWeights.win / 100 * total,
-    draw: currentAvgWeights.draw / 100 * total,
-    loss: currentAvgWeights.loss / 100 * total
-  };
-  
-  // Round and adjust to ensure sum equals total
-  let values = {
-    win: Math.round(rawValues.win),
-    draw: Math.round(rawValues.draw),
-    loss: Math.round(rawValues.loss)
-  };
-  
-  // Adjust for rounding errors
-  let sum = values.win + values.draw + values.loss;
-  let diff = total - sum;
-  
-  // Add/subtract difference from largest value
-  if (diff !== 0) {
-    let maxKey = 'win';
-    let maxVal = values.win;
-    ['draw', 'loss'].forEach(k => {
-      if (values[k] > maxVal) {
-        maxVal = values[k];
-        maxKey = k;
-      }
-    });
-    values[maxKey] += diff;
-  }
-  
-  // Apply values to inputs
-  ['win', 'draw', 'loss'].forEach(result => {
-    config.avg.subs[result] = values[result];
-    const input = document.getElementById('avg' + result.charAt(0).toUpperCase() + result.slice(1));
-    const item = document.getElementById('avg' + result.charAt(0).toUpperCase() + result.slice(1) + 'Item');
-    input.value = values[result];
-    if (values[result] > 0) {
-      item.classList.add('has-value');
-    }
-  });
-  
-  // Mark as manually edited to prevent auto-populate from overwriting
-  config.avg.manuallyEdited = { win: true, draw: true, loss: true };
-  
-  updateSubtotal('avg');
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
-}
-function applyVenueSuggested() {
-  const total = config.ha.total;
-  if (total <= 0) {
-    alert('Please set a Home & Away category total first.');
-    return;
-  }
-  
-  // Calculate actual values based on total and percentages
-  const rawHome = currentVenueWeights.home / 100 * total;
-  const rawAway = currentVenueWeights.away / 100 * total;
-  
-  // Round and adjust to ensure sum equals total
-  let homeVal = Math.round(rawHome);
-  let awayVal = Math.round(rawAway);
-  
-  // Adjust for rounding errors
-  let sum = homeVal + awayVal;
-  let diff = total - sum;
-  
-  // Add/subtract difference from larger value
-  if (diff !== 0) {
-    if (homeVal >= awayVal) {
-      homeVal += diff;
-    } else {
-      awayVal += diff;
-    }
-  }
-  
-  // Apply values to inputs
-  config.ha.subs.home = homeVal;
-  config.ha.subs.away = awayVal;
-  
-  document.getElementById('haHome').value = homeVal;
-  document.getElementById('haAway').value = awayVal;
-  
-  if (homeVal > 0) document.getElementById('haHomeItem').classList.add('has-value');
-  if (awayVal > 0) document.getElementById('haAwayItem').classList.add('has-value');
-  
-  // Mark as manually edited
-  config.ha.manuallyEdited = { home: true, away: true };
-  
-  updateSubtotal('ha');
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
-}
-
-// Initialize innings and venue weights on page load
-updateInningsWeights();
-updateVenueWeights();
-updateResultWeights();
-updateAvgWeights();
-
-// Calculate and display result weights
-function updateResultWeights() {
-  const selectedEras = getSelectedEras();
-  currentResultWeights = getResultWeightsForEras(selectedEras);
-  
-  // Update suggested weight displays
-  document.getElementById('resultWinSuggested').textContent = currentResultWeights.win.toFixed(1) + '%';
-  document.getElementById('resultDrawSuggested').textContent = currentResultWeights.draw.toFixed(1) + '%';
-  document.getElementById('resultLossSuggested').textContent = currentResultWeights.loss.toFixed(1) + '%';
-  
-  // Update era label
-  const eraLabel = document.getElementById('resultEraLabel');
-  if (selectedEras.includes('all')) {
-    eraLabel.textContent = '(All Eras)';
-  } else if (selectedEras.length === 1) {
-    eraLabel.textContent = '(' + selectedEras[0] + ')';
-  } else {
-    eraLabel.textContent = '(' + selectedEras.length + ' Eras)';
-  }
-  
-  // Show apply button if result category has a total
-  const applyBtn = document.getElementById('resultApplySuggested');
-  if (config.result.total > 0) {
-    applyBtn.style.display = 'block';
-  }
-}
-
-// Apply suggested result weights to Match Result category
-function applyResultSuggested() {
-  const total = config.result.total;
-  if (total <= 0) {
-    alert('Please set a Match Result category total first.');
-    return;
-  }
-  
-  // Calculate actual values based on total and percentages
-  const rawWin = currentResultWeights.win / 100 * total;
-  const rawDraw = currentResultWeights.draw / 100 * total;
-  const rawLoss = currentResultWeights.loss / 100 * total;
-  
-  // Round and adjust to ensure sum equals total
-  let winVal = Math.round(rawWin);
-  let drawVal = Math.round(rawDraw);
-  let lossVal = Math.round(rawLoss);
-  
-  // Adjust for rounding errors
-  let sum = winVal + drawVal + lossVal;
-  let diff = total - sum;
-  
-  // Add/subtract difference from largest value
-  if (diff !== 0) {
-    if (winVal >= drawVal && winVal >= lossVal) {
-      winVal += diff;
-    } else if (drawVal >= lossVal) {
-      drawVal += diff;
-    } else {
-      lossVal += diff;
-    }
-  }
-  
-  // Apply values to inputs
-  config.result.subs.win = winVal;
-  config.result.subs.draw = drawVal;
-  config.result.subs.loss = lossVal;
-  
-  document.getElementById('resultWin').value = winVal;
-  document.getElementById('resultDraw').value = drawVal;
-  document.getElementById('resultLoss').value = lossVal;
-  
-  if (winVal > 0) document.getElementById('resultWinItem').classList.add('has-value');
-  if (drawVal > 0) document.getElementById('resultDrawItem').classList.add('has-value');
-  if (lossVal > 0) document.getElementById('resultLossItem').classList.add('has-value');
-  
-  // Mark as manually edited
-  config.result.manuallyEdited = { win: true, draw: true, loss: true };
-  
-  updateSubtotal('result');
-  updateGrandTotal();
-  updateTags();
-  updatePreview();
-}
 
 // Share functionality
 function sharePage(){
@@ -194028,12 +193311,20 @@ function showShareDialog(url){
 function exportToExcel(){
   const grandTotal = Object.values(config).reduce((sum, cfg) => sum + cfg.total, 0);
   
-  // Get filtered players from results table
+  // Get filtered players from results table (batting)
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
   const minAvg = parseFloat(document.getElementById('avgFilter').value) || 0;
   const minSR = parseFloat(document.getElementById('srFilter').value) || 0;
   const selectedEras = getSelectedEras();
   const playerLimit = document.getElementById('playerFilter').value;
+  
+  // Bowling filters
+  const minBowlWkts = parseFloat(document.getElementById('bowlWktsFilter').value) || 0;
+  const maxBowlAvg = parseFloat(document.getElementById('bowlAvgFilter').value) || 0;
+  const maxBowlSR = parseFloat(document.getElementById('bowlSRFilter').value) || 0;
+  const maxBowlEcon = parseFloat(document.getElementById('bowlEconFilter').value) || 0;
+  const selectedBowlEras = typeof getSelectedBowlEras === 'function' ? getSelectedBowlEras() : ['all'];
+  const bowlPlayerLimit = document.getElementById('bowlPlayerFilter') ? document.getElementById('bowlPlayerFilter').value : 'all';
   
   // Filter players
   const filteredByStats = playerData.filter(player => {
@@ -194047,6 +193338,29 @@ function exportToExcel(){
       });
       if (!matchesEra) return false;
     }
+    
+    // Bowling filters
+    const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
+    if (bowlFiltersActive) {
+      const bowlWkts = player.bowlWkts || 0;
+      const bowlAvg = player.bowlAvg || 0;
+      const bowlSR = player.bowlSR || 0;
+      const bowlEcon = player.bowlEcon || 0;
+      if (minBowlWkts > 0 && bowlWkts < minBowlWkts) return false;
+      if (maxBowlAvg > 0 && (bowlWkts === 0 || bowlAvg > maxBowlAvg)) return false;
+      if (maxBowlSR > 0 && (bowlWkts === 0 || bowlSR > maxBowlSR)) return false;
+      if (maxBowlEcon > 0 && (bowlWkts === 0 || bowlEcon > maxBowlEcon)) return false;
+      if (!selectedBowlEras.includes('all')) {
+        const playerFrom = player.from || 0;
+        const playerTo = player.to || 9999;
+        const matchesBowlEra = selectedBowlEras.some(era => {
+          const [eraStart, eraEnd] = era.split('-').map(Number);
+          return !(playerTo < eraStart || playerFrom > eraEnd);
+        });
+        if (!matchesBowlEra) return false;
+      }
+    }
+    
     return true;
   });
   
@@ -194058,42 +193372,17 @@ function exportToExcel(){
   
   playersWithPoints.sort((a, b) => b.points - a.points);
   
-  const limitedPlayers = playerLimit === 'all' 
+  // Apply player limit - use the more restrictive of batting and bowling limits
+  let effectiveLimit = playerLimit;
+  if (bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
+    effectiveLimit = bowlPlayerLimit;
+  }
+  
+  const limitedPlayers = effectiveLimit === 'all' 
     ? playersWithPoints 
-    : playersWithPoints.slice(0, parseInt(playerLimit));
+    : playersWithPoints.slice(0, parseInt(effectiveLimit));
   
   if(limitedPlayers.length === 0){alert('No data to export');return;}
-  
-  // Helper functions
-  // Neutral venue is treated as away
-  const getImpactPct = (player, venue) => {
-    if (!player.venueRuns || !player.teamVenueRuns) return '—';
-    let playerRuns, teamRuns;
-    if (venue === 'away') {
-      playerRuns = (player.venueRuns.away || 0) + (player.venueRuns.neutral || 0);
-      teamRuns = (player.teamVenueRuns.away || 0) + (player.teamVenueRuns.neutral || 0);
-    } else {
-      playerRuns = player.venueRuns[venue] || 0;
-      teamRuns = player.teamVenueRuns[venue] || 0;
-    }
-    if (teamRuns === 0) return '—';
-    return ((playerRuns / teamRuns) * 100).toFixed(1);
-  };
-  
-  // Tie is treated as draw
-  const getOutcomePct = (player, result) => {
-    if (!player.resultRuns || !player.teamResultRuns) return '—';
-    let playerRuns, teamRuns;
-    if (result === 'draw') {
-      playerRuns = (player.resultRuns.draw || 0) + (player.resultRuns.tie || 0);
-      teamRuns = (player.teamResultRuns.draw || 0) + (player.teamResultRuns.tie || 0);
-    } else {
-      playerRuns = player.resultRuns[result] || 0;
-      teamRuns = player.teamResultRuns[result] || 0;
-    }
-    if (teamRuns === 0) return '—';
-    return ((playerRuns / teamRuns) * 100).toFixed(1);
-  };
   
   // Create workbook
   const wb = XLSX.utils.book_new();
@@ -194106,15 +193395,10 @@ function exportToExcel(){
     'Runs': player.runs,
     'Average': player.avg.toFixed(2),
     'Strike Rate': player.sr.toFixed(2),
-    'Impact Home %': getImpactPct(player, 'home'),
-    'Impact Away %': getImpactPct(player, 'away'),
-    'Outcome Win %': getOutcomePct(player, 'win'),
-    'Outcome Draw %': getOutcomePct(player, 'draw'),
-    'Outcome Loss %': getOutcomePct(player, 'loss'),
     'Points': grandTotal > 0 ? player.points.toFixed(1) : '—'
   }));
   const wsResults = XLSX.utils.json_to_sheet(resultsData);
-  wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:8}];
+  wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:8}];
   XLSX.utils.book_append_sheet(wb, wsResults, 'Simulation Results');
   
   // Weights configuration sheet
@@ -194122,14 +193406,9 @@ function exportToExcel(){
     ['Weight Configuration', ''],
     ['', ''],
     ['Category', 'Weight %'],
-    ['Contribution Impact Total', config.impact.total],
-    ['  Home', config.impact.subs.home],
-    ['  Away', config.impact.subs.away],
-    ['Outcome Average Total', config.avg.total],
-    ['  Avg in Wins', config.avg.subs.win],
-    ['  Avg in Draws', config.avg.subs.draw],
-    ['  Avg in Losses', config.avg.subs.loss],
-    ['Speed (SR)', config.sr.total],
+    ['Runs', config.runs.total],
+    ['Average', config.avg.total],
+    ['Strike Rate', config.sr.total],
     ['', ''],
     ['Grand Total', grandTotal + '%']
   ];
