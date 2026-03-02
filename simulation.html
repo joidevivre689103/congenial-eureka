@@ -193295,39 +193295,56 @@ function clearBowlFilters() {
 updateGrandTotal();
 updateResultsTable();
 
-// Load config from URL params (sent from backsim)
+// Load config from URL params (sent from backsim) or localStorage fallback
 (function loadConfigFromURL() {
   const params = new URLSearchParams(window.location.search);
-  const configParam = params.get('config');
+  let configParam = params.get('config');
+  let playerType = params.get('playerType');
+  let modelType = params.get('modelType');
+
+  // Fallback: read from localStorage if no URL params
+  if (!configParam) {
+    try {
+      const saved = localStorage.getItem('backsim_applied_config');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        configParam = JSON.stringify(parsed.config);
+        playerType = playerType || parsed.playerType;
+        modelType = modelType || parsed.modelType;
+      }
+    } catch(e) {}
+  }
+
   if (!configParam) return;
 
   try {
-    const incoming = JSON.parse(decodeURIComponent(configParam));
+    const incoming = typeof configParam === 'string' && configParam.startsWith('{') 
+      ? JSON.parse(configParam) 
+      : JSON.parse(decodeURIComponent(configParam));
 
-    // Populate the model weight inputs
+    // Populate the config (model weight values in memory)
     for (const [model, factors] of Object.entries(incoming)) {
-      if (!config[model]) continue;
+      if (!config[model]) {
+        // Create config slot for unknown models
+        config[model] = {};
+      }
       for (const [factor, weight] of Object.entries(factors)) {
-        if (config[model].hasOwnProperty(factor)) {
-          config[model][factor] = weight;
-          const input = document.getElementById(`${model}_${factor}`);
-          if (input) {
-            input.value = weight > 0 ? weight : '';
-            const item = document.getElementById(`${model}_${factor}_item`);
-            if (item) {
-              if (weight > 0) item.classList.add('has-value');
-              else item.classList.remove('has-value');
-            }
+        config[model][factor] = weight;
+        // Try to update input if it exists in DOM (only custom cards are rendered)
+        const input = document.getElementById(`${model}_${factor}`);
+        if (input) {
+          input.value = weight > 0 ? weight : '';
+          const item = document.getElementById(`${model}_${factor}_item`);
+          if (item) {
+            if (weight > 0) item.classList.add('has-value');
+            else item.classList.remove('has-value');
           }
         }
       }
-      // Update subtotal display for this model
       if (typeof updateModelSubtotal === 'function') updateModelSubtotal(model);
     }
 
     // Set player type and model type if provided
-    const playerType = params.get('playerType');
-    const modelType = params.get('modelType');
     if (playerType) {
       const ptSelect = document.getElementById('playerTypeFilter');
       if (ptSelect) {
@@ -193338,10 +193355,15 @@ updateResultsTable();
     if (modelType) {
       const mtSelect = document.getElementById('modelTypeFilter');
       if (mtSelect) {
-        // Set after a tick so handlePlayerTypeChange has populated options
+        // Need to wait for handlePlayerTypeChange to populate dropdown options
         setTimeout(() => {
           mtSelect.value = modelType;
+          // NOW refresh results with correct model selected
+          updateTags();
+          updatePreview();
+          updateResultsTable();
         }, 0);
+        return; // Skip the immediate refresh below, the setTimeout handles it
       }
     }
 

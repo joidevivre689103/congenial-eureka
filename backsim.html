@@ -27,6 +27,8 @@
 .password-error{color:#d04040;font-size:12px;margin-top:10px;opacity:0;transition:opacity 0.2s}
 .password-error.show{opacity:1}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(26,154,96,0.5)}70%{box-shadow:0 0 0 10px rgba(26,154,96,0)}100%{box-shadow:0 0 0 0 rgba(26,154,96,0)}}
+.pulse{animation:pulse 1s ease-out}
 .site-content{display:none}
 .site-content.unlocked{display:block}
 
@@ -737,7 +739,11 @@ header.header{display:none !important}
       <span class="wp-title">Model Weights</span>
       <div class="wp-actions">
         <button class="wp-reset" onclick="resetWeights()">Reset All</button>
-        <button class="wp-apply" onclick="applyWeights()">Apply &amp; Run Simulation →</button>
+        <button class="wp-apply" onclick="applyWeights()">Apply Weights</button>
+        <button class="wp-apply" id="goToSimBtn" onclick="goToSimulation()" style="display:none;background:linear-gradient(135deg,var(--green),#147a4a);gap:6px">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:#fff;fill:none"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          View in Simulation →
+        </button>
       </div>
     </div>
 
@@ -1042,7 +1048,7 @@ function applyWeights() {
   for (const [model, factors] of Object.entries(config)) {
     const total = Object.values(factors).reduce((s, v) => s + v, 0);
     if (total > 0) {
-      activeConfig[model] = factors;
+      activeConfig[model] = { ...factors };
     }
   }
 
@@ -1051,11 +1057,37 @@ function applyWeights() {
     return;
   }
 
-  // Encode config and navigate to simulation page
-  const configStr = encodeURIComponent(JSON.stringify(activeConfig));
+  // Save to localStorage so simulation page can read it
   const playerType = document.getElementById('playerTypeFilter').value;
   const modelType = document.getElementById('modelTypeFilter').value;
-  window.location.href = `simulation.html?config=${configStr}&playerType=${playerType}&modelType=${modelType}`;
+  try {
+    localStorage.setItem('backsim_applied_config', JSON.stringify({
+      config: activeConfig,
+      playerType: playerType,
+      modelType: modelType
+    }));
+  } catch(e) { console.warn('Could not save config:', e); }
+
+  // Show confirmation and enable the go-to-simulation button
+  const goBtn = document.getElementById('goToSimBtn');
+  if (goBtn) {
+    goBtn.style.display = 'inline-flex';
+    goBtn.classList.add('pulse');
+    setTimeout(() => goBtn.classList.remove('pulse'), 1000);
+  }
+  alert('Weights saved! Click "View in Simulation →" to see results.');
+}
+
+function goToSimulation() {
+  // Build URL with config from localStorage
+  const saved = localStorage.getItem('backsim_applied_config');
+  if (!saved) {
+    alert('Please apply weights first.');
+    return;
+  }
+  const { config: activeConfig, playerType, modelType } = JSON.parse(saved);
+  const configStr = encodeURIComponent(JSON.stringify(activeConfig));
+  window.location.href = `simulation.html?config=${configStr}&playerType=${encodeURIComponent(playerType)}&modelType=${encodeURIComponent(modelType)}`;
 }
 
 // Render cards on load
