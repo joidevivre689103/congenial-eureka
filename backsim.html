@@ -132,6 +132,15 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   transition:all 0.2s;
 }
 .wg-reset-btn:hover{color:var(--accent);border-color:var(--accent)}
+.wg-lock-btn{
+  font-size:11px;color:var(--text3);background:none;border:1px solid var(--border);
+  border-radius:4px;padding:4px 8px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:500;
+  transition:all 0.2s;display:inline-flex;align-items:center;gap:4px;
+}
+.wg-lock-btn:hover{color:var(--blue);border-color:var(--blue)}
+.wg-lock-btn.locked{color:var(--green);border-color:var(--green);background:var(--green-dim)}
+.weight-group.is-locked .wi-input{opacity:0.6;pointer-events:none}
+.weight-group.is-locked .wg-reset-btn{opacity:0.4;pointer-events:none}
 
 /* Total input row */
 .wg-total-row{
@@ -833,10 +842,15 @@ function renderModelCards() {
     const iconSvg = isBowl
       ? '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
       : '<path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>';
+    const lockSvgOpen = '<svg viewBox="0 0 24 24" width="12" height="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+    const lockSvgClosed = '<svg viewBox="0 0 24 24" width="12" height="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
     let html = `<div class="weight-group" id="${key}Group">
       <div class="wg-header">
         <span class="wg-title"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>${model.name}</span>
-        <button class="wg-reset-btn" onclick="resetCategory('${key}')">Reset</button>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="wg-lock-btn" id="${key}LockBtn" onclick="toggleLock('${key}')" title="Lock weights across sessions">${lockSvgOpen} Lock</button>
+          <button class="wg-reset-btn" onclick="resetCategory('${key}')">Reset</button>
+        </div>
       </div>`;
     model.factors.forEach(f => {
       html += `<div class="weight-item" id="${key}_${f}_item" style="margin-bottom:6px">
@@ -862,6 +876,9 @@ function renderModelCards() {
 }
 
 function onFactorInput(model, factor) {
+  // Prevent editing locked models
+  if (lockedModels[model]) return;
+
   const input = document.getElementById(`${model}_${factor}`);
   let val = parseInt(input.value) || 0;
   if (val < 0) val = 0;
@@ -975,6 +992,18 @@ function clearGroup(group) {
 
 function resetCategory(model) {
   if (!config[model]) return;
+
+  // Unlock if locked
+  const lockSvgOpen = '<svg viewBox="0 0 24 24" width="12" height="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+  if (lockedModels[model]) {
+    lockedModels[model] = false;
+    const btn = document.getElementById(`${model}LockBtn`);
+    const group = document.getElementById(`${model}Group`);
+    if (btn) { btn.classList.remove('locked'); btn.innerHTML = lockSvgOpen + ' Lock'; }
+    if (group) group.classList.remove('is-locked');
+    saveLockedData();
+  }
+
   for (const factor of Object.keys(config[model])) {
     config[model][factor] = 0;
     const input = document.getElementById(`${model}_${factor}`);
@@ -1031,6 +1060,106 @@ function applyWeights() {
 
 // Render cards on load
 renderModelCards();
+
+// Lock system - persist weights across sessions via localStorage
+const LOCK_STORAGE_KEY = 'backsim_locked_models';
+const lockedModels = {};
+
+function getLockedData() {
+  try {
+    const data = localStorage.getItem(LOCK_STORAGE_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch(e) { return {}; }
+}
+
+function saveLockedData() {
+  const toSave = {};
+  for (const [model, isLocked] of Object.entries(lockedModels)) {
+    if (isLocked) {
+      toSave[model] = { ...config[model] };
+    }
+  }
+  try {
+    localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(toSave));
+  } catch(e) { console.warn('Could not save locked weights:', e); }
+}
+
+function toggleLock(model) {
+  const lockSvgOpen = '<svg viewBox="0 0 24 24" width="12" height="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+  const lockSvgClosed = '<svg viewBox="0 0 24 24" width="12" height="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+
+  const btn = document.getElementById(`${model}LockBtn`);
+  const group = document.getElementById(`${model}Group`);
+
+  if (lockedModels[model]) {
+    // Unlock
+    lockedModels[model] = false;
+    btn.classList.remove('locked');
+    btn.innerHTML = lockSvgOpen + ' Lock';
+    group.classList.remove('is-locked');
+  } else {
+    // Lock - validate first
+    const total = Object.values(config[model]).reduce((s, v) => s + v, 0);
+    if (total > 0 && total !== 100) {
+      alert(`${allModels[model].name} factors must sum to 100% before locking (currently ${total}%).`);
+      return;
+    }
+    if (total === 0) {
+      alert('Set weights before locking.');
+      return;
+    }
+    lockedModels[model] = true;
+    btn.classList.add('locked');
+    btn.innerHTML = lockSvgClosed + ' Locked';
+    group.classList.add('is-locked');
+  }
+  saveLockedData();
+}
+
+function restoreLockedWeights() {
+  const saved = getLockedData();
+  const lockSvgClosed = '<svg viewBox="0 0 24 24" width="12" height="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:currentColor;fill:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+
+  for (const [model, factors] of Object.entries(saved)) {
+    if (!config[model]) continue;
+
+    // Restore weights
+    for (const [factor, val] of Object.entries(factors)) {
+      if (config[model].hasOwnProperty(factor)) {
+        config[model][factor] = val;
+        const input = document.getElementById(`${model}_${factor}`);
+        if (input) {
+          input.value = val > 0 ? val : '';
+          const item = document.getElementById(`${model}_${factor}_item`);
+          if (item) {
+            if (val > 0) item.classList.add('has-value');
+            else item.classList.remove('has-value');
+          }
+        }
+      }
+    }
+
+    // Mark as locked
+    lockedModels[model] = true;
+    const btn = document.getElementById(`${model}LockBtn`);
+    const group = document.getElementById(`${model}Group`);
+    if (btn) {
+      btn.classList.add('locked');
+      btn.innerHTML = lockSvgClosed + ' Locked';
+    }
+    if (group) group.classList.add('is-locked');
+
+    updateModelSubtotal(model);
+  }
+
+  if (Object.keys(saved).length > 0) {
+    updateTags();
+    updatePreview();
+  }
+}
+
+// Restore locked weights on page load
+restoreLockedWeights();
 
 // Player data from actual Test cricket database
 const playerData = [
