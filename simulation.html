@@ -193245,6 +193245,66 @@ function clearBowlFilters() {
 updateGrandTotal();
 updateResultsTable();
 
+// Load config from URL params (sent from backsim)
+(function loadConfigFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const configParam = params.get('config');
+  if (!configParam) return;
+
+  try {
+    const incoming = JSON.parse(decodeURIComponent(configParam));
+
+    // Populate the model weight inputs
+    for (const [model, factors] of Object.entries(incoming)) {
+      if (!config[model]) continue;
+      for (const [factor, weight] of Object.entries(factors)) {
+        if (config[model].hasOwnProperty(factor)) {
+          config[model][factor] = weight;
+          const input = document.getElementById(`${model}_${factor}`);
+          if (input) {
+            input.value = weight > 0 ? weight : '';
+            const item = document.getElementById(`${model}_${factor}_item`);
+            if (item) {
+              if (weight > 0) item.classList.add('has-value');
+              else item.classList.remove('has-value');
+            }
+          }
+        }
+      }
+      // Update subtotal display for this model
+      if (typeof updateModelSubtotal === 'function') updateModelSubtotal(model);
+    }
+
+    // Set player type and model type if provided
+    const playerType = params.get('playerType');
+    const modelType = params.get('modelType');
+    if (playerType) {
+      const ptSelect = document.getElementById('playerTypeFilter');
+      if (ptSelect) {
+        ptSelect.value = playerType;
+        if (typeof handlePlayerTypeChange === 'function') handlePlayerTypeChange();
+      }
+    }
+    if (modelType) {
+      const mtSelect = document.getElementById('modelTypeFilter');
+      if (mtSelect) {
+        // Set after a tick so handlePlayerTypeChange has populated options
+        setTimeout(() => {
+          mtSelect.value = modelType;
+        }, 0);
+      }
+    }
+
+    // Refresh everything
+    updateTags();
+    updatePreview();
+    updateResultsTable();
+
+  } catch (e) {
+    console.warn('Failed to parse config from URL:', e);
+  }
+})();
+
 // Share functionality
 function sharePage(){
   const shareUrl = window.location.href;
