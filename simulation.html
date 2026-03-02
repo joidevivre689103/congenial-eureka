@@ -492,8 +492,8 @@ header.header{display:none !important}
   <div class="info-panel">
     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
     <div class="info-text">
-      <strong>How weights work:</strong> Each model has its own factor weights that must sum to 100% within that model. 
-      Batting models use Runs, Average and Strike Rate. Bowling models use Wickets, Average, Strike Rate and Economy.
+      <strong>How it works:</strong> Set custom weights below (must sum to 100%), or select a pre-configured model from the Model Type dropdown. 
+      Named models (Tencliffe15, Bradlar99, etc.) are configured in backsim and their weights carry over automatically.
     </div>
   </div>
 
@@ -725,17 +725,17 @@ header.header{display:none !important}
 
   <div class="weights-panel">
     <div class="wp-header">
-      <span class="wp-title">Model Weights</span>
+      <span class="wp-title">Custom Weights</span>
       <div class="wp-actions">
         <button class="wp-reset" onclick="resetWeights()">Reset All</button>
-        <button class="wp-apply" onclick="applyWeights()">Apply Weights</button>
       </div>
     </div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:18px">Set your own factor weights below, or select a pre-configured model from the dropdown above to use weights from backsim.</p>
 
     <div style="margin-bottom:16px">
       <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:6px">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);fill:none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        Batting Models
+        Batting Weights
       </span>
     </div>
     <div class="weights-grid" style="margin-bottom:20px" id="battingModelsGrid">
@@ -744,7 +744,7 @@ header.header{display:none !important}
     <div style="margin-bottom:16px">
       <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:6px">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--blue);fill:none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Bowling Models
+        Bowling Weights
       </span>
     </div>
     <div class="weights-grid" id="bowlingModelsGrid">
@@ -789,6 +789,7 @@ header.header{display:none !important}
 
 <script>
 // Model definitions
+// Named models (configured via backsim, not editable here)
 const battingModels = {
   tencliffe15: { name: 'Tencliffe15', factors: ['runs','average','strikeRate'] },
   bradlar99: { name: 'Bradlar99', factors: ['runs','average','strikeRate'] },
@@ -801,7 +802,14 @@ const bowlingModels = {
   mal40: { name: 'Mal40', factors: ['wickets','average','strikeRate','economy'] },
   bap25: { name: 'Bap2.5', factors: ['wickets','average','strikeRate','economy'] }
 };
-const allModels = { ...battingModels, ...bowlingModels };
+
+// Custom user-configurable cards (editable on this page)
+const customModels = {
+  custom_batting: { name: 'Custom Batting', factors: ['runs','average','strikeRate'] },
+  custom_bowling: { name: 'Custom Bowling', factors: ['wickets','average','strikeRate','economy'] }
+};
+
+const allModels = { ...battingModels, ...bowlingModels, ...customModels };
 
 const factorLabels = {
   runs: 'Runs', average: 'Average', strikeRate: 'Strike Rate',
@@ -810,28 +818,28 @@ const factorLabels = {
   awayWinPct: '% Team Runs — Away Wins', awayDrawPct: '% Team Runs — Away Draws', awayLossPct: '% Team Runs — Away Losses'
 };
 
-// Config: each model has a weight per factor
+// Config: all models get factor slots
 const config = {};
 for (const [key, model] of Object.entries(allModels)) {
   config[key] = {};
   model.factors.forEach(f => { config[key][f] = 0; });
 }
 
-// Render model cards
+// Render only the two custom cards (named models are not shown)
 function renderModelCards() {
   const batGrid = document.getElementById('battingModelsGrid');
   const bowlGrid = document.getElementById('bowlingModelsGrid');
   batGrid.innerHTML = '';
   bowlGrid.innerHTML = '';
 
-  function buildCard(key, model, accentColor) {
-    const isBowl = !!bowlingModels[key];
+  function buildCard(key, model) {
+    const isBowl = key === 'custom_bowling';
     const iconSvg = isBowl
       ? '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
       : '<path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>';
     let html = `<div class="weight-group" id="${key}Group">
       <div class="wg-header">
-        <span class="wg-title"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>${model.name}</span>
+        <span class="wg-title"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>${isBowl ? 'Bowling' : 'Batting'}</span>
         <button class="wg-reset-btn" onclick="resetCategory('${key}')">Reset</button>
       </div>`;
     model.factors.forEach(f => {
@@ -849,12 +857,8 @@ function renderModelCards() {
     return html;
   }
 
-  for (const [key, model] of Object.entries(battingModels)) {
-    batGrid.innerHTML += buildCard(key, model, 'accent');
-  }
-  for (const [key, model] of Object.entries(bowlingModels)) {
-    bowlGrid.innerHTML += buildCard(key, model, 'blue');
-  }
+  batGrid.innerHTML = buildCard('custom_batting', customModels.custom_batting);
+  bowlGrid.innerHTML = buildCard('custom_bowling', customModels.custom_bowling);
 }
 
 function onFactorInput(model, factor) {
@@ -990,22 +994,7 @@ function resetWeights() {
   }
 }
 
-function applyWeights() {
-  // Validate each model: if any factor is set, total should be exactly 100
-  const errors = [];
-  for (const [model, factors] of Object.entries(config)) {
-    const total = Object.values(factors).reduce((s, v) => s + v, 0);
-    if (total > 0 && total !== 100) {
-      errors.push(`${allModels[model].name}: ${total}% (should be 100%)`);
-    }
-  }
-  if (errors.length > 0) {
-    alert('Each active model\'s factors must sum to 100%:\n\n' + errors.join('\n'));
-    return;
-  }
-  console.log('Applied configuration:', config);
-  alert('Weights applied successfully!\n\nConfiguration saved. Ready to run simulation.');
-}
+function applyWeights() {} // No-op — custom weights apply live
 
 // Render cards on load
 renderModelCards();
@@ -192943,15 +192932,28 @@ const playerData = [
 function calculatePoints(player) {
   let points = 0;
   
+  // Get the currently selected model from the dropdown
+  const modelTypeEl = document.getElementById('modelTypeFilter');
+  const selectedModelLabel = modelTypeEl ? modelTypeEl.value : '';
+  
+  // Map dropdown label to config key
+  const labelToKey = {};
+  for (const [key, model] of Object.entries(allModels)) {
+    labelToKey[model.name] = key;
+  }
+  const activeModelKey = labelToKey[selectedModelLabel];
+  
+  // Only calculate using the selected model's weights
+  if (!activeModelKey || !config[activeModelKey]) return 0;
+  const factors = config[activeModelKey];
+  
   // Map factor keys to actual player data values
-  // All batting models (tencliffe15, bradlar99, harjosh86) share the same batting stats
   const battingFactorMap = {
     runs: player.runs || 0,
     average: player.avg || 0,
     strikeRate: player.sr || 0
   };
   
-  // All bowling models (sharan7080, dale20, mal40, bap25) share bowling stats
   const bowlingFactorMap = {
     wickets: player.bowlWkts || 0,
     average: player.bowlAvg || 0,
@@ -192959,7 +192961,6 @@ function calculatePoints(player) {
     economy: player.bowlEcon || 0
   };
   
-  // Completeness model uses home/away result percentages
   const completenessMap = {
     homeWinPct: (player.homeResultPct && player.homeResultPct.win) || 0,
     homeDrawPct: (player.homeResultPct && player.homeResultPct.draw) || 0,
@@ -192969,22 +192970,20 @@ function calculatePoints(player) {
     awayLossPct: (player.awayResultPct && player.awayResultPct.loss) || 0
   };
   
-  const battingModelKeys = ['tencliffe15', 'bradlar99', 'harjosh86'];
-  const bowlingModelKeys = ['sharan7080', 'dale20', 'mal40', 'bap25'];
+  const battingModelKeys = ['tencliffe15', 'bradlar99', 'harjosh86', 'custom_batting'];
+  const bowlingModelKeys = ['sharan7080', 'dale20', 'mal40', 'bap25', 'custom_bowling'];
   
-  for (const [model, factors] of Object.entries(config)) {
-    for (const [factor, weight] of Object.entries(factors)) {
-      if (weight > 0) {
-        let score = 0;
-        if (model === 'completeness') {
-          score = completenessMap[factor] || 0;
-        } else if (battingModelKeys.includes(model)) {
-          score = battingFactorMap[factor] || 0;
-        } else if (bowlingModelKeys.includes(model)) {
-          score = bowlingFactorMap[factor] || 0;
-        }
-        points += score * (weight / 100);
+  for (const [factor, weight] of Object.entries(factors)) {
+    if (weight > 0) {
+      let score = 0;
+      if (activeModelKey === 'completeness') {
+        score = completenessMap[factor] || 0;
+      } else if (battingModelKeys.includes(activeModelKey)) {
+        score = battingFactorMap[factor] || 0;
+      } else if (bowlingModelKeys.includes(activeModelKey)) {
+        score = bowlingFactorMap[factor] || 0;
       }
+      points += score * (weight / 100);
     }
   }
   
@@ -192993,7 +192992,14 @@ function calculatePoints(player) {
 
 function updateResultsTable() {
   const tbody = document.getElementById('resultsBody');
-  const anyWeightsSet = Object.values(config).some(m => Object.values(m).some(v => v > 0));
+  
+  // Check if the selected model has any weights set
+  const modelTypeEl = document.getElementById('modelTypeFilter');
+  const selectedLabel = modelTypeEl ? modelTypeEl.value : '';
+  const labelToKeyMap = {};
+  for (const [key, model] of Object.entries(allModels)) { labelToKeyMap[model.name] = key; }
+  const selectedKey = labelToKeyMap[selectedLabel];
+  const anyWeightsSet = selectedKey && config[selectedKey] ? Object.values(config[selectedKey]).some(v => v > 0) : false;
   
   // Get batting stat filters
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
@@ -193178,12 +193184,14 @@ function clearFilters() {
 // Player Type & Model Type functions
 const modelOptions = {
   batter: [
+    { value: 'Custom Batting', label: 'Custom' },
     { value: 'Tencliffe15', label: 'Tencliffe15' },
     { value: 'Bradlar99', label: 'Bradlar99' },
     { value: 'Harjosh86', label: 'Harjosh86' },
     { value: 'Completeness', label: 'Completeness' }
   ],
   bowler: [
+    { value: 'Custom Bowling', label: 'Custom' },
     { value: 'Sharan7080', label: 'Sharan7080' },
     { value: 'Dale20', label: 'Dale20' },
     { value: 'Mal40', label: 'Mal40' },
@@ -193400,7 +193408,12 @@ function showShareDialog(url){
 
 // Export to Excel function
 function exportToExcel(){
-  const anyWeightsSet = Object.values(config).some(m => Object.values(m).some(v => v > 0));
+  const modelTypeEl = document.getElementById('modelTypeFilter');
+  const selectedLabel = modelTypeEl ? modelTypeEl.value : '';
+  const labelToKeyMap = {};
+  for (const [key, model] of Object.entries(allModels)) { labelToKeyMap[model.name] = key; }
+  const selectedKey = labelToKeyMap[selectedLabel];
+  const anyWeightsSet = selectedKey && config[selectedKey] ? Object.values(config[selectedKey]).some(v => v > 0) : false;
   
   // Get filtered players from results table (batting)
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
