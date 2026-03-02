@@ -193126,15 +193126,28 @@ const playerData = [
 function calculatePoints(player) {
   let points = 0;
   
+  // Get the currently selected model from the dropdown
+  const modelTypeEl = document.getElementById('modelTypeFilter');
+  const selectedModelLabel = modelTypeEl ? modelTypeEl.value : '';
+  
+  // Map dropdown label to config key
+  const labelToKey = {};
+  for (const [key, model] of Object.entries(allModels)) {
+    labelToKey[model.name] = key;
+  }
+  const activeModelKey = labelToKey[selectedModelLabel];
+  
+  // Only calculate using the selected model's weights
+  if (!activeModelKey || !config[activeModelKey]) return 0;
+  const factors = config[activeModelKey];
+  
   // Map factor keys to actual player data values
-  // All batting models (tencliffe15, bradlar99, harjosh86) share the same batting stats
   const battingFactorMap = {
     runs: player.runs || 0,
     average: player.avg || 0,
     strikeRate: player.sr || 0
   };
   
-  // All bowling models (sharan7080, dale20, mal40, bap25) share bowling stats
   const bowlingFactorMap = {
     wickets: player.bowlWkts || 0,
     average: player.bowlAvg || 0,
@@ -193142,7 +193155,6 @@ function calculatePoints(player) {
     economy: player.bowlEcon || 0
   };
   
-  // Completeness model uses home/away result percentages
   const completenessMap = {
     homeWinPct: (player.homeResultPct && player.homeResultPct.win) || 0,
     homeDrawPct: (player.homeResultPct && player.homeResultPct.draw) || 0,
@@ -193155,19 +193167,17 @@ function calculatePoints(player) {
   const battingModelKeys = ['tencliffe15', 'bradlar99', 'harjosh86'];
   const bowlingModelKeys = ['sharan7080', 'dale20', 'mal40', 'bap25'];
   
-  for (const [model, factors] of Object.entries(config)) {
-    for (const [factor, weight] of Object.entries(factors)) {
-      if (weight > 0) {
-        let score = 0;
-        if (model === 'completeness') {
-          score = completenessMap[factor] || 0;
-        } else if (battingModelKeys.includes(model)) {
-          score = battingFactorMap[factor] || 0;
-        } else if (bowlingModelKeys.includes(model)) {
-          score = bowlingFactorMap[factor] || 0;
-        }
-        points += score * (weight / 100);
+  for (const [factor, weight] of Object.entries(factors)) {
+    if (weight > 0) {
+      let score = 0;
+      if (activeModelKey === 'completeness') {
+        score = completenessMap[factor] || 0;
+      } else if (battingModelKeys.includes(activeModelKey)) {
+        score = battingFactorMap[factor] || 0;
+      } else if (bowlingModelKeys.includes(activeModelKey)) {
+        score = bowlingFactorMap[factor] || 0;
       }
+      points += score * (weight / 100);
     }
   }
   
@@ -193176,7 +193186,14 @@ function calculatePoints(player) {
 
 function updateResultsTable() {
   const tbody = document.getElementById('resultsBody');
-  const anyWeightsSet = Object.values(config).some(m => Object.values(m).some(v => v > 0));
+  
+  // Check if the selected model has any weights set
+  const modelTypeEl = document.getElementById('modelTypeFilter');
+  const selectedLabel = modelTypeEl ? modelTypeEl.value : '';
+  const labelToKeyMap = {};
+  for (const [key, model] of Object.entries(allModels)) { labelToKeyMap[model.name] = key; }
+  const selectedKey = labelToKeyMap[selectedLabel];
+  const anyWeightsSet = selectedKey && config[selectedKey] ? Object.values(config[selectedKey]).some(v => v > 0) : false;
   
   // Get batting stat filters
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
@@ -193536,7 +193553,12 @@ function showShareDialog(url){
 
 // Export to Excel function
 function exportToExcel(){
-  const anyWeightsSet = Object.values(config).some(m => Object.values(m).some(v => v > 0));
+  const modelTypeEl = document.getElementById('modelTypeFilter');
+  const selectedLabel = modelTypeEl ? modelTypeEl.value : '';
+  const labelToKeyMap = {};
+  for (const [key, model] of Object.entries(allModels)) { labelToKeyMap[model.name] = key; }
+  const selectedKey = labelToKeyMap[selectedLabel];
+  const anyWeightsSet = selectedKey && config[selectedKey] ? Object.values(config[selectedKey]).some(v => v > 0) : false;
   
   // Get filtered players from results table (batting)
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
