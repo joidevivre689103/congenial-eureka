@@ -193275,9 +193275,10 @@ function updateResultsTable() {
   // Sort by points descending
   playersWithPoints.sort((a, b) => b.points - a.points);
   
-  // Apply player limit filter - use the more restrictive of batting and bowling limits
+  // Apply player limit filter - only use bowling limit if bowling filters are active
+  const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
   let effectiveLimit = playerLimit;
-  if (bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
+  if (bowlFiltersActive && bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
     effectiveLimit = bowlPlayerLimit;
   }
   
@@ -193621,9 +193622,10 @@ function exportToExcel(){
   
   playersWithPoints.sort((a, b) => b.points - a.points);
   
-  // Apply player limit - use the more restrictive of batting and bowling limits
+  // Apply player limit - only use bowling limit if bowling filters are active
+  const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
   let effectiveLimit = playerLimit;
-  if (bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
+  if (bowlFiltersActive && bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
     effectiveLimit = bowlPlayerLimit;
   }
   
