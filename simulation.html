@@ -792,7 +792,8 @@ header.header{display:none !important}
 const battingModels = {
   tencliffe15: { name: 'Tencliffe15', factors: ['runs','average','strikeRate'] },
   bradlar99: { name: 'Bradlar99', factors: ['runs','average','strikeRate'] },
-  harjosh86: { name: 'Harjosh86', factors: ['runs','average','strikeRate'] }
+  harjosh86: { name: 'Harjosh86', factors: ['runs','average','strikeRate'] },
+  completeness: { name: 'Completeness', factors: ['homeWinPct','homeDrawPct','homeLossPct','awayWinPct','awayDrawPct','awayLossPct'] }
 };
 const bowlingModels = {
   sharan7080: { name: 'Sharan7080', factors: ['wickets','average','strikeRate','economy'] },
@@ -802,7 +803,12 @@ const bowlingModels = {
 };
 const allModels = { ...battingModels, ...bowlingModels };
 
-const factorLabels = { runs: 'Runs', average: 'Average', strikeRate: 'Strike Rate', wickets: 'Wickets', economy: 'Economy' };
+const factorLabels = {
+  runs: 'Runs', average: 'Average', strikeRate: 'Strike Rate',
+  wickets: 'Wickets', economy: 'Economy',
+  homeWinPct: '% Team Runs — Home Wins', homeDrawPct: '% Team Runs — Home Draws', homeLossPct: '% Team Runs — Home Losses',
+  awayWinPct: '% Team Runs — Away Wins', awayDrawPct: '% Team Runs — Away Draws', awayLossPct: '% Team Runs — Away Losses'
+};
 
 // Config: each model has a weight per factor
 const config = {};
@@ -192937,12 +192943,47 @@ const playerData = [
 function calculatePoints(player) {
   let points = 0;
   
-  // Each model's factors contribute to the score
+  // Map factor keys to actual player data values
+  // All batting models (tencliffe15, bradlar99, harjosh86) share the same batting stats
+  const battingFactorMap = {
+    runs: player.runs || 0,
+    average: player.avg || 0,
+    strikeRate: player.sr || 0
+  };
+  
+  // All bowling models (sharan7080, dale20, mal40, bap25) share bowling stats
+  const bowlingFactorMap = {
+    wickets: player.bowlWkts || 0,
+    average: player.bowlAvg || 0,
+    strikeRate: player.bowlSR || 0,
+    economy: player.bowlEcon || 0
+  };
+  
+  // Completeness model uses home/away result percentages
+  const completenessMap = {
+    homeWinPct: (player.homeResultPct && player.homeResultPct.win) || 0,
+    homeDrawPct: (player.homeResultPct && player.homeResultPct.draw) || 0,
+    homeLossPct: (player.homeResultPct && player.homeResultPct.loss) || 0,
+    awayWinPct: (player.awayResultPct && player.awayResultPct.win) || 0,
+    awayDrawPct: (player.awayResultPct && player.awayResultPct.draw) || 0,
+    awayLossPct: (player.awayResultPct && player.awayResultPct.loss) || 0
+  };
+  
+  const battingModelKeys = ['tencliffe15', 'bradlar99', 'harjosh86'];
+  const bowlingModelKeys = ['sharan7080', 'dale20', 'mal40', 'bap25'];
+  
   for (const [model, factors] of Object.entries(config)) {
     for (const [factor, weight] of Object.entries(factors)) {
       if (weight > 0) {
-        const modelScore = player.modelScores ? (player.modelScores[model] ? (player.modelScores[model][factor] || 0) : 0) : 0;
-        points += modelScore * (weight / 100);
+        let score = 0;
+        if (model === 'completeness') {
+          score = completenessMap[factor] || 0;
+        } else if (battingModelKeys.includes(model)) {
+          score = battingFactorMap[factor] || 0;
+        } else if (bowlingModelKeys.includes(model)) {
+          score = bowlingFactorMap[factor] || 0;
+        }
+        points += score * (weight / 100);
       }
     }
   }
@@ -193139,7 +193180,8 @@ const modelOptions = {
   batter: [
     { value: 'Tencliffe15', label: 'Tencliffe15' },
     { value: 'Bradlar99', label: 'Bradlar99' },
-    { value: 'Harjosh86', label: 'Harjosh86' }
+    { value: 'Harjosh86', label: 'Harjosh86' },
+    { value: 'Completeness', label: 'Completeness' }
   ],
   bowler: [
     { value: 'Sharan7080', label: 'Sharan7080' },
