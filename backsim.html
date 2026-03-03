@@ -1043,16 +1043,16 @@ function applyWeights() {
     return;
   }
 
-  // Build compact config: only include models with weights set
+  // Build config: include ALL models so simulation page has complete data
   const activeConfig = {};
+  let anyActive = false;
   for (const [model, factors] of Object.entries(config)) {
+    activeConfig[model] = { ...factors };
     const total = Object.values(factors).reduce((s, v) => s + v, 0);
-    if (total > 0) {
-      activeConfig[model] = { ...factors };
-    }
+    if (total > 0) anyActive = true;
   }
 
-  if (Object.keys(activeConfig).length === 0) {
+  if (!anyActive) {
     alert('Please set weights for at least one model before applying.');
     return;
   }
