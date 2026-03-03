@@ -193251,11 +193251,14 @@ function handlePlayerTypeChange() {
   }
   // Populate model dropdown for the selected player type
   handlePlayerTypeChange();
-  // Now set the model type if saved
+  // Now set the model type if saved (only if it exists in the current options)
   if (last && last.modelType) {
     const mtSelect = document.getElementById('modelTypeFilter');
     if (mtSelect) {
-      mtSelect.value = last.modelType;
+      const optionExists = Array.from(mtSelect.options).some(o => o.value === last.modelType);
+      if (optionExists) {
+        mtSelect.value = last.modelType;
+      }
       updateResultsTable();
     }
   }
@@ -193408,7 +193411,10 @@ updateResultsTable();
     if (modelType) {
       const mtSelect = document.getElementById('modelTypeFilter');
       if (mtSelect) {
-        mtSelect.value = modelType;
+        const optionExists = Array.from(mtSelect.options).some(o => o.value === modelType);
+        if (optionExists) {
+          mtSelect.value = modelType;
+        }
       }
     }
 
