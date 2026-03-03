@@ -193406,6 +193406,15 @@ updateResultsTable();
             modelSelect.appendChild(option);
           });
         }
+        // Toggle filter panels and weight sections for this player type
+        const batFilterPanel = document.getElementById('battingFilterPanel');
+        const bowlFilterPanel = document.getElementById('bowlingFilterPanel');
+        if (batFilterPanel) batFilterPanel.style.display = playerType === 'batter' ? '' : 'none';
+        if (bowlFilterPanel) bowlFilterPanel.style.display = playerType === 'bowler' ? '' : 'none';
+        const batWeights = document.getElementById('battingWeightsSection');
+        const bowlWeights = document.getElementById('bowlingWeightsSection');
+        if (batWeights) batWeights.style.display = playerType === 'batter' ? '' : 'none';
+        if (bowlWeights) bowlWeights.style.display = playerType === 'bowler' ? '' : 'none';
       }
     }
     if (modelType) {
@@ -193428,6 +193437,16 @@ updateResultsTable();
 
   } catch (e) {
     console.warn('Failed to parse config from URL:', e);
+  }
+})();
+
+// Final safety: ensure model dropdown always has a valid selection
+(function ensureValidModelSelection() {
+  const mtSelect = document.getElementById('modelTypeFilter');
+  if (mtSelect && mtSelect.options.length > 0 && mtSelect.selectedIndex === -1) {
+    mtSelect.selectedIndex = 0;
+    saveLastFilter();
+    updateResultsTable();
   }
 })();
 
