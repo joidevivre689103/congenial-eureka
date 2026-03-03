@@ -250,15 +250,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .tw-status.invalid{background:var(--red-dim);color:var(--red)}
 
 /* Active Weights Tags */
-.active-weights{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-.aw-tag{
-  display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
-  background:var(--accent-dim);border:1px solid rgba(192,128,24,0.25);
-  border-radius:6px;font-size:11px;color:var(--accent);font-weight:500;
-}
-.aw-tag .aw-val{font-weight:700}
-.aw-tag button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;line-height:1;opacity:0.7}
-.aw-tag button:hover{opacity:1}
+
 
 /* Info Panel */
 .info-panel{
@@ -747,7 +739,6 @@ header.header{display:none !important}
     </div>
     </div>
 
-    <div class="active-weights" id="activeTags" style="margin-top:20px"></div>
   </div>
 
   <!-- Results Table -->
@@ -934,18 +925,7 @@ function updateGrandTotal() {
   if (typeof updateResultsTable === 'function') updateResultsTable();
 }
 
-function updateTags() {
-  const tags = [];
-  for (const [model, factors] of Object.entries(config)) {
-    for (const [factor, val] of Object.entries(factors)) {
-      if (val > 0) {
-        const modelName = allModels[model].name;
-        tags.push(`<span class="aw-tag">${modelName} — ${factorLabels[factor]}: <span class="aw-val">${val}%</span><button onclick="clearFactor('${model}','${factor}')">&times;</button></span>`);
-      }
-    }
-  }
-  document.getElementById('activeTags').innerHTML = tags.join('');
-}
+function updateTags() {}
 
 function updatePreview() {}
 
