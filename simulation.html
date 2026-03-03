@@ -270,20 +270,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .info-text strong{color:var(--text);font-weight:600}
 
 /* Preview Panel */
-.preview-panel{
-  background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  padding:24px 28px;
-}
-.pp-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
-.pp-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
-.pp-empty svg{width:40px;height:40px;stroke:var(--border2);fill:none;margin-bottom:12px}
-.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.preview-card{background:var(--surface2);border-radius:8px;padding:14px 16px;border:1px solid transparent;transition:border-color 0.2s,box-shadow 0.2s}
-.preview-card.pc-active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.pc-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.pc-badge{font-size:8px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:2px 6px;border-radius:4px}
-.pc-value{font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent)}
-.pc-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
 
 /* Results Table */
 .results-panel{
@@ -758,19 +745,10 @@ header.header{display:none !important}
     <div class="active-weights" id="activeTags" style="margin-top:20px"></div>
   </div>
 
-  <div class="preview-panel">
-    <div class="pp-title">Configuration</div>
-    <div class="pp-empty" id="previewEmpty">
-      <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-      <div>Set weights above to configure your simulation</div>
-    </div>
-    <div class="preview-grid" id="previewContent" style="display:none"></div>
-  </div>
-
   <!-- Results Table -->
   <div class="results-panel">
     <div class="rp-header">
-      <span class="rp-title">Simulation Results</span>
+      <span class="rp-title">Simulation Results <span id="activeModelLabel" style="font-weight:500;color:var(--accent);font-size:13px"></span></span>
       <div class="rp-stats">
         <span class="rp-stat">Players: <strong id="playerCount">10</strong></span>
       </div>
@@ -964,37 +942,7 @@ function updateTags() {
   document.getElementById('activeTags').innerHTML = tags.join('');
 }
 
-function updatePreview() {
-  const empty = document.getElementById('previewEmpty');
-  const content = document.getElementById('previewContent');
-  const anyActive = Object.values(config).some(m => Object.values(m).some(v => v > 0));
-
-  if (!anyActive) {
-    empty.style.display = 'block';
-    content.style.display = 'none';
-    return;
-  }
-  empty.style.display = 'none';
-  content.style.display = 'grid';
-
-  // Determine the currently selected model key
-  const modelTypeEl = document.getElementById('modelTypeFilter');
-  const selectedLabel = modelTypeEl ? modelTypeEl.value : '';
-  const labelToKeyPreview = {};
-  for (const [key, model] of Object.entries(allModels)) { labelToKeyPreview[model.name] = key; }
-  const activeKey = labelToKeyPreview[selectedLabel] || '';
-
-  let html = '';
-  for (const [model, factors] of Object.entries(config)) {
-    const total = Object.values(factors).reduce((s, v) => s + v, 0);
-    if (total > 0) {
-      const modelName = allModels[model].name;
-      const detail = Object.entries(factors).filter(([,v]) => v > 0).map(([f,v]) => `${factorLabels[f]} ${v}%`).join(', ');
-      const isActive = model === activeKey;
-      html += `<div class="preview-card${isActive ? ' pc-active' : ''}"><div class="pc-label">${modelName}${isActive ? ' <span class="pc-badge">Active</span>' : ''}</div><div class="pc-value">${total}%</div><div class="pc-sub">${detail}</div></div>`;
-    }
-  }
-  content.innerHTML = html;
+function updatePreview() {}
 }
 
 function clearFactor(model, factor) {
@@ -193040,6 +192988,12 @@ function updateResultsTable() {
   for (const [key, model] of Object.entries(allModels)) { labelToKeyMap[model.name] = key; }
   const selectedKey = labelToKeyMap[selectedLabel];
   const anyWeightsSet = selectedKey && config[selectedKey] ? Object.values(config[selectedKey]).some(v => v > 0) : false;
+  
+  // Update active model label in results header
+  const activeModelLabel = document.getElementById('activeModelLabel');
+  if (activeModelLabel) {
+    activeModelLabel.textContent = selectedLabel ? '\u2014 ' + selectedLabel : '';
+  }
   
   // Get batting stat filters
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
