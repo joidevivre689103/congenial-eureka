@@ -750,7 +750,7 @@ header.header{display:none !important}
       </div>
     </div>
     <table class="results-table">
-      <thead>
+      <thead id="resultsHead">
         <tr>
           <th>Player</th>
           <th class="num">Runs</th>
@@ -192964,6 +192964,16 @@ function calculatePoints(player) {
 
 function updateResultsTable() {
   const tbody = document.getElementById('resultsBody');
+  const thead = document.getElementById('resultsHead');
+  const playerType = document.getElementById('playerTypeFilter').value;
+  const isBowler = playerType === 'bowler';
+  
+  // Update table headers based on player type
+  if (isBowler) {
+    thead.innerHTML = '<tr><th>Player</th><th class="num">Wickets</th><th class="num">Avg</th><th class="num">SR</th><th class="num">Econ</th><th class="num">Points</th><th class="num">Rank</th></tr>';
+  } else {
+    thead.innerHTML = '<tr><th>Player</th><th class="num">Runs</th><th class="num">Avg</th><th class="num">SR</th><th class="num">Points</th><th class="num">Rank</th></tr>';
+  }
   
   // Check if the selected model has any weights set
   const modelTypeEl = document.getElementById('modelTypeFilter');
@@ -192994,56 +193004,45 @@ function updateResultsTable() {
   const selectedBowlEras = typeof getSelectedBowlEras === 'function' ? getSelectedBowlEras() : ['all'];
   const bowlPlayerLimit = document.getElementById('bowlPlayerFilter') ? document.getElementById('bowlPlayerFilter').value : 'all';
   
-  // Filter players by batting stats and era
+  // Filter players
   const filteredByStats = playerData.filter(player => {
-    // Batting stats filters
-    if (player.runs < minRuns || player.avg < minAvg || player.sr < minSR) return false;
-    
-    // Batting era filter: player's career must overlap with at least one selected era
-    if (!selectedEras.includes('all')) {
-      const playerFrom = player.from || 0;
-      const playerTo = player.to || 9999;
-      
-      const matchesEra = selectedEras.some(era => {
-        const [eraStart, eraEnd] = era.split('-').map(Number);
-        return !(playerTo < eraStart || playerFrom > eraEnd);
-      });
-      
-      if (!matchesEra) return false;
-    }
-    
-    // Bowling filters (only apply if any bowling filter is active)
-    const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
-    
-    if (bowlFiltersActive) {
+    if (isBowler) {
+      // Bowling mode: apply bowling filters only
       const bowlWkts = player.bowlWkts || 0;
       const bowlAvg = player.bowlAvg || 0;
       const bowlSR = player.bowlSR || 0;
       const bowlEcon = player.bowlEcon || 0;
       
-      // Wickets minimum
+      // Must have bowling data
+      if (bowlWkts === 0) return false;
+      
       if (minBowlWkts > 0 && bowlWkts < minBowlWkts) return false;
-      
-      // Bowling average maximum (lower is better) - only filter if player has bowling data
-      if (maxBowlAvg > 0 && (bowlWkts === 0 || bowlAvg > maxBowlAvg)) return false;
-      
-      // Bowling strike rate maximum (lower is better) - only filter if player has bowling data
-      if (maxBowlSR > 0 && (bowlWkts === 0 || bowlSR > maxBowlSR)) return false;
-      
-      // Economy rate maximum (lower is better) - only filter if player has bowling data
-      if (maxBowlEcon > 0 && (bowlWkts === 0 || bowlEcon > maxBowlEcon)) return false;
+      if (maxBowlAvg > 0 && bowlAvg > maxBowlAvg) return false;
+      if (maxBowlSR > 0 && bowlSR > maxBowlSR) return false;
+      if (maxBowlEcon > 0 && bowlEcon > maxBowlEcon) return false;
       
       // Bowling era filter
       if (!selectedBowlEras.includes('all')) {
         const playerFrom = player.from || 0;
         const playerTo = player.to || 9999;
-        
         const matchesBowlEra = selectedBowlEras.some(era => {
           const [eraStart, eraEnd] = era.split('-').map(Number);
           return !(playerTo < eraStart || playerFrom > eraEnd);
         });
-        
         if (!matchesBowlEra) return false;
+      }
+    } else {
+      // Batting mode: apply batting filters, optionally bowling filters
+      if (player.runs < minRuns || player.avg < minAvg || player.sr < minSR) return false;
+      
+      if (!selectedEras.includes('all')) {
+        const playerFrom = player.from || 0;
+        const playerTo = player.to || 9999;
+        const matchesEra = selectedEras.some(era => {
+          const [eraStart, eraEnd] = era.split('-').map(Number);
+          return !(playerTo < eraStart || playerFrom > eraEnd);
+        });
+        if (!matchesEra) return false;
       }
     }
     
@@ -193059,12 +193058,8 @@ function updateResultsTable() {
   // Sort by points descending
   playersWithPoints.sort((a, b) => b.points - a.points);
   
-  // Apply player limit filter - only use bowling limit if bowling filters are active
-  const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
-  let effectiveLimit = playerLimit;
-  if (bowlFiltersActive && bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
-    effectiveLimit = bowlPlayerLimit;
-  }
+  // Apply player limit
+  const effectiveLimit = isBowler ? bowlPlayerLimit : playerLimit;
   
   const limitedPlayers = effectiveLimit === 'all' 
     ? playersWithPoints 
@@ -193074,7 +193069,20 @@ function updateResultsTable() {
   document.getElementById('playerCount').textContent = limitedPlayers.length;
   
   // Render table rows
-  tbody.innerHTML = limitedPlayers.map((player, index) => `
+  if (isBowler) {
+    tbody.innerHTML = limitedPlayers.map((player, index) => `
+    <tr>
+      <td class="player-name">${player.name}</td>
+      <td class="num">${(player.bowlWkts || 0).toLocaleString()}</td>
+      <td class="num">${(player.bowlAvg || 0).toFixed(2)}</td>
+      <td class="num">${(player.bowlSR || 0).toFixed(2)}</td>
+      <td class="num">${(player.bowlEcon || 0).toFixed(2)}</td>
+      <td class="num points">${anyWeightsSet ? player.points.toFixed(1) : '—'}</td>
+      <td class="num">${index + 1}</td>
+    </tr>
+  `).join('');
+  } else {
+    tbody.innerHTML = limitedPlayers.map((player, index) => `
     <tr>
       <td class="player-name">${player.name}</td>
       <td class="num">${player.runs.toLocaleString()}</td>
@@ -193084,6 +193092,7 @@ function updateResultsTable() {
       <td class="num">${index + 1}</td>
     </tr>
   `).join('');
+  }
 }
 
 // Era multi-select functions
@@ -193487,6 +193496,8 @@ function showShareDialog(url){
 
 // Export to Excel function
 function exportToExcel(){
+  const playerType = document.getElementById('playerTypeFilter').value;
+  const isBowler = playerType === 'bowler';
   const modelTypeEl = document.getElementById('modelTypeFilter');
   const selectedLabel = modelTypeEl ? modelTypeEl.value : '';
   const labelToKeyMap = {};
@@ -193494,14 +193505,12 @@ function exportToExcel(){
   const selectedKey = labelToKeyMap[selectedLabel];
   const anyWeightsSet = selectedKey && config[selectedKey] ? Object.values(config[selectedKey]).some(v => v > 0) : false;
   
-  // Get filtered players from results table (batting)
+  // Get filters
   const minRuns = parseFloat(document.getElementById('runsFilter').value) || 0;
   const minAvg = parseFloat(document.getElementById('avgFilter').value) || 0;
   const minSR = parseFloat(document.getElementById('srFilter').value) || 0;
   const selectedEras = getSelectedEras();
   const playerLimit = document.getElementById('playerFilter').value;
-  
-  // Bowling filters
   const minBowlWkts = parseFloat(document.getElementById('bowlWktsFilter').value) || 0;
   const maxBowlAvg = parseFloat(document.getElementById('bowlAvgFilter').value) || 0;
   const maxBowlSR = parseFloat(document.getElementById('bowlSRFilter').value) || 0;
@@ -193509,30 +193518,15 @@ function exportToExcel(){
   const selectedBowlEras = typeof getSelectedBowlEras === 'function' ? getSelectedBowlEras() : ['all'];
   const bowlPlayerLimit = document.getElementById('bowlPlayerFilter') ? document.getElementById('bowlPlayerFilter').value : 'all';
   
-  // Filter players
+  // Filter players (same logic as updateResultsTable)
   const filteredByStats = playerData.filter(player => {
-    if (player.runs < minRuns || player.avg < minAvg || player.sr < minSR) return false;
-    if (!selectedEras.includes('all')) {
-      const playerFrom = player.from || 0;
-      const playerTo = player.to || 9999;
-      const matchesEra = selectedEras.some(era => {
-        const [eraStart, eraEnd] = era.split('-').map(Number);
-        return !(playerTo < eraStart || playerFrom > eraEnd);
-      });
-      if (!matchesEra) return false;
-    }
-    
-    // Bowling filters
-    const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
-    if (bowlFiltersActive) {
+    if (isBowler) {
       const bowlWkts = player.bowlWkts || 0;
-      const bowlAvg = player.bowlAvg || 0;
-      const bowlSR = player.bowlSR || 0;
-      const bowlEcon = player.bowlEcon || 0;
+      if (bowlWkts === 0) return false;
       if (minBowlWkts > 0 && bowlWkts < minBowlWkts) return false;
-      if (maxBowlAvg > 0 && (bowlWkts === 0 || bowlAvg > maxBowlAvg)) return false;
-      if (maxBowlSR > 0 && (bowlWkts === 0 || bowlSR > maxBowlSR)) return false;
-      if (maxBowlEcon > 0 && (bowlWkts === 0 || bowlEcon > maxBowlEcon)) return false;
+      if (maxBowlAvg > 0 && (player.bowlAvg || 0) > maxBowlAvg) return false;
+      if (maxBowlSR > 0 && (player.bowlSR || 0) > maxBowlSR) return false;
+      if (maxBowlEcon > 0 && (player.bowlEcon || 0) > maxBowlEcon) return false;
       if (!selectedBowlEras.includes('all')) {
         const playerFrom = player.from || 0;
         const playerTo = player.to || 9999;
@@ -193542,47 +193536,62 @@ function exportToExcel(){
         });
         if (!matchesBowlEra) return false;
       }
+    } else {
+      if (player.runs < minRuns || player.avg < minAvg || player.sr < minSR) return false;
+      if (!selectedEras.includes('all')) {
+        const playerFrom = player.from || 0;
+        const playerTo = player.to || 9999;
+        const matchesEra = selectedEras.some(era => {
+          const [eraStart, eraEnd] = era.split('-').map(Number);
+          return !(playerTo < eraStart || playerFrom > eraEnd);
+        });
+        if (!matchesEra) return false;
+      }
     }
-    
     return true;
   });
   
-  // Calculate points
   const playersWithPoints = filteredByStats.map(player => ({
     ...player,
     points: calculatePoints(player)
   }));
-  
   playersWithPoints.sort((a, b) => b.points - a.points);
   
-  // Apply player limit - only use bowling limit if bowling filters are active
-  const bowlFiltersActive = minBowlWkts > 0 || maxBowlAvg > 0 || maxBowlSR > 0 || maxBowlEcon > 0 || !selectedBowlEras.includes('all');
-  let effectiveLimit = playerLimit;
-  if (bowlFiltersActive && bowlPlayerLimit !== 'all' && (effectiveLimit === 'all' || parseInt(bowlPlayerLimit) < parseInt(effectiveLimit))) {
-    effectiveLimit = bowlPlayerLimit;
-  }
-  
+  const effectiveLimit = isBowler ? bowlPlayerLimit : playerLimit;
   const limitedPlayers = effectiveLimit === 'all' 
     ? playersWithPoints 
     : playersWithPoints.slice(0, parseInt(effectiveLimit));
   
   if(limitedPlayers.length === 0){alert('No data to export');return;}
   
-  // Create workbook
   const wb = XLSX.utils.book_new();
   
   // Main results sheet
-  const resultsData = limitedPlayers.map((player, index) => ({
-    'Rank': index + 1,
-    'Player': player.name,
-    'Country': player.country || '—',
-    'Runs': player.runs,
-    'Average': player.avg.toFixed(2),
-    'Strike Rate': player.sr.toFixed(2),
-    'Points': anyWeightsSet ? player.points.toFixed(1) : '—'
-  }));
+  let resultsData;
+  if (isBowler) {
+    resultsData = limitedPlayers.map((player, index) => ({
+      'Rank': index + 1,
+      'Player': player.name,
+      'Country': player.country || '—',
+      'Wickets': player.bowlWkts || 0,
+      'Average': (player.bowlAvg || 0).toFixed(2),
+      'Strike Rate': (player.bowlSR || 0).toFixed(2),
+      'Economy': (player.bowlEcon || 0).toFixed(2),
+      'Points': anyWeightsSet ? player.points.toFixed(1) : '—'
+    }));
+  } else {
+    resultsData = limitedPlayers.map((player, index) => ({
+      'Rank': index + 1,
+      'Player': player.name,
+      'Country': player.country || '—',
+      'Runs': player.runs,
+      'Average': player.avg.toFixed(2),
+      'Strike Rate': player.sr.toFixed(2),
+      'Points': anyWeightsSet ? player.points.toFixed(1) : '—'
+    }));
+  }
   const wsResults = XLSX.utils.json_to_sheet(resultsData);
-  wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:8}];
+  wsResults['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:8},{wch:8},{wch:10},{wch:8},{wch:8}];
   XLSX.utils.book_append_sheet(wb, wsResults, 'Simulation Results');
   
   // Weights configuration sheet
