@@ -193350,25 +193350,28 @@ updateResultsTable();
       const ptSelect = document.getElementById('playerTypeFilter');
       if (ptSelect) {
         ptSelect.value = playerType;
-        if (typeof handlePlayerTypeChange === 'function') handlePlayerTypeChange();
+        // Repopulate model dropdown for this player type (without triggering updateResultsTable yet)
+        const modelSelect = document.getElementById('modelTypeFilter');
+        if (modelSelect) {
+          modelSelect.innerHTML = '';
+          const options = modelOptions[playerType] || [];
+          options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            modelSelect.appendChild(option);
+          });
+        }
       }
     }
     if (modelType) {
       const mtSelect = document.getElementById('modelTypeFilter');
       if (mtSelect) {
-        // Need to wait for handlePlayerTypeChange to populate dropdown options
-        setTimeout(() => {
-          mtSelect.value = modelType;
-          // NOW refresh results with correct model selected
-          updateTags();
-          updatePreview();
-          updateResultsTable();
-        }, 0);
-        return; // Skip the immediate refresh below, the setTimeout handles it
+        mtSelect.value = modelType;
       }
     }
 
-    // Refresh everything
+    // Refresh everything once with the correct model selected
     updateTags();
     updatePreview();
     updateResultsTable();
