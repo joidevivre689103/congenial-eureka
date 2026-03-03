@@ -512,7 +512,7 @@ header.header{display:none !important}
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Model Type</label>
-        <select class="filter-select" id="modelTypeFilter" onchange="updateResultsTable()">
+        <select class="filter-select" id="modelTypeFilter" onchange="saveLastFilter(); updateResultsTable()">
         </select>
       </div>
     </div>
@@ -193200,6 +193200,24 @@ const modelOptions = {
   ]
 };
 
+const SIM_FILTER_KEY = 'sim_last_filter';
+
+function saveLastFilter() {
+  try {
+    localStorage.setItem(SIM_FILTER_KEY, JSON.stringify({
+      playerType: document.getElementById('playerTypeFilter').value,
+      modelType: document.getElementById('modelTypeFilter').value
+    }));
+  } catch(e) {}
+}
+
+function getLastFilter() {
+  try {
+    const saved = localStorage.getItem(SIM_FILTER_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch(e) { return null; }
+}
+
 function handlePlayerTypeChange() {
   const playerType = document.getElementById('playerTypeFilter').value;
   const modelSelect = document.getElementById('modelTypeFilter');
@@ -193214,11 +193232,28 @@ function handlePlayerTypeChange() {
     modelSelect.appendChild(option);
   });
   
+  saveLastFilter();
   updateResultsTable();
 }
 
-// Initialize model dropdown on load
-handlePlayerTypeChange();
+// Initialize model dropdown on load — restore last filter if saved
+(function initFilterFromStorage() {
+  const last = getLastFilter();
+  if (last) {
+    const ptSelect = document.getElementById('playerTypeFilter');
+    if (ptSelect && last.playerType) ptSelect.value = last.playerType;
+  }
+  // Populate model dropdown for the selected player type
+  handlePlayerTypeChange();
+  // Now set the model type if saved
+  if (last && last.modelType) {
+    const mtSelect = document.getElementById('modelTypeFilter');
+    if (mtSelect) {
+      mtSelect.value = last.modelType;
+      updateResultsTable();
+    }
+  }
+})();
 
 // Bowling filter functions
 function toggleBowlEraDropdown() {
@@ -193370,6 +193405,9 @@ updateResultsTable();
         mtSelect.value = modelType;
       }
     }
+
+    // Persist the incoming filter selection
+    saveLastFilter();
 
     // Refresh everything once with the correct model selected
     updateTags();
