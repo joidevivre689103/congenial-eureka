@@ -113,7 +113,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 /* Weight Groups Grid */
 .weights-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
   gap:16px;
 }
 
@@ -278,8 +278,10 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .pp-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
 .pp-empty svg{width:40px;height:40px;stroke:var(--border2);fill:none;margin-bottom:12px}
 .preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.preview-card{background:var(--surface2);border-radius:8px;padding:14px 16px}
-.pc-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.preview-card{background:var(--surface2);border-radius:8px;padding:14px 16px;border:1px solid transparent;transition:border-color 0.2s,box-shadow 0.2s}
+.preview-card.pc-active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pc-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.pc-badge{font-size:8px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:2px 6px;border-radius:4px}
 .pc-value{font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent)}
 .pc-sub{font-size:11px;color:var(--text2);margin-top:2px}
 
@@ -512,14 +514,14 @@ header.header{display:none !important}
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Model Type</label>
-        <select class="filter-select" id="modelTypeFilter" onchange="saveLastFilter(); updateResultsTable()">
+        <select class="filter-select" id="modelTypeFilter" onchange="saveLastFilter(); updatePreview(); updateResultsTable()">
         </select>
       </div>
     </div>
   </div>
 
   <!-- Batting Filter -->
-  <div class="filter-panel" style="border-radius:0;margin-bottom:0;padding-bottom:14px;border-top:1px dashed var(--border)">
+  <div class="filter-panel" id="battingFilterPanel" style="border-radius:0;margin-bottom:0;padding-bottom:14px;border-top:1px dashed var(--border)">
     <div style="margin-bottom:12px">
       <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">Batting Filters</span>
     </div>
@@ -613,10 +615,9 @@ header.header{display:none !important}
   </div>
 
   <!-- Bowling Filter -->
-  <div class="filter-panel" style="border-top:1px dashed var(--border);border-top-left-radius:0;border-top-right-radius:0;padding-top:14px">
+  <div class="filter-panel" id="bowlingFilterPanel" style="border-top:1px dashed var(--border);border-top-left-radius:0;border-top-right-radius:0;padding-top:14px">
     <div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
       <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">Bowling Filters</span>
-      <span style="font-size:9px;color:var(--text3);font-weight:500;background:var(--surface2);padding:2px 8px;border-radius:4px">Optional</span>
     </div>
     <div class="filter-row" style="flex-wrap:wrap;gap:16px 24px">
       <div style="display:flex;align-items:center;gap:10px">
@@ -732,6 +733,7 @@ header.header{display:none !important}
     </div>
     <p style="font-size:12px;color:var(--text3);margin-bottom:18px">Set your own factor weights below, or select a pre-configured model from the dropdown above to use weights from backsim.</p>
 
+    <div id="battingWeightsSection">
     <div style="margin-bottom:16px">
       <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:6px">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);fill:none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
@@ -740,7 +742,9 @@ header.header{display:none !important}
     </div>
     <div class="weights-grid" style="margin-bottom:20px" id="battingModelsGrid">
     </div>
+    </div>
 
+    <div id="bowlingWeightsSection" style="display:none">
     <div style="margin-bottom:16px">
       <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:6px">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--blue);fill:none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -749,12 +753,13 @@ header.header{display:none !important}
     </div>
     <div class="weights-grid" id="bowlingModelsGrid">
     </div>
+    </div>
 
     <div class="active-weights" id="activeTags" style="margin-top:20px"></div>
   </div>
 
   <div class="preview-panel">
-    <div class="pp-title">Configuration Preview</div>
+    <div class="pp-title">Configuration</div>
     <div class="pp-empty" id="previewEmpty">
       <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
       <div>Set weights above to configure your simulation</div>
@@ -804,6 +809,7 @@ const bowlingModels = {
 };
 
 // Custom user-configurable cards (editable on this page)
+// Each factor is its own "model" internally but they share a group total
 const customModels = {
   custom_batting: { name: 'Custom Batting', factors: ['runs','average','strikeRate'] },
   custom_bowling: { name: 'Custom Bowling', factors: ['wickets','average','strikeRate','economy'] }
@@ -818,6 +824,15 @@ const factorLabels = {
   awayWinPct: '% Team Runs — Away Wins', awayDrawPct: '% Team Runs — Away Draws', awayLossPct: '% Team Runs — Away Losses'
 };
 
+// Icons for individual factor cards
+const factorIcons = {
+  runs: '<path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>',
+  average: '<line x1="4" y1="12" x2="20" y2="12"/><polyline points="8 8 4 12 8 16"/><polyline points="16 8 20 12 16 16"/>',
+  strikeRate: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  wickets: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/>',
+  economy: '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'
+};
+
 // Config: all models get factor slots
 const config = {};
 for (const [key, model] of Object.entries(allModels)) {
@@ -825,40 +840,50 @@ for (const [key, model] of Object.entries(allModels)) {
   model.factors.forEach(f => { config[key][f] = 0; });
 }
 
-// Render only the two custom cards (named models are not shown)
+// Render individual factor cards for custom batting/bowling
 function renderModelCards() {
   const batGrid = document.getElementById('battingModelsGrid');
   const bowlGrid = document.getElementById('bowlingModelsGrid');
   batGrid.innerHTML = '';
   bowlGrid.innerHTML = '';
 
-  function buildCard(key, model) {
-    const isBowl = key === 'custom_bowling';
-    const iconSvg = isBowl
-      ? '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
-      : '<path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>';
-    let html = `<div class="weight-group" id="${key}Group">
+  function buildFactorCard(groupKey, factor) {
+    const icon = factorIcons[factor] || '<circle cx="12" cy="12" r="10"/>';
+    const cardId = `${groupKey}_${factor}`;
+    return `<div class="weight-group" id="${cardId}_card">
       <div class="wg-header">
-        <span class="wg-title"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>${isBowl ? 'Bowling' : 'Batting'}</span>
-        <button class="wg-reset-btn" onclick="resetCategory('${key}')">Reset</button>
-      </div>`;
-    model.factors.forEach(f => {
-      html += `<div class="weight-item" id="${key}_${f}_item" style="margin-bottom:6px">
-        <span class="wi-label">${factorLabels[f]}</span>
-        <input type="number" class="wi-input" id="${key}_${f}" min="0" max="100" placeholder="0" value="" oninput="onFactorInput('${key}','${f}')">
+        <span class="wg-title"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>${factorLabels[factor]}</span>
+        <button class="wg-reset-btn" onclick="clearFactor('${groupKey}','${factor}')">Reset</button>
+      </div>
+      <div class="weight-item" id="${groupKey}_${factor}_item" style="margin-bottom:6px">
+        <span class="wi-label">Weight</span>
+        <input type="number" class="wi-input" id="${groupKey}_${factor}" min="0" max="100" placeholder="0" value="" oninput="onFactorInput('${groupKey}','${factor}')">
         <span class="wi-unit">%</span>
-      </div>`;
-    });
-    html += `<div class="wg-subtotal" style="margin-top:8px">
-        <span class="wg-subtotal-label">Total:</span>
-        <span class="wg-subtotal-value" id="${key}_subtotal">0 / 100%</span>
-      </div>`;
-    html += '</div>';
-    return html;
+      </div>
+    </div>`;
   }
 
-  batGrid.innerHTML = buildCard('custom_batting', customModels.custom_batting);
-  bowlGrid.innerHTML = buildCard('custom_bowling', customModels.custom_bowling);
+  // Build batting factor cards
+  customModels.custom_batting.factors.forEach(f => {
+    batGrid.innerHTML += buildFactorCard('custom_batting', f);
+  });
+  // Add shared total row after the grid
+  const batTotal = document.createElement('div');
+  batTotal.className = 'wg-subtotal';
+  batTotal.style.cssText = 'margin-top:8px;padding:0 4px';
+  batTotal.innerHTML = `<span class="wg-subtotal-label">Total:</span><span class="wg-subtotal-value" id="custom_batting_subtotal">0 / 100%</span>`;
+  batGrid.parentNode.insertBefore(batTotal, batGrid.nextSibling);
+
+  // Build bowling factor cards
+  customModels.custom_bowling.factors.forEach(f => {
+    bowlGrid.innerHTML += buildFactorCard('custom_bowling', f);
+  });
+  // Add shared total row after the grid
+  const bowlTotal = document.createElement('div');
+  bowlTotal.className = 'wg-subtotal';
+  bowlTotal.style.cssText = 'margin-top:8px;padding:0 4px';
+  bowlTotal.innerHTML = `<span class="wg-subtotal-label">Total:</span><span class="wg-subtotal-value" id="custom_bowling_subtotal">0 / 100%</span>`;
+  bowlGrid.parentNode.insertBefore(bowlTotal, bowlGrid.nextSibling);
 }
 
 function onFactorInput(model, factor) {
@@ -892,18 +917,25 @@ function onFactorInput(model, factor) {
 function updateModelSubtotal(model) {
   const total = Object.values(config[model]).reduce((s, v) => s + v, 0);
   const el = document.getElementById(`${model}_subtotal`);
-  const groupEl = document.getElementById(`${model}Group`);
   if (!el) return;
   el.textContent = `${total} / 100%`;
   if (total === 0) {
     el.className = 'wg-subtotal-value';
-    groupEl.classList.remove('has-error');
   } else if (total === 100) {
     el.className = 'wg-subtotal-value valid';
-    groupEl.classList.remove('has-error');
   } else {
     el.className = 'wg-subtotal-value invalid';
-    groupEl.classList.add('has-error');
+  }
+  // Highlight individual factor cards when total is invalid
+  const modelDef = customModels[model];
+  if (modelDef) {
+    modelDef.factors.forEach(f => {
+      const card = document.getElementById(`${model}_${f}_card`);
+      if (card) {
+        if (total > 0 && total !== 100) card.classList.add('has-error');
+        else card.classList.remove('has-error');
+      }
+    });
   }
 }
 
@@ -945,13 +977,21 @@ function updatePreview() {
   empty.style.display = 'none';
   content.style.display = 'grid';
 
+  // Determine the currently selected model key
+  const modelTypeEl = document.getElementById('modelTypeFilter');
+  const selectedLabel = modelTypeEl ? modelTypeEl.value : '';
+  const labelToKeyPreview = {};
+  for (const [key, model] of Object.entries(allModels)) { labelToKeyPreview[model.name] = key; }
+  const activeKey = labelToKeyPreview[selectedLabel] || '';
+
   let html = '';
   for (const [model, factors] of Object.entries(config)) {
     const total = Object.values(factors).reduce((s, v) => s + v, 0);
     if (total > 0) {
       const modelName = allModels[model].name;
       const detail = Object.entries(factors).filter(([,v]) => v > 0).map(([f,v]) => `${factorLabels[f]} ${v}%`).join(', ');
-      html += `<div class="preview-card"><div class="pc-label">${modelName}</div><div class="pc-value">${total}%</div><div class="pc-sub">${detail}</div></div>`;
+      const isActive = model === activeKey;
+      html += `<div class="preview-card${isActive ? ' pc-active' : ''}"><div class="pc-label">${modelName}${isActive ? ' <span class="pc-badge">Active</span>' : ''}</div><div class="pc-value">${total}%</div><div class="pc-sub">${detail}</div></div>`;
     }
   }
   content.innerHTML = html;
@@ -193231,6 +193271,18 @@ function handlePlayerTypeChange() {
     option.textContent = opt.label;
     modelSelect.appendChild(option);
   });
+  
+  // Toggle filter panels visibility based on player type
+  const batFilterPanel = document.getElementById('battingFilterPanel');
+  const bowlFilterPanel = document.getElementById('bowlingFilterPanel');
+  if (batFilterPanel) batFilterPanel.style.display = playerType === 'batter' ? '' : 'none';
+  if (bowlFilterPanel) bowlFilterPanel.style.display = playerType === 'bowler' ? '' : 'none';
+
+  // Toggle weight sections
+  const batWeights = document.getElementById('battingWeightsSection');
+  const bowlWeights = document.getElementById('bowlingWeightsSection');
+  if (batWeights) batWeights.style.display = playerType === 'batter' ? '' : 'none';
+  if (bowlWeights) bowlWeights.style.display = playerType === 'bowler' ? '' : 'none';
   
   saveLastFilter();
   updateResultsTable();
