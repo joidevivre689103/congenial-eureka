@@ -502,6 +502,11 @@ header.header{display:none !important}
       <div style="display:flex;align-items:center;gap:10px">
         <label class="filter-label">Model Type</label>
         <select class="filter-select" id="modelTypeFilter" onchange="saveLastFilter(); updatePreview(); updateResultsTable()">
+          <option value="Custom Batting">Custom</option>
+          <option value="Tencliffe15">Tencliffe15</option>
+          <option value="Bradlar99">Bradlar99</option>
+          <option value="Harjosh86">Harjosh86</option>
+          <option value="Completeness">Completeness</option>
         </select>
       </div>
     </div>
@@ -602,7 +607,7 @@ header.header{display:none !important}
   </div>
 
   <!-- Bowling Filter -->
-  <div class="filter-panel" id="bowlingFilterPanel" style="border-top:1px dashed var(--border);border-top-left-radius:0;border-top-right-radius:0;padding-top:14px">
+  <div class="filter-panel" id="bowlingFilterPanel" style="display:none;border-top:1px dashed var(--border);border-top-left-radius:0;border-top-right-radius:0;padding-top:14px">
     <div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
       <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">Bowling Filters</span>
     </div>
