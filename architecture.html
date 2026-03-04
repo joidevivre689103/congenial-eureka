@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture Editor — Cricket Times Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
+
+:root {
+  --bg: #070a0d;
+  --panel: #0d1117;
+  --panel2: #111820;
+  --border: #1c2530;
+  --border2: #243040;
+  --c1: #22d3ee;
+  --c2: #a78bfa;
+  --c3: #fb923c;
+  --c4: #34d399;
+  --c5: #f472b6;
+  --c6: #f87171;
+  --c7: #fbbf24;
+  --text: #dde4ee;
+  --muted: #4e6070;
+  --danger: #f87171;
+  --success: #34d399;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  gap: 12px; flex-wrap: wrap;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.logo {
+  font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.18em; color: var(--c1); text-transform: uppercase;
+}
+.page-title { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+  padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border2);
+  background: var(--panel2); color: var(--text); cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.04em; white-space: nowrap;
+}
+.btn:hover { border-color: var(--c1); color: var(--c1); }
+.btn.primary {
+  background: var(--c1); color: var(--bg); border-color: var(--c1); font-weight: 700;
+}
+.btn.primary:hover { background: #06b6d4; border-color: #06b6d4; color: var(--bg); }
+.btn.danger { border-color: var(--danger); color: var(--danger); }
+.btn.danger:hover { background: var(--danger); color: var(--bg); }
+.btn.success { border-color: var(--success); color: var(--success); }
+.btn.success:hover { background: var(--success); color: var(--bg); }
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--muted); flex-shrink: 0;
+  transition: background 0.3s;
+}
+.status-dot.connected { background: var(--success); }
+.status-dot.saving { background: var(--c7); animation: pulse 0.8s infinite; }
+.status-dot.error { background: var(--danger); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.status-text {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--muted);
+}
+
+/* ── LAYOUT ── */
+.workspace {
+  display: flex; flex: 1; overflow: hidden; height: calc(100vh - 57px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 300px; min-width: 260px; max-width: 340px;
+  background: var(--panel); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+  flex-shrink: 0;
+}
+.sidebar-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+}
+.stab {
+  flex: 1; padding: 10px 6px; text-align: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.stab.active { color: var(--c1); border-bottom-color: var(--c1); }
+.stab:hover:not(.active) { color: var(--text); }
+
+.sidebar-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.sidebar-body::-webkit-scrollbar { width: 4px; }
+.sidebar-body::-webkit-scrollbar-track { background: transparent; }
+.sidebar-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── FORM ELEMENTS ── */
+label {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  display: block; margin-bottom: 4px;
+}
+input[type=text], input[type=color], select, textarea {
+  width: 100%; background: var(--panel2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; padding: 8px 10px; outline: none;
+  transition: border-color 0.15s;
+}
+input[type=text]:focus, select:focus, textarea:focus { border-color: var(--c1); }
+select { cursor: pointer; }
+select option { background: var(--panel2); }
+textarea { resize: vertical; min-height: 60px; }
+
+input[type=color] {
+  padding: 3px 6px; height: 34px; cursor: pointer; border-radius: 8px;
+}
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field-row { display: flex; gap: 8px; }
+.field-row .field { flex: 1; }
+
+.form-section {
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
+}
+.form-section-title {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--c1);
+  margin-bottom: 4px;
+}
+
+/* ── ITEM CARDS ── */
+.item-card {
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; transition: all 0.15s;
+  position: relative;
+}
+.item-card:hover { border-color: var(--border2); }
+.item-card.selected { border-color: var(--c1); background: color-mix(in srgb, var(--c1) 6%, var(--panel2)); }
+.item-card-dot {
+  width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+}
+.item-card-info { flex: 1; min-width: 0; }
+.item-card-name {
+  font-size: 0.76rem; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.item-card-sub {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.item-card-del {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 0.9rem; padding: 2px 4px; border-radius: 4px; flex-shrink: 0;
+  transition: color 0.15s;
+}
+.item-card-del:hover { color: var(--danger); }
+
+.empty-state {
+  text-align: center; padding: 24px 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted);
+  line-height: 1.8;
+}
+
+/* ── CANVAS ── */
+.canvas-wrap {
+  flex: 1; overflow: auto; position: relative;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+#diagram-canvas {
+  position: relative;
+  min-width: 900px;
+  min-height: 700px;
+  padding: 40px 40px 80px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0;
+}
+
+#arrow-svg {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; overflow: visible; z-index: 10;
+}
+
+/* ── DIAGRAM NODES ── */
+.d-layer {
+  width: 100%; display: flex; flex-direction: column; align-items: center;
+  margin-bottom: 4px;
+}
+.d-layer-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 8px; align-self: flex-start;
+}
+.d-layer-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; }
+
+.d-node {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; padding: 13px 14px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 5px; min-width: 110px; max-width: 155px; flex: 1;
+  position: relative; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  animation: fadeUp 0.4s ease both;
+}
+.d-node:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.d-node.selected {
+  border-color: var(--c1) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c1) 25%, transparent);
+}
+.d-node::after {
+  content: ''; position: absolute; top: 0; left: 12px; right: 12px;
+  height: 1px; border-radius: 99px; opacity: 0.6;
+}
+.d-node-ico {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.15rem;
+}
+.d-node-name { font-size: 0.76rem; font-weight: 700; text-align: center; line-height: 1.2; }
+.d-node-desc { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--muted); text-align: center; line-height: 1.4; }
+.d-node-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.54rem;
+  padding: 2px 8px; border-radius: 99px; letter-spacing: 0.06em; white-space: nowrap;
+  border: 1px solid; margin-top: 2px;
+}
+
+.d-connector {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 4px 0; gap: 2px; width: 100%;
+}
+.d-conn-line { width: 1px; height: 14px; background: rgba(34,211,238,0.12); }
+.d-conn-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.57rem;
+  color: var(--muted); background: var(--bg);
+  border: 1px solid var(--border); padding: 2px 10px;
+  border-radius: 99px; letter-spacing: 0.06em; white-space: nowrap;
+}
+.d-conn-arrow { color: rgba(34,211,238,0.3); font-size: 0.68rem; line-height: 1; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--panel); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px 18px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 999; animation: slideIn 0.2s ease;
+  max-width: 320px;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; backdrop-filter: blur(4px);
+}
+.modal {
+  background: var(--panel); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 24px; width: 100%; max-width: 460px;
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  animation: fadeUp 0.2s ease;
+}
+.modal-title { font-size: 1rem; font-weight: 800; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+
+/* ── COLOUR SWATCHES ── */
+.swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.swatch {
+  width: 24px; height: 24px; border-radius: 6px; cursor: pointer;
+  border: 2px solid transparent; transition: transform 0.1s, border-color 0.1s;
+}
+.swatch:hover { transform: scale(1.15); }
+.swatch.active { border-color: white; }
+
+/* ── LAYER BAND ── */
+.d-band {
+  width: 100%; border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  margin-bottom: 4px;
+}
+.d-band-title {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 3px 12px; border-radius: 99px; font-weight: 600; border: 1px solid;
+}
+
+.two-band-wrap {
+  display: flex; width: 100%; gap: 20px; align-items: flex-start;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="logo">Cricket Times</span>
+    <span style="color:var(--border2)">|</span>
+    <span class="page-title">Architecture Editor</span>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot" id="status-dot"></div>
+    <span class="status-text" id="status-text">Connecting…</span>
+    <button class="btn" onclick="resetToDefault()">↺ Reset</button>
+    <button class="btn success" onclick="saveToFirebase()">💾 Save</button>
+    <button class="btn primary" onclick="window.open('https://joidevivre689103.github.io/congenial-eureka/news.html','_blank')">↗ View Site</button>
+  </div>
+</div>
+
+<div class="workspace">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-tabs">
+      <div class="stab active" onclick="switchTab('layers')" id="tab-layers">Layers</div>
+      <div class="stab" onclick="switchTab('nodes')"  id="tab-nodes">Nodes</div>
+      <div class="stab" onclick="switchTab('arrows')" id="tab-arrows">Arrows</div>
+    </div>
+
+    <!-- LAYERS TAB -->
+    <div class="sidebar-body" id="panel-layers">
+      <div class="form-section">
+        <div class="form-section-title">Add Layer</div>
+        <div class="field"><label>Layer Name</label><input type="text" id="new-layer-name" placeholder="e.g. // services"></div>
+        <div class="field-row">
+          <div class="field"><label>Order</label><input type="text" id="new-layer-order" placeholder="0" style="width:100%"></div>
+          <div class="field">
+            <label>Style</label>
+            <select id="new-layer-style">
+              <option value="normal">Normal</option>
+              <option value="band">Band (split)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn primary" style="width:100%" onclick="addLayer()">+ Add Layer</button>
+      </div>
+      <div id="layers-list"></div>
+    </div>
+
+    <!-- NODES TAB -->
+    <div class="sidebar-body" id="panel-nodes" style="display:none">
+      <div class="form-section">
+        <div class="form-section-title">Add / Edit Node</div>
+        <div class="field"><label>Name</label><input type="text" id="node-name" placeholder="e.g. news.html"></div>
+        <div class="field"><label>Description</label><textarea id="node-desc" placeholder="Short description"></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>Icon (emoji)</label><input type="text" id="node-icon" placeholder="📰" style="font-size:1.1rem"></div>
+          <div class="field"><label>Tag</label><input type="text" id="node-tag" placeholder="Home"></div>
+        </div>
+        <div class="field">
+          <label>Layer</label>
+          <select id="node-layer"></select>
+        </div>
+        <div class="field">
+          <label>Sub-group (for band layers)</label>
+          <input type="text" id="node-group" placeholder="e.g. Public or Admin">
+        </div>
+        <div class="field">
+          <label>Colour</label>
+          <div class="swatches" id="node-colour-swatches"></div>
+        </div>
+        <input type="hidden" id="node-colour-val" value="#22d3ee">
+        <input type="hidden" id="editing-node-id" value="">
+        <div style="display:flex;gap:8px">
+          <button class="btn primary" style="flex:1" onclick="saveNode()">Save Node</button>
+          <button class="btn" onclick="clearNodeForm()">Clear</button>
+        </div>
+      </div>
+      <div id="nodes-list"></div>
+    </div>
+
+    <!-- ARROWS TAB -->
+    <div class="sidebar-body" id="panel-arrows" style="display:none">
+      <div class="form-section">
+        <div class="form-section-title">Add / Edit Arrow</div>
+        <div class="field"><label>From Node</label><select id="arrow-from"></select></div>
+        <div class="field"><label>To Node</label><select id="arrow-to"></select></div>
+        <div class="field"><label>Label</label><input type="text" id="arrow-label" placeholder="e.g. configures"></div>
+        <div class="field">
+          <label>Colour</label>
+          <div class="swatches" id="arrow-colour-swatches"></div>
+        </div>
+        <input type="hidden" id="arrow-colour-val" value="#fbbf24">
+        <div class="field">
+          <label>Style</label>
+          <select id="arrow-style">
+            <option value="dashed">Dashed</option>
+            <option value="solid">Solid</option>
+          </select>
+        </div>
+        <input type="hidden" id="editing-arrow-id" value="">
+        <div style="display:flex;gap:8px">
+          <button class="btn primary" style="flex:1" onclick="saveArrow()">Save Arrow</button>
+          <button class="btn" onclick="clearArrowForm()">Clear</button>
+        </div>
+      </div>
+      <div id="arrows-list"></div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap">
+    <div id="diagram-canvas">
+      <svg id="arrow-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="diagram-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBnfn9hK0y-p6nvIZ_AwoJnWD7DfDuIQd4",
+  authDomain: "hitwicket-cba02.firebaseapp.com",
+  projectId: "hitwicket-cba02",
+  storageBucket: "hitwicket-cba02.firebasestorage.app",
+  messagingSenderId: "196915483829",
+  appId: "1:196915483829:web:071c47af79914aec88dafc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const DOC_PATH = "architecture/diagram";
+
+// ── COLOUR PALETTE ──
+const COLOURS = [
+  "#22d3ee","#a78bfa","#fb923c","#34d399",
+  "#f472b6","#f87171","#fbbf24","#60a5fa",
+  "#e879f9","#4ade80","#f97316","#818cf8"
+];
+
+// ── STATE ──
+window.state = {
+  layers: [],   // { id, name, order, style }
+  nodes:  [],   // { id, name, desc, icon, tag, colour, layerId, group }
+  arrows: [],   // { id, fromId, toId, label, colour, style }
+};
+
+// ── STATUS UI ──
+function setStatus(s, msg) {
+  const dot  = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  dot.className = 'status-dot ' + s;
+  text.textContent = msg;
+}
+
+// ── TOAST ──
+function toast(msg, colour = '#34d399') {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span style="color:${colour}">●</span> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+// ── FIREBASE LOAD ──
+async function loadFromFirebase() {
+  setStatus('', 'Connecting…');
+  try {
+    const snap = await getDoc(doc(db, ...DOC_PATH.split('/')));
+    if (snap.exists()) {
+      const data = snap.data();
+      window.state.layers = data.layers || [];
+      window.state.nodes  = data.nodes  || [];
+      window.state.arrows = data.arrows || [];
+      setStatus('connected', 'Loaded from Firebase');
+      toast('Diagram loaded ✓');
+    } else {
+      setStatus('connected', 'No saved data — using default');
+      loadDefault();
+    }
+  } catch(e) {
+    setStatus('error', 'Connection error');
+    toast('Firebase error: ' + e.message, '#f87171');
+    loadDefault();
+  }
+  renderAll();
+}
+
+// ── FIREBASE SAVE ──
+window.saveToFirebase = async function() {
+  setStatus('saving', 'Saving…');
+  try {
+    await setDoc(doc(db, ...DOC_PATH.split('/')), {
+      layers: window.state.layers,
+      nodes:  window.state.nodes,
+      arrows: window.state.arrows,
+      updatedAt: new Date().toISOString()
+    });
+    setStatus('connected', 'Saved ✓');
+    toast('Saved to Firebase ✓');
+  } catch(e) {
+    setStatus('error', 'Save failed');
+    toast('Save error: ' + e.message, '#f87171');
+  }
+}
+
+// ── DEFAULT DATA ──
+function loadDefault() {
+  window.state.layers = [
+    { id:'l1', name:'// users',          order:0, style:'normal' },
+    { id:'l2', name:'// ci/cd · hosting',order:1, style:'normal' },
+    { id:'l3', name:'// html pages',     order:2, style:'band'   },
+    { id:'l4', name:'// backend services',order:3,style:'normal' },
+  ];
+  window.state.nodes = [
+    { id:'n-visitor', name:'Public Visitor', desc:'Reads news, stats & simulations', icon:'👤', tag:'Reader',       colour:'#22d3ee', layerId:'l1', group:'' },
+    { id:'n-admin',   name:'Admin / Editor', desc:'Manages content, config & testing',icon:'🔑', tag:'Authenticated',colour:'#fbbf24', layerId:'l1', group:'' },
+    { id:'n-repo',    name:'GitHub Repo',    desc:'congenial-eureka',                icon:'🐙', tag:'Version Control',colour:'#f87171',layerId:'l2', group:'' },
+    { id:'n-actions', name:'GitHub Actions', desc:'Auto deploy on push',             icon:'⚙️', tag:'CI/CD',         colour:'#f87171', layerId:'l2', group:'' },
+    { id:'n-pages',   name:'GitHub Pages',   desc:'joidevivre689103.github.io',      icon:'🌐', tag:'CDN Hosting',   colour:'#f87171', layerId:'l2', group:'' },
+    { id:'n-news',    name:'news.html',      desc:'Stories · scores · opinion',      icon:'📰', tag:'Home',          colour:'#a78bfa', layerId:'l3', group:'Public' },
+    { id:'n-batting', name:'batting-records',desc:'All-time batting leaderboard',    icon:'🏏', tag:'Stats',         colour:'#a78bfa', layerId:'l3', group:'Public' },
+    { id:'n-country', name:'country-results',desc:'Head-to-head nation records',     icon:'🌍', tag:'Stats',         colour:'#a78bfa', layerId:'l3', group:'Public' },
+    { id:'n-compare', name:'index.html',     desc:'Player vs Player comparison',     icon:'⚖️', tag:'Compare',       colour:'#a78bfa', layerId:'l3', group:'Public' },
+    { id:'n-sim',     name:'simulation.html',desc:'Weighted ranking · 7 models',     icon:'🎰', tag:'Sim',           colour:'#a78bfa', layerId:'l3', group:'Public' },
+    { id:'n-adm',     name:'admin.html',     desc:'Site admin & controls',           icon:'🛠️', tag:'Admin',         colour:'#fbbf24', layerId:'l3', group:'Admin' },
+    { id:'n-test',    name:'test.html',      desc:'Testing & diagnostics',           icon:'🧪', tag:'Dev',           colour:'#fbbf24', layerId:'l3', group:'Admin' },
+    { id:'n-backsim', name:'backsim.html',   desc:'Simulation model configuration', icon:'⚙️', tag:'Config',        colour:'#fbbf24', layerId:'l3', group:'Admin' },
+    { id:'n-cms',     name:'cms.html',       desc:'News content management',         icon:'✏️', tag:'CMS',           colour:'#fbbf24', layerId:'l3', group:'Admin' },
+    { id:'n-firestore',name:'Firebase Firestore',desc:'User data · profiles · content',icon:'🔥',tag:'NoSQL DB',   colour:'#34d399', layerId:'l4', group:'' },
+    { id:'n-auth',    name:'Firebase Auth',  desc:'Admin login & sessions',          icon:'🔐', tag:'Auth',          colour:'#34d399', layerId:'l4', group:'' },
+    { id:'n-eleven',  name:'ElevenLabs',     desc:'AI narration for articles',       icon:'🎙️', tag:'Voice API',     colour:'#f472b6', layerId:'l4', group:'' },
+  ];
+  window.state.arrows = [
+    { id:'a1', fromId:'n-backsim', toId:'n-sim',  label:'configures',    colour:'#fbbf24', style:'dashed' },
+    { id:'a2', fromId:'n-cms',     toId:'n-news',  label:'feeds content', colour:'#f472b6', style:'dashed' },
+  ];
+}
+
+// ── RESET ──
+window.resetToDefault = function() {
+  if (!confirm('Reset to default diagram? This won\'t overwrite Firebase until you Save.')) return;
+  loadDefault();
+  renderAll();
+  toast('Reset to default');
+}
+
+// ── RENDER ALL ──
+function renderAll() {
+  renderDiagram();
+  renderSidebarLayers();
+  renderSidebarNodes();
+  renderSidebarArrows();
+  populateNodeSelects();
+  populateLayerSelect();
+}
+
+// ── DIAGRAM RENDER ──
+function renderDiagram() {
+  const canvas = document.getElementById('diagram-content');
+  canvas.innerHTML = '';
+  const svg = document.getElementById('arrow-svg');
+  svg.innerHTML = '';
+
+  const layers = [...window.state.layers].sort((a,b) => (a.order||0)-(b.order||0));
+
+  layers.forEach((layer, li) => {
+    const layerNodes = window.state.nodes.filter(n => n.layerId === layer.id);
+    if (!layerNodes.length) return;
+
+    // connector between layers
+    if (li > 0) {
+      const conn = document.createElement('div');
+      conn.className = 'd-connector';
+      conn.innerHTML = `<div class="d-conn-line"></div><div class="d-conn-arrow">▼</div>`;
+      canvas.appendChild(conn);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'd-layer';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'd-layer-label';
+    lbl.textContent = layer.name;
+    wrap.appendChild(lbl);
+
+    if (layer.style === 'band') {
+      // Group nodes by group name
+      const groups = {};
+      layerNodes.forEach(n => {
+        const g = n.group || 'Default';
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(n);
+      });
+      const bandWrap = document.createElement('div');
+      bandWrap.className = 'two-band-wrap';
+
+      Object.entries(groups).forEach(([gname, gnodes]) => {
+        const band = document.createElement('div');
+        band.style.flex = '1';
+        band.style.display = 'flex';
+        band.style.flexDirection = 'column';
+        band.style.alignItems = 'center';
+
+        const box = document.createElement('div');
+        box.className = 'd-band';
+        const col = gnodes[0]?.colour || '#22d3ee';
+        box.style.borderColor = `color-mix(in srgb, ${col} 22%, var(--border))`;
+
+        const title = document.createElement('div');
+        title.className = 'd-band-title';
+        title.textContent = gname;
+        title.style.color = col;
+        title.style.borderColor = `color-mix(in srgb, ${col} 25%, transparent)`;
+        title.style.background = `color-mix(in srgb, ${col} 10%, transparent)`;
+        box.appendChild(title);
+
+        const row = document.createElement('div');
+        row.className = 'd-layer-row';
+        gnodes.forEach(n => row.appendChild(makeNodeEl(n)));
+        box.appendChild(row);
+        band.appendChild(box);
+        bandWrap.appendChild(band);
+      });
+      wrap.appendChild(bandWrap);
+    } else {
+      const row = document.createElement('div');
+      row.className = 'd-layer-row';
+      layerNodes.forEach(n => row.appendChild(makeNodeEl(n)));
+      wrap.appendChild(row);
+    }
+
+    canvas.appendChild(wrap);
+  });
+
+  // Draw arrows after DOM settles
+  setTimeout(() => drawArrows(svg), 80);
+}
+
+function makeNodeEl(n) {
+  const el = document.createElement('div');
+  el.className = 'd-node';
+  el.id = 'dnode-' + n.id;
+  el.style.setProperty('--nc', n.colour);
+  el.style.borderColor = 'var(--border)';
+  el.innerHTML = `
+    <div class="d-node-ico" style="background:color-mix(in srgb,${n.colour} 13%,transparent)">${n.icon||'📦'}</div>
+    <div class="d-node-name">${n.name}</div>
+    ${n.desc ? `<div class="d-node-desc">${n.desc.replace(/\n/g,'<br>')}</div>` : ''}
+    <div class="d-node-tag" style="color:${n.colour};border-color:color-mix(in srgb,${n.colour} 25%,transparent);background:color-mix(in srgb,${n.colour} 10%,transparent)">${n.tag||''}</div>
+  `;
+  el.style.setProperty('--nc', n.colour);
+  // top line via pseudo — set via inline style override
+  el.addEventListener('mouseenter', () => el.style.setProperty('--nc', n.colour));
+  el.style.cssText += `--nc:${n.colour};`;
+  // After-pseudo colour via a real element
+  const topLine = document.createElement('div');
+  topLine.style.cssText = `position:absolute;top:0;left:12px;right:12px;height:1px;background:${n.colour};opacity:0.55;border-radius:99px;`;
+  el.appendChild(topLine);
+
+  el.onclick = () => editNodeFromDiagram(n.id);
+  return el;
+}
+
+// ── DRAW SVG ARROWS ──
+function drawArrows(svg) {
+  svg.innerHTML = '';
+  const canvas = document.getElementById('diagram-canvas');
+  const cr = canvas.getBoundingClientRect();
+
+  window.state.arrows.forEach((arr, i) => {
+    const fromEl = document.getElementById('dnode-' + arr.fromId);
+    const toEl   = document.getElementById('dnode-' + arr.toId);
+    if (!fromEl || !toEl) return;
+
+    const fr = fromEl.getBoundingClientRect();
+    const tr = toEl.getBoundingClientRect();
+
+    // Pick edge points — from left side to right side (cross-band)
+    const x1 = fr.left - cr.left;
+    const y1 = fr.top  - cr.top + fr.height / 2;
+    const x2 = tr.right - cr.left;
+    const y2 = tr.top  - cr.top + tr.height / 2;
+
+    const mid = { x:(x1+x2)/2, y:(y1+y2)/2 };
+    const dx = x2-x1, dy = y2-y1;
+    const len = Math.sqrt(dx*dx+dy*dy)||1;
+    const nx=-dy/len, ny=dx/len;
+    const bow = Math.min(len*0.35, 80);
+    const cx = mid.x + nx*bow;
+    const cy = mid.y + ny*bow;
+
+    const markId = `m${i}`;
+    const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+    const marker = document.createElementNS('http://www.w3.org/2000/svg','marker');
+    marker.setAttribute('id', markId);
+    marker.setAttribute('markerWidth','8');
+    marker.setAttribute('markerHeight','8');
+    marker.setAttribute('refX','6');
+    marker.setAttribute('refY','3');
+    marker.setAttribute('orient','auto');
+    const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    poly.setAttribute('points','0,0 6,3 0,6');
+    poly.setAttribute('fill', arr.colour||'#fbbf24');
+    marker.appendChild(poly);
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke', arr.colour||'#fbbf24');
+    path.setAttribute('stroke-width','1.5');
+    if (arr.style !== 'solid') path.setAttribute('stroke-dasharray','5,4');
+    path.setAttribute('opacity','0.8');
+    path.setAttribute('marker-end',`url(#${markId})`);
+    svg.appendChild(path);
+
+    // Label
+    const t=0.5;
+    const lx=(1-t)*(1-t)*x1+2*(1-t)*t*cx+t*t*x2;
+    const ly=(1-t)*(1-t)*y1+2*(1-t)*t*cy+t*t*y2;
+    const tw = (arr.label||'').length*6.5+18, th=16;
+
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',lx-tw/2); rect.setAttribute('y',ly-th/2);
+    rect.setAttribute('width',tw); rect.setAttribute('height',th);
+    rect.setAttribute('rx','8');
+    rect.setAttribute('fill','#070a0d');
+    rect.setAttribute('stroke',arr.colour||'#fbbf24');
+    rect.setAttribute('stroke-width','0.8');
+    svg.appendChild(rect);
+
+    const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',lx); txt.setAttribute('y',ly+4.5);
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('font-family','JetBrains Mono,monospace');
+    txt.setAttribute('font-size','8.5');
+    txt.setAttribute('fill',arr.colour||'#fbbf24');
+    txt.textContent = arr.label||'';
+    svg.appendChild(txt);
+  });
+}
+
+// ── SIDEBAR: LAYERS ──
+function renderSidebarLayers() {
+  const list = document.getElementById('layers-list');
+  list.innerHTML = '';
+  const sorted = [...window.state.layers].sort((a,b)=>(a.order||0)-(b.order||0));
+  if (!sorted.length) { list.innerHTML = '<div class="empty-state">No layers yet.<br>Add one above ↑</div>'; return; }
+  sorted.forEach(l => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div class="item-card-dot" style="background:#22d3ee"></div>
+      <div class="item-card-info">
+        <div class="item-card-name">${l.name}</div>
+        <div class="item-card-sub">order:${l.order} · ${l.style}</div>
+      </div>
+      <button class="item-card-del" onclick="deleteLayer('${l.id}',event)" title="Delete">✕</button>
+    `;
+    list.appendChild(card);
+  });
+}
+
+window.addLayer = function() {
+  const name  = document.getElementById('new-layer-name').value.trim();
+  const order = parseInt(document.getElementById('new-layer-order').value)||0;
+  const style = document.getElementById('new-layer-style').value;
+  if (!name) { toast('Enter a layer name','#f87171'); return; }
+  const id = 'l' + Date.now();
+  window.state.layers.push({ id, name, order, style });
+  document.getElementById('new-layer-name').value = '';
+  renderAll();
+  toast('Layer added');
+}
+
+window.deleteLayer = function(id, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this layer? Nodes in it will be unassigned.')) return;
+  window.state.layers = window.state.layers.filter(l => l.id !== id);
+  renderAll();
+  toast('Layer deleted','#fb923c');
+}
+
+// ── SIDEBAR: NODES ──
+function renderSidebarNodes() {
+  const list = document.getElementById('nodes-list');
+  list.innerHTML = '';
+  if (!window.state.nodes.length) { list.innerHTML = '<div class="empty-state">No nodes yet.<br>Add one above ↑</div>'; return; }
+  window.state.nodes.forEach(n => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div class="item-card-dot" style="background:${n.colour}"></div>
+      <div class="item-card-info">
+        <div class="item-card-name">${n.icon||''} ${n.name}</div>
+        <div class="item-card-sub">${n.tag||''} · ${getLayerName(n.layerId)}</div>
+      </div>
+      <button class="item-card-del" onclick="deleteNode('${n.id}',event)" title="Delete">✕</button>
+    `;
+    card.onclick = () => editNodeFromDiagram(n.id);
+    list.appendChild(card);
+  });
+}
+
+function getLayerName(id) { return window.state.layers.find(l=>l.id===id)?.name || 'unassigned'; }
+
+function populateLayerSelect() {
+  const sel = document.getElementById('node-layer');
+  sel.innerHTML = '<option value="">— select layer —</option>';
+  window.state.layers.sort((a,b)=>(a.order||0)-(b.order||0)).forEach(l => {
+    sel.innerHTML += `<option value="${l.id}">${l.name}</option>`;
+  });
+}
+
+function editNodeFromDiagram(id) {
+  switchTab('nodes');
+  const n = window.state.nodes.find(x=>x.id===id);
+  if (!n) return;
+  document.getElementById('node-name').value  = n.name;
+  document.getElementById('node-desc').value  = n.desc||'';
+  document.getElementById('node-icon').value  = n.icon||'';
+  document.getElementById('node-tag').value   = n.tag||'';
+  document.getElementById('node-layer').value = n.layerId||'';
+  document.getElementById('node-group').value = n.group||'';
+  document.getElementById('node-colour-val').value = n.colour||'#22d3ee';
+  document.getElementById('editing-node-id').value = id;
+  setActiveSwatches('node-colour-swatches', n.colour||'#22d3ee');
+  // Highlight in diagram
+  document.querySelectorAll('.d-node').forEach(el=>el.classList.remove('selected'));
+  const el = document.getElementById('dnode-'+id);
+  if (el) { el.classList.add('selected'); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+
+window.saveNode = function() {
+  const name   = document.getElementById('node-name').value.trim();
+  if (!name) { toast('Node name required','#f87171'); return; }
+  const id     = document.getElementById('editing-node-id').value || 'n' + Date.now();
+  const colour = document.getElementById('node-colour-val').value;
+  const node = {
+    id,
+    name,
+    desc:    document.getElementById('node-desc').value.trim(),
+    icon:    document.getElementById('node-icon').value.trim()||'📦',
+    tag:     document.getElementById('node-tag').value.trim(),
+    layerId: document.getElementById('node-layer').value,
+    group:   document.getElementById('node-group').value.trim(),
+    colour,
+  };
+  const idx = window.state.nodes.findIndex(n=>n.id===id);
+  if (idx > -1) window.state.nodes[idx] = node;
+  else window.state.nodes.push(node);
+  clearNodeForm();
+  renderAll();
+  toast(idx > -1 ? 'Node updated ✓' : 'Node added ✓');
+}
+
+window.deleteNode = function(id, e) {
+  if (e) e.stopPropagation();
+  window.state.nodes = window.state.nodes.filter(n=>n.id!==id);
+  window.state.arrows = window.state.arrows.filter(a=>a.fromId!==id&&a.toId!==id);
+  renderAll();
+  toast('Node deleted','#fb923c');
+}
+
+window.clearNodeForm = function() {
+  ['node-name','node-desc','node-icon','node-tag','node-group','editing-node-id'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('node-colour-val').value='#22d3ee';
+  setActiveSwatches('node-colour-swatches','#22d3ee');
+  document.querySelectorAll('.d-node').forEach(el=>el.classList.remove('selected'));
+}
+
+// ── SIDEBAR: ARROWS ──
+function populateNodeSelects() {
+  ['arrow-from','arrow-to'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">— select node —</option>';
+    window.state.nodes.forEach(n => {
+      sel.innerHTML += `<option value="${n.id}">${n.icon||''} ${n.name}</option>`;
+    });
+    sel.value = cur;
+  });
+}
+
+function renderSidebarArrows() {
+  const list = document.getElementById('arrows-list');
+  list.innerHTML = '';
+  if (!window.state.arrows.length) { list.innerHTML = '<div class="empty-state">No arrows yet.<br>Add one above ↑</div>'; return; }
+  window.state.arrows.forEach(a => {
+    const fromName = window.state.nodes.find(n=>n.id===a.fromId)?.name||a.fromId;
+    const toName   = window.state.nodes.find(n=>n.id===a.toId)?.name||a.toId;
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div class="item-card-dot" style="background:${a.colour||'#fbbf24'}"></div>
+      <div class="item-card-info">
+        <div class="item-card-name">${fromName} → ${toName}</div>
+        <div class="item-card-sub">"${a.label||''}" · ${a.style||'dashed'}</div>
+      </div>
+      <button class="item-card-del" onclick="deleteArrow('${a.id}',event)" title="Delete">✕</button>
+    `;
+    card.onclick = () => editArrow(a.id);
+    list.appendChild(card);
+  });
+}
+
+function editArrow(id) {
+  const a = window.state.arrows.find(x=>x.id===id);
+  if (!a) return;
+  document.getElementById('arrow-from').value  = a.fromId;
+  document.getElementById('arrow-to').value    = a.toId;
+  document.getElementById('arrow-label').value = a.label||'';
+  document.getElementById('arrow-style').value = a.style||'dashed';
+  document.getElementById('arrow-colour-val').value = a.colour||'#fbbf24';
+  document.getElementById('editing-arrow-id').value = id;
+  setActiveSwatches('arrow-colour-swatches', a.colour||'#fbbf24');
+}
+
+window.saveArrow = function() {
+  const fromId = document.getElementById('arrow-from').value;
+  const toId   = document.getElementById('arrow-to').value;
+  if (!fromId || !toId) { toast('Select from & to nodes','#f87171'); return; }
+  const id     = document.getElementById('editing-arrow-id').value || 'a' + Date.now();
+  const arrow  = {
+    id,
+    fromId,
+    toId,
+    label:  document.getElementById('arrow-label').value.trim(),
+    colour: document.getElementById('arrow-colour-val').value,
+    style:  document.getElementById('arrow-style').value,
+  };
+  const idx = window.state.arrows.findIndex(a=>a.id===id);
+  if (idx > -1) window.state.arrows[idx] = arrow;
+  else window.state.arrows.push(arrow);
+  clearArrowForm();
+  renderAll();
+  toast(idx > -1 ? 'Arrow updated ✓' : 'Arrow added ✓');
+}
+
+window.deleteArrow = function(id, e) {
+  if (e) e.stopPropagation();
+  window.state.arrows = window.state.arrows.filter(a=>a.id!==id);
+  renderAll();
+  toast('Arrow deleted','#fb923c');
+}
+
+window.clearArrowForm = function() {
+  ['arrow-from','arrow-to','arrow-label','editing-arrow-id'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('arrow-colour-val').value='#fbbf24';
+  setActiveSwatches('arrow-colour-swatches','#fbbf24');
+}
+
+// ── COLOUR SWATCHES ──
+function buildSwatches(containerId, hiddenId) {
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  COLOURS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'swatch';
+    s.style.background = c;
+    s.title = c;
+    s.onclick = () => {
+      document.getElementById(hiddenId).value = c;
+      setActiveSwatches(containerId, c);
+    };
+    wrap.appendChild(s);
+  });
+}
+
+function setActiveSwatches(containerId, colour) {
+  document.querySelectorAll(`#${containerId} .swatch`).forEach(s => {
+    s.classList.toggle('active', s.style.background === colour || s.title === colour);
+  });
+}
+
+// ── TAB SWITCHING ──
+window.switchTab = function(tab) {
+  ['layers','nodes','arrows'].forEach(t => {
+    document.getElementById('panel-'+t).style.display = t===tab ? 'flex' : 'none';
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+  });
+}
+
+// ── INIT ──
+buildSwatches('node-colour-swatches',  'node-colour-val');
+buildSwatches('arrow-colour-swatches', 'arrow-colour-val');
+setActiveSwatches('node-colour-swatches',  '#22d3ee');
+setActiveSwatches('arrow-colour-swatches', '#fbbf24');
+window.addEventListener('resize', () => {
+  const svg = document.getElementById('arrow-svg');
+  drawArrows(svg);
+});
+loadFromFirebase();
+</script>
+</body>
+</html>
