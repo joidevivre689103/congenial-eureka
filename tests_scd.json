@@ -1,0 +1,41 @@
+[
+  /* --- Data from tests_scd_pre1980.json --- */
+  {
+    "Test": 1,
+    "Year": 1877,
+    "Team1": "Aus",
+    "Team2": "Eng",
+    "Player": "C Bannerman",
+    "Status": "ret hurt",
+    "Runs": 0,
+    "BatContr": 15.57,
+    "MatPerfIdx": 29.35
+  },
+  /* ... thousands of records from the early era ... */
+
+  /* --- Data from tests_scd_1980_1999.json --- */
+  {
+    "Test": 868,
+    "Year": 1980,
+    "Team1": "Aus",
+    "Team2": "Eng",
+    "Player": "GA Gooch",
+    "Runs": 16,
+    "Wickets": 2,
+    "MatPerfIdx": 12.53
+  },
+  /* ... records including IT Botham (1980) and early 90s stars ... */
+
+  /* --- Data from tests_scd_2000plus.json --- */
+  {
+    "Test": 1481,
+    "Year": 2000,
+    "Team1": "Aus",
+    "Team2": "Ind",
+    "Player": "MSK Prasad",
+    "Runs": 0,
+    "Wickets": 0,
+    "MatPerfIdx": 1.67
+  }
+  /* ... modern era records up to Year 2026 (e.g., MG Neser, MA Starc) ... */
+]
