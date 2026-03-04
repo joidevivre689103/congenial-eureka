@@ -2203,6 +2203,10 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const STORAGE_KEY = 'cricket_site_auth';
+const ADMIN_EMAIL = 'joseph.ivan@outlook.com';
+function getTodayStr() { return new Date().toISOString().slice(0, 10); }
+async function setDailyAuth(email) { try { await db.collection('daily_auth').doc(email).set({ email: email, date: getTodayStr() }); } catch(e) { console.error('Error setting daily auth:', e); } }
+async function isDailyAuthed() { try { const doc = await db.collection('daily_auth').doc(ADMIN_EMAIL).get(); if (doc.exists && doc.data().date === getTodayStr()) return true; } catch(e) { console.error('Error checking daily auth:', e); } return false; }
 const DEFAULT_PASSWORD = 'mylaptopismAI!';
 let sitePassword = DEFAULT_PASSWORD;
 
@@ -2276,6 +2280,8 @@ async function checkPassword() {
     
     sessionStorage.setItem(STORAGE_KEY, 'authenticated');
     sessionStorage.setItem('cricket_user_email', email);
+    // Set daily auth if admin email
+    if (email.toLowerCase() === ADMIN_EMAIL) { await setDailyAuth(email.toLowerCase()); }
     unlockSite();
   } else {
     passwordInput.classList.add('error');
@@ -2315,7 +2321,15 @@ window.addEventListener('beforeunload', async () => {
 if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
   unlockSite();
 } else {
-  document.getElementById('emailInput').focus();
+  (async () => {
+    if (await isDailyAuthed()) {
+      sessionStorage.setItem(STORAGE_KEY, 'authenticated');
+      sessionStorage.setItem('cricket_user_email', ADMIN_EMAIL);
+      unlockSite();
+    } else {
+      document.getElementById('emailInput').focus();
+    }
+  })();
 }
 </script>
 </body>

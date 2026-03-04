@@ -235,6 +235,20 @@ const db = firebase.firestore();
 
 // Default admin password (will be stored in Firestore)
 const DEFAULT_ADMIN_PASSWORD = 'admin123';
+const DAILY_AUTH_KEY = 'cricket_daily_auth';
+const ADMIN_EMAIL = 'joseph.ivan@outlook.com';
+
+function getTodayStr() { return new Date().toISOString().slice(0, 10); }
+async function setDailyAuth(email) {
+  try { await db.collection('daily_auth').doc(email).set({ email: email, date: getTodayStr() }); } catch(e) { console.error('Error setting daily auth:', e); }
+}
+async function isDailyAuthed() {
+  try {
+    const doc = await db.collection('daily_auth').doc(ADMIN_EMAIL).get();
+    if (doc.exists && doc.data().date === getTodayStr()) return true;
+  } catch(e) { console.error('Error checking daily auth:', e); }
+  return false;
+}
 
 let adminPassword = DEFAULT_ADMIN_PASSWORD;
 
@@ -301,6 +315,8 @@ async function adminLogin() {
   
   if (input.value === adminPassword) {
     sessionStorage.setItem('cricket_admin_auth', 'true');
+    // Also set daily auth in Firebase for cross-page unlock
+    await setDailyAuth(ADMIN_EMAIL);
     document.getElementById('adminLoginOverlay').classList.add('hidden');
     document.getElementById('adminPanel').classList.add('visible');
     loadLogins();
@@ -542,7 +558,16 @@ if (sessionStorage.getItem('cricket_admin_auth') === 'true') {
   document.getElementById('adminPanel').classList.add('visible');
   loadLogins();
 } else {
-  document.getElementById('adminPassword').focus();
+  (async () => {
+    if (await isDailyAuthed()) {
+      sessionStorage.setItem('cricket_admin_auth', 'true');
+      document.getElementById('adminLoginOverlay').classList.add('hidden');
+      document.getElementById('adminPanel').classList.add('visible');
+      loadLogins();
+    } else {
+      document.getElementById('adminPassword').focus();
+    }
+  })();
 }
 </script>
 </body>
