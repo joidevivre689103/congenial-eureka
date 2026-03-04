@@ -321,6 +321,9 @@ input[type=color] {
 .two-band-wrap {
   display: flex; width: 100%; gap: 20px; align-items: flex-start;
 }
+.fe-links{display:flex;align-items:center;gap:2px}
+.fe-link{color:var(--text3);text-decoration:none;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;transition:all 0.2s}
+.fe-link:hover{background:var(--accent);color:#fff}
 </style>
 </head>
 <body>
@@ -333,6 +336,14 @@ input[type=color] {
     <span class="page-title">Architecture Editor</span>
   </div>
   <div class="topbar-right">
+    <div class="fe-links">
+      <a href="news.html" class="fe-link">Stories</a>
+      <a href="country-results.html" class="fe-link">Countries</a>
+      <a href="batting-records.html" class="fe-link">Batting</a>
+      <a href="index.html" class="fe-link">Compare</a>
+      <a href="simulation.html" class="fe-link">Simulation</a>
+      <span style="color:var(--border2);margin:0 4px">|</span>
+    </div>
     <div class="status-dot" id="status-dot"></div>
     <span class="status-text" id="status-text">Connecting…</span>
     <button class="btn" onclick="resetToDefault()">↺ Reset</button>
