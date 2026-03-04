@@ -324,6 +324,8 @@ input[type=color] {
 .fe-links{display:flex;align-items:center;gap:2px}
 .fe-link{color:var(--text3);text-decoration:none;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;transition:all 0.2s}
 .fe-link:hover{background:var(--accent);color:#fff}
+.fe-link.be{color:var(--text3);opacity:0.7}
+.fe-link.be:hover{background:#2d3340;color:#fff;opacity:1}
 </style>
 </head>
 <body>
@@ -342,6 +344,11 @@ input[type=color] {
       <a href="batting-records.html" class="fe-link">Batting</a>
       <a href="index.html" class="fe-link">Compare</a>
       <a href="simulation.html" class="fe-link">Simulation</a>
+      <span style="color:var(--border2);margin:0 4px">|</span>
+      <a href="admin.html" class="fe-link be">Admin</a>
+      <a href="cms.html" class="fe-link be">CMS</a>
+      <a href="backsim.html" class="fe-link be">Sim Weights</a>
+      <a href="test.html" class="fe-link be">Tests</a>
       <span style="color:var(--border2);margin:0 4px">|</span>
     </div>
     <div class="status-dot" id="status-dot"></div>
