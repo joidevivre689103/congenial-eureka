@@ -390,6 +390,9 @@ header.header{display:none !important}
 .ct-nav-link:hover{color:var(--accent)}
 .ct-nav-link.active{color:var(--accent)}
 .ct-nav-link.active::after{content:'';position:absolute;bottom:0;left:20px;right:20px;height:2px;background:var(--accent)}
+.ct-nav-sep{width:1px;height:16px;background:var(--border);margin:0 8px;flex-shrink:0}
+.ct-nav-link.ct-be{color:var(--text3);font-size:11px;opacity:0.7}
+.ct-nav-link.ct-be:hover{color:var(--accent);opacity:1}
 @media(max-width:900px){
   .ct-nav-inner{overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .ct-nav-inner::-webkit-scrollbar{display:none}
@@ -445,6 +448,11 @@ header.header{display:none !important}
     <a href="batting-records.html" class="ct-nav-link">Batting</a>
     <a href="index.html" class="ct-nav-link">Compare</a>
     <a href="simulation.html" class="ct-nav-link active">Simulation</a>
+    <span class="ct-nav-sep"></span>
+    <a href="admin.html" class="ct-nav-link ct-be">Admin</a>
+    <a href="cms.html" class="ct-nav-link ct-be">CMS</a>
+    <a href="architecture.html" class="ct-nav-link ct-be">Architecture</a>
+    <a href="test.html" class="ct-nav-link ct-be">Tests</a>
   </div>
 </nav>
 <script>(function(){var d=document.getElementById('ctDate');if(d)d.textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})})()</script>
