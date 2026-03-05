@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deploy to GitHub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --border: #2a2a3a;
+    --accent: #00ff88;
+    --accent2: #0088ff;
+    --danger: #ff4466;
+    --text: #e8e8f0;
+    --muted: #666680;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+  }
+
+  .header {
+    margin-bottom: 2.5rem;
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .row.full { grid-template-columns: 1fr; }
+
+  label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.6rem 0.75rem;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--accent2);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 200px;
+  }
+
+  .token-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .token-row input {
+    flex: 1;
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-ghost {
+    background: var(--border);
+    color: var(--muted);
+  }
+
+  .btn-ghost:hover { background: #3a3a4a; color: var(--text); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #00cc66);
+    color: #000;
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0,255,136,0.3);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .status {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    border-left: 3px solid;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .status.success {
+    display: block;
+    background: rgba(0,255,136,0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .status.error {
+    display: block;
+    background: rgba(255,68,102,0.08);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .status.loading {
+    display: block;
+    background: rgba(0,136,255,0.08);
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  .status a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  .hint {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+    line-height: 1.5;
+  }
+
+  .commit-msg-row {
+    margin-top: 0.75rem;
+  }
+
+  .saved-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    background: rgba(0,255,136,0.15);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    letter-spacing: 0.05em;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .loading-dots::after {
+    content: '...';
+    animation: pulse 1s infinite;
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="container">
+  <div class="header">
+    <h1>⟶ Deploy to GitHub</h1>
+    <p>// push files directly to your repo via GitHub API</p>
+  </div>
+
+  <!-- Config Card -->
+  <div class="card">
+    <div class="card-title">
+      Repository Config
+      <span id="savedBadge" class="saved-badge" style="display:none">● saved</span>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>GitHub Username</label>
+        <input type="text" id="owner" placeholder="e.g. your-username" />
+      </div>
+      <div>
+        <label>Repository Name</label>
+        <input type="text" id="repo" placeholder="e.g. congenial-eureka" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Branch</label>
+        <input type="text" id="branch" placeholder="main" value="main" />
+      </div>
+      <div>
+        <label>File Path in Repo</label>
+        <input type="text" id="filepath" placeholder="e.g. batting-records.html" />
+      </div>
+    </div>
+
+    <div class="row full">
+      <div>
+        <label>Personal Access Token</label>
+        <div class="token-row">
+          <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+          <button class="btn btn-ghost" onclick="toggleToken()">show</button>
+          <button class="btn btn-ghost" onclick="saveConfig()">save</button>
+        </div>
+        <p class="hint">Generate at github.com → Settings → Developer settings → Personal access tokens → Fine-grained. Needs <strong>Contents: Read & Write</strong> permission.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Card -->
+  <div class="card">
+    <div class="card-title">File Content</div>
+
+    <div class="row full">
+      <div>
+        <label>Paste file content here</label>
+        <textarea id="content" placeholder="Paste the content from Claude here...&#10;&#10;(Copy from any Claude code block using the copy button)"></textarea>
+      </div>
+    </div>
+
+    <div class="commit-msg-row">
+      <label>Commit Message</label>
+      <input type="text" id="commitMsg" placeholder="Update via Claude deploy tool" value="Update via Claude deploy tool" />
+    </div>
+
+    <button class="btn btn-primary" id="deployBtn" onclick="deploy()">
+      ⟶ Deploy to GitHub
+    </button>
+
+    <div class="status" id="status"></div>
+  </div>
+</div>
+
+<script>
+  // Load saved config on startup
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = loadConfig();
+    if (saved) {
+      document.getElementById('owner').value = saved.owner || '';
+      document.getElementById('repo').value = saved.repo || '';
+      document.getElementById('branch').value = saved.branch || 'main';
+      document.getElementById('token').value = saved.token || '';
+      if (saved.owner || saved.repo) {
+        document.getElementById('savedBadge').style.display = 'inline-block';
+      }
+    }
+  });
+
+  function saveConfig() {
+    const config = {
+      owner: document.getElementById('owner').value.trim(),
+      repo: document.getElementById('repo').value.trim(),
+      branch: document.getElementById('branch').value.trim(),
+      token: document.getElementById('token').value.trim(),
+    };
+    sessionStorage.setItem('gh_deploy_config', JSON.stringify(config));
+    document.getElementById('savedBadge').style.display = 'inline-block';
+    showStatus('Config saved for this session.', 'success');
+  }
+
+  function loadConfig() {
+    try {
+      const raw = sessionStorage.getItem('gh_deploy_config');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  function toggleToken() {
+    const t = document.getElementById('token');
+    t.type = t.type === 'password' ? 'text' : 'password';
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.className = `status ${type}`;
+    el.innerHTML = msg;
+  }
+
+  async function deploy() {
+    const owner = document.getElementById('owner').value.trim();
+    const repo = document.getElementById('repo').value.trim();
+    const branch = document.getElementById('branch').value.trim() || 'main';
+    const filepath = document.getElementById('filepath').value.trim();
+    const token = document.getElementById('token').value.trim();
+    const content = document.getElementById('content').value;
+    const commitMsg = document.getElementById('commitMsg').value.trim() || 'Update via Claude deploy tool';
+
+    if (!owner || !repo || !filepath || !token || !content) {
+      showStatus('Please fill in all fields (username, repo, file path, token, and content).', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('deployBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-dots">Deploying</span>';
+    showStatus('Connecting to GitHub API...', 'loading');
+
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filepath}`;
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      // Check if file already exists (to get its SHA for updates)
+      let sha = null;
+      try {
+        const existing = await fetch(`${apiUrl}?ref=${branch}`, { headers });
+        if (existing.ok) {
+          const data = await existing.json();
+          sha = data.sha;
+          showStatus('File exists — updating...', 'loading');
+        }
+      } catch {}
+
+      // Base64 encode the content
+      const encoded = btoa(unescape(encodeURIComponent(content)));
+
+      const body = {
+        message: commitMsg,
+        content: encoded,
+        branch: branch,
+      };
+      if (sha) body.sha = sha;
+
+      const res = await fetch(apiUrl, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(body),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        const fileUrl = `https://github.com/${owner}/${repo}/blob/${branch}/${filepath}`;
+        const pagesUrl = `https://${owner}.github.io/${repo}/${filepath}`;
+        showStatus(
+          `✓ Deployed successfully!<br><br>` +
+          `<a href="${fileUrl}" target="_blank">→ View on GitHub</a><br>` +
+          `<a href="${pagesUrl}" target="_blank">→ View on GitHub Pages</a>`,
+          'success'
+        );
+      } else {
+        const msg = result.message || 'Unknown error';
+        showStatus(`✗ GitHub API error: ${msg}`, 'error');
+      }
+    } catch (err) {
+      showStatus(`✗ Network error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '⟶ Deploy to GitHub';
+    }
+  }
+</script>
+
+</body>
+</html>
