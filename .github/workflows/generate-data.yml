@@ -1,9 +1,10 @@
-name: Generate data.js from .dat files
+name: Generate data.js
 
 on:
   push:
     paths:
-      - '*.dat'   # Triggers only when a .dat file is uploaded/updated
+      - 'testmat.dat.gz'
+      - 'testply.dat.gz'
 
 jobs:
   generate:
@@ -18,15 +19,13 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run extract script
-        run: python3 extract_data.py
+      - name: Run extract_data.py
+        run: python extract_data.py
 
-      - name: Commit and push new data.js
+      - name: Commit updated data.js
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data.js
-          git diff --staged --quiet && echo "No changes to data.js" || (
-            git commit -m "Auto-regenerate data.js from updated .dat files" &&
-            git push
-          )
+          git diff --staged --quiet || git commit -m "Auto-update data.js from dat files"
+          git push
