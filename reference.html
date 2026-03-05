@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference — Cricket Times Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --cream-dark: #ede7d9;
+      --red: #c41e1e;
+      --red-dark: #9e1818;
+      --ink: #1a1a1a;
+      --ink-light: #444;
+      --rule: #c8b89a;
+      --badge-bg: #1a1a1a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 0 2rem;
+      border-bottom: 3px solid var(--red);
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .site-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .admin-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--red);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+
+    /* ── Page title ── */
+    .page-title-bar {
+      background: var(--cream-dark);
+      border-bottom: 1px solid var(--rule);
+      padding: 2rem 2rem 1.5rem;
+    }
+    .page-title-bar .inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .eyebrow {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+    .subtitle {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      font-weight: 300;
+    }
+
+    /* ── Main content ── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+      display: grid;
+      gap: 2rem;
+    }
+
+    /* ── Section card ── */
+    .section-card {
+      background: white;
+      border: 1px solid var(--rule);
+      border-top: 3px solid var(--ink);
+    }
+    .section-card.highlight {
+      border-top-color: var(--red);
+    }
+    .card-header {
+      padding: 1.2rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--cream-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .card-number {
+      width: 28px;
+      height: 28px;
+      background: var(--ink);
+      color: var(--cream);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Playfair Display', serif;
+    }
+    .highlight .card-number {
+      background: var(--red);
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .card-body {
+      padding: 1.25rem 1.5rem;
+    }
+
+    /* ── Steps ── */
+    .steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .step {
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--cream-dark);
+    }
+    .step:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--red);
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .step-text {
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: var(--ink-light);
+    }
+    .step-text strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      background: var(--cream-dark);
+      border: 1px solid var(--rule);
+      padding: 1px 5px;
+      border-radius: 2px;
+      color: var(--red-dark);
+    }
+
+    /* ── Auto badge ── */
+    .auto-note {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: #f0f7f0;
+      border: 1px solid #b5d4b5;
+      border-left: 3px solid #3a8a3a;
+      padding: 0.85rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 0 2px 2px 0;
+    }
+    .auto-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .auto-note p {
+      font-size: 0.82rem;
+      color: #2a5a2a;
+      line-height: 1.5;
+    }
+    .auto-note p strong { color: #1a3a1a; }
+
+    /* ── File offsets table ── */
+    .offsets-section {
+      margin-top: 0.25rem;
+    }
+    .offsets-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.6rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      padding: 0.4rem 0.75rem;
+      background: var(--cream-dark);
+      border: 1px solid var(--rule);
+    }
+    td {
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--cream-dark);
+      color: var(--ink-light);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #faf8f4; }
+    td:first-child { font-family: 'Courier New', monospace; color: var(--red-dark); font-size: 0.78rem; }
+    td:nth-child(2) { font-weight: 500; color: var(--ink); }
+
+    /* ── File list ── */
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      background: var(--cream);
+      border: 1px solid var(--rule);
+      font-size: 0.83rem;
+    }
+    .file-icon { font-size: 0.9rem; }
+    .file-name { font-family: 'Courier New', monospace; font-weight: 600; color: var(--ink); font-size: 0.8rem; }
+    .file-desc { color: var(--ink-light); font-size: 0.78rem; margin-left: auto; }
+
+    /* ── Two column grid ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      font-weight: 300;
+    }
+    footer a { color: var(--red); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="site-name">Cricket Times</a>
+      <span class="admin-badge">Admin Reference</span>
+    </div>
+  </header>
+
+  <div class="page-title-bar">
+    <div class="inner">
+      <p class="eyebrow">Backend Documentation</p>
+      <h1>Reference Guide</h1>
+      <p class="subtitle">Procedures and technical notes for maintaining the Cricket Times data pipeline.</p>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- Update procedure -->
+    <div class="section-card highlight">
+      <div class="card-header">
+        <div class="card-number">★</div>
+        <div class="card-title">How to Update the Database</div>
+      </div>
+      <div class="card-body">
+        <ul class="steps">
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 1 — Compress the new .dat files</strong><br>
+              Upload <code>testmat.dat</code> and <code>testply.dat</code> to Claude and ask it to compress them. Download the resulting <code>testmat.dat.gz</code> and <code>testply.dat.gz</code>.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 2 — Upload to GitHub</strong><br>
+              Go to the repo on GitHub. Click <strong>Add file → Upload files</strong>. Upload both <code>.gz</code> files and commit the changes.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 3 — Done!</strong><br>
+              The GitHub Action runs <code>extract_data.py</code> automatically and commits the updated <code>data.js</code> back to the repo. Monitor progress under the <strong>Actions</strong> tab.
+            </div>
+          </li>
+        </ul>
+        <div class="auto-note">
+          <span class="auto-icon">⚡</span>
+          <p><strong>Fully automated:</strong> Once the .gz files are pushed, the workflow handles everything — no manual script running required.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repo files -->
+    <div class="two-col">
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-number">1</div>
+          <div class="card-title">Key Repo Files</div>
+        </div>
+        <div class="card-body">
+          <div class="file-list">
+            <div class="file-item">
+              <span class="file-icon">🐍</span>
+              <span class="file-name">extract_data.py</span>
+              <span class="file-desc">Data pipeline script</span>
+            </div>
+            <div class="file-item">
+              <span class="file-icon">📦</span>
+              <span class="file-name">testmat.dat.gz</span>
+              <span class="file-desc">Match data (compressed)</span>
+            </div>
+            <div class="file-item">
+              <span class="file-icon">📦</span>
+              <span class="file-name">testply.dat.gz</span>
+              <span class="file-desc">Player data (compressed)</span>
+            </div>
+            <div class="file-item">
+              <span class="file-icon">📄</span>
+              <span class="file-name">data.js</span>
+              <span class="file-desc">Generated output (auto)</span>
+            </div>
+            <div class="file-item">
+              <span class="file-icon">⚙️</span>
+              <span class="file-name">generate-data.yml</span>
+              <span class="file-desc">GitHub Actions workflow</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-number">2</div>
+          <div class="card-title">File Sizes</div>
+        </div>
+        <div class="card-body">
+          <div class="file-list">
+            <div class="file-item">
+              <span class="file-icon">📊</span>
+              <div>
+                <div class="file-name">testmat.dat</div>
+                <div style="font-size:0.75rem;color:var(--ink-light);margin-top:2px;">26.2 MB → 11.8 MB (gz)</div>
+              </div>
+              <span class="file-desc" style="color:#3a8a3a;font-weight:600;">55% smaller</span>
+            </div>
+            <div class="file-item">
+              <span class="file-icon">📊</span>
+              <div>
+                <div class="file-name">testply.dat</div>
+                <div style="font-size:0.75rem;color:var(--ink-light);margin-top:2px;">26 MB → 2.8 MB (gz)</div>
+              </div>
+              <span class="file-desc" style="color:#3a8a3a;font-weight:600;">89% smaller</span>
+            </div>
+            <div class="file-item" style="background:#fff8f0;border-color:#e8c9a0;">
+              <span class="file-icon">ℹ️</span>
+              <span class="file-desc" style="margin-left:0;font-size:0.78rem;color:var(--ink-light);">Record sizes: 10,000 bytes/match · 8,000 bytes/player · 2,616 matches · 3,281 players</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Binary offsets -->
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-number">3</div>
+        <div class="card-title">testply.dat — Confirmed Binary Offsets</div>
+      </div>
+      <div class="card-body">
+        <div class="offsets-section">
+          <p class="offsets-label">Batting stats — little-endian encoding</p>
+          <table>
+            <thead>
+              <tr><th>Offset</th><th>Field</th><th>Type</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0x000</td><td>Name</td><td>string</td><td>Null-terminated, ~30 bytes</td></tr>
+              <tr><td>0x03E</td><td>Tests</td><td>u16</td><td>Total tests played</td></tr>
+              <tr><td>0x040</td><td>Innings</td><td>u16</td><td>Total innings</td></tr>
+              <tr><td>0x042</td><td>Runs</td><td>u16</td><td>Career runs</td></tr>
+              <tr><td>0x044</td><td>High Score</td><td>u16</td><td>Best individual score</td></tr>
+              <tr><td>0x056</td><td>Not Outs</td><td>byte</td><td></td></tr>
+              <tr><td>0x05A</td><td>Hundreds</td><td>byte</td><td>Career centuries</td></tr>
+              <tr><td>0x05B</td><td>Fifties</td><td>byte</td><td>Career half-centuries</td></tr>
+              <tr><td>0x18E</td><td>Fours</td><td>u16</td><td>Career boundaries</td></tr>
+              <tr><td>0x190</td><td>Sixes</td><td>u16</td><td>Career sixes</td></tr>
+              <tr><td>—</td><td>Average</td><td>calculated</td><td>runs ÷ (innings − not_outs)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Match offsets -->
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-number">4</div>
+        <div class="card-title">testmat.dat — Match Record Fields</div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr><th>Offset</th><th>Field</th><th>Type</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0x000</td><td>Series</td><td>string</td><td>44 bytes</td></tr>
+            <tr><td>0x02C</td><td>Match Number</td><td>string</td><td>22 bytes (e.g. "1st Test")</td></tr>
+            <tr><td>0x042</td><td>Host</td><td>string</td><td>14 bytes</td></tr>
+            <tr><td>0x050</td><td>Dates</td><td>string</td><td>44 bytes</td></tr>
+            <tr><td>0x07C</td><td>Ground</td><td>string</td><td>75 bytes</td></tr>
+            <tr><td>0x0C8</td><td>Result</td><td>string</td><td>75 bytes (with margin)</td></tr>
+            <tr><td>0x11E</td><td>Umpire 1</td><td>string</td><td>34 bytes</td></tr>
+            <tr><td>0x140</td><td>Umpire 2</td><td>string</td><td>34 bytes</td></tr>
+            <tr><td>0x16D</td><td>City</td><td>string</td><td>20 bytes</td></tr>
+            <tr><td>0x1C2</td><td>Year</td><td>u16</td><td>Start year</td></tr>
+            <tr><td>0x1C4</td><td>Year End</td><td>u16</td><td>End year</td></tr>
+            <tr><td>0x1E0</td><td>Total Runs</td><td>u16</td><td>Match aggregate</td></tr>
+            <tr><td>0x1E2</td><td>Total Wickets</td><td>u16</td><td>Match aggregate</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Cricket Times Admin &mdash; <a href="index.html">Back to site</a>
+  </footer>
+
+</body>
+</html>
