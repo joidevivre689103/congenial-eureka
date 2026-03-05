@@ -11,10 +11,10 @@ import json
 import os
 
 # === Configuration ===
-PLAYER_DAT = '/mnt/user-data/uploads/testply__1_.dat.gz'
-MATCH_DAT = '/mnt/user-data/uploads/testmat__1_.dat.gz'
-EXISTING_DATA_JS = '/mnt/user-data/uploads/data.js'
-OUTPUT_FILE = '/mnt/user-data/outputs/data.js'
+PLAYER_DAT = 'testply.dat.gz'
+MATCH_DAT = 'testmat.dat.gz'
+EXISTING_DATA_JS = 'data.js'
+OUTPUT_FILE = 'data.js'
 
 PLAYER_RECORD_SIZE = 8000
 MATCH_RECORD_SIZE = 10000
