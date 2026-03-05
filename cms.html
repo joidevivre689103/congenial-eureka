@@ -869,6 +869,94 @@ textarea.form-input{
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   QUIZ QUEUE
+═══════════════════════════════════════════════════════════════════════════ */
+.queue-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.queue-item:hover { border-color: var(--border2); }
+.queue-item.drag-over { border-color: var(--accent); background: var(--accent-dim); }
+.queue-item-drag {
+  color: var(--text3);
+  cursor: grab;
+  padding: 4px 2px;
+  flex-shrink: 0;
+}
+.queue-item-drag:active { cursor: grabbing; }
+.queue-item-body { flex: 1; min-width: 0; }
+.queue-item-question {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-item-meta {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.queue-item-date-input {
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  width: 140px;
+}
+.queue-item-date-input:focus { outline: none; border-color: var(--accent); }
+.queue-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.submission-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.submission-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+.submission-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.submission-card-meta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.submission-questions-preview {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  max-height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+.submission-questions-preview.expanded { max-height: none; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════════════════════════ */
 @media(max-width:1200px){
@@ -923,6 +1011,11 @@ textarea.form-input{
         <a href="#" class="nav-item" data-view="quiz">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Quiz
+        </a>
+        <a href="#" class="nav-item" data-view="quiz-queue">
+          <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Quiz Queue
+          <span class="nav-item-badge" id="queueNavBadge">0</span>
         </a>
       </div>
       
@@ -1299,6 +1392,87 @@ textarea.form-input{
             <div id="quizCurrentText" style="font-size:13px;color:var(--text)"></div>
           </div>
 
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ QUEUE VIEW -->
+    <div id="quiz-queue-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Quiz Queue</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary" onclick="loadQuizQueue()">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
+          </button>
+          <button class="btn btn-primary" onclick="publishQueueToGitHub()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Publish Schedule to GitHub
+          </button>
+        </div>
+      </div>
+
+      <!-- Info banner -->
+      <div style="background:var(--accent-dim);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--text2);line-height:1.6">
+        <strong style="color:var(--accent)">How sequencing works:</strong>
+        Quizzes submitted via the reader form appear below as <em>Pending</em>. 
+        When you publish today's quiz from the Quiz panel, any approved submissions here are automatically 
+        assigned to subsequent days — Day +1, Day +2, etc. You can also manually set dates or reorder the queue.
+        The schedule is saved as <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">quiz.json</code> with a <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">queue</code> array.
+      </div>
+
+      <!-- GitHub token (shared with quiz panel) -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">GitHub Access</h2>
+          <span style="font-size:11px;color:var(--text3)">Shared with Quiz panel — enter token once per session</span>
+        </div>
+        <div style="padding:16px 20px;display:flex;gap:12px;align-items:flex-end">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Personal Access Token</label>
+            <input type="password" class="form-input" id="queueGithubToken"
+                   placeholder="ghp_ … (same token as Quiz panel)"
+                   style="font-family:monospace;font-size:13px">
+          </div>
+          <button class="btn btn-secondary" onclick="syncQueueToken()" style="height:44px;white-space:nowrap">Sync from Quiz Panel</button>
+          <button class="btn btn-secondary" onclick="loadQuizQueue()" style="height:44px;white-space:nowrap">Load Current Schedule</button>
+        </div>
+        <div id="queueTokenStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
+      </div>
+
+      <!-- Today's scheduled quiz -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">Today's Quiz</h2>
+          <span id="todayDateLabel" style="font-size:12px;color:var(--text3)"></span>
+        </div>
+        <div id="todayQuizPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
+          No quiz loaded. Click "Load Current Schedule".
+        </div>
+      </div>
+
+      <!-- Upcoming scheduled queue -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">Upcoming Schedule</h2>
+          <span style="font-size:11px;color:var(--text3)">Drag rows to reorder · click date to edit</span>
+        </div>
+        <div id="queueSchedulePanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
+          No queue loaded yet.
+        </div>
+      </div>
+
+      <!-- Pending submissions from Firestore -->
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Pending Submissions</h2>
+          <button class="btn btn-sm btn-secondary" onclick="loadPendingSubmissions()">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Load from Firestore
+          </button>
+        </div>
+        <div id="pendingSubmissionsPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
+          Click "Load from Firestore" to fetch reader-submitted quizzes awaiting review.
         </div>
       </div>
     </div>
@@ -2657,7 +2831,10 @@ async function initQuizView() {
   try {
     const res = await fetch(url + '?t=' + Date.now());
     if (res.ok) {
-      const quiz = await res.json();
+      const data = await res.json();
+      // Support new { today, queue } format and old flat format
+      const quiz = data.today || (data.question ? data : null);
+      if (!quiz) return;
       const panel = document.getElementById('quizCurrentPanel');
       const text  = document.getElementById('quizCurrentText');
       panel.style.display = 'block';
@@ -2723,6 +2900,301 @@ async function saveQuizToGitHub() {
     showToast('error', 'Network Error', e.message);
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUIZ QUEUE — sequencing reader submissions after CMS today quiz
+// ═══════════════════════════════════════════════════════════════════════════
+
+let queueState = { today: null, queue: [] };
+let pendingSubmissions = [];
+let dragSrcIndex = null;
+
+function syncQueueToken() {
+  const t = document.getElementById('quizGithubToken').value.trim();
+  if (t) {
+    document.getElementById('queueGithubToken').value = t;
+    showQueueStatus('<span style="color:var(--green)">✓ Token synced from Quiz panel.</span>');
+  } else {
+    showQueueStatus('<span style="color:var(--yellow)">⚠ Quiz panel token is empty. Enter it there first.</span>');
+  }
+}
+function showQueueStatus(html) {
+  const el = document.getElementById('queueTokenStatus');
+  el.style.display = 'block'; el.innerHTML = html;
+}
+function getQueueToken() {
+  return document.getElementById('queueGithubToken').value.trim()
+      || document.getElementById('quizGithubToken').value.trim();
+}
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function formatDateNice(dateStr) {
+  if (!dateStr) return '';
+  const [y,m,dd] = dateStr.split('-');
+  return new Date(+y, +m-1, +dd).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+
+async function loadQuizQueue() {
+  showQueueStatus('<span style="color:var(--text3)">Loading quiz.json…</span>');
+  const url = `https://raw.githubusercontent.com/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/${QUIZ_BRANCH}/${QUIZ_FILE_PATH}?t=${Date.now()}`;
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.today !== undefined || data.queue !== undefined) {
+        queueState.today = data.today || null;
+        queueState.queue = data.queue || [];
+      } else if (data.question) {
+        queueState.today = { ...data, date: data.date || todayStr() };
+        queueState.queue = [];
+      } else {
+        queueState = { today: null, queue: [] };
+      }
+      showQueueStatus('<span style="color:var(--green)">✓ Loaded from GitHub.</span>');
+    } else {
+      showQueueStatus('<span style="color:var(--yellow)">⚠ quiz.json not found — starting fresh.</span>');
+      queueState = { today: null, queue: [] };
+    }
+  } catch(e) {
+    showQueueStatus(`<span style="color:var(--red)">✗ ${e.message}</span>`);
+    queueState = { today: null, queue: [] };
+  }
+  document.getElementById('todayDateLabel').textContent = formatDateNice(todayStr());
+  renderTodayPanel(); renderQueuePanel(); updateQueueBadge();
+}
+
+function renderTodayPanel() {
+  const panel = document.getElementById('todayQuizPanel');
+  const q = queueState.today;
+  if (!q) {
+    panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No quiz set for today. Publish one from the Quiz panel — queued items will be shifted to subsequent days automatically.</span>';
+    return;
+  }
+  panel.innerHTML = `
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">${q.question}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+      ${['A','B','C'].map(opt => `
+        <div style="padding:6px 12px;border-radius:6px;font-size:12px;
+                    background:${q.correctAnswer===opt?'var(--green-dim)':'var(--surface3)'};
+                    border:1px solid ${q.correctAnswer===opt?'var(--green)':'var(--border)'};
+                    color:${q.correctAnswer===opt?'var(--green)':'var(--text2)'}">
+          <strong>${opt}:</strong> ${q['option'+opt]||'—'}${q.correctAnswer===opt?' ✓':''}
+        </div>`).join('')}
+    </div>
+    ${q.contributedBy?`<div style="font-size:11px;color:var(--text3)">Contributed by: ${q.contributedBy}</div>`:''}
+    <div style="font-size:11px;color:var(--text3);margin-top:4px">Date: ${formatDateNice(q.date||todayStr())}</div>
+  `;
+}
+
+function renderQueuePanel() {
+  const panel = document.getElementById('queueSchedulePanel');
+  if (!queueState.queue.length) {
+    panel.innerHTML = '<span style="color:var(--text3);font-style:italic">Queue is empty. Approve pending submissions below to add them.</span>';
+    return;
+  }
+  panel.innerHTML = '';
+  queueState.queue.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'queue-item';
+    div.draggable = true;
+    div.addEventListener('dragstart', () => { dragSrcIndex = idx; });
+    div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('drag-over'); });
+    div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+    div.addEventListener('drop', e => {
+      e.preventDefault(); div.classList.remove('drag-over');
+      if (dragSrcIndex === null || dragSrcIndex === idx) return;
+      const moved = queueState.queue.splice(dragSrcIndex, 1)[0];
+      queueState.queue.splice(idx, 0, moved);
+      resequenceDates(); renderQueuePanel();
+    });
+    div.addEventListener('dragend', () => { dragSrcIndex = null; document.querySelectorAll('.queue-item').forEach(el=>el.classList.remove('drag-over')); });
+    div.innerHTML = `
+      <div class="queue-item-drag" title="Drag to reorder">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="5" y1="8" x2="19" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="16" x2="19" y2="16"/>
+        </svg>
+      </div>
+      <div class="queue-item-body">
+        <div class="queue-item-question">${item.question}</div>
+        <div class="queue-item-meta">
+          <span>A: ${item.optionA||'—'} &nbsp;·&nbsp; B: ${item.optionB||'—'} &nbsp;·&nbsp; C: ${item.optionC||'—'}</span>
+          ${item.contributedBy?`<span>· by <strong>${item.contributedBy}</strong></span>`:''}
+          ${item.source?`<span style="color:var(--accent)">· 📥 ${item.source}</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+        <input type="date" class="queue-item-date-input" value="${item.date||''}"
+               onchange="queueState.queue[${idx}].date=this.value;updateQueueBadge()">
+        <div class="queue-item-actions">
+          <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},-1)" ${idx===0?'disabled':''}>↑</button>
+          <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},1)" ${idx===queueState.queue.length-1?'disabled':''}>↓</button>
+          <button class="btn btn-sm btn-danger" onclick="removeFromQueue(${idx})">×</button>
+        </div>
+      </div>
+    `;
+    panel.appendChild(div);
+  });
+  updateQueueBadge();
+}
+
+function moveQueueItem(idx, dir) {
+  const t = idx + dir;
+  if (t < 0 || t >= queueState.queue.length) return;
+  [queueState.queue[idx], queueState.queue[t]] = [queueState.queue[t], queueState.queue[idx]];
+  resequenceDates(); renderQueuePanel();
+}
+function removeFromQueue(idx) {
+  queueState.queue.splice(idx, 1);
+  resequenceDates(); renderQueuePanel();
+}
+function resequenceDates() {
+  const base = queueState.today ? (queueState.today.date || todayStr()) : addDays(todayStr(), -1);
+  queueState.queue.forEach((item, i) => { item.date = addDays(base, i + 1); });
+}
+
+async function loadPendingSubmissions() {
+  const panel = document.getElementById('pendingSubmissionsPanel');
+  panel.innerHTML = '<span style="color:var(--text3)">Loading from Firestore…</span>';
+  const db = window._db;
+  if (!db) { panel.innerHTML = '<span style="color:var(--red)">✗ Firestore not ready. Reload the page.</span>'; return; }
+  try {
+    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const q = query(collection(db, 'submissions'), where('type','==','quiz'), where('status','==','pending'));
+    const snap = await getDocs(q);
+    pendingSubmissions = [];
+    snap.forEach(doc => pendingSubmissions.push({ firestoreId: doc.id, ...doc.data() }));
+    if (!pendingSubmissions.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No pending quiz submissions found.</span>'; return; }
+    renderPendingSubmissions();
+  } catch(e) { panel.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
+}
+
+function renderPendingSubmissions() {
+  const panel = document.getElementById('pendingSubmissionsPanel');
+  if (!pendingSubmissions.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No pending submissions.</span>'; return; }
+  panel.innerHTML = '';
+  pendingSubmissions.forEach((sub, sIdx) => {
+    const div = document.createElement('div');
+    div.className = 'submission-card';
+    const qCount = sub.questions ? sub.questions.length : 0;
+    div.innerHTML = `
+      <div class="submission-card-header">
+        <div>
+          <div class="submission-card-title">📋 ${sub.title||'Untitled Quiz'}</div>
+          <div class="submission-card-meta">
+            ${sub.author?`By <strong>${sub.author}</strong>`:''}
+            ${sub.email?` · ${sub.email}`:''}
+            · ${qCount} question${qCount!==1?'s':''}
+            ${sub.submittedAt?` · ${typeof sub.submittedAt==='string'?new Date(sub.submittedAt).toLocaleDateString():new Date(sub.submittedAt.seconds*1000).toLocaleDateString()}`:''}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn btn-sm btn-ghost" onclick="toggleSubmissionDetail(${sIdx})" id="detailBtn_${sIdx}">Preview</button>
+          <button class="btn btn-sm btn-primary" onclick="approveSubmission(${sIdx})">+ Add to Queue</button>
+          <button class="btn btn-sm btn-danger" onclick="dismissSubmission(${sIdx})">Dismiss</button>
+        </div>
+      </div>
+      <div id="submissionDetail_${sIdx}" style="display:none">
+        ${sub.questions?sub.questions.map((q,qi)=>`
+          <div style="background:var(--surface3);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:12px">
+            <div style="font-weight:600;color:var(--text);margin-bottom:6px">Q${qi+1}: ${q.question}</div>
+            ${(q.options||[]).map((opt,oi)=>`
+              <div style="padding:4px 8px;border-radius:4px;margin-bottom:3px;
+                          background:${q.correctIndex===oi?'var(--green-dim)':'transparent'};
+                          color:${q.correctIndex===oi?'var(--green)':'var(--text2)'}">
+                ${String.fromCharCode(65+oi)}: ${opt}${q.correctIndex===oi?' ✓':''}
+              </div>`).join('')}
+          </div>`).join(''):'<em style="color:var(--text3)">No question data</em>'}
+      </div>
+    `;
+    panel.appendChild(div);
+  });
+}
+
+function toggleSubmissionDetail(sIdx) {
+  const el = document.getElementById(`submissionDetail_${sIdx}`);
+  const btn = document.getElementById(`detailBtn_${sIdx}`);
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? 'Preview' : 'Hide';
+}
+
+function approveSubmission(sIdx) {
+  const sub = pendingSubmissions[sIdx];
+  if (!sub.questions || !sub.questions.length) { showToast('error','No Questions','This submission has no question data.'); return; }
+  sub.questions.forEach(q => {
+    const opts = q.options || [];
+    queueState.queue.push({
+      question: q.question,
+      optionA: opts[0]||'', optionB: opts[1]||'', optionC: opts[2]||'',
+      correctAnswer: ['A','B','C'][q.correctIndex]||'A',
+      contributedBy: sub.author||'',
+      source: sub.title||'reader submission',
+      date: ''
+    });
+  });
+  resequenceDates(); renderQueuePanel(); updateQueueBadge();
+  pendingSubmissions.splice(sIdx, 1); renderPendingSubmissions();
+  showToast('success','Added to Queue',`${sub.questions.length} question(s) from "${sub.title||'submission'}" queued.`);
+}
+
+function dismissSubmission(sIdx) {
+  pendingSubmissions.splice(sIdx, 1);
+  renderPendingSubmissions();
+}
+
+function updateQueueBadge() {
+  document.getElementById('queueNavBadge').textContent = queueState.queue.length;
+}
+
+async function publishQueueToGitHub() {
+  const token = getQueueToken();
+  if (!token) { showToast('error','No Token','Enter your GitHub token above.'); return; }
+  if (!queueState.today && !queueState.queue.length) { showToast('error','Nothing to Publish','Set today\'s quiz or add items to the queue.'); return; }
+  const payload = { today: queueState.today, queue: queueState.queue, lastUpdated: new Date().toISOString() };
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+  const apiUrl = `https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/contents/${QUIZ_FILE_PATH}`;
+  const headers = { Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' };
+  let sha = null;
+  try { const c = await fetch(apiUrl,{headers}); if(c.ok){const d=await c.json();sha=d.sha;} } catch(e){}
+  const body = { message:'Update quiz schedule via CMS queue manager', content, branch:QUIZ_BRANCH };
+  if (sha) body.sha = sha;
+  try {
+    const res = await fetch(apiUrl, { method:'PUT', headers, body:JSON.stringify(body) });
+    if (res.ok) {
+      showToast('success','Schedule Published',`Today\'s quiz + ${queueState.queue.length} queued item(s) committed to GitHub.`);
+    } else {
+      const err = await res.json();
+      showToast('error','GitHub Error', err.message||'Could not save.');
+    }
+  } catch(e) { showToast('error','Network Error',e.message); }
+}
+
+// Hook: when today's quiz is saved from the Quiz panel, sync queueState and re-sequence
+const _origSaveQuiz = saveQuizToGitHub;
+saveQuizToGitHub = async function() {
+  const q  = document.getElementById('quizQuestion').value.trim();
+  const a  = document.getElementById('quizOptionA').value.trim();
+  const b  = document.getElementById('quizOptionB').value.trim();
+  const c  = document.getElementById('quizOptionC').value.trim();
+  const ok = document.getElementById('quizCorrectAnswer').value;
+  const by = document.getElementById('quizContributedBy').value.trim();
+  if (q && queueState.queue.length > 0) {
+    queueState.today = { question:q, optionA:a, optionB:b, optionC:c, correctAnswer:ok, contributedBy:by, date:todayStr() };
+    resequenceDates();
+    await publishQueueToGitHub();
+    initQuizView();
+  } else {
+    await _origSaveQuiz();
+    if (q) queueState.today = { question:q, optionA:a, optionB:b, optionC:c, correctAnswer:ok, contributedBy:by, date:todayStr() };
+  }
+};
 </script>
 
 </body>
