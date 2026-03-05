@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Content – Cricket Times</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnfn9hK0y-p6nvIZ_AwoJnWD7DfDuIQd4",
+      authDomain: "hitwicket-cba02.firebaseapp.com",
+      projectId: "hitwicket-cba02",
+      storageBucket: "hitwicket-cba02.firebasestorage.app",
+      messagingSenderId: "196915483829",
+      appId: "1:196915483829:web:071c47af79914aec88dafc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Expose to global scope for non-module script
+    window._db = db;
+    window._fsCollection = collection;
+    window._fsAddDoc = addDoc;
+    window._fsTimestamp = serverTimestamp;
+  </script>
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --cream-dark: #ede7d6;
+      --ink: #1a1208;
+      --ink-mid: #3a2e1e;
+      --ink-light: #6b5c42;
+      --red: #b5171e;
+      --red-dark: #8a0f14;
+      --gold: #c9a84c;
+      --border: #c8bca8;
+      --border-light: #ddd6c4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Source Serif 4', Georgia, serif;
+      min-height: 100vh;
+    }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--cream);
+      border-bottom: 3px double var(--ink);
+      padding: 0;
+    }
+    .masthead-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 40px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .masthead-top a {
+      color: var(--ink-light);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: 'Source Serif 4', serif;
+      letter-spacing: 0.08em;
+    }
+    .masthead-top a:hover { color: var(--red); }
+    .masthead-brand {
+      text-align: center;
+      padding: 14px 40px 10px;
+    }
+    .masthead-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .masthead-brand .edition-line {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--ink-light);
+      letter-spacing: 0.12em;
+      margin-top: 4px;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: var(--ink);
+      padding: 28px 40px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(255,255,255,0.015) 3px,
+        rgba(255,255,255,0.015) 4px
+      );
+      pointer-events: none;
+    }
+    .page-header .kicker {
+      font-family: 'Source Serif 4', serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .page-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.15;
+    }
+    .page-header .deck {
+      font-family: 'Source Serif 4', serif;
+      font-style: italic;
+      font-size: 15px;
+      color: rgba(245,240,232,0.7);
+      margin-top: 10px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.5;
+    }
+
+    /* ── LAYOUT ── */
+    .main-layout {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    /* ── MODULE CARD ── */
+    .module-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: 3px 3px 0 var(--border-light);
+    }
+    .module-header {
+      background: var(--ink);
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .module-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .module-icon svg { width: 20px; height: 20px; fill: #fff; }
+    .module-title-wrap {}
+    .module-num {
+      font-family: 'Source Serif 4', serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .module-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.2;
+    }
+    .module-body {
+      padding: 24px 22px 26px;
+    }
+    .module-desc {
+      font-size: 13.5px;
+      color: var(--ink-light);
+      line-height: 1.55;
+      margin-bottom: 20px;
+      border-left: 3px solid var(--red);
+      padding-left: 12px;
+      font-style: italic;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .field-group { margin-bottom: 16px; }
+    .field-group label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 5px;
+    }
+    .field-group label span.req { color: var(--red); margin-left: 2px; }
+    .field-group input[type="text"],
+    .field-group input[type="email"],
+    .field-group input[type="number"],
+    .field-group select,
+    .field-group textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      background: var(--cream);
+      font-family: 'Source Serif 4', serif;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field-group input:focus,
+    .field-group select:focus,
+    .field-group textarea:focus {
+      border-color: var(--ink);
+      background: #fff;
+    }
+    .field-group textarea { resize: vertical; min-height: 70px; }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0 16px;
+    }
+    .section-divider span {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      white-space: nowrap;
+    }
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── QUIZ BUILDER ── */
+    .quiz-meta { margin-bottom: 18px; }
+
+    .questions-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .question-block {
+      border: 1px solid var(--border-light);
+      background: var(--cream);
+      padding: 14px 14px 12px;
+      position: relative;
+      transition: border-color 0.15s;
+    }
+    .question-block:hover { border-color: var(--border); }
+    .question-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .q-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+    .q-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--border);
+      font-size: 18px;
+      line-height: 1;
+      padding: 0 2px;
+      transition: color 0.15s;
+    }
+    .q-remove:hover { color: var(--red); }
+
+    .options-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .option-radio {
+      width: 16px; height: 16px;
+      accent-color: var(--red);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .option-input {
+      flex: 1;
+      padding: 6px 9px;
+      border: 1px solid var(--border-light);
+      background: #fff;
+      font-family: 'Source Serif 4', serif;
+      font-size: 13px;
+      color: var(--ink);
+      outline: none;
+    }
+    .option-input:focus { border-color: var(--ink); }
+    .option-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--border);
+      font-size: 15px;
+      padding: 0 2px;
+      transition: color 0.15s;
+    }
+    .option-remove:hover { color: var(--red); }
+    .add-option-btn {
+      margin-top: 8px;
+      background: none;
+      border: 1px dashed var(--border);
+      padding: 5px 10px;
+      font-size: 12px;
+      color: var(--ink-light);
+      cursor: pointer;
+      font-family: 'Source Serif 4', serif;
+      transition: all 0.15s;
+      width: 100%;
+    }
+    .add-option-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+    .correct-note {
+      font-size: 11px;
+      color: var(--ink-light);
+      font-style: italic;
+      margin-top: 8px;
+    }
+
+    .add-question-btn {
+      margin-top: 14px;
+      width: 100%;
+      background: none;
+      border: 2px dashed var(--border);
+      padding: 10px;
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      color: var(--ink-light);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .add-question-btn:hover { border-color: var(--red); color: var(--red); background: rgba(181,23,30,0.03); }
+
+    /* ── ARTICLE UPLOAD ── */
+    .contributor-fields { margin-bottom: 20px; }
+
+    .declarations {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 16px 0 20px;
+    }
+    .declaration-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--cream);
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .declaration-item:hover { border-color: var(--border); }
+    .declaration-item.checked {
+      border-color: var(--ink);
+      background: #fff;
+    }
+    .declaration-item input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--ink);
+      margin-top: 1px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .declaration-text {
+      font-size: 13px;
+      color: var(--ink-mid);
+      line-height: 1.45;
+    }
+    .declaration-text strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    /* ── FILE DROP ZONE ── */
+    .file-zone {
+      border: 2px dashed var(--border);
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--cream);
+      position: relative;
+    }
+    .file-zone:hover, .file-zone.drag-over {
+      border-color: var(--ink);
+      background: rgba(26,18,8,0.04);
+    }
+    .file-zone.has-file {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.07);
+    }
+    .file-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .file-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .file-zone-label {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .file-zone-sub {
+      font-size: 12px;
+      color: var(--ink-light);
+      display: block;
+    }
+    .file-name-display {
+      font-size: 13px;
+      color: var(--ink);
+      font-weight: 600;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* ── SUBMIT BUTTONS ── */
+    .submit-btn {
+      width: 100%;
+      padding: 13px 20px;
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .submit-btn:hover { background: var(--red); }
+    .submit-btn:active { transform: translateY(1px); }
+    .submit-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: var(--ink-light);
+    }
+    .submit-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* ── SUCCESS TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--ink);
+      color: var(--cream);
+      padding: 14px 20px;
+      font-family: 'Source Serif 4', serif;
+      font-size: 14px;
+      box-shadow: 4px 4px 0 var(--gold);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+      max-width: 320px;
+      line-height: 1.45;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast strong { color: var(--gold); font-family: 'Playfair Display', serif; font-size: 15px; display: block; margin-bottom: 4px; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      height: 3px;
+      background: var(--border-light);
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--red);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* ── VALIDATION HIGHLIGHT ── */
+    .invalid {
+      border-color: var(--red) !important;
+      background: rgba(181,23,30,0.04) !important;
+    }
+    .field-error {
+      font-size: 11.5px;
+      color: var(--red);
+      margin-top: 4px;
+      font-style: italic;
+      display: none;
+    }
+    .field-error.visible { display: block; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 760px) {
+      .main-layout { grid-template-columns: 1fr; gap: 28px; padding: 24px 16px 50px; }
+      .masthead-top { padding: 8px 16px 6px; }
+      .masthead-brand { padding: 12px 16px 8px; }
+      .page-header { padding: 22px 20px 18px; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <a href="news.html">← Back to Home</a>
+    <a href="batting-records.html">Statistics</a>
+  </div>
+  <div class="masthead-brand">
+    <h1>Cricket Times</h1>
+    <div class="edition-line">Est. The Golden Age of the Game &mdash; Reader Contributions</div>
+  </div>
+</header>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="kicker">Contribute to Cricket Times</div>
+  <h2>Submit Your Content</h2>
+  <p class="deck">Share your cricket knowledge with our readers — from quizzes to long-form analysis, every submission is reviewed by our editorial team.</p>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+  <!-- ── MODULE 1: QUIZ BUILDER ── -->
+  <div class="module-card">
+    <div class="module-header">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+      </div>
+      <div class="module-title-wrap">
+        <div class="module-num">Module I</div>
+        <div class="module-title">Cricket Quiz Submission</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Create a cricket trivia quiz for our readers. Add multiple-choice questions and mark the correct answer for each.</p>
+
+      <div class="quiz-meta">
+        <div class="field-group">
+          <label>Quiz Title <span class="req">*</span></label>
+          <input type="text" id="quizTitle" placeholder="e.g. The 2005 Ashes — A Summer to Remember" />
+          <div class="field-error" id="quizTitleErr">Please enter a quiz title.</div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Category</label>
+            <select id="quizCategory">
+              <option value="">Select category</option>
+              <option>Test Cricket</option>
+              <option>One Day Internationals</option>
+              <option>T20 / IPL</option>
+              <option>Historic Ashes</option>
+              <option>Player Records</option>
+              <option>Venues &amp; Grounds</option>
+              <option>Laws of Cricket</option>
+              <option>General Cricket</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Difficulty</label>
+            <select id="quizDifficulty">
+              <option value="">Select level</option>
+              <option>Casual Fan</option>
+              <option>Club Cricketer</option>
+              <option>Statistician</option>
+              <option>Wisden Scholar</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Brief Description</label>
+          <textarea id="quizDesc" placeholder="Describe what your quiz covers…" rows="2"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Your Name <span class="req">*</span></label>
+            <input type="text" id="quizAuthor" placeholder="Full name" />
+            <div class="field-error" id="quizAuthorErr">Please enter your name.</div>
+          </div>
+          <div class="field-group">
+            <label>Your Email <span class="req">*</span></label>
+            <input type="email" id="quizEmail" placeholder="email@example.com" />
+            <div class="field-error" id="quizEmailErr">Please enter a valid email.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Questions</span></div>
+
+      <div class="questions-list" id="questionsList">
+        <!-- Questions injected here -->
+      </div>
+
+      <button class="add-question-btn" id="addQuestionBtn" type="button">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Add Question
+      </button>
+
+      <div class="progress-wrap"><div class="progress-bar" id="quizProgress"></div></div>
+
+      <button class="submit-btn" id="submitQuizBtn" type="button">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Submit Quiz for Review
+      </button>
+    </div>
+  </div>
+
+  <!-- ── MODULE 2: ARTICLE SUBMISSION ── -->
+  <div class="module-card">
+    <div class="module-header">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+      </div>
+      <div class="module-title-wrap">
+        <div class="module-num">Module II</div>
+        <div class="module-title">Article Submission</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Submit a long-form article, match report, or cricket essay. Upload a .docx file after completing the contributor details and declarations below.</p>
+
+      <div class="section-divider"><span>Contributor Details</span></div>
+
+      <div class="contributor-fields">
+        <div class="field-row">
+          <div class="field-group">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" id="artName" placeholder="Your full name" />
+            <div class="field-error" id="artNameErr">Please enter your full name.</div>
+          </div>
+          <div class="field-group">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" id="artEmail" placeholder="email@example.com" />
+            <div class="field-error" id="artEmailErr">Please enter a valid email.</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Article Title <span class="req">*</span></label>
+            <input type="text" id="artTitle" placeholder="Working title of your article" />
+            <div class="field-error" id="artTitleErr">Please enter an article title.</div>
+          </div>
+          <div class="field-group">
+            <label>Category</label>
+            <select id="artCategory">
+              <option value="">Select category</option>
+              <option>Match Report</option>
+              <option>Player Profile</option>
+              <option>Historical Essay</option>
+              <option>Tactical Analysis</option>
+              <option>Opinion &amp; Commentary</option>
+              <option>Statistics &amp; Records</option>
+              <option>Tour Diary</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Short Bio / Credentials</label>
+          <textarea id="artBio" placeholder="Tell us briefly about yourself and your cricket background…" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Declarations</span></div>
+
+      <p style="font-size:13px;color:var(--ink-light);margin-bottom:12px;font-style:italic;">All boxes must be checked before uploading your document.</p>
+
+      <div class="declarations" id="declarationsList">
+        <label class="declaration-item" id="decl0">
+          <input type="checkbox" class="decl-check" data-idx="0" onchange="updateDeclState(0)" />
+          <div class="declaration-text">
+            <strong>Original Authorship</strong>
+            This is my original content, written solely by me.
+          </div>
+        </label>
+        <label class="declaration-item" id="decl1">
+          <input type="checkbox" class="decl-check" data-idx="1" onchange="updateDeclState(1)" />
+          <div class="declaration-text">
+            <strong>Not AI-Generated</strong>
+            This article has not been generated by artificial intelligence tools, in whole or in part.
+          </div>
+        </label>
+        <label class="declaration-item" id="decl2">
+          <input type="checkbox" class="decl-check" data-idx="2" onchange="updateDeclState(2)" />
+          <div class="declaration-text">
+            <strong>No Plagiarism</strong>
+            I have not plagiarised any information, passages, or ideas in this document.
+          </div>
+        </label>
+        <label class="declaration-item" id="decl3">
+          <input type="checkbox" class="decl-check" data-idx="3" onchange="updateDeclState(3)" />
+          <div class="declaration-text">
+            <strong>Publication Consent</strong>
+            I permit Cricket Times to publish this content on their platform with appropriate editorial edits, while retaining attribution to me as the author.
+          </div>
+        </label>
+      </div>
+
+      <div class="section-divider"><span>Upload Document</span></div>
+
+      <div class="file-zone" id="fileZone">
+        <input type="file" id="fileInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="onFileSelect(event)" />
+        <span class="file-icon">📄</span>
+        <span class="file-zone-label">Drop your .docx file here</span>
+        <span class="file-zone-sub">or click to browse — Word documents only (.docx)</span>
+        <div class="file-name-display" id="fileNameDisplay"></div>
+      </div>
+      <div class="field-error" id="artFileErr" style="display:none;">Please upload a .docx file.</div>
+      <div class="field-error" id="artDeclErr" style="display:none;color:var(--red);">Please check all four declaration boxes before uploading.</div>
+
+      <div class="progress-wrap"><div class="progress-bar" id="artProgress"></div></div>
+
+      <button class="submit-btn" id="submitArtBtn" type="button">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Submit Article for Review
+      </button>
+    </div>
+  </div>
+
+</div><!-- /main-layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <strong id="toastTitle">Submitted!</strong>
+  <span id="toastMsg">Your submission has been received and is awaiting editorial review.</span>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   QUIZ BUILDER
+═══════════════════════════════════════ */
+let questions = [];
+let qId = 0;
+
+function addQuestion() {
+  qId++;
+  questions.push({ id: qId, text: '', options: ['', '', '', ''], correct: 0 });
+  renderQuestions();
+}
+
+function removeQuestion(id) {
+  questions = questions.filter(q => q.id !== id);
+  renderQuestions();
+}
+
+function addOption(qIdx) {
+  if (questions[qIdx].options.length >= 6) return;
+  questions[qIdx].options.push('');
+  renderQuestions();
+}
+
+function removeOption(qIdx, oIdx) {
+  if (questions[qIdx].options.length <= 2) return;
+  questions[qIdx].options.splice(oIdx, 1);
+  if (questions[qIdx].correct >= questions[qIdx].options.length) {
+    questions[qIdx].correct = 0;
+  }
+  renderQuestions();
+}
+
+function renderQuestions() {
+  const list = document.getElementById('questionsList');
+  list.innerHTML = '';
+  questions.forEach((q, qIdx) => {
+    const block = document.createElement('div');
+    block.className = 'question-block';
+    block.innerHTML = `
+      <div class="question-block-header">
+        <span class="q-label">Question ${qIdx + 1}</span>
+        <button class="q-remove" title="Remove question" onclick="removeQuestion(${q.id})">×</button>
+      </div>
+      <div class="field-group" style="margin-bottom:10px">
+        <input type="text" placeholder="Enter your question…" value="${escHtml(q.text)}"
+          oninput="questions[${qIdx}].text = this.value" />
+      </div>
+      <div class="options-list">
+        ${q.options.map((opt, oIdx) => `
+          <div class="option-row">
+            <input type="radio" class="option-radio" name="correct_${q.id}"
+              ${q.correct === oIdx ? 'checked' : ''}
+              title="Mark as correct answer"
+              onchange="questions[${qIdx}].correct = ${oIdx}" />
+            <input type="text" class="option-input" placeholder="Option ${String.fromCharCode(65+oIdx)}"
+              value="${escHtml(opt)}"
+              oninput="questions[${qIdx}].options[${oIdx}] = this.value" />
+            <button class="option-remove" title="Remove option" onclick="removeOption(${qIdx}, ${oIdx})">×</button>
+          </div>
+        `).join('')}
+      </div>
+      <button class="add-option-btn" onclick="addOption(${qIdx})">+ Add Option</button>
+      <div class="correct-note">Select the radio button beside the correct answer.</div>
+    `;
+    list.appendChild(block);
+  });
+  updateQuizProgress();
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function updateQuizProgress() {
+  const filled = questions.filter(q => q.text.trim() && q.options.filter(o=>o.trim()).length >= 2).length;
+  const pct = questions.length ? Math.round((filled/questions.length)*100) : 0;
+  document.getElementById('quizProgress').style.width = pct + '%';
+}
+
+document.getElementById('addQuestionBtn').addEventListener('click', addQuestion);
+
+// Start with 3 default questions
+addQuestion(); addQuestion(); addQuestion();
+
+function validateQuiz() {
+  let ok = true;
+  const title = document.getElementById('quizTitle').value.trim();
+  const author = document.getElementById('quizAuthor').value.trim();
+  const email = document.getElementById('quizEmail').value.trim();
+
+  toggleErr('quizTitle', 'quizTitleErr', !title);
+  toggleErr('quizAuthor', 'quizAuthorErr', !author);
+  toggleErr('quizEmail', 'quizEmailErr', !email || !email.includes('@'));
+  if (!title || !author || !email || !email.includes('@')) ok = false;
+  if (questions.length === 0) ok = false;
+  return ok;
+}
+
+document.getElementById('submitQuizBtn').addEventListener('click', async () => {
+  if (!validateQuiz()) { showToast('Missing Information', 'Please fill in all required fields.', true); return; }
+  const data = {
+    type: 'quiz',
+    title: document.getElementById('quizTitle').value,
+    category: document.getElementById('quizCategory').value,
+    difficulty: document.getElementById('quizDifficulty').value,
+    description: document.getElementById('quizDesc').value,
+    author: document.getElementById('quizAuthor').value,
+    email: document.getElementById('quizEmail').value,
+    questions: questions.map(q => ({
+      question: q.text,
+      options: q.options.filter(o => o.trim()),
+      correctIndex: q.correct
+    })),
+    status: 'pending',
+    submittedAt: window._fsTimestamp ? window._fsTimestamp() : new Date().toISOString()
+  };
+
+  const btn = document.getElementById('submitQuizBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    await window._fsAddDoc(window._fsCollection(window._db, 'submissions'), data);
+    showToast('Quiz Submitted!', `Thank you, ${data.author}. Your quiz "${data.title}" has been sent for editorial review.`);
+    resetQuizForm();
+  } catch (err) {
+    console.error('Firestore error:', err);
+    showToast('Submission Failed', 'Could not save your quiz. Please try again.', true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Submit Quiz for Review`;
+  }
+});
+
+function resetQuizForm() {
+  ['quizTitle','quizAuthor','quizEmail','quizDesc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('quizCategory').value = '';
+  document.getElementById('quizDifficulty').value = '';
+  questions = []; qId = 0;
+  addQuestion(); addQuestion(); addQuestion();
+}
+
+/* ═══════════════════════════════════════
+   ARTICLE SUBMISSION
+═══════════════════════════════════════ */
+let selectedFile = null;
+const declChecked = [false, false, false, false];
+
+function updateDeclState(idx) {
+  declChecked[idx] = document.querySelector(`.decl-check[data-idx="${idx}"]`).checked;
+  document.getElementById(`decl${idx}`).classList.toggle('checked', declChecked[idx]);
+  updateArtProgress();
+}
+
+function allDeclChecked() {
+  return declChecked.every(Boolean);
+}
+
+function updateArtProgress() {
+  const fields = [
+    document.getElementById('artName').value.trim(),
+    document.getElementById('artEmail').value.trim(),
+    document.getElementById('artTitle').value.trim()
+  ];
+  const fieldsFilled = fields.every(Boolean);
+  const score = (fieldsFilled ? 40 : 0) + (allDeclChecked() ? 40 : declChecked.filter(Boolean).length * 10) + (selectedFile ? 20 : 0);
+  document.getElementById('artProgress').style.width = Math.min(score, 100) + '%';
+}
+
+['artName','artEmail','artTitle','artBio'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', updateArtProgress);
+});
+
+function onFileSelect(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!f.name.endsWith('.docx')) {
+    showToast('Invalid File', 'Please upload a .docx (Word) file only.', true);
+    return;
+  }
+  selectedFile = f;
+  const zone = document.getElementById('fileZone');
+  zone.classList.add('has-file');
+  const disp = document.getElementById('fileNameDisplay');
+  disp.textContent = '✓ ' + f.name + ' (' + (f.size / 1024).toFixed(1) + ' KB)';
+  disp.style.display = 'block';
+  updateArtProgress();
+}
+
+// Drag & drop
+const fz = document.getElementById('fileZone');
+fz.addEventListener('dragover', e => { e.preventDefault(); fz.classList.add('drag-over'); });
+fz.addEventListener('dragleave', () => fz.classList.remove('drag-over'));
+fz.addEventListener('drop', e => {
+  e.preventDefault(); fz.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f && f.name.endsWith('.docx')) {
+    selectedFile = f;
+    fz.classList.add('has-file');
+    const disp = document.getElementById('fileNameDisplay');
+    disp.textContent = '✓ ' + f.name + ' (' + (f.size/1024).toFixed(1) + ' KB)';
+    disp.style.display = 'block';
+    updateArtProgress();
+  } else {
+    showToast('Invalid File', 'Please upload a .docx (Word) file only.', true);
+  }
+});
+
+document.getElementById('submitArtBtn').addEventListener('click', async () => {
+  const name = document.getElementById('artName').value.trim();
+  const email = document.getElementById('artEmail').value.trim();
+  const title = document.getElementById('artTitle').value.trim();
+  let ok = true;
+
+  toggleErr('artName', 'artNameErr', !name); if (!name) ok = false;
+  toggleErr('artEmail', 'artEmailErr', !email || !email.includes('@')); if (!email || !email.includes('@')) ok = false;
+  toggleErr('artTitle', 'artTitleErr', !title); if (!title) ok = false;
+
+  const declErr = document.getElementById('artDeclErr');
+  if (!allDeclChecked()) {
+    declErr.style.display = 'block';
+    ok = false;
+  } else {
+    declErr.style.display = 'none';
+  }
+
+  const fileErr = document.getElementById('artFileErr');
+  if (!selectedFile) {
+    fileErr.style.display = 'block';
+    ok = false;
+  } else {
+    fileErr.style.display = 'none';
+  }
+
+  if (!ok) { showToast('Incomplete Submission', 'Please complete all fields, sign all declarations, and upload your document.', true); return; }
+
+  const data = {
+    type: 'article',
+    name, email, title,
+    category: document.getElementById('artCategory').value,
+    bio: document.getElementById('artBio').value,
+    fileName: selectedFile.name,
+    fileSize: selectedFile.size,
+    declarations: {
+      originalContent: true,
+      notAI: true,
+      noPlagiarism: true,
+      publishConsent: true
+    },
+    status: 'pending',
+    submittedAt: window._fsTimestamp ? window._fsTimestamp() : new Date().toISOString()
+  };
+
+  const btn = document.getElementById('submitArtBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    await window._fsAddDoc(window._fsCollection(window._db, 'submissions'), data);
+    showToast('Article Submitted!', `Thank you, ${name}. Your article "${title}" has been received and will be reviewed by our editorial team.`);
+    resetArticleForm();
+  } catch (err) {
+    console.error('Firestore error:', err);
+    showToast('Submission Failed', 'Could not save your article. Please try again.', true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Submit Article for Review`;
+  }
+});
+
+function resetArticleForm() {
+  ['artName','artEmail','artTitle','artBio'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('artCategory').value = '';
+  declChecked.fill(false);
+  for (let i = 0; i < 4; i++) {
+    document.querySelector(`.decl-check[data-idx="${i}"]`).checked = false;
+    document.getElementById(`decl${i}`).classList.remove('checked');
+  }
+  selectedFile = null;
+  document.getElementById('fileZone').classList.remove('has-file');
+  document.getElementById('fileNameDisplay').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  updateArtProgress();
+}
+
+/* ═══════════════════════════════════════
+   SHARED UTILS
+═══════════════════════════════════════ */
+function toggleErr(fieldId, errId, show) {
+  const el = document.getElementById(fieldId);
+  const err = document.getElementById(errId);
+  if (el) el.classList.toggle('invalid', show);
+  if (err) err.classList.toggle('visible', show);
+}
+
+function showToast(title, msg, isError=false) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMsg').textContent = msg;
+  toast.style.background = isError ? 'var(--red-dark)' : 'var(--ink)';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4500);
+}
+
+
+</script>
+</body>
+</html>
