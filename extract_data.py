@@ -5,15 +5,16 @@ Adds match year, result with margin, series name, dates, host to match data.
 Preserves all existing data.js structure.
 """
 
+import gzip
 import struct
 import json
 import os
 
 # === Configuration ===
-PLAYER_DAT = 'testply__1_.dat'
-MATCH_DAT = 'testmat__1_.dat'
-EXISTING_DATA_JS = 'data.js'
-OUTPUT_FILE = 'data.js'
+PLAYER_DAT = '/mnt/user-data/uploads/testply__1_.dat.gz'
+MATCH_DAT = '/mnt/user-data/uploads/testmat__1_.dat.gz'
+EXISTING_DATA_JS = '/mnt/user-data/uploads/data.js'
+OUTPUT_FILE = '/mnt/user-data/outputs/data.js'
 
 PLAYER_RECORD_SIZE = 8000
 MATCH_RECORD_SIZE = 10000
@@ -40,7 +41,7 @@ def load_existing_data_js(path):
 def extract_match_data(dat_path):
     """Extract enriched match data from testmat.dat."""
     matches = {}
-    with open(dat_path, 'rb') as f:
+    with gzip.open(dat_path, 'rb') as f:
         for i in range(NUM_MATCHES):
             f.seek(i * MATCH_RECORD_SIZE)
             rec = f.read(MATCH_RECORD_SIZE)
@@ -82,6 +83,63 @@ def extract_match_data(dat_path):
             }
     
     return matches
+
+
+def extract_player_data(dat_path):
+    """
+    Extract batting stats from testply.dat.
+
+    Confirmed offsets (little-endian):
+      0x000 = name (null-terminated string)
+      0x03E = tests played (u16)
+      0x040 = innings (u16)
+      0x042 = runs (u16)
+      0x044 = high score (u16)
+      0x056 = not-outs (byte)
+      0x05A = hundreds (byte)
+      0x05B = fifties (byte)
+      0x18E = fours (u16)
+      0x190 = sixes (u16)
+      avg   = calculated as runs / (innings - not_outs)
+    """
+    players = {}
+    with gzip.open(dat_path, 'rb') as f:
+        for i in range(NUM_PLAYER_SLOTS):
+            f.seek(i * PLAYER_RECORD_SIZE)
+            rec = f.read(PLAYER_RECORD_SIZE)
+
+            name = read_str(rec, 0x000, 50)
+            if not name:
+                continue
+
+            tests     = struct.unpack_from('<H', rec, 0x03E)[0]
+            innings   = struct.unpack_from('<H', rec, 0x040)[0]
+            runs      = struct.unpack_from('<H', rec, 0x042)[0]
+            high_score = struct.unpack_from('<H', rec, 0x044)[0]
+            not_outs  = rec[0x056]
+            hundreds  = rec[0x05A]
+            fifties   = rec[0x05B]
+            fours     = struct.unpack_from('<H', rec, 0x18E)[0]
+            sixes     = struct.unpack_from('<H', rec, 0x190)[0]
+
+            denom = innings - not_outs
+            avg = round(runs / denom, 2) if denom > 0 else 0.0
+
+            players[str(i + 1)] = {
+                'name':       name,
+                'tests':      tests,
+                'innings':    innings,
+                'runs':       runs,
+                'high_score': high_score,
+                'not_outs':   not_outs,
+                'average':    avg,
+                'hundreds':   hundreds,
+                'fifties':    fifties,
+                'fours':      fours,
+                'sixes':      sixes,
+            }
+
+    return players
 
 
 def build_enriched_data(existing, dat_matches):
@@ -240,6 +298,14 @@ def main():
     
     print(f"Extracting match data from {NUM_MATCHES} records in testmat.dat...")
     dat_matches = extract_match_data(MATCH_DAT)
+
+    print(f"Extracting player batting stats from {NUM_PLAYER_SLOTS} records in testply.dat...")
+    dat_players = extract_player_data(PLAYER_DAT)
+    print(f"  -> {len(dat_players)} players extracted")
+    for pid, p in dat_players.items():
+        if p['name'] == 'DG Bradman':
+            print(f"  Sample - {p['name']}: {p['tests']} tests, {p['runs']} runs, avg {p['average']}, hs {p['high_score']}, {p['hundreds']}x100s")
+            break
     
     print("Building enriched data structure...")
     enriched = build_enriched_data(existing, dat_matches)
