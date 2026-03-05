@@ -74,7 +74,8 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .share-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 .share-btn svg{width:16px;height:16px;stroke:currentColor;fill:none}
 
-.hdr-nav{display:flex;align-items:center;gap:8px}
+.hdr-nav{display:flex;align-items:center;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:1;min-width:0}
+.hdr-nav::-webkit-scrollbar{display:none}
 .nav-link{
   background:var(--surface);border:1px solid var(--border);border-radius:8px;
   padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:7px;
@@ -268,7 +269,8 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .empty p{font-size:13px;color:var(--text3);max-width:380px;margin:0 auto}
 
 /* Tabs */
-.tabs{display:flex;gap:3px;margin-bottom:18px;background:var(--surface);border-radius:8px;padding:3px;border:1px solid var(--border)}
+.tabs-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.tabs{display:flex;gap:3px;background:var(--surface);border-radius:8px;padding:3px;border:1px solid var(--border);flex:1;min-width:0}
 .tab{
   flex:1;padding:8px;border-radius:6px;border:none;background:none;
   color:var(--text2);font-family:'Outfit',sans-serif;font-size:12px;
@@ -278,6 +280,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .tab.on{background:var(--surface3);color:var(--accent);font-weight:600}
 .tc{display:none}
 .tc.on{display:block}
+.export-inline-btn{
+  display:flex;align-items:center;gap:7px;flex-shrink:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:8px 14px;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--text2);
+  transition:all 0.2s;white-space:nowrap;
+}
+.export-inline-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-dim)}
 
 /* ---- TRANSPOSED TABLE: players = rows, stats = columns ---- */
 .tbl-wrap{overflow-x:auto;margin-bottom:24px;border-radius:11px;border:1px solid var(--border)}
@@ -568,14 +578,7 @@ header.header{display:none !important}
         </svg>
         <span>Share</span>
       </button>
-      <button class="nav-link export-btn" id="exportBtn" onclick="exportToExcel()" style="display:none">
-        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        <span>Excel</span>
-      </button>
+
     </div>
   </div>
 </div>
@@ -703,11 +706,21 @@ header.header{display:none !important}
   </div>
 
   <div class="comp" id="comp">
-    <div class="tabs">
-      <button class="tab on" onclick="switchTab('overview',this)">Overview</button>
-      <button class="tab" onclick="switchTab('batting',this)">Batting</button>
-      <button class="tab" onclick="switchTab('bowling',this)">Bowling</button>
-      <button class="tab" onclick="switchTab('all',this)">All Stats</button>
+    <div class="tabs-row">
+      <div class="tabs">
+        <button class="tab on" onclick="switchTab('overview',this)">Overview</button>
+        <button class="tab" onclick="switchTab('batting',this)">Batting</button>
+        <button class="tab" onclick="switchTab('bowling',this)">Bowling</button>
+        <button class="tab" onclick="switchTab('all',this)">All Stats</button>
+      </div>
+      <button class="export-inline-btn" id="exportBtn" onclick="exportToExcel()" style="display:none">
+        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export to Excel
+      </button>
     </div>
     <div id="filtSummary"></div>
     <div class="tc on" id="t-overview"><div id="tblOverview"></div></div>
