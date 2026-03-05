@@ -478,6 +478,13 @@ body{
   color:var(--text3);
   font-style:italic;
 }
+#quizNameInput:focus{
+  border-color:#1a1208 !important;
+  background:#fff !important;
+}
+#quizNameSubmit:hover{
+  background:#b5171e !important;
+}
 
 @media(max-width:900px){
   .hero-section{
@@ -912,6 +919,27 @@ body{
   }
 }
 </style>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnfn9hK0y-p6nvIZ_AwoJnWD7DfDuIQd4",
+    authDomain: "hitwicket-cba02.firebaseapp.com",
+    projectId: "hitwicket-cba02",
+    storageBucket: "hitwicket-cba02.firebasestorage.app",
+    messagingSenderId: "196915483829",
+    appId: "1:196915483829:web:071c47af79914aec88dafc"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  window._quizDb           = db;
+  window._quizFsCollection = collection;
+  window._quizFsAddDoc     = addDoc;
+  window._quizFsTimestamp  = serverTimestamp;
+</script>
 </head>
 <body>
 
@@ -1718,8 +1746,11 @@ if (window.speechSynthesis) {
       `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${FILE}?t=${Date.now()}`
     );
     if (!res.ok) return;
-    const quiz = await res.json();
-    if (!quiz.question || !quiz.optionA || !quiz.optionB || !quiz.optionC || !quiz.correctAnswer) return;
+    const data = await res.json();
+
+    // Support both new { today, queue } format and old flat format
+    const quiz = data.today || (data.question ? data : null);
+    if (!quiz || !quiz.question || !quiz.optionA || !quiz.optionB || !quiz.optionC || !quiz.correctAnswer) return;
 
     document.getElementById('quizQuestionText').textContent = quiz.question;
 
@@ -1731,6 +1762,28 @@ if (window.speechSynthesis) {
 
     const container = document.getElementById('quizOptionsContainer');
     let answered = false;
+
+    // Show a name prompt only after a correct answer — built lazily
+    function buildNamePrompt(onSubmit) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+      wrap.innerHTML = `
+        <input id="quizNameInput" type="text" placeholder="Your name (optional)"
+               style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #c8bca8;
+                      background:#f5f0e8;font-family:inherit;font-size:13px;outline:none;border-radius:3px">
+        <button id="quizNameSubmit"
+                style="padding:7px 14px;background:#1a1208;color:#f5f0e8;border:none;
+                       font-family:inherit;font-size:13px;cursor:pointer;border-radius:3px;white-space:nowrap">
+          Submit name
+        </button>
+      `;
+      wrap.querySelector('#quizNameSubmit').addEventListener('click', () => {
+        const name = wrap.querySelector('#quizNameInput').value.trim();
+        onSubmit(name);
+        wrap.remove();
+      });
+      return wrap;
+    }
 
     options.forEach(opt => {
       const label = document.createElement('label');
@@ -1750,12 +1803,34 @@ if (window.speechSynthesis) {
           if (val === quiz.correctAnswer) el.classList.add('correct');
           else if (val === opt.label && !isCorrect) el.classList.add('wrong');
         });
-        // Check the clicked radio
         label.querySelector('input').checked = true;
 
         if (isCorrect) {
           resultEl.textContent = '🎉 Congratulations! That\'s the correct answer!';
           resultEl.className = 'quiz-result show correct';
+
+          // Prompt for name, then write to Firestore
+          const prompt = buildNamePrompt(async (name) => {
+            try {
+              const db  = window._quizDb;
+              const col = window._quizFsCollection;
+              const add = window._quizFsAddDoc;
+              const ts  = window._quizFsTimestamp;
+              if (db && col && add) {
+                await add(col(db, 'quiz_answers'), {
+                  quizQuestion:  quiz.question,
+                  answer:        opt.label,
+                  name:          name || 'Anonymous',
+                  answeredAt:    ts ? ts() : new Date().toISOString(),
+                  quizDate:      quiz.date || new Date().toISOString().slice(0, 10)
+                });
+              }
+            } catch(e) {
+              console.warn('Could not save quiz answer:', e);
+            }
+          });
+          resultEl.after(prompt);
+
         } else {
           const correctText = options.find(o => o.label === quiz.correctAnswer).text;
           resultEl.textContent = `Not quite — the correct answer is: ${correctText}`;
