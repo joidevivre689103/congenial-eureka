@@ -493,6 +493,84 @@
       </div>
     </div>
 
+    <!-- Secrets Vault & Deploy Tool -->
+    <div class="section-card highlight">
+      <div class="card-header">
+        <div class="card-number">★</div>
+        <div class="card-title">Secrets Vault &amp; GitHub Deploy Tool</div>
+      </div>
+      <div class="card-body">
+
+        <div class="offsets-label" style="margin-bottom:1rem;">First-time setup — <code>secrets.html</code></div>
+        <ul class="steps">
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 1 — Create your master password</strong><br>
+              Open <code>secrets.html</code> and click <em>"First time? Set up master password"</em>. Choose a strong password (min 6 characters) and confirm it. This password encrypts all your secrets with AES-256 — it cannot be recovered if lost.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 2 — Unlock and fill in your credentials</strong><br>
+              Enter your master password to unlock the vault. Fill in your <strong>GitHub Token</strong>, <strong>Firebase API Key</strong>, and <strong>ElevenLabs API Key</strong> in the pre-configured slots. Use the <strong>+ Add</strong> row at the bottom to add any additional secrets with custom labels.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 3 — Save to Firestore</strong><br>
+              Click <strong>Save to Firestore</strong>. Your secrets are encrypted with your master password before being stored — they are unreadable without it. The save bar will disappear once saved successfully.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 4 — Generate a GitHub Personal Access Token</strong><br>
+              Go to github.com → <strong>Profile → Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>. Create a token with <strong>Contents: Read &amp; Write</strong> permission scoped to the <code>congenial-eureka</code> repo. Paste it into the GitHub Token slot in the vault.
+            </div>
+          </li>
+        </ul>
+
+        <div style="margin-top:1.5rem;" class="offsets-label">Daily workflow — deploying files from Claude</div>
+        <ul class="steps" style="margin-top:0.75rem;">
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 1 — Open the Secrets Vault</strong><br>
+              Open <code>secrets.html</code> and unlock with your master password. Keep this tab open.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 2 — Open the Deploy Tool</strong><br>
+              Open <code>github-deploy-tool.html</code> in a new tab <em>from the same browser window</em>. The banner at the top will turn green confirming <strong>"GitHub Token loaded from Secrets Vault"</strong> — no manual pasting needed.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 3 — Copy content from Claude</strong><br>
+              In Claude, use the <strong>copy button</strong> (top-right of any code block) to copy the file content. No download required.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 4 — Fill in repo details and deploy</strong><br>
+              In the deploy tool, set your <strong>GitHub username</strong>, <strong>repo name</strong> (<code>congenial-eureka</code>), <strong>branch</strong> (<code>main</code>), and <strong>file path</strong> (e.g. <code>batting-records.html</code>). Paste the copied content, then click <strong>Deploy to GitHub</strong>. The tool auto-detects whether to create or update the file.
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-dot"></div>
+            <div class="step-text"><strong>Step 5 — Confirm deployment</strong><br>
+              On success, links to the file on GitHub and on GitHub Pages are shown. Click <strong>Save</strong> once on the deploy tool to remember your repo config for the session.
+            </div>
+          </li>
+        </ul>
+
+        <div class="auto-note" style="margin-top:1rem;">
+          <span class="auto-icon">🔐</span>
+          <p><strong>Security note:</strong> Secrets are encrypted with AES-256-GCM using your master password as the key. Even with direct Firestore access, the values cannot be read without your password. Never share your master password or commit tokens directly to the repo.</p>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
   <footer>
