@@ -2,927 +2,986 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Cricket Times — Test Cricket News & Analysis</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cricket Times — Content Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 :root{
-  --bg:#faf9f7;
-  --surface:#ffffff;
-  --surface2:#f5f4f2;
-  --surface3:#eceae6;
-  --border:#d8d4cc;
-  --border2:#c8c4bc;
-  --text:#1a1a18;
-  --text2:#4a4a46;
-  --text3:#7a7a74;
-  --accent:#a03020;
-  --accent-hover:#801810;
-  --accent-dim:rgba(160,48,32,0.08);
-  --gold:#c08018;
-  --gold-dim:rgba(192,128,24,0.10);
-  --green:#1a6848;
-  --blue:#1a4878;
+  --bg:#0f1117;
+  --surface:#1a1d24;
+  --surface2:#252830;
+  --surface3:#2f333d;
+  --border:#3a3f4a;
+  --border2:#4a505c;
+  --text:#f0f2f5;
+  --text2:#a0a8b8;
+  --text3:#6a7080;
+  --accent:#3b82f6;
+  --accent-hover:#2563eb;
+  --accent-dim:rgba(59,130,246,0.15);
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,0.15);
+  --yellow:#eab308;
+  --yellow-dim:rgba(234,179,8,0.15);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.15);
+  --orange:#f97316;
+  --purple:#a855f7;
 }
 
 body{
   background:var(--bg);
   color:var(--text);
-  font-family:'Source Serif 4',Georgia,serif;
+  font-family:'Inter',system-ui,sans-serif;
   min-height:100vh;
-  line-height:1.6;
+  line-height:1.5;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MASTHEAD
+   LAYOUT
 ═══════════════════════════════════════════════════════════════════════════ */
-.masthead{
-  text-align:center;
-  padding:20px 24px 16px;
-  border-bottom:2px solid var(--text);
-  position:relative;
-}
-.masthead-date{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  font-weight:500;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-  color:var(--text3);
-  margin-bottom:8px;
-}
-.masthead-logo{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(36px,8vw,58px);
-  font-weight:700;
-  letter-spacing:-1px;
-  line-height:1.1;
-}
-.masthead-logo span{
-  color:var(--accent);
-}
-.masthead-tagline{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  font-weight:500;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--text3);
-  margin-top:6px;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════════════════════════════════════════ */
-.nav-bar{
-  border-bottom:1px solid var(--border);
-  background:var(--surface);
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-.nav-inner{
-  max-width:1400px;
-  margin:0 auto;
-  padding:0 24px;
-  display:flex;
-  justify-content:center;
-  gap:0;
-}
-.nav-link{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:600;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
-  color:var(--text2);
-  text-decoration:none;
-  padding:14px 20px;
-  position:relative;
-  transition:color 0.2s;
-}
-.nav-link:hover{
-  color:var(--accent);
-}
-.nav-link.active{
-  color:var(--accent);
-}
-.nav-link.active::after{
-  content:'';
-  position:absolute;
-  bottom:0;
-  left:20px;
-  right:20px;
-  height:2px;
-  background:var(--accent);
-}
-.nav-link.external::after{
-  content:'↗';
-  font-size:10px;
-  margin-left:4px;
-  opacity:0.6;
-}
-
-@media(max-width:900px){
-  .nav-inner{
-    overflow-x:auto;
-    justify-content:flex-start;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-  }
-  .nav-inner::-webkit-scrollbar{display:none}
-  .nav-link{
-    white-space:nowrap;
-    padding:12px 14px;
-    font-size:11px;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   MAIN LAYOUT
-═══════════════════════════════════════════════════════════════════════════ */
-.main{
-  max-width:1400px;
-  margin:0 auto;
-  padding:0 24px;
-}
-
-/* ─── BREAKING TICKER ─── */
-.ticker{
-  background:var(--accent);
-  color:#fff;
-  padding:10px 24px;
-  display:flex;
-  align-items:center;
-  gap:16px;
-  overflow:hidden;
-}
-.ticker-label{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  background:rgba(255,255,255,0.2);
-  padding:4px 10px;
-  border-radius:3px;
-  flex-shrink:0;
-}
-.ticker-content{
-  font-size:13px;
-  font-weight:500;
-  white-space:nowrap;
-  animation:scroll-left 30s linear infinite;
-}
-@keyframes scroll-left{
-  0%{transform:translateX(100%)}
-  100%{transform:translateX(-100%)}
-}
-
-/* ─── HERO SECTION ─── */
-.hero-section{
+.app{
   display:grid;
-  grid-template-columns:1fr 340px;
-  gap:0;
-  border-bottom:1px solid var(--border);
-  padding:32px 0;
-}
-
-.hero-main{
-  padding-right:32px;
-  border-right:1px solid var(--border);
-}
-.hero-category{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  color:var(--accent);
-  margin-bottom:12px;
-}
-.hero-headline{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(32px,5vw,48px);
-  font-weight:700;
-  line-height:1.15;
-  letter-spacing:-0.5px;
-  margin-bottom:16px;
-}
-.hero-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.hero-headline a:hover{
-  text-decoration:underline;
-  text-decoration-thickness:2px;
-  text-underline-offset:4px;
-}
-.hero-summary{
-  font-size:18px;
-  line-height:1.6;
-  color:var(--text2);
-  margin-bottom:20px;
-}
-.hero-image{
-  width:100%;
-  aspect-ratio:16/10;
-  object-fit:cover;
-  border-radius:4px;
-  margin-bottom:16px;
-  background:var(--surface3);
-}
-.hero-meta{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  color:var(--text3);
-  display:flex;
-  gap:16px;
-  align-items:center;
-}
-.hero-author{
-  font-weight:600;
-  color:var(--text2);
-}
-.hero-time{
-  opacity:0.8;
+  grid-template-columns:240px 1fr;
+  min-height:100vh;
 }
 
 /* ─── SIDEBAR ─── */
-.hero-sidebar{
-  padding-left:24px;
-}
-.sidebar-section{
-  margin-bottom:28px;
-}
-.sidebar-title{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1.8px;
-  text-transform:uppercase;
-  color:var(--text3);
-  padding-bottom:10px;
-  border-bottom:1px solid var(--border);
-  margin-bottom:16px;
-}
-.sidebar-item{
-  padding:12px 0;
-  border-bottom:1px solid var(--surface3);
-}
-.sidebar-item:last-child{border-bottom:none}
-.sidebar-item-num{
-  font-family:'Playfair Display',serif;
-  font-size:28px;
-  font-weight:700;
-  color:var(--surface3);
-  float:left;
-  margin-right:12px;
-  line-height:1;
-}
-.sidebar-item-headline{
-  font-family:'Playfair Display',serif;
-  font-size:15px;
-  font-weight:600;
-  line-height:1.35;
-}
-.sidebar-item-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.sidebar-item-headline a:hover{
-  color:var(--accent);
-}
-.sidebar-item-meta{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  color:var(--text3);
-  margin-top:4px;
-}
-
-/* ─── LIVE SCORES WIDGET ─── */
-.live-scores{
-  background:var(--text);
-  color:#fff;
-  border-radius:6px;
-  padding:16px;
-  margin-top:4px;
-}
-.live-scores-header{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-bottom:14px;
-}
-.live-dot{
-  width:8px;
-  height:8px;
-  background:#e04040;
-  border-radius:50%;
-  animation:pulse 1.5s infinite;
-}
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:0.4}
-}
-.live-scores-title{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-}
-.score-card{
-  background:rgba(255,255,255,0.08);
-  border-radius:4px;
-  padding:12px;
-  margin-bottom:10px;
-}
-.score-card:last-child{margin-bottom:0}
-.score-match{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:600;
-  letter-spacing:0.5px;
-  opacity:0.6;
-  margin-bottom:8px;
-}
-.score-teams{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.score-team{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.score-team-name{
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  font-weight:600;
-}
-.score-team-score{
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  color:var(--gold);
-}
-.score-status{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  color:rgba(255,255,255,0.5);
-  margin-top:8px;
-}
-
-/* ── QUIZ WIDGET ── */
-.quiz-widget{
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:16px;
-  margin-top:16px;
-}
-.quiz-widget-label{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  color:var(--accent);
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-.quiz-question-text{
-  font-family:'Playfair Display',serif;
-  font-size:14px;
-  font-weight:600;
-  line-height:1.45;
-  color:var(--text);
-  margin-bottom:12px;
-}
-.quiz-options{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
-.quiz-option{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  cursor:pointer;
-  padding:8px 10px;
-  border-radius:4px;
-  border:1px solid var(--border);
+.sidebar{
   background:var(--surface);
-  transition:all 0.15s;
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  color:var(--text2);
-  user-select:none;
-}
-.quiz-option:hover{
-  border-color:var(--accent);
-  background:var(--accent-dim);
-  color:var(--accent);
-}
-.quiz-option input[type="radio"]{
-  accent-color:var(--accent);
-  width:14px;
-  height:14px;
-  flex-shrink:0;
-  pointer-events:none;
-}
-.quiz-option.correct{
-  border-color:var(--green);
-  background:rgba(26,104,72,0.1);
-  color:var(--green);
-  font-weight:600;
-}
-.quiz-option.wrong{
-  border-color:#b03030;
-  background:rgba(176,48,48,0.08);
-  color:#b03030;
-}
-.quiz-option.disabled{ pointer-events:none; }
-.quiz-result{
-  margin-top:12px;
-  padding:10px 12px;
-  border-radius:4px;
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:600;
-  display:none;
-}
-.quiz-result.show{ display:block }
-.quiz-result.correct{
-  background:rgba(26,104,72,0.12);
-  border:1px solid var(--green);
-  color:var(--green);
-}
-.quiz-result.wrong{
-  background:rgba(176,48,48,0.08);
-  border:1px solid #b03030;
-  color:#b03030;
-}
-.quiz-contributed{
-  margin-top:9px;
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  color:var(--text3);
-  font-style:italic;
-}
-#quizNameInput:focus{
-  border-color:#1a1208 !important;
-  background:#fff !important;
-}
-#quizNameSubmit:hover{
-  background:#b5171e !important;
-}
-
-@media(max-width:900px){
-  .hero-section{
-    grid-template-columns:1fr;
-  }
-  .hero-main{
-    padding-right:0;
-    border-right:none;
-    padding-bottom:24px;
-    border-bottom:1px solid var(--border);
-    margin-bottom:24px;
-  }
-  .hero-sidebar{
-    padding-left:0;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   CONTENT GRID (3 Columns)
-═══════════════════════════════════════════════════════════════════════════ */
-.content-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:0;
-  padding:32px 0;
-  border-bottom:1px solid var(--border);
-}
-.content-col{
-  padding:0 24px;
   border-right:1px solid var(--border);
+  padding:20px 0;
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
 }
-.content-col:first-child{padding-left:0}
-.content-col:last-child{border-right:none;padding-right:0}
-
-.col-header{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1.8px;
-  text-transform:uppercase;
-  color:var(--accent);
-  padding-bottom:12px;
-  border-bottom:2px solid var(--accent);
+.sidebar-brand{
+  padding:0 20px 20px;
+  border-bottom:1px solid var(--border);
   margin-bottom:20px;
 }
-
-.article-card{
-  margin-bottom:24px;
-}
-.article-card:last-child{margin-bottom:0}
-.article-card-image{
-  width:100%;
-  aspect-ratio:16/10;
-  object-fit:cover;
-  border-radius:3px;
-  margin-bottom:12px;
-  background:var(--surface3);
-}
-.article-card-headline{
-  font-family:'Playfair Display',serif;
+.sidebar-brand h1{
   font-size:18px;
-  font-weight:600;
-  line-height:1.3;
-  margin-bottom:8px;
+  font-weight:800;
+  letter-spacing:-0.3px;
 }
-.article-card-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.article-card-headline a:hover{
+.sidebar-brand span{
   color:var(--accent);
 }
-.article-card-summary{
-  font-size:14px;
-  line-height:1.55;
-  color:var(--text2);
-  margin-bottom:10px;
-}
-.article-card-meta{
-  font-family:'Inter',sans-serif;
+.sidebar-brand p{
   font-size:11px;
-  color:var(--text3);
-}
-
-.article-mini{
-  display:flex;
-  gap:14px;
-  padding:14px 0;
-  border-top:1px solid var(--surface3);
-}
-.article-mini:first-of-type{border-top:none}
-.article-mini-image{
-  width:80px;
-  height:60px;
-  object-fit:cover;
-  border-radius:3px;
-  flex-shrink:0;
-  background:var(--surface3);
-}
-.article-mini-content{flex:1}
-.article-mini-headline{
-  font-family:'Playfair Display',serif;
-  font-size:14px;
-  font-weight:600;
-  line-height:1.35;
-}
-.article-mini-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.article-mini-headline a:hover{color:var(--accent)}
-.article-mini-meta{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
   color:var(--text3);
   margin-top:4px;
 }
 
-@media(max-width:900px){
-  .content-grid{
-    grid-template-columns:1fr;
-  }
-  .content-col{
-    padding:0;
-    border-right:none;
-    padding-bottom:28px;
-    margin-bottom:28px;
-    border-bottom:1px solid var(--border);
-  }
-  .content-col:last-child{
-    margin-bottom:0;
-    padding-bottom:0;
-    border-bottom:none;
-  }
+.sidebar-nav{
+  flex:1;
+  padding:0 12px;
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ANALYSIS SECTION (Featured Essays)
-═══════════════════════════════════════════════════════════════════════════ */
-.analysis-section{
-  padding:40px 0;
-  border-bottom:1px solid var(--border);
+.nav-section{
+  margin-bottom:24px;
 }
-.section-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:28px;
-}
-.section-title{
-  font-family:'Playfair Display',serif;
-  font-size:26px;
-  font-weight:700;
-}
-.section-link{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:600;
-  color:var(--accent);
-  text-decoration:none;
-}
-.section-link:hover{text-decoration:underline}
-
-.analysis-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:28px;
-}
-.analysis-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:6px;
-  overflow:hidden;
-  transition:transform 0.2s, box-shadow 0.2s;
-}
-.analysis-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 8px 30px rgba(0,0,0,0.08);
-}
-.analysis-card-image{
-  width:100%;
-  aspect-ratio:16/9;
-  object-fit:cover;
-  background:var(--surface3);
-}
-.analysis-card-content{
-  padding:20px;
-}
-.analysis-card-category{
-  font-family:'Inter',sans-serif;
+.nav-section-title{
   font-size:10px;
   font-weight:700;
   letter-spacing:1.2px;
   text-transform:uppercase;
-  color:var(--gold);
-  margin-bottom:10px;
+  color:var(--text3);
+  padding:0 8px;
+  margin-bottom:8px;
 }
-.analysis-card-headline{
-  font-family:'Playfair Display',serif;
-  font-size:20px;
-  font-weight:600;
-  line-height:1.3;
-  margin-bottom:10px;
-}
-.analysis-card-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.analysis-card-headline a:hover{color:var(--accent)}
-.analysis-card-excerpt{
-  font-size:14px;
-  line-height:1.55;
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:8px;
   color:var(--text2);
-  margin-bottom:14px;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.15s;
 }
-.analysis-card-author{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:600;
+.nav-item:hover{
+  background:var(--surface2);
   color:var(--text);
 }
-.analysis-card-author span{
+.nav-item.active{
+  background:var(--accent-dim);
+  color:var(--accent);
+}
+.nav-item svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  flex-shrink:0;
+}
+.nav-item-badge{
+  margin-left:auto;
+  background:var(--surface3);
+  padding:2px 8px;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:600;
   color:var(--text3);
-  font-weight:400;
+}
+.nav-item.active .nav-item-badge{
+  background:var(--accent);
+  color:#fff;
 }
 
-@media(max-width:900px){
-  .analysis-grid{
-    grid-template-columns:1fr;
-    gap:20px;
-  }
+.sidebar-footer{
+  padding:16px 20px;
+  border-top:1px solid var(--border);
+}
+.sidebar-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.sidebar-avatar{
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+}
+.sidebar-user-info h4{
+  font-size:13px;
+  font-weight:600;
+}
+.sidebar-user-info p{
+  font-size:11px;
+  color:var(--text3);
+}
+
+/* ─── MAIN CONTENT ─── */
+.main{
+  padding:24px 32px;
+  overflow-y:auto;
+}
+.main-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+.main-title{
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-0.3px;
+}
+.main-actions{
+  display:flex;
+  gap:12px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   STATS PROMO SECTION
+   BUTTONS
 ═══════════════════════════════════════════════════════════════════════════ */
-.stats-promo{
-  padding:48px 0;
-  background:linear-gradient(180deg,var(--surface2) 0%,var(--bg) 100%);
-  border-bottom:1px solid var(--border);
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 18px;
+  border-radius:8px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s;
+  border:none;
+  text-decoration:none;
 }
-.stats-promo-inner{
-  max-width:1400px;
-  margin:0 auto;
-  padding:0 24px;
+.btn svg{
+  width:16px;
+  height:16px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
 }
-.stats-header{
-  text-align:center;
-  margin-bottom:36px;
+.btn-primary{
+  background:var(--accent);
+  color:#fff;
 }
-.stats-header h2{
-  font-family:'Playfair Display',serif;
-  font-size:32px;
-  font-weight:700;
-  margin-bottom:8px;
+.btn-primary:hover{
+  background:var(--accent-hover);
 }
-.stats-header p{
-  font-size:16px;
+.btn-secondary{
+  background:var(--surface2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{
+  background:var(--surface3);
+  border-color:var(--border2);
+}
+.btn-ghost{
+  background:transparent;
   color:var(--text2);
 }
+.btn-ghost:hover{
+  background:var(--surface2);
+  color:var(--text);
+}
+.btn-danger{
+  background:var(--red-dim);
+  color:var(--red);
+}
+.btn-danger:hover{
+  background:var(--red);
+  color:#fff;
+}
+.btn-sm{
+  padding:6px 12px;
+  font-size:12px;
+}
+.btn-sm svg{
+  width:14px;
+  height:14px;
+}
 
-.stats-cards{
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATS CARDS
+═══════════════════════════════════════════════════════════════════════════ */
+.stats-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:20px;
+  gap:16px;
+  margin-bottom:28px;
 }
 .stat-card{
   background:var(--surface);
   border:1px solid var(--border);
-  border-radius:8px;
-  padding:24px;
-  text-align:center;
-  text-decoration:none;
-  color:inherit;
-  transition:all 0.25s;
+  border-radius:12px;
+  padding:20px;
 }
-.stat-card:hover{
-  border-color:var(--gold);
-  transform:translateY(-4px);
-  box-shadow:0 12px 40px rgba(192,128,24,0.12);
+.stat-card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:12px;
 }
 .stat-card-icon{
-  width:48px;
-  height:48px;
-  margin:0 auto 16px;
-  background:var(--gold-dim);
-  border-radius:12px;
+  width:40px;
+  height:40px;
+  border-radius:10px;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 .stat-card-icon svg{
-  width:24px;
-  height:24px;
-  stroke:var(--gold);
+  width:20px;
+  height:20px;
+  stroke-width:2;
+  fill:none;
+}
+.stat-card-icon.blue{background:var(--accent-dim)}
+.stat-card-icon.blue svg{stroke:var(--accent)}
+.stat-card-icon.green{background:var(--green-dim)}
+.stat-card-icon.green svg{stroke:var(--green)}
+.stat-card-icon.yellow{background:var(--yellow-dim)}
+.stat-card-icon.yellow svg{stroke:var(--yellow)}
+.stat-card-icon.purple{background:rgba(168,85,247,0.15)}
+.stat-card-icon.purple svg{stroke:var(--purple)}
+
+.stat-card-trend{
+  font-size:11px;
+  font-weight:600;
+  padding:3px 8px;
+  border-radius:6px;
+}
+.stat-card-trend.up{background:var(--green-dim);color:var(--green)}
+.stat-card-trend.down{background:var(--red-dim);color:var(--red)}
+
+.stat-card-value{
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+  margin-bottom:4px;
+}
+.stat-card-label{
+  font-size:13px;
+  color:var(--text3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTENT TABLE
+═══════════════════════════════════════════════════════════════════════════ */
+.content-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+.panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+}
+.panel-title{
+  font-size:15px;
+  font-weight:600;
+}
+.panel-tabs{
+  display:flex;
+  gap:4px;
+}
+.panel-tab{
+  padding:8px 14px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text3);
+  cursor:pointer;
+  transition:all 0.15s;
+  border:none;
+  background:none;
+}
+.panel-tab:hover{
+  color:var(--text);
+  background:var(--surface2);
+}
+.panel-tab.active{
+  color:var(--accent);
+  background:var(--accent-dim);
+}
+
+.panel-filters{
+  display:flex;
+  gap:12px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface2);
+}
+.filter-search{
+  flex:1;
+  position:relative;
+}
+.filter-search svg{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:16px;
+  height:16px;
+  stroke:var(--text3);
   fill:none;
   stroke-width:2;
 }
-.stat-card-title{
-  font-family:'Inter',sans-serif;
-  font-size:14px;
-  font-weight:700;
-  margin-bottom:6px;
-}
-.stat-card-desc{
-  font-size:13px;
-  color:var(--text3);
-  line-height:1.45;
-}
-
-@media(max-width:900px){
-  .stats-cards{
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
-  }
-  .stat-card{padding:18px}
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   AUDIO LISTEN BUTTON
-═══════════════════════════════════════════════════════════════════════════ */
-.audio-listen-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  padding:5px 12px;
-  border-radius:20px;
+.filter-search input{
+  width:100%;
+  padding:10px 12px 10px 40px;
+  border-radius:8px;
   border:1px solid var(--border);
   background:var(--surface);
-  color:var(--text2);
-  font-family:'Inter',sans-serif;
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+.filter-search input::placeholder{color:var(--text3)}
+.filter-search input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.filter-select{
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+  cursor:pointer;
+}
+.filter-select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.content-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.content-table th{
+  text-align:left;
+  padding:12px 16px;
   font-size:11px;
   font-weight:600;
-  cursor:pointer;
-  transition:all 0.2s;
-  white-space:nowrap;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  color:var(--text3);
+  background:var(--surface2);
+  border-bottom:1px solid var(--border);
+}
+.content-table td{
+  padding:16px;
+  border-bottom:1px solid var(--border);
   vertical-align:middle;
 }
-.audio-listen-btn:hover{
-  background:var(--accent-dim);
-  border-color:var(--accent);
-  color:var(--accent);
+.content-table tr:last-child td{border-bottom:none}
+.content-table tr:hover td{background:var(--surface2)}
+
+.article-cell{
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
-.audio-listen-btn.playing{
-  background:var(--accent);
-  border-color:var(--accent);
-  color:#fff;
-  animation:audio-pulse 1.5s ease-in-out infinite;
+.article-thumb{
+  width:64px;
+  height:44px;
+  border-radius:6px;
+  object-fit:cover;
+  flex-shrink:0;
+  background:var(--surface3);
 }
-@keyframes audio-pulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(160,48,32,0.3)}
-  50%{box-shadow:0 0 0 6px rgba(160,48,32,0)}
+.article-info h4{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:4px;
+  line-height:1.35;
 }
-.audio-listen-btn svg{
-  width:14px;height:14px;
-  stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;
+.article-info p{
+  font-size:12px;
+  color:var(--text3);
 }
-.audio-listen-btn .audio-bars{
-  display:inline-flex;align-items:center;gap:2px;height:14px;
+
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:600;
 }
-.audio-listen-btn .audio-bars span{
-  display:block;width:2px;background:currentColor;border-radius:1px;
-  animation:audio-bar 0.8s ease-in-out infinite;
+.status-badge::before{
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
 }
-.audio-listen-btn .audio-bars span:nth-child(1){height:4px;animation-delay:0s}
-.audio-listen-btn .audio-bars span:nth-child(2){height:8px;animation-delay:0.15s}
-.audio-listen-btn .audio-bars span:nth-child(3){height:12px;animation-delay:0.3s}
-.audio-listen-btn .audio-bars span:nth-child(4){height:6px;animation-delay:0.45s}
-@keyframes audio-bar{
-  0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.3)}
+.status-badge.published{background:var(--green-dim);color:var(--green)}
+.status-badge.published::before{background:var(--green)}
+.status-badge.draft{background:var(--yellow-dim);color:var(--yellow)}
+.status-badge.draft::before{background:var(--yellow)}
+.status-badge.scheduled{background:var(--accent-dim);color:var(--accent)}
+.status-badge.scheduled::before{background:var(--accent)}
+.status-badge.archived{background:var(--surface3);color:var(--text3)}
+.status-badge.archived::before{background:var(--text3)}
+
+.placement-badge{
+  padding:4px 10px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:600;
+  background:var(--surface3);
+  color:var(--text2);
+}
+.placement-badge.hero{background:var(--purple);color:#fff}
+.placement-badge.featured{background:var(--orange);color:#fff}
+
+.table-actions{
+  display:flex;
+  gap:6px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   FOOTER
+   MODAL
 ═══════════════════════════════════════════════════════════════════════════ */
-.footer{
-  background:var(--text);
-  color:rgba(255,255,255,0.7);
-  padding:48px 24px 32px;
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(4px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  opacity:0;
+  visibility:hidden;
+  transition:all 0.2s;
 }
-.footer-inner{
-  max-width:1400px;
-  margin:0 auto;
+.modal-overlay.active{
+  opacity:1;
+  visibility:visible;
 }
-.footer-top{
+.modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  width:100%;
+  max-width:720px;
+  max-height:90vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  transform:scale(0.95);
+  transition:transform 0.2s;
+}
+.modal-overlay.active .modal{
+  transform:scale(1);
+}
+.modal-header{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-  padding-bottom:32px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
-  margin-bottom:24px;
+  align-items:center;
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
 }
-.footer-brand{
-  font-family:'Playfair Display',serif;
-  font-size:28px;
+.modal-header h2{
+  font-size:18px;
   font-weight:700;
-  color:#fff;
 }
-.footer-nav{
+.modal-close{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  border:none;
+  background:var(--surface2);
+  color:var(--text2);
+  cursor:pointer;
   display:flex;
-  gap:32px;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.15s;
 }
-.footer-nav a{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:500;
-  color:rgba(255,255,255,0.6);
-  text-decoration:none;
+.modal-close:hover{
+  background:var(--red-dim);
+  color:var(--red);
 }
-.footer-nav a:hover{color:#fff}
+.modal-close svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+}
 
-.footer-bottom{
-  font-family:'Inter',sans-serif;
+.modal-body{
+  padding:24px;
+  overflow-y:auto;
+  flex:1;
+}
+
+.form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-bottom:20px;
+}
+.form-row.full{
+  grid-template-columns:1fr;
+}
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.form-label{
+  font-size:12px;
+  font-weight:600;
+  color:var(--text2);
+}
+.form-label span{
+  color:var(--red);
+}
+.form-input{
+  padding:12px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:14px;
+  transition:all 0.15s;
+}
+.form-input:focus{
+  outline:none;
+  border-color:var(--accent);
+  background:var(--surface);
+}
+.form-input::placeholder{color:var(--text3)}
+
+textarea.form-input{
+  min-height:100px;
+  resize:vertical;
+  line-height:1.5;
+}
+
+.form-select{
+  padding:12px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:14px;
+  cursor:pointer;
+}
+.form-select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.image-upload{
+  border:2px dashed var(--border);
+  border-radius:10px;
+  padding:32px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.image-upload:hover{
+  border-color:var(--accent);
+  background:var(--accent-dim);
+}
+.image-upload svg{
+  width:40px;
+  height:40px;
+  stroke:var(--text3);
+  fill:none;
+  stroke-width:1.5;
+  margin-bottom:12px;
+}
+.image-upload p{
+  font-size:13px;
+  color:var(--text2);
+  margin-bottom:4px;
+}
+.image-upload span{
   font-size:11px;
-  color:rgba(255,255,255,0.4);
+  color:var(--text3);
+}
+.image-upload.has-image{
+  padding:0;
+  border:none;
+  position:relative;
+}
+.image-upload.has-image img{
+  width:100%;
+  border-radius:10px;
+}
+.image-upload.has-image .remove-image{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:28px;
+  height:28px;
+  border-radius:6px;
+  background:var(--red);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.image-upload.has-image .remove-image svg{
+  width:16px;
+  height:16px;
+  stroke:#fff;
+  margin:0;
+}
+
+.modal-footer{
   display:flex;
   justify-content:space-between;
+  align-items:center;
+  padding:16px 24px;
+  border-top:1px solid var(--border);
+  background:var(--surface2);
+}
+.modal-footer-left{
+  display:flex;
+  gap:12px;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIVE SCORES EDITOR
+═══════════════════════════════════════════════════════════════════════════ */
+.scores-editor{
+  display:none;
+}
+.scores-editor.active{
+  display:block;
+}
+
+.score-match-card{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:16px;
+}
+.score-match-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+.score-match-title{
+  font-size:14px;
+  font-weight:600;
+}
+.score-teams-editor{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.score-team-row{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:12px;
+  align-items:center;
+}
+.score-team-row input{
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+.score-team-row input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+.score-status-row{
+  margin-top:12px;
+}
+.score-status-row input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TICKER EDITOR
+═══════════════════════════════════════════════════════════════════════════ */
+.ticker-editor{
+  display:none;
+}
+.ticker-editor.active{
+  display:block;
+}
+.ticker-items{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.ticker-item{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.ticker-item input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:13px;
+}
+.ticker-item input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+═══════════════════════════════════════════════════════════════════════════ */
+.toast-container{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  z-index:2000;
+}
+.toast{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  animation:slideIn 0.3s ease;
+}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes slideIn{
+  from{transform:translateX(100%);opacity:0}
+  to{transform:translateX(0);opacity:1}
+}
+.toast-icon{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.toast-icon svg{
+  width:18px;
+  height:18px;
+  stroke-width:2;
+  fill:none;
+}
+.toast-icon.success{background:var(--green-dim)}
+.toast-icon.success svg{stroke:var(--green)}
+.toast-icon.error{background:var(--red-dim)}
+.toast-icon.error svg{stroke:var(--red)}
+
+.toast-content h4{
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:2px;
+}
+.toast-content p{
+  font-size:12px;
+  color:var(--text3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUIZ QUEUE
+═══════════════════════════════════════════════════════════════════════════ */
+.queue-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.queue-item:hover { border-color: var(--border2); }
+.queue-item.drag-over { border-color: var(--accent); background: var(--accent-dim); }
+.queue-item-drag {
+  color: var(--text3);
+  cursor: grab;
+  padding: 4px 2px;
+  flex-shrink: 0;
+}
+.queue-item-drag:active { cursor: grabbing; }
+.queue-item-body { flex: 1; min-width: 0; }
+.queue-item-question {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-item-meta {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.queue-item-date-input {
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  width: 140px;
+}
+.queue-item-date-input:focus { outline: none; border-color: var(--accent); }
+.queue-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.submission-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.submission-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+.submission-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.submission-card-meta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.submission-questions-preview {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  max-height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+.submission-questions-preview.expanded { max-height: none; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════════════════ */
+@media(max-width:1200px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:900px){
-  .footer-top{
-    flex-direction:column;
-    gap:24px;
+  .app{grid-template-columns:1fr}
+  .sidebar{
+    position:fixed;
+    left:-260px;
+    width:260px;
+    z-index:500;
+    transition:left 0.3s;
   }
-  .footer-nav{
-    flex-wrap:wrap;
-    gap:16px;
-  }
-  .footer-bottom{
-    flex-direction:column;
-    gap:8px;
-  }
+  .sidebar.open{left:0}
+  .main{padding:16px}
+  .stats-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .panel-filters{flex-wrap:wrap}
+  .filter-search{min-width:100%}
 }
 </style>
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
+  import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
   const firebaseConfig = {
     apiKey: "AIzaSyBnfn9hK0y-p6nvIZ_AwoJnWD7DfDuIQd4",
     authDomain: "hitwicket-cba02.firebaseapp.com",
@@ -931,924 +990,2370 @@ body{
     messagingSenderId: "196915483829",
     appId: "1:196915483829:web:071c47af79914aec88dafc"
   };
-
   const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-
-  window._quizDb           = db;
-  window._quizFsCollection = collection;
-  window._quizFsAddDoc     = addDoc;
-  window._quizFsTimestamp  = serverTimestamp;
+  window._db = getFirestore(app);
 </script>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MASTHEAD
-═══════════════════════════════════════════════════════════════════════════ -->
-<header class="masthead">
-  <div class="masthead-date">Friday, February 27, 2026</div>
-  <h1 class="masthead-logo">Cricket <span>Times</span></h1>
-  <div class="masthead-tagline">The Definitive Voice of Test Cricket</div>
-</header>
+<div class="app">
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Cricket <span>Times</span></h1>
+      <p>Content Management</p>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Content</div>
+        <a href="#" class="nav-item active" data-view="articles">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Articles
+          <span class="nav-item-badge">24</span>
+        </a>
+        <a href="#" class="nav-item" data-view="ticker">
+          <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Breaking News
+        </a>
+        <a href="#" class="nav-item" data-view="scores">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Live Scores
+        </a>
+        <a href="#" class="nav-item" data-view="quiz">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Quiz
+        </a>
+        <a href="#" class="nav-item" data-view="quiz-queue">
+          <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Quiz Queue
+          <span class="nav-item-badge" id="queueNavBadge">0</span>
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Organization</div>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Categories
+        </a>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Tags
+        </a>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Authors
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Back End Pages</div>
+        <a href="admin.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Admin Panel
+        </a>
+        <a href="backsim.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+          Sim Weights
+        </a>
+        <a href="architecture.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Architecture
+        </a>
+        <a href="test.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Test Suite
+        </a>
+        <a href="reference.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Reference
+        </a>
+      </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     NAVIGATION
-═══════════════════════════════════════════════════════════════════════════ -->
-<nav class="nav-bar">
-  <div class="nav-inner">
-    <a href="news.html" class="nav-link active">Stories</a>
-    <a href="#analysis" class="nav-link">Analysis</a>
-    <a href="country-results.html" class="nav-link external">Countries</a>
-    <a href="batting-records.html" class="nav-link external">Batting</a>
-    <a href="#" class="nav-link">Bowling</a>
-    <a href="index.html" class="nav-link external">Compare</a>
-    <a href="simulation.html" class="nav-link external">Simulation</a>
-    <a href="#" class="nav-link">Share</a>
-  </div>
-</nav>
+      <div class="nav-section">
+        <div class="nav-section-title">Front End Pages</div>
+        <a href="news.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>
+          Stories
+        </a>
+        <a href="country-results.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Countries
+        </a>
+        <a href="batting-records.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Batting Records
+        </a>
+        <a href="index.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Compare Players
+        </a>
+        <a href="simulation.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+          Simulation
+        </a>
+      </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     BREAKING NEWS TICKER
-═══════════════════════════════════════════════════════════════════════════ -->
-<div class="ticker">
-  <span class="ticker-label">Breaking</span>
-  <span class="ticker-content">
-    England announce squad for upcoming Ashes series • Virat Kohli surpasses 9,000 Test runs • Australia clinch Border-Gavaskar Trophy 3-1 • ICC announces new Test Championship cycle format • Ben Stokes hints at potential return to red-ball cricket
-  </span>
+      <div class="nav-section">
+        <div class="nav-section-title">Settings</div>
+        <a href="#" class="nav-item" data-view="audio-settings">
+          <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          Audio Settings
+        </a>
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          Layout Editor
+        </a>
+        <a href="news.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Live Site
+        </a>
+        <a href="#" class="nav-item" onclick="event.preventDefault(); persistToLocalStorage(); showToast('success','Pushed to Live','All published content is now live on the site.');" style="color:var(--green)">
+          <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Push All to Live
+        </a>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">ED</div>
+        <div class="sidebar-user-info">
+          <h4>Editor</h4>
+          <p>Administrator</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <main class="main">
+    <!-- ARTICLES VIEW -->
+    <div id="articles-view">
+      <div class="main-header">
+        <h1 class="main-title">Articles</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import
+          </button>
+          <button class="btn btn-primary" onclick="openModal('create')">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Article
+          </button>
+        </div>
+      </div>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon blue">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <span class="stat-card-trend up">+12%</span>
+          </div>
+          <div class="stat-card-value">24</div>
+          <div class="stat-card-label">Total Articles</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon green">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value">18</div>
+          <div class="stat-card-label">Published</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon yellow">
+              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value">4</div>
+          <div class="stat-card-label">Drafts</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon purple">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value">2</div>
+          <div class="stat-card-label">Scheduled</div>
+        </div>
+      </div>
+      
+      <!-- Content Panel -->
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">All Content</h2>
+          <div class="panel-tabs">
+            <button class="panel-tab active" data-filter="all">All</button>
+            <button class="panel-tab" data-filter="published">Published</button>
+            <button class="panel-tab" data-filter="draft">Drafts</button>
+            <button class="panel-tab" data-filter="scheduled">Scheduled</button>
+          </div>
+        </div>
+        
+        <div class="panel-filters">
+          <div class="filter-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search articles..." id="searchInput" oninput="filterArticles()">
+          </div>
+          <select class="filter-select" id="categoryFilter" onchange="filterArticles()">
+            <option value="">All Categories</option>
+            <option value="news">News</option>
+            <option value="analysis">Analysis</option>
+            <option value="features">Features</option>
+            <option value="opinion">Opinion</option>
+          </select>
+          <select class="filter-select" id="placementFilter" onchange="filterArticles()">
+            <option value="">All Placements</option>
+            <option value="hero">Hero</option>
+            <option value="featured">Featured</option>
+            <option value="standard">Standard</option>
+          </select>
+        </div>
+        
+        <table class="content-table">
+          <thead>
+            <tr>
+              <th>Article</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Placement</th>
+              <th>Audio</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="articlesTable">
+            <!-- Articles populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- TICKER VIEW -->
+    <div id="ticker-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Breaking News Ticker</h1>
+        <div class="main-actions">
+          <button class="btn btn-primary" onclick="saveTicker()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Ticker Items</h2>
+          <button class="btn btn-sm btn-secondary" onclick="addTickerItem()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Item
+          </button>
+        </div>
+        <div style="padding:20px">
+          <p style="font-size:13px;color:var(--text3);margin-bottom:16px">
+            Add headlines that will scroll across the breaking news ticker. Each item should be concise.
+          </p>
+          <div class="ticker-items" id="tickerItems">
+            <!-- Ticker items populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SCORES VIEW -->
+    <div id="scores-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Live Scores</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary" onclick="addScoreCard()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Match
+          </button>
+          <button class="btn btn-primary" onclick="saveScores()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Current Matches</h2>
+        </div>
+        <div style="padding:20px" id="scoresEditor">
+          <!-- Score cards populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ VIEW -->
+    <div id="quiz-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Quiz</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary" id="newQuizBtn" onclick="startNewQuiz()" style="display:none">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Quiz
+          </button>
+          <button class="btn btn-primary" onclick="saveQuizToGitHub()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save &amp; Publish Quiz
+          </button>
+        </div>
+      </div>
+
+      <!-- GitHub Token Panel -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">GitHub Access</h2>
+          <span style="font-size:11px;color:var(--text3)">Token is never stored — enter each session</span>
+        </div>
+        <div style="padding:20px;display:flex;gap:12px;align-items:flex-end">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Personal Access Token <span style="color:var(--red)">*</span></label>
+            <div style="display:flex;gap:6px">
+              <input type="password" class="form-input" id="quizGithubToken"
+                     placeholder="ghp_..."
+                     style="flex:1;font-family:monospace;font-size:13px">
+              <button type="button" onclick="toggleQuizTokenVisibility()"
+                      style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
+                <svg id="quizTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">
+              Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope.
+              <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create one →</a>
+            </span>
+          </div>
+          <button class="btn btn-secondary" onclick="verifyQuizToken()" style="height:44px;white-space:nowrap">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="20 6 9 17 4 12"/></svg>
+            Verify Token
+          </button>
+        </div>
+        <div id="quizTokenStatus" style="display:none;padding:0 20px 16px;font-size:12px"></div>
+      </div>
+
+      <!-- Quiz Form -->
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Cricket Quiz of the Day</h2>
+          <span style="font-size:12px;color:var(--text3)">Saved as <code style="background:var(--surface3);padding:1px 6px;border-radius:3px;font-size:11px">quiz.json</code> in your repo</span>
+        </div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:20px">
+
+          <div class="form-group">
+            <label class="form-label">Question <span style="color:var(--red)">*</span></label>
+            <textarea class="form-input" id="quizQuestion"
+                      placeholder="e.g. Who was the first batsman to score 10,000 Test runs?"
+                      style="min-height:80px"
+                      oninput="updateQuizPreview()"></textarea>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+            <div class="form-group">
+              <label class="form-label">Option A <span style="color:var(--red)">*</span></label>
+              <input type="text" class="form-input" id="quizOptionA" placeholder="First option" oninput="updateQuizPreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Option B <span style="color:var(--red)">*</span></label>
+              <input type="text" class="form-input" id="quizOptionB" placeholder="Second option" oninput="updateQuizPreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Option C <span style="color:var(--red)">*</span></label>
+              <input type="text" class="form-input" id="quizOptionC" placeholder="Third option" oninput="updateQuizPreview()">
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group">
+              <label class="form-label">Correct Answer <span style="color:var(--red)">*</span></label>
+              <select class="form-select" id="quizCorrectAnswer" onchange="updateQuizPreview()">
+                <option value="">— Select correct answer —</option>
+                <option value="A">Option A</option>
+                <option value="B">Option B</option>
+                <option value="C">Option C</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contributed By</label>
+              <input type="text" class="form-input" id="quizContributedBy"
+                     placeholder="e.g. Rahul Dravid" oninput="updateQuizPreview()">
+            </div>
+          </div>
+
+          <!-- Live Preview -->
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+            <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Preview</div>
+            <div id="quizPreview" style="font-size:13px;color:var(--text2)">Fill in the fields above to see a preview.</div>
+          </div>
+
+          <!-- Current Published Quiz -->
+          <div id="quizCurrentPanel" style="display:none;border:1px solid var(--green);border-radius:10px;overflow:hidden">
+            <div style="background:var(--green-dim);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Currently Live on Site</div>
+              <button class="btn btn-sm" onclick="loadCorrectSubmitters()" style="background:rgba(34,197,94,0.2);color:var(--green);border:1px solid var(--green);font-size:11px;padding:4px 10px">
+                <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Load Submitters
+              </button>
+            </div>
+            <div id="quizCurrentText" style="font-size:13px;color:var(--text);padding:14px 16px;border-bottom:1px solid var(--border)"></div>
+            <!-- Who got it right -->
+            <div id="quizSubmittersWrap" style="padding:14px 16px">
+              <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Who Got It Right</div>
+              <div id="quizSubmittersList" style="font-size:13px;color:var(--text3);font-style:italic">Click "Load Submitters" to fetch.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ QUEUE VIEW -->
+    <div id="quiz-queue-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Quiz Queue</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary" onclick="loadQuizQueue()">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
+          </button>
+          <button class="btn btn-primary" onclick="publishQueueToGitHub()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Publish Schedule to GitHub
+          </button>
+        </div>
+      </div>
+
+      <!-- Info banner -->
+      <div style="background:var(--accent-dim);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--text2);line-height:1.6">
+        <strong style="color:var(--accent)">How sequencing works:</strong>
+        Quizzes submitted via the reader form appear below as <em>Pending</em>. 
+        When you publish today's quiz from the Quiz panel, any approved submissions here are automatically 
+        assigned to subsequent days — Day +1, Day +2, etc. You can also manually set dates or reorder the queue.
+        The schedule is saved as <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">quiz.json</code> with a <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">queue</code> array.
+      </div>
+
+      <!-- GitHub token (shared with quiz panel) -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">GitHub Access</h2>
+          <span style="font-size:11px;color:var(--text3)">Shared with Quiz panel — enter token once per session</span>
+        </div>
+        <div style="padding:16px 20px;display:flex;gap:12px;align-items:flex-end">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Personal Access Token</label>
+            <input type="password" class="form-input" id="queueGithubToken"
+                   placeholder="ghp_ … (same token as Quiz panel)"
+                   style="font-family:monospace;font-size:13px">
+          </div>
+          <button class="btn btn-secondary" onclick="syncQueueToken()" style="height:44px;white-space:nowrap">Sync from Quiz Panel</button>
+          <button class="btn btn-secondary" onclick="loadQuizQueue()" style="height:44px;white-space:nowrap">Load Current Schedule</button>
+        </div>
+        <div id="queueTokenStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
+      </div>
+
+      <!-- Today's scheduled quiz -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">Today's Quiz</h2>
+          <span id="todayDateLabel" style="font-size:12px;color:var(--text3)"></span>
+        </div>
+        <div id="todayQuizPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
+          No quiz loaded. Click "Load Current Schedule".
+        </div>
+      </div>
+
+      <!-- Upcoming scheduled queue -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">Upcoming Schedule</h2>
+          <span style="font-size:11px;color:var(--text3)">Drag rows to reorder · click date to edit</span>
+        </div>
+        <div id="queueSchedulePanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
+          No queue loaded yet.
+        </div>
+      </div>
+
+      <!-- Pending submissions from Firestore -->
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Pending Submissions</h2>
+          <button class="btn btn-sm btn-secondary" onclick="loadPendingSubmissions()">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Load from Firestore
+          </button>
+        </div>
+        <div id="pendingSubmissionsPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
+          Click "Load from Firestore" to fetch reader-submitted quizzes awaiting review.
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIO SETTINGS VIEW -->
+    <div id="audio-settings-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Audio Settings</h1>
+      </div>
+      
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">ElevenLabs Voice Cloning</h2>
+        </div>
+        <div style="padding:24px">
+          <p style="font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.6">
+            Connect your ElevenLabs account to generate article narrations in your cloned voice. 
+            Upload your voice sample at <a href="https://elevenlabs.io" target="_blank" style="color:var(--accent)">elevenlabs.io</a> to create a voice clone, then enter your credentials below.
+          </p>
+          
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="form-label">API Key <span style="color:var(--red)">*</span></label>
+              <div style="position:relative;display:flex;gap:6px">
+                <input type="password" class="form-input" id="elevenLabsApiKey" placeholder="sk_..." value="" style="flex:1;font-family:'Consolas','Monaco','Courier New',monospace;font-size:13px;letter-spacing:0.3px">
+                <button type="button" onclick="toggleApiKeyVisibility()" id="apiKeyToggleBtn" style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:all 0.15s" title="Show/hide API key">
+                  <svg id="apiKeyEyeIcon" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button type="button" onclick="copyApiKey()" id="apiKeyCopyBtn" style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:all 0.15s" title="Copy API key">
+                  <svg id="apiKeyCopyIcon" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-group" style="flex:1">
+              <label class="form-label">Voice ID <span style="color:var(--red)">*</span></label>
+              <input type="text" class="form-input" id="elevenLabsVoiceId" placeholder="e.g., pNInz6obpgDQGcFmaJgB" value="">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Model</label>
+              <select class="form-select" id="elevenLabsModel">
+                <option value="eleven_multilingual_v2">Multilingual v2 (Recommended)</option>
+                <option value="eleven_turbo_v2_5">Turbo v2.5 (Faster)</option>
+                <option value="eleven_monolingual_v1">Monolingual v1</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stability</label>
+              <input type="range" id="elevenLabsStability" min="0" max="100" value="50" style="width:100%;accent-color:var(--accent)">
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)"><span>Variable</span><span>Stable</span></div>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:12px;margin-top:20px">
+            <button class="btn btn-primary" onclick="saveAudioSettings()">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Settings
+            </button>
+            <button class="btn btn-secondary" onclick="testVoice()">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Test Voice
+            </button>
+          </div>
+          
+          <div id="testVoiceResult" style="display:none;margin-top:16px">
+            <audio id="testAudioPlayer" controls style="width:100%;height:36px"></audio>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-panel" style="margin-top:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">Bulk Audio Generation</h2>
+          <button class="btn btn-sm btn-primary" onclick="generateAllAudio()">
+            <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            Generate All Missing
+          </button>
+        </div>
+        <div style="padding:20px">
+          <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Generate audio for all published articles that don't have audio yet.</p>
+          <div id="bulkProgress" style="display:none">
+            <div style="background:var(--surface3);border-radius:6px;height:8px;overflow:hidden;margin-bottom:8px">
+              <div id="bulkProgressBar" style="background:var(--accent);height:100%;width:0%;transition:width 0.3s;border-radius:6px"></div>
+            </div>
+            <div id="bulkProgressText" style="font-size:12px;color:var(--text3)"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-panel" style="margin-top:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">Audio Storage Diagnostic</h2>
+          <button class="btn btn-sm btn-secondary" onclick="runAudioDiagnostic()">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Check Storage
+          </button>
+        </div>
+        <div style="padding:20px">
+          <pre id="audioDiagOutput" style="font-size:12px;color:var(--text2);background:var(--bg);padding:16px;border-radius:8px;border:1px solid var(--border);white-space:pre-wrap;max-height:300px;overflow-y:auto">Click "Check Storage" to inspect localStorage audio keys.</pre>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     MAIN CONTENT
+     CREATE/EDIT MODAL
 ═══════════════════════════════════════════════════════════════════════════ -->
-<main class="main">
-  
-  <!-- ─── HERO SECTION ─── -->
-  <section class="hero-section">
-    <article class="hero-main">
-      <div class="hero-category">Test Cricket</div>
-      <h2 class="hero-headline">
-        <a href="#">India's Dominance at Home: How Spin Bowling Has Redefined Test Cricket Strategy</a>
-      </h2>
-      <p class="hero-summary">
-        A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack 
-        has forced visiting teams to fundamentally rethink their approach to subcontinent tours. 
-        From Ashwin's artistry to Jadeja's relentless accuracy, the numbers tell a compelling story.
-      </p>
-      <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
-      <div class="hero-meta">
-        <span class="hero-author">By Rahul Dravid</span>
-        <span class="hero-time">12 min read</span>
-        <span>February 27, 2026</span>
-        <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>
-      </div>
-    </article>
+<div class="modal-overlay" id="articleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Create New Article</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
     
-    <aside class="hero-sidebar">
-      <!-- Most Read -->
-      <div class="sidebar-section">
-        <h3 class="sidebar-title">Most Read</h3>
-        <div class="sidebar-item">
-          <span class="sidebar-item-num">1</span>
-          <h4 class="sidebar-item-headline"><a href="#">Smith's technique evolution: The making of a modern master</a></h4>
-          <div class="sidebar-item-meta">Analysis • 8 min</div>
-        </div>
-        <div class="sidebar-item">
-          <span class="sidebar-item-num">2</span>
-          <h4 class="sidebar-item-headline"><a href="#">Why the Duke ball behaves differently in English conditions</a></h4>
-          <div class="sidebar-item-meta">Science • 5 min</div>
-        </div>
-        <div class="sidebar-item">
-          <span class="sidebar-item-num">3</span>
-          <h4 class="sidebar-item-headline"><a href="#">The forgotten art of defensive batting</a></h4>
-          <div class="sidebar-item-meta">Opinion • 6 min</div>
-        </div>
-        <div class="sidebar-item">
-          <span class="sidebar-item-num">4</span>
-          <h4 class="sidebar-item-headline"><a href="#">Root equals Tendulkar's century tally</a></h4>
-          <div class="sidebar-item-meta">News • 3 min</div>
+    <div class="modal-body">
+      <input type="hidden" id="articleId">
+      
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Headline <span>*</span></label>
+          <input type="text" class="form-input" id="articleHeadline" placeholder="Enter article headline...">
         </div>
       </div>
       
-      <!-- Live Scores -->
-      <div class="live-scores">
-        <div class="live-scores-header">
-          <span class="live-dot"></span>
-          <span class="live-scores-title">Live Scores</span>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category <span>*</span></label>
+          <select class="form-select" id="articleCategory">
+            <option value="news">News</option>
+            <option value="analysis">Analysis</option>
+            <option value="features">Features</option>
+            <option value="opinion">Opinion</option>
+          </select>
         </div>
-        <div class="score-card">
-          <div class="score-match">3rd Test • Day 2 • Johannesburg</div>
-          <div class="score-teams">
-            <div class="score-team">
-              <span class="score-team-name">South Africa</span>
-              <span class="score-team-score">284 & 45/2</span>
-            </div>
-            <div class="score-team">
-              <span class="score-team-name">England</span>
-              <span class="score-team-score">312</span>
+        <div class="form-group">
+          <label class="form-label">Author</label>
+          <input type="text" class="form-input" id="articleAuthor" placeholder="Author name">
+        </div>
+      </div>
+      
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Summary</label>
+          <textarea class="form-input" id="articleSummary" placeholder="Brief summary for article cards..."></textarea>
+        </div>
+      </div>
+      
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Full Content</label>
+          <textarea class="form-input" id="articleContent" placeholder="Full article content..." style="min-height:180px"></textarea>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Placement</label>
+          <select class="form-select" id="articlePlacement">
+            <option value="standard">Standard</option>
+            <option value="featured">Featured (Column Top)</option>
+            <option value="hero">Hero (Main Story)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Read Time (minutes)</label>
+          <input type="number" class="form-input" id="articleReadTime" placeholder="e.g., 8" min="1">
+        </div>
+      </div>
+      
+
+      <div class="form-row full" style="background:var(--surface2);margin:0 -24px;padding:16px 24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="form-group" style="gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <label class="form-label" style="display:flex;align-items:center;gap:8px;margin:0">
+              <input type="checkbox" id="articleAudioEnabled" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+              <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--text2);fill:none;stroke-width:2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Enable Audio
+            </label>
+            <button type="button" class="btn btn-sm btn-primary" id="generateAudioBtn" onclick="generateAudioForArticle()" style="gap:6px">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              Generate Audio
+            </button>
+          </div>
+          <div id="audioStatus" style="display:none;font-size:12px;color:var(--text3);padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px">
+            <div id="audioStatusText">No audio generated yet.</div>
+            <div id="audioPlayerWrap" style="display:none;margin-top:8px">
+              <audio id="audioPreviewPlayer" controls style="width:100%;height:32px"></audio>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="removeGeneratedAudio()" style="margin-top:6px;color:var(--red)">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--red)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Remove Audio
+              </button>
             </div>
           </div>
-          <div class="score-status">SA lead by 17 runs</div>
         </div>
-        <div class="score-card">
-          <div class="score-match">1st Test • Day 4 • Karachi</div>
-          <div class="score-teams">
-            <div class="score-team">
-              <span class="score-team-name">Pakistan</span>
-              <span class="score-team-score">388 & 156/4</span>
-            </div>
-            <div class="score-team">
-              <span class="score-team-name">New Zealand</span>
-              <span class="score-team-score">421</span>
-            </div>
+      </div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Featured Image</label>
+          <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <p>Click to upload image</p>
+            <span>PNG, JPG up to 5MB</span>
           </div>
-          <div class="score-status">PAK lead by 123 runs</div>
+          <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
         </div>
       </div>
-
-      <!-- Quiz Widget — populated from quiz.json in GitHub repo -->
-      <div class="quiz-widget" id="quizWidget" style="display:none">
-        <div class="quiz-widget-label">
-          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          Quiz
-        </div>
-        <div class="quiz-question-text" id="quizQuestionText"></div>
-        <div class="quiz-options" id="quizOptionsContainer"></div>
-        <div class="quiz-result" id="quizResult"></div>
-        <div class="quiz-contributed" id="quizContributedBy"></div>
+    </div>
+    
+    <div class="modal-footer">
+      <div class="modal-footer-left">
+        <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteArticle()" style="display:none">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Delete
+        </button>
       </div>
-    </aside>
-  </section>
-  
-  <!-- ─── THREE COLUMN CONTENT ─── -->
-  <section class="content-grid">
-    
-    <!-- Column 1: Latest News -->
-    <div class="content-col">
-      <h3 class="col-header">Latest News</h3>
-      
-      <article class="article-card">
-        <div class="article-card-image" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48);"></div>
-        <h4 class="article-card-headline">
-          <a href="#">England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination</a>
-        </h4>
-        <p class="article-card-summary">
-          The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.
-        </p>
-        <div class="article-card-meta">2 hours ago <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#4a5a4a,#3a4a38);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">Warner's farewell century seals dominant win</a></h4>
-          <div class="article-mini-meta">4 hours ago</div>
-        </div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#5a4a4a,#4a3a38);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">Bumrah ruled out of remaining series with back injury</a></h4>
-          <div class="article-mini-meta">6 hours ago</div>
-        </div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#4a4a5a,#38384a);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">ICC confirms DRS technology upgrade for 2027</a></h4>
-          <div class="article-mini-meta">Yesterday</div>
-        </div>
-      </article>
-    </div>
-    
-    <!-- Column 2: Features -->
-    <div class="content-col">
-      <h3 class="col-header">Features</h3>
-      
-      <article class="article-card">
-        <div class="article-card-image" style="background:linear-gradient(135deg,#5a5040,#4a4030);"></div>
-        <h4 class="article-card-headline">
-          <a href="#">The Numbers Behind Bradman: Why His Records May Never Be Broken</a>
-        </h4>
-        <p class="article-card-summary">
-          Statistical analysis reveals just how far ahead of his peers the Don truly was, and why modern cricket's evolution makes his feats even more remarkable.
-        </p>
-        <div class="article-card-meta">Analysis • 15 min read <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#404a50,#303a40);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">Inside the mind of a Test opener</a></h4>
-          <div class="article-mini-meta">Interview • 10 min</div>
-        </div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#504a40,#403a30);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">How data analytics is transforming field placements</a></h4>
-          <div class="article-mini-meta">Technology • 8 min</div>
-        </div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#405040,#304030);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">The lost art of leg spin in Test cricket</a></h4>
-          <div class="article-mini-meta">History • 12 min</div>
-        </div>
-      </article>
-    </div>
-    
-    <!-- Column 3: Opinion -->
-    <div class="content-col">
-      <h3 class="col-header">Opinion</h3>
-      
-      <article class="article-card">
-        <div class="article-card-image" style="background:linear-gradient(135deg,#604850,#503840);"></div>
-        <h4 class="article-card-headline">
-          <a href="#">Test Cricket's Survival Depends on Embracing Change, Not Fighting It</a>
-        </h4>
-        <p class="article-card-summary">
-          The game's oldest format must evolve or risk becoming a museum piece. Here's what needs to happen.
-        </p>
-        <div class="article-card-meta">Michael Holding • Opinion <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#484858,#383848);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">Why we need more day-night Tests</a></h4>
-          <div class="article-mini-meta">Ian Chappell</div>
-        </div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#585048,#484038);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">The case against impact player rules in Test</a></h4>
-          <div class="article-mini-meta">Ricky Ponting</div>
-        </div>
-      </article>
-      
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:linear-gradient(135deg,#485848,#384838);"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="#">Pitch preparation needs standardization</a></h4>
-          <div class="article-mini-meta">Sunil Gavaskar</div>
-        </div>
-      </article>
-    </div>
-  </section>
-  
-  <!-- ─── ANALYSIS SECTION ─── -->
-  <section class="analysis-section" id="analysis">
-    <div class="section-header">
-      <h2 class="section-title">Deep Analysis</h2>
-      <a href="#" class="section-link">View all analysis →</a>
-    </div>
-    
-    <div class="analysis-grid">
-      <article class="analysis-card">
-        <div class="analysis-card-image" style="background:linear-gradient(135deg,#2a4048,#1a3038);"></div>
-        <div class="analysis-card-content">
-          <div class="analysis-card-category">Statistical Deep Dive</div>
-          <h3 class="analysis-card-headline"><a href="#">Home vs Away: The Growing Disparity in Modern Test Cricket</a></h3>
-          <p class="analysis-card-excerpt">Our analysis of 500 Tests reveals home advantage has never been stronger. What's driving this trend?</p>
-          <div class="analysis-card-author">Dr. Sarah Williams <span>• 20 min read</span> <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
-        </div>
-      </article>
-      
-      <article class="analysis-card">
-        <div class="analysis-card-image" style="background:linear-gradient(135deg,#483828,#382818);"></div>
-        <div class="analysis-card-content">
-          <div class="analysis-card-category">Tactical Breakdown</div>
-          <h3 class="analysis-card-headline"><a href="#">Reverse Swing Mastery: Comparing Techniques Across Eras</a></h3>
-          <p class="analysis-card-excerpt">From Waqar to Bumrah, how has the art of reverse swing evolved and what makes today's exponents different?</p>
-          <div class="analysis-card-author">Wasim Akram <span>• 18 min read</span> <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
-        </div>
-      </article>
-      
-      <article class="analysis-card">
-        <div class="analysis-card-image" style="background:linear-gradient(135deg,#384838,#283828);"></div>
-        <div class="analysis-card-content">
-          <div class="analysis-card-category">Performance Metrics</div>
-          <h3 class="analysis-card-headline"><a href="#">The True Cost of Strike Rate: When Aggressive Play Backfires</a></h3>
-          <p class="analysis-card-excerpt">Examining the correlation between batting strike rates and match outcomes across different conditions.</p>
-          <div class="analysis-card-author">Jonathan Liew <span>• 14 min read</span> <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
-        </div>
-      </article>
-    </div>
-  </section>
-</main>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     STATS PROMO SECTION
-═══════════════════════════════════════════════════════════════════════════ -->
-<section class="stats-promo">
-  <div class="stats-promo-inner">
-    <div class="stats-header">
-      <h2>Explore Test Cricket Statistics</h2>
-      <p>Comprehensive data and analysis tools covering every Test match ever played</p>
-    </div>
-    
-    <div class="stats-cards">
-      <a href="country-results.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <h3 class="stat-card-title">Countries</h3>
-        <p class="stat-card-desc">Head-to-head records and historical results between nations</p>
-      </a>
-      
-      <a href="batting-records.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        </div>
-        <h3 class="stat-card-title">Batting Records</h3>
-        <p class="stat-card-desc">All-time batting leaders with advanced filtering options</p>
-      </a>
-      
-      <a href="index.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <h3 class="stat-card-title">Player Compare</h3>
-        <p class="stat-card-desc">Side-by-side statistical comparison of any two players</p>
-      </a>
-      
-      <a href="simulation.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
-        </div>
-        <h3 class="stat-card-title">Simulation</h3>
-        <p class="stat-card-desc">Custom weighted rankings based on your criteria</p>
-      </a>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-secondary" onclick="saveArticle('draft')">Save as Draft</button>
+        <button class="btn btn-primary" onclick="saveArticle('published')">Publish</button>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════════════════════════════════════ -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">Cricket Times</div>
-      <nav class="footer-nav">
-        <a href="news.html">Stories</a>
-        <a href="#analysis">Analysis</a>
-        <a href="country-results.html">Countries</a>
-        <a href="batting-records.html">Batting</a>
-        <a href="#">Bowling</a>
-        <a href="index.html">Compare</a>
-        <a href="simulation.html">Simulation</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-      </nav>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Cricket Times. All rights reserved.</span>
-      <span>Statistics powered by comprehensive Test cricket databases</span>
-    </div>
-  </div>
-</footer>
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-// Dynamic date in masthead
-const dateEl = document.querySelector('.masthead-date');
-const now = new Date();
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-dateEl.textContent = now.toLocaleDateString('en-US', options);
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA STORE (In production, this would connect to a backend/database)
+// ═══════════════════════════════════════════════════════════════════════════
+let articles = [
+  {
+    id: 1,
+    headline: "India's Dominance at Home: How Spin Bowling Has Redefined Test Cricket Strategy",
+    summary: "A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack has forced visiting teams to fundamentally rethink their approach to subcontinent tours.",
+    content: "",
+    category: "analysis",
+    author: "Rahul Dravid",
+    status: "published",
+    placement: "hero",
+    readTime: 12,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-02-27"
+  },
+  {
+    id: 2,
+    headline: "England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination",
+    summary: "The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.",
+    content: "",
+    category: "news",
+    author: "Staff",
+    status: "published",
+    placement: "featured",
+    readTime: 5,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-02-27"
+  },
+  {
+    id: 3,
+    headline: "The Numbers Behind Bradman: Why His Records May Never Be Broken",
+    summary: "Statistical analysis reveals just how far ahead of his peers the Don truly was.",
+    content: "",
+    category: "features",
+    author: "Dr. Sarah Williams",
+    status: "published",
+    placement: "featured",
+    readTime: 15,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-02-26"
+  },
+  {
+    id: 4,
+    headline: "Test Cricket's Survival Depends on Embracing Change, Not Fighting It",
+    summary: "The game's oldest format must evolve or risk becoming a museum piece.",
+    content: "",
+    category: "opinion",
+    author: "Michael Holding",
+    status: "published",
+    placement: "featured",
+    readTime: 8,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-02-26"
+  },
+  {
+    id: 5,
+    headline: "Smith's technique evolution: The making of a modern master",
+    summary: "An in-depth look at how Steve Smith reinvented his batting technique.",
+    content: "",
+    category: "analysis",
+    author: "Mark Taylor",
+    status: "published",
+    placement: "standard",
+    readTime: 10,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-02-25"
+  },
+  {
+    id: 6,
+    headline: "Warner's farewell century seals dominant win",
+    summary: "David Warner bows out of Test cricket with a memorable hundred.",
+    content: "",
+    category: "news",
+    author: "Staff",
+    status: "published",
+    placement: "standard",
+    readTime: 4,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-02-27"
+  },
+  {
+    id: 7,
+    headline: "Upcoming: Preview of the Ashes Series",
+    summary: "Everything you need to know about the upcoming Ashes.",
+    content: "",
+    category: "features",
+    author: "Jonathan Liew",
+    status: "draft",
+    placement: "standard",
+    readTime: 12,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-02-28"
+  },
+  {
+    id: 8,
+    headline: "ICC Announces New Test Championship Format",
+    summary: "Major changes coming to the World Test Championship cycle.",
+    content: "",
+    category: "news",
+    author: "Staff",
+    status: "scheduled",
+    placement: "standard",
+    readTime: 6,
+    image: null,
+    audioEnabled: true,
+    audioData: null,
+    date: "2026-03-01"
+  }
+];
 
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    const href = this.getAttribute('href');
-    if (href === '#') return;
+let tickerItems = [
+  "England announce squad for upcoming Ashes series",
+  "Virat Kohli surpasses 9,000 Test runs",
+  "Australia clinch Border-Gavaskar Trophy 3-1",
+  "ICC announces new Test Championship cycle format",
+  "Ben Stokes hints at potential return to red-ball cricket"
+];
+
+let liveScores = [
+  {
+    id: 1,
+    match: "3rd Test • Day 2 • Johannesburg",
+    team1: { name: "South Africa", score: "284 & 45/2" },
+    team2: { name: "England", score: "312" },
+    status: "SA lead by 17 runs"
+  },
+  {
+    id: 2,
+    match: "1st Test • Day 4 • Karachi",
+    team1: { name: "Pakistan", score: "388 & 156/4" },
+    team2: { name: "New Zealand", score: "421" },
+    status: "PAK lead by 123 runs"
+  }
+];
+
+let nextArticleId = 9;
+let nextScoreId = 3;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════════════════════════════════════════
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', (e) => {
     e.preventDefault();
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const view = item.dataset.view;
+    
+    // Update nav active state
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    
+    // Show correct view
+    document.getElementById('articles-view').style.display = view === 'articles' ? 'block' : 'none';
+    document.getElementById('audio-settings-view').style.display = view === 'audio-settings' ? 'block' : 'none';
+    document.getElementById('ticker-view').style.display = view === 'ticker' ? 'block' : 'none';
+    document.getElementById('scores-view').style.display = view === 'scores' ? 'block' : 'none';
+    document.getElementById('quiz-view').style.display = view === 'quiz' ? 'block' : 'none';
+
+    // Initialize views
+    if (view === 'ticker') renderTickerEditor();
+    if (view === 'scores') renderScoresEditor();
+    if (view === 'quiz') initQuizView();
   });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CMS INTEGRATION — Load published content from localStorage
+// ARTICLES MANAGEMENT
 // ═══════════════════════════════════════════════════════════════════════════
-(function loadCMSContent() {
-  let cmsData;
-  try {
-    const raw = localStorage.getItem('cricketTimesCMS');
-    if (!raw) return; // No CMS data yet, keep default content
-    cmsData = JSON.parse(raw);
-  } catch(e) {
-    return; // Parse error, keep defaults
-  }
-
-  const { articles, tickerItems, liveScores } = cmsData;
-
-  // ─── TICKER ───
-  if (tickerItems && tickerItems.length > 0) {
-    const tickerContent = document.querySelector('.ticker-content');
-    if (tickerContent) {
-      tickerContent.textContent = tickerItems.join(' • ');
-    }
-  }
-
-  // ─── LIVE SCORES ───
-  if (liveScores && liveScores.length > 0) {
-    const scoresContainer = document.querySelector('.live-scores');
-    if (scoresContainer) {
-      const header = scoresContainer.querySelector('.live-scores-header').outerHTML;
-      const cardsHTML = liveScores.map(score => `
-        <div class="score-card">
-          <div class="score-match">${escapeHTML(score.match)}</div>
-          <div class="score-teams">
-            <div class="score-team">
-              <span class="score-team-name">${escapeHTML(score.team1.name)}</span>
-              <span class="score-team-score">${escapeHTML(score.team1.score)}</span>
-            </div>
-            <div class="score-team">
-              <span class="score-team-name">${escapeHTML(score.team2.name)}</span>
-              <span class="score-team-score">${escapeHTML(score.team2.score)}</span>
-            </div>
+function renderArticles(filteredArticles = null) {
+  const data = filteredArticles || articles;
+  const tbody = document.getElementById('articlesTable');
+  
+  tbody.innerHTML = data.map(article => `
+    <tr data-id="${article.id}" data-status="${article.status}" data-category="${article.category}" data-placement="${article.placement}">
+      <td>
+        <div class="article-cell">
+          <div class="article-thumb" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48)"></div>
+          <div class="article-info">
+            <h4>${article.headline}</h4>
+            <p>${article.author} • ${article.readTime} min read</p>
           </div>
-          <div class="score-status">${escapeHTML(score.status)}</div>
         </div>
-      `).join('');
-      scoresContainer.innerHTML = header + cardsHTML;
-    }
-  }
-
-  // ─── ARTICLES ───
-  if (!articles || articles.length === 0) return;
-
-  // Categorize articles by placement and category
-  const heroArticle = articles.find(a => a.placement === 'hero');
-  const featuredArticles = articles.filter(a => a.placement === 'featured');
-  const standardArticles = articles.filter(a => a.placement === 'standard');
-
-  // Group by category
-  const newsCat = articles.filter(a => a.category === 'news');
-  const featuresCat = articles.filter(a => a.category === 'features');
-  const opinionCat = articles.filter(a => a.category === 'opinion');
-  const analysisCat = articles.filter(a => a.category === 'analysis');
-
-  // ─── HERO SECTION ───
-  if (heroArticle) {
-    const heroMain = document.querySelector('.hero-main');
-    if (heroMain) {
-      const categoryLabel = heroArticle.category.charAt(0).toUpperCase() + heroArticle.category.slice(1);
-      heroMain.innerHTML = `
-        <div class="hero-category">${escapeHTML(categoryLabel)}</div>
-        <h2 class="hero-headline">
-          <a href="article.html?id=${heroArticle.id}">${escapeHTML(heroArticle.headline)}</a>
-        </h2>
-        <p class="hero-summary">${escapeHTML(heroArticle.summary)}</p>
-        <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
-        <div class="hero-meta">
-          <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
-          <span class="hero-time">${heroArticle.readTime} min read</span>
-          <span>${formatArticleDate(heroArticle.date)}</span>
-          ${heroArticle.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${heroArticle.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
+      </td>
+      <td><span style="text-transform:capitalize">${article.category}</span></td>
+      <td><span class="status-badge ${article.status}">${article.status}</span></td>
+      <td><span class="placement-badge ${article.placement}">${article.placement}</span></td>
+      <td>
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:${article.audioEnabled !== false ? (article.audioData ? 'var(--green)' : 'var(--accent)') : 'var(--text3)'}">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
+            ${article.audioEnabled !== false
+              ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>'
+              : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'}
+          </svg>
+          ${article.audioEnabled !== false ? (article.audioData ? '✓ Ready' : 'Pending') : 'Off'}
+        </span>
+      </td>
+      <td>${formatDate(article.date)}</td>
+      <td>
+        <div class="table-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editArticle(${article.id})">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="duplicateArticle(${article.id})">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
         </div>
-      `;
-    }
-  }
+      </td>
+    </tr>
+  `).join('');
+}
 
-  // ─── MOST READ SIDEBAR ───
-  // Use top 4 articles by most recent
-  const mostRead = articles.slice(0, 4);
-  const sidebarSection = document.querySelector('.sidebar-section');
-  if (sidebarSection && mostRead.length > 0) {
-    const titleEl = sidebarSection.querySelector('.sidebar-title');
-    const titleHTML = titleEl ? titleEl.outerHTML : '<h3 class="sidebar-title">Most Read</h3>';
-    sidebarSection.innerHTML = titleHTML + mostRead.map((a, i) => `
-      <div class="sidebar-item">
-        <span class="sidebar-item-num">${i + 1}</span>
-        <h4 class="sidebar-item-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-        <div class="sidebar-item-meta">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))} • ${a.readTime} min</div>
-      </div>
-    `).join('');
-  }
-
-  // ─── THREE COLUMN CONTENT GRID ───
-  const contentCols = document.querySelectorAll('.content-col');
-  if (contentCols.length >= 3) {
-    // Column 1: Latest News
-    renderColumn(contentCols[0], 'Latest News', newsCat.length > 0 ? newsCat : standardArticles);
-
-    // Column 2: Features
-    renderColumn(contentCols[1], 'Features', featuresCat.length > 0 ? featuresCat : featuredArticles);
-
-    // Column 3: Opinion
-    renderColumn(contentCols[2], 'Opinion', opinionCat.length > 0 ? opinionCat : articles.slice(-3));
-  }
-
-  // ─── ANALYSIS SECTION ───
-  const analysisGrid = document.querySelector('.analysis-grid');
-  const analysisArticles = analysisCat.length > 0 ? analysisCat : articles.filter(a => a.readTime >= 10);
-  if (analysisGrid && analysisArticles.length > 0) {
-    const colors = [
-      'linear-gradient(135deg,#2a4048,#1a3038)',
-      'linear-gradient(135deg,#483828,#382818)',
-      'linear-gradient(135deg,#384838,#283828)'
-    ];
-    analysisGrid.innerHTML = analysisArticles.slice(0, 3).map((a, i) => `
-      <article class="analysis-card">
-        <div class="analysis-card-image" style="background:${colors[i % colors.length]};"></div>
-        <div class="analysis-card-content">
-          <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
-          <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
-          <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
-          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span> ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
-        </div>
-      </article>
-    `).join('');
-  }
-})();
-
-// ═══════════════════════════════════════════════════════════════════════════
-// HELPER FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════════
-function renderColumn(colEl, title, articles) {
-  if (!articles || articles.length === 0) return;
-
-  const gradients = [
-    'linear-gradient(135deg,#3a4a5a,#2a3a48)',
-    'linear-gradient(135deg,#4a5a4a,#3a4a38)',
-    'linear-gradient(135deg,#5a4a4a,#4a3a38)',
-    'linear-gradient(135deg,#4a4a5a,#38384a)',
-    'linear-gradient(135deg,#504a40,#403a30)'
-  ];
-
-  // First article gets full card treatment
-  const lead = articles[0];
-  const rest = articles.slice(1, 5);
-
-  let html = `<h3 class="col-header">${escapeHTML(title)}</h3>`;
-
-  // Lead article card
-  html += `
-    <article class="article-card">
-      <div class="article-card-image" style="background:${gradients[0]};"></div>
-      <h4 class="article-card-headline">
-        <a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a>
-      </h4>
-      <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
-      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read ${lead.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${lead.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
-    </article>
-  `;
-
-  // Mini articles
-  rest.forEach((a, i) => {
-    html += `
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-          <div class="article-mini-meta">${timeAgo(a.date)} ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
-        </div>
-      </article>
-    `;
+function filterArticles() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const category = document.getElementById('categoryFilter').value;
+  const placement = document.getElementById('placementFilter').value;
+  const statusTab = document.querySelector('.panel-tab.active').dataset.filter;
+  
+  let filtered = articles.filter(article => {
+    const matchSearch = article.headline.toLowerCase().includes(search) || 
+                       article.author.toLowerCase().includes(search);
+    const matchCategory = !category || article.category === category;
+    const matchPlacement = !placement || article.placement === placement;
+    const matchStatus = statusTab === 'all' || article.status === statusTab;
+    
+    return matchSearch && matchCategory && matchPlacement && matchStatus;
   });
-
-  colEl.innerHTML = html;
+  
+  renderArticles(filtered);
 }
 
-function escapeHTML(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
+// Tab filtering
+document.querySelectorAll('.panel-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    filterArticles();
+  });
+});
 
-function formatArticleDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now - d;
-  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffHrs < 1) return 'Just now';
-  if (diffHrs < 24) return diffHrs + ' hours ago';
-  if (diffDays === 1) return 'Yesterday';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ARTICLE AUDIO PLAYBACK — Uses pre-generated narrations from CMS
-// ═══════════════════════════════════════════════════════════════════════════
-const AUDIO_ICON_LISTEN = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
-const AUDIO_ICON_PLAYING = '<span class="audio-bars"><span></span><span></span><span></span><span></span></span> Playing';
-
-let currentAudio = null;
-let currentAudioBtn = null;
-
-function resetBtn(btn) {
-  if (!btn) return;
-  btn.classList.remove('playing');
-  btn.innerHTML = AUDIO_ICON_LISTEN;
-}
-
-function getAudioForButton(btn) {
-  // Priority 1: Direct article ID on the button (set by CMS dynamic rendering)
-  const articleId = btn.getAttribute('data-article-id');
-  if (articleId) {
-    const keys = ['cricketTimesAudio_' + articleId, 'cricketTimesEditorAudio_' + articleId];
-    for (const k of keys) {
-      try {
-        const d = localStorage.getItem(k);
-        if (d && d.startsWith('data:audio')) return d;
-      } catch(e) {}
+function openModal(mode, articleId = null) {
+  const modal = document.getElementById('articleModal');
+  const title = document.getElementById('modalTitle');
+  const deleteBtn = document.getElementById('deleteBtn');
+  
+  // Reset form
+  document.getElementById('articleId').value = '';
+  document.getElementById('articleHeadline').value = '';
+  document.getElementById('articleCategory').value = 'news';
+  document.getElementById('articleAuthor').value = '';
+  document.getElementById('articleSummary').value = '';
+  document.getElementById('articleContent').value = '';
+  document.getElementById('articlePlacement').value = 'standard';
+  document.getElementById('articleReadTime').value = '';
+  document.getElementById('articleAudioEnabled').checked = true;
+  resetAudioUI();
+  resetImageUpload();
+  
+  if (mode === 'edit' && articleId) {
+    const article = articles.find(a => a.id === articleId);
+    if (article) {
+      title.textContent = 'Edit Article';
+      deleteBtn.style.display = 'flex';
+      
+      document.getElementById('articleId').value = article.id;
+      document.getElementById('articleHeadline').value = article.headline;
+      document.getElementById('articleCategory').value = article.category;
+      document.getElementById('articleAuthor').value = article.author;
+      document.getElementById('articleSummary').value = article.summary;
+      document.getElementById('articleContent').value = article.content;
+      document.getElementById('articlePlacement').value = article.placement;
+      document.getElementById('articleReadTime').value = article.readTime;
+      document.getElementById('articleAudioEnabled').checked = article.audioEnabled !== false;
+      if (article.audioData) {
+        showAudioReady(article.audioData);
+      }
     }
+  } else {
+    title.textContent = 'Create New Article';
+    deleteBtn.style.display = 'none';
+  }
+  
+  modal.classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('articleModal').classList.remove('active');
+}
+
+function editArticle(id) {
+  openModal('edit', id);
+}
+
+function duplicateArticle(id) {
+  const article = articles.find(a => a.id === id);
+  if (article) {
+    const newArticle = {
+      ...article,
+      id: nextArticleId++,
+      headline: article.headline + ' (Copy)',
+      status: 'draft',
+      date: new Date().toISOString().split('T')[0]
+    };
+    articles.unshift(newArticle);
+    renderArticles();
+    updateStats();
+    showToast('success', 'Article Duplicated', 'A copy has been created as a draft.');
+  }
+}
+
+function saveArticle(status) {
+  const id = document.getElementById('articleId').value;
+  const headline = document.getElementById('articleHeadline').value.trim();
+  const category = document.getElementById('articleCategory').value;
+  const author = document.getElementById('articleAuthor').value.trim() || 'Staff';
+  const summary = document.getElementById('articleSummary').value.trim();
+  const content = document.getElementById('articleContent').value.trim();
+  const placement = document.getElementById('articlePlacement').value;
+  const readTime = parseInt(document.getElementById('articleReadTime').value) || 5;
+  
+  if (!headline) {
+    showToast('error', 'Validation Error', 'Headline is required.');
+    return;
+  }
+  
+  const audioEnabled = document.getElementById('articleAudioEnabled').checked;
+
+  const articleData = {
+    headline,
+    category,
+    author,
+    summary,
+    content,
+    placement,
+    readTime,
+    audioEnabled,
+    status,
+    date: new Date().toISOString().split('T')[0],
+    image: null
+  };
+  
+  if (id) {
+    // Update existing
+    const index = articles.findIndex(a => a.id === parseInt(id));
+    if (index !== -1) {
+      // Preserve existing audioData unless explicitly removed
+      if (!articleData.audioData && articles[index].audioData) {
+        articleData.audioData = articles[index].audioData;
+      }
+      articles[index] = { ...articles[index], ...articleData };
+    }
+    showToast('success', 'Article Updated', status === 'published' ? 'Changes are now live on the site.' : 'Draft saved.');
+  } else {
+    // Create new
+    articleData.id = nextArticleId++;
+    articleData.audioData = window._pendingAudioData || null;
+    articles.unshift(articleData);
+    showToast('success', 'Article Created', status === 'published' ? 'Article is now live on the site.' : 'Draft saved.');
+  }
+  
+  persistToLocalStorage();
+  closeModal();
+  renderArticles();
+  updateStats();
+}
+
+function deleteArticle() {
+  const id = parseInt(document.getElementById('articleId').value);
+  if (id && confirm('Are you sure you want to delete this article?')) {
+    articles = articles.filter(a => a.id !== id);
+    closeModal();
+    renderArticles();
+    updateStats();
+    persistToLocalStorage();
+    showToast('success', 'Article Deleted', 'The article has been removed from the live site.');
+  }
+}
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const upload = document.getElementById('imageUpload');
+      upload.classList.add('has-image');
+      upload.innerHTML = `
+        <img src="${e.target.result}" alt="Preview">
+        <button class="remove-image" onclick="event.stopPropagation(); resetImageUpload()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      `;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function resetImageUpload() {
+  const upload = document.getElementById('imageUpload');
+  upload.classList.remove('has-image');
+  upload.innerHTML = `
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    <p>Click to upload image</p>
+    <span>PNG, JPG up to 5MB</span>
+  `;
+  document.getElementById('imageInput').value = '';
+}
+
+function updateStats() {
+  const total = articles.length;
+  const published = articles.filter(a => a.status === 'published').length;
+  const drafts = articles.filter(a => a.status === 'draft').length;
+  const scheduled = articles.filter(a => a.status === 'scheduled').length;
+  
+  const cards = document.querySelectorAll('.stat-card-value');
+  if (cards.length >= 4) {
+    cards[0].textContent = total;
+    cards[1].textContent = published;
+    cards[2].textContent = drafts;
+    cards[3].textContent = scheduled;
+  }
+  
+  // Update nav badge
+  document.querySelector('.nav-item[data-view="articles"] .nav-item-badge').textContent = total;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ELEVENLABS AUDIO GENERATION
+// ═══════════════════════════════════════════════════════════════════════════
+function getAudioSettings() {
+  try {
+    const saved = localStorage.getItem('cricketTimesAudioSettings');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return { apiKey: '', voiceId: '', model: 'eleven_multilingual_v2', stability: 50 };
+}
+
+function loadAudioSettings() {
+  const s = getAudioSettings();
+  document.getElementById('elevenLabsApiKey').value = s.apiKey || '';
+  document.getElementById('elevenLabsVoiceId').value = s.voiceId || '';
+  document.getElementById('elevenLabsModel').value = s.model || 'eleven_multilingual_v2';
+  document.getElementById('elevenLabsStability').value = s.stability || 50;
+}
+
+function toggleApiKeyVisibility() {
+  const input = document.getElementById('elevenLabsApiKey');
+  const icon = document.getElementById('apiKeyEyeIcon');
+  const btn = document.getElementById('apiKeyToggleBtn');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    btn.style.color = 'var(--accent)';
+  } else {
+    input.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    btn.style.color = 'var(--text3)';
+  }
+}
+
+function copyApiKey() {
+  const input = document.getElementById('elevenLabsApiKey');
+  const btn = document.getElementById('apiKeyCopyBtn');
+  const icon = document.getElementById('apiKeyCopyIcon');
+  const val = input.value.trim();
+  if (!val) { showToast('error', 'Nothing to Copy', 'API key field is empty.'); return; }
+  navigator.clipboard.writeText(val).then(() => {
+    icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    showToast('success', 'Copied', 'API key copied to clipboard.');
+    setTimeout(() => {
+      icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+      btn.style.color = 'var(--text3)';
+      btn.style.borderColor = 'var(--border)';
+    }, 2000);
+  }).catch(() => {
+    input.select();
+    document.execCommand('copy');
+    showToast('success', 'Copied', 'API key copied to clipboard.');
+  });
+}
+
+function saveAudioSettings() {
+  const settings = {
+    apiKey: document.getElementById('elevenLabsApiKey').value.trim(),
+    voiceId: document.getElementById('elevenLabsVoiceId').value.trim(),
+    model: document.getElementById('elevenLabsModel').value,
+    stability: parseInt(document.getElementById('elevenLabsStability').value)
+  };
+  
+  // Also trim the input fields visually
+  document.getElementById('elevenLabsApiKey').value = settings.apiKey;
+  document.getElementById('elevenLabsVoiceId').value = settings.voiceId;
+  
+  localStorage.setItem('cricketTimesAudioSettings', JSON.stringify(settings));
+  
+  const keyPreview = settings.apiKey ? settings.apiKey.substring(0, 8) + '...' : '(empty)';
+  const voicePreview = settings.voiceId || '(empty)';
+  showToast('success', 'Settings Saved', `API Key: ${keyPreview} | Voice: ${voicePreview}`);
+}
+
+async function callElevenLabs(text) {
+  const s = getAudioSettings();
+  const apiKey = (s.apiKey || '').trim();
+  const voiceId = (s.voiceId || '').trim();
+  
+  if (!apiKey || !voiceId) {
+    throw new Error('Please configure your ElevenLabs API Key and Voice ID in Audio Settings first.');
   }
 
-  // Priority 2: Match by headline in CMS data
-  const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
-  if (!article) return null;
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+  
+  const body = {
+    text: text,
+    model_id: s.model || 'eleven_multilingual_v2',
+    voice_settings: {
+      stability: (s.stability || 50) / 100,
+      similarity_boost: 0.75
+    }
+  };
 
-  const headlineEl = article.querySelector(
-    '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
-  );
-  if (!headlineEl) return null;
-  const headline = headlineEl.textContent.trim();
+  let response;
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': apiKey
+      },
+      body: JSON.stringify(body)
+    });
+  } catch(networkErr) {
+    throw new Error('Network error — could not reach ElevenLabs. If running from a local file, try using a local server (e.g. python3 -m http.server) or deploy to your Firebase hosting. Error: ' + networkErr.message);
+  }
 
+  if (!response.ok) {
+    let errDetail = '';
+    try { errDetail = await response.text(); } catch(e) {}
+    
+    if (response.status === 401) {
+      throw new Error(`Auth failed (401): ${errDetail.substring(0, 200)}. Key: "${apiKey.substring(0, 8)}...". Make sure your key has "Text to Speech" permission enabled at elevenlabs.io → Developers → API Keys → Edit key.`);
+    }
+    if (response.status === 422) {
+      throw new Error('Invalid request (422). The Voice ID may be wrong, or the text is too short. Detail: ' + errDetail.substring(0, 200));
+    }
+    throw new Error(`ElevenLabs error ${response.status}: ${errDetail.substring(0, 300)}`);
+  }
+
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Failed to convert audio to base64'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function testVoice() {
+  const resultDiv = document.getElementById('testVoiceResult');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<div style="font-size:12px;color:var(--text3)">Generating test audio with your voice...</div>';
+
+  const s = getAudioSettings();
+  const apiKey = (s.apiKey || '').trim();
+  const voiceId = (s.voiceId || '').trim();
+
+  if (!apiKey) { showToast('error', 'No API Key', 'Enter your API key first.'); return; }
+  if (!voiceId) { showToast('error', 'No Voice ID', 'Enter your Voice ID first.'); return; }
+
+  showToast('success', 'Generating...', 'Calling ElevenLabs TTS API...');
+  try {
+    const audioData = await callElevenLabs('This is a test of the Cricket Times audio narration. Your cloned voice is now ready for article playback.');
+    resultDiv.innerHTML = '<div style="margin-bottom:8px"><audio controls style="width:100%;height:36px"></audio></div><span style="color:var(--green);font-size:12px;font-weight:600">✓ Voice test successful! Your audio is working.</span>';
+    const player = resultDiv.querySelector('audio');
+    player.src = audioData;
+    player.play();
+    showToast('success', 'Voice Test Passed', 'Audio generated successfully with your voice.');
+  } catch(err) {
+    resultDiv.innerHTML = '<pre style="font-size:11px;color:var(--red);white-space:pre-wrap;background:var(--surface);padding:12px;border-radius:8px;border:1px solid var(--red)">' + err.message + '</pre>';
+    showToast('error', 'Voice Test Failed', err.message.substring(0, 100));
+  }
+}
+
+function resetAudioUI() {
+  const status = document.getElementById('audioStatus');
+  const statusText = document.getElementById('audioStatusText');
+  const playerWrap = document.getElementById('audioPlayerWrap');
+  const player = document.getElementById('audioPreviewPlayer');
+  const genBtn = document.getElementById('generateAudioBtn');
+  status.style.display = 'none';
+  playerWrap.style.display = 'none';
+  player.src = '';
+  genBtn.disabled = false;
+  genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Generate Audio';
+  window._pendingAudioData = null;
+}
+
+function showAudioReady(audioDataUri) {
+  const status = document.getElementById('audioStatus');
+  const statusText = document.getElementById('audioStatusText');
+  const playerWrap = document.getElementById('audioPlayerWrap');
+  const player = document.getElementById('audioPreviewPlayer');
+  status.style.display = 'block';
+  statusText.innerHTML = '<span style="color:var(--green);font-weight:600">✓ Audio ready</span> — narration generated with your cloned voice';
+  playerWrap.style.display = 'block';
+  player.src = audioDataUri;
+  window._pendingAudioData = audioDataUri;
+}
+
+function removeGeneratedAudio() {
+  const id = document.getElementById('articleId').value;
+  if (id) {
+    const idx = articles.findIndex(a => a.id === parseInt(id));
+    if (idx !== -1) {
+      articles[idx].audioData = null;
+      persistToLocalStorage();
+    }
+  }
+  resetAudioUI();
+  showToast('success', 'Audio Removed', 'The generated narration has been removed.');
+}
+
+async function generateAudioForArticle() {
+  const headline = document.getElementById('articleHeadline').value.trim();
+  const summary = document.getElementById('articleSummary').value.trim();
+  const content = document.getElementById('articleContent').value.trim();
+  
+  const text = content || (headline + '. ' + summary);
+  if (!text || text.length < 10) {
+    showToast('error', 'No Content', 'Add article content or summary before generating audio.');
+    return;
+  }
+
+  const genBtn = document.getElementById('generateAudioBtn');
+  const status = document.getElementById('audioStatus');
+  const statusText = document.getElementById('audioStatusText');
+
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2" stroke-dasharray="30 70"/></svg> Generating...';
+  status.style.display = 'block';
+  statusText.innerHTML = 'Calling ElevenLabs API... this may take a few seconds.';
+
+  try {
+    const audioData = await callElevenLabs(text);
+    
+    // Store on the article
+    const id = document.getElementById('articleId').value;
+    if (id) {
+      const idx = articles.findIndex(a => a.id === parseInt(id));
+      if (idx !== -1) {
+        articles[idx].audioData = audioData;
+        persistToLocalStorage();
+      }
+    }
+    window._pendingAudioData = audioData;
+    
+    showAudioReady(audioData);
+    genBtn.disabled = false;
+    genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Regenerate';
+    showToast('success', 'Audio Generated', 'Narration created using your cloned voice.');
+  } catch(err) {
+    statusText.innerHTML = '<span style="color:var(--red)">✗ ' + err.message + '</span>';
+    genBtn.disabled = false;
+    genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Retry';
+    showToast('error', 'Generation Failed', err.message);
+  }
+}
+
+async function generateAllAudio() {
+  const s = getAudioSettings();
+  if (!s.apiKey || !s.voiceId) {
+    showToast('error', 'Not Configured', 'Set up your ElevenLabs credentials in the settings above first.');
+    return;
+  }
+  
+  const pending = articles.filter(a => a.status === 'published' && a.audioEnabled !== false && !a.audioData);
+  if (pending.length === 0) {
+    showToast('success', 'All Done', 'All published articles already have audio.');
+    return;
+  }
+  
+  const progressDiv = document.getElementById('bulkProgress');
+  const progressBar = document.getElementById('bulkProgressBar');
+  const progressText = document.getElementById('bulkProgressText');
+  progressDiv.style.display = 'block';
+  
+  let done = 0;
+  for (const article of pending) {
+    progressText.textContent = `Generating ${done + 1} of ${pending.length}: ${article.headline.substring(0, 50)}...`;
+    progressBar.style.width = ((done / pending.length) * 100) + '%';
+    
+    const text = article.content || (article.headline + '. ' + article.summary);
+    try {
+      article.audioData = await callElevenLabs(text);
+      persistToLocalStorage();
+    } catch(err) {
+      progressText.textContent = `Error on "${article.headline.substring(0, 40)}": ${err.message}`;
+      showToast('error', 'Generation Error', err.message);
+      break;
+    }
+    done++;
+  }
+  
+  progressBar.style.width = '100%';
+  progressText.textContent = `Done! Generated audio for ${done} of ${pending.length} articles.`;
+  renderArticles();
+  showToast('success', 'Bulk Generation Complete', `${done} articles now have audio narration.`);
+}
+
+function runAudioDiagnostic() {
+  const out = document.getElementById('audioDiagOutput');
+  let lines = [];
+  
+  lines.push('=== ARTICLES IN MEMORY ===');
+  articles.forEach(a => {
+    lines.push(`  ID:${a.id} | "${a.headline.substring(0,45)}..." | audio:${a.audioEnabled!==false?'ON':'OFF'} | hasData:${!!a.audioData} | dataSize:${a.audioData ? (a.audioData.length/1024).toFixed(0)+'KB' : 'none'}`);
+  });
+  
+  lines.push('');
+  lines.push('=== LOCALSTORAGE KEYS ===');
+  const allKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    allKeys.push(localStorage.key(i));
+  }
+  allKeys.sort().forEach(key => {
+    const val = localStorage.getItem(key);
+    const size = val ? (val.length / 1024).toFixed(0) + 'KB' : '0KB';
+    const isAudio = key.startsWith('cricketTimesAudio_') || key.startsWith('cricketTimesEditorAudio_');
+    const preview = isAudio && val ? val.substring(0, 30) + '...' : '';
+    lines.push(`  ${key} (${size}) ${isAudio ? '🔊 ' + preview : ''}`);
+  });
+  
+  lines.push('');
+  lines.push('=== CMS PAYLOAD CHECK ===');
   try {
     const raw = localStorage.getItem('cricketTimesCMS');
     if (raw) {
-      const cmsData = JSON.parse(raw);
-      if (cmsData.articles) {
-        const match = cmsData.articles.find(a => a.headline === headline);
-        if (match && match.audioEnabled !== false) {
-          const keys = ['cricketTimesAudio_' + match.id, 'cricketTimesEditorAudio_' + match.id];
-          for (const k of keys) {
-            try {
-              const d = localStorage.getItem(k);
-              if (d && d.startsWith('data:audio')) return d;
-            } catch(e) {}
-          }
-          if (match.audioData) return match.audioData;
-        }
+      const data = JSON.parse(raw);
+      lines.push(`  Articles in payload: ${data.articles ? data.articles.length : 0}`);
+      if (data.articles) {
+        data.articles.forEach(a => {
+          lines.push(`    ID:${a.id} | hasAudio flag:${a.hasAudio} | audioData inline:${!!a.audioData} | "${a.headline.substring(0,40)}..."`);
+        });
       }
+    } else {
+      lines.push('  ⚠️ cricketTimesCMS key NOT FOUND in localStorage');
     }
-  } catch(e) {}
-  return null;
+  } catch(e) {
+    lines.push('  ⚠️ Error parsing: ' + e.message);
+  }
+  
+  out.textContent = lines.join('\n');
 }
 
-function getArticleText(btn) {
-  const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
-  if (!article) return '';
+// ═══════════════════════════════════════════════════════════════════════════
+// TICKER MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+function renderTickerEditor() {
+  const container = document.getElementById('tickerItems');
+  container.innerHTML = tickerItems.map((item, index) => `
+    <div class="ticker-item">
+      <input type="text" value="${item}" onchange="updateTickerItem(${index}, this.value)">
+      <button class="btn btn-ghost btn-sm" onclick="removeTickerItem(${index})">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--red)"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
 
-  const headlineEl = article.querySelector(
-    '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
-  );
-  const headline = headlineEl ? headlineEl.textContent.trim() : '';
+function addTickerItem() {
+  tickerItems.push('New breaking news headline...');
+  renderTickerEditor();
+}
 
-  const summaryEl = article.querySelector(
-    '.hero-summary, .article-card-summary, .analysis-card-excerpt'
-  );
-  const summary = summaryEl ? summaryEl.textContent.trim() : '';
+function updateTickerItem(index, value) {
+  tickerItems[index] = value;
+}
 
-  // Try CMS full content
-  if (headline) {
+function removeTickerItem(index) {
+  tickerItems.splice(index, 1);
+  renderTickerEditor();
+}
+
+function saveTicker() {
+  persistToLocalStorage();
+  showToast('success', 'Ticker Updated', 'Breaking news headlines have been saved and pushed live.');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE SCORES MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+function renderScoresEditor() {
+  const container = document.getElementById('scoresEditor');
+  container.innerHTML = liveScores.map(score => `
+    <div class="score-match-card" data-id="${score.id}">
+      <div class="score-match-header">
+        <input type="text" class="form-input" value="${score.match}" 
+               onchange="updateScore(${score.id}, 'match', this.value)" 
+               style="background:var(--surface);max-width:300px">
+        <button class="btn btn-danger btn-sm" onclick="removeScoreCard(${score.id})">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Remove
+        </button>
+      </div>
+      <div class="score-teams-editor">
+        <div class="score-team-row">
+          <input type="text" value="${score.team1.name}" placeholder="Team 1 Name"
+                 onchange="updateScore(${score.id}, 'team1Name', this.value)">
+          <input type="text" value="${score.team1.score}" placeholder="Score"
+                 onchange="updateScore(${score.id}, 'team1Score', this.value)">
+        </div>
+        <div class="score-team-row">
+          <input type="text" value="${score.team2.name}" placeholder="Team 2 Name"
+                 onchange="updateScore(${score.id}, 'team2Name', this.value)">
+          <input type="text" value="${score.team2.score}" placeholder="Score"
+                 onchange="updateScore(${score.id}, 'team2Score', this.value)">
+        </div>
+        <div class="score-status-row">
+          <input type="text" value="${score.status}" placeholder="Match status..."
+                 onchange="updateScore(${score.id}, 'status', this.value)">
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addScoreCard() {
+  liveScores.push({
+    id: nextScoreId++,
+    match: "New Match • Day 1",
+    team1: { name: "Team A", score: "0/0" },
+    team2: { name: "Team B", score: "" },
+    status: "Match in progress"
+  });
+  renderScoresEditor();
+}
+
+function updateScore(id, field, value) {
+  const score = liveScores.find(s => s.id === id);
+  if (score) {
+    switch(field) {
+      case 'match': score.match = value; break;
+      case 'team1Name': score.team1.name = value; break;
+      case 'team1Score': score.team1.score = value; break;
+      case 'team2Name': score.team2.name = value; break;
+      case 'team2Score': score.team2.score = value; break;
+      case 'status': score.status = value; break;
+    }
+  }
+}
+
+function removeScoreCard(id) {
+  liveScores = liveScores.filter(s => s.id !== id);
+  renderScoresEditor();
+}
+
+function saveScores() {
+  persistToLocalStorage();
+  showToast('success', 'Scores Updated', 'Live scores have been saved and pushed live.');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (date.toDateString() === today.toDateString()) return 'Today';
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function showToast(type, title, message) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <div class="toast-icon ${type}">
+      <svg viewBox="0 0 24 24">
+        ${type === 'success' 
+          ? '<polyline points="20 6 9 17 4 12"/>' 
+          : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}
+      </svg>
+    </div>
+    <div class="toast-content">
+      <h4>${title}</h4>
+      <p>${message}</p>
+    </div>
+  `;
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideIn 0.3s ease reverse';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOCALSTORAGE PERSISTENCE (Bridge to news.html)
+// ═══════════════════════════════════════════════════════════════════════════
+function persistToLocalStorage() {
+  const publishedArticles = articles.filter(a => a.status === 'published');
+  
+  // Store audio data SEPARATELY per article (avoids localStorage quota on main payload)
+  publishedArticles.forEach(a => {
+    const audioKey = 'cricketTimesAudio_' + a.id;
     try {
-      const raw = localStorage.getItem('cricketTimesCMS');
-      if (raw) {
-        const cmsData = JSON.parse(raw);
-        if (cmsData.articles) {
-          const match = cmsData.articles.find(a => a.headline === headline);
-          if (match && match.content && match.content.trim().length > 10) {
-            return headline + '. ' + match.content.trim();
-          }
-          if (match && match.summary) {
-            return headline + '. ' + match.summary.trim();
-          }
-        }
+      if (a.audioData) {
+        localStorage.setItem(audioKey, a.audioData);
+      } else {
+        localStorage.removeItem(audioKey);
       }
-    } catch(e) {}
+    } catch(e) {
+      console.warn('Could not save audio for article ' + a.id + ':', e);
+    }
+  });
+  
+  // Main payload WITHOUT audioData (keeps it small)
+  const articlesForPayload = publishedArticles.map(a => {
+    const { audioData, ...rest } = a;
+    return { ...rest, hasAudio: !!audioData };
+  });
+  
+  const payload = {
+    articles: articlesForPayload,
+    tickerItems: tickerItems,
+    liveScores: liveScores,
+    lastUpdated: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem('cricketTimesCMS', JSON.stringify(payload));
+  } catch(e) {
+    console.warn('Could not save to localStorage:', e);
   }
-
-  if (summary) return headline + '. ' + summary;
-  return headline || '';
 }
 
-let currentUtterance = null;
-
-function toggleArticleAudio(btn) {
-  // If currently playing this one → stop
-  if (btn.classList.contains('playing')) {
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
-    if (currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; }
-    resetBtn(btn);
-    currentAudioBtn = null;
-    return;
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('cricketTimesCMS_editorState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (state.articles) {
+        articles = state.articles;
+        // Restore audioData from separate keys
+        articles.forEach(a => {
+          const audioKey = 'cricketTimesEditorAudio_' + a.id;
+          try {
+            const audioData = localStorage.getItem(audioKey);
+            if (audioData) {
+              a.audioData = audioData;
+            } else if (a.hasAudio) {
+              // Try the published audio key as fallback
+              const pubKey = 'cricketTimesAudio_' + a.id;
+              const pubAudio = localStorage.getItem(pubKey);
+              if (pubAudio) a.audioData = pubAudio;
+            }
+          } catch(e) {}
+          delete a.hasAudio;
+        });
+      }
+      if (state.tickerItems) tickerItems = state.tickerItems;
+      if (state.liveScores) liveScores = state.liveScores;
+      if (state.nextArticleId) nextArticleId = state.nextArticleId;
+      if (state.nextScoreId) nextScoreId = state.nextScoreId;
+    }
+  } catch(e) {
+    console.warn('Could not load from localStorage:', e);
   }
-
-  // Stop any other playing audio
-  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
-  if (currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; }
-  if (currentAudioBtn && currentAudioBtn !== btn) { resetBtn(currentAudioBtn); }
-
-  // Priority 1: Stored audio file from CMS (ElevenLabs cloned voice)
-  const audioSrc = getAudioForButton(btn);
-  if (audioSrc) {
-    const audio = new Audio(audioSrc);
-    currentAudio = audio;
-    currentAudioBtn = btn;
-    btn.classList.add('playing');
-    btn.innerHTML = AUDIO_ICON_PLAYING;
-    audio.addEventListener('ended', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
-    audio.addEventListener('error', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
-    audio.play().catch(() => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
-    return;
-  }
-
-  // Priority 2: Browser Text-to-Speech (works without any API)
-  const text = getArticleText(btn);
-  if (!text) {
-    btn.style.borderColor = 'var(--gold)'; btn.style.color = 'var(--gold)';
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> No content';
-    setTimeout(() => { btn.style.borderColor = ''; btn.style.color = ''; btn.innerHTML = AUDIO_ICON_LISTEN; }, 2000);
-    return;
-  }
-
-  if (!window.speechSynthesis) {
-    btn.style.borderColor = 'var(--red)'; btn.style.color = 'var(--red)';
-    btn.innerHTML = 'Not supported';
-    setTimeout(() => { btn.style.borderColor = ''; btn.style.color = ''; btn.innerHTML = AUDIO_ICON_LISTEN; }, 2000);
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 0.95;
-  utterance.pitch = 1.0;
-
-  // Pick a good English voice
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length > 0) {
-    const preferred = voices.find(v => v.name.includes('Google UK English')) ||
-                      voices.find(v => v.name.includes('Google US English')) ||
-                      voices.find(v => v.name.includes('Samantha')) ||
-                      voices.find(v => v.lang.startsWith('en') && v.localService) ||
-                      voices.find(v => v.lang.startsWith('en'));
-    if (preferred) utterance.voice = preferred;
-  }
-
-  btn.classList.add('playing');
-  btn.innerHTML = AUDIO_ICON_PLAYING;
-  currentAudioBtn = btn;
-  currentUtterance = utterance;
-
-  // Chrome workaround: keep speech alive past 15s
-  let resumeTimer = setInterval(() => {
-    if (!window.speechSynthesis.speaking) { clearInterval(resumeTimer); }
-    else { window.speechSynthesis.pause(); window.speechSynthesis.resume(); }
-  }, 10000);
-
-  utterance.onend = () => { clearInterval(resumeTimer); resetBtn(btn); currentAudioBtn = null; currentUtterance = null; };
-  utterance.onerror = (e) => { clearInterval(resumeTimer); if (e.error !== 'canceled') console.warn('TTS error:', e.error); resetBtn(btn); currentAudioBtn = null; currentUtterance = null; };
-
-  window.speechSynthesis.speak(utterance);
 }
 
-// Pre-load voices
-if (window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-  window.speechSynthesis.getVoices();
+function saveEditorState() {
+  try {
+    // Save audio data separately per article
+    articles.forEach(a => {
+      const audioKey = 'cricketTimesEditorAudio_' + a.id;
+      try {
+        if (a.audioData) {
+          localStorage.setItem(audioKey, a.audioData);
+        } else {
+          localStorage.removeItem(audioKey);
+        }
+      } catch(e) {}
+    });
+    
+    // Save editor state WITHOUT audioData
+    const articlesWithoutAudio = articles.map(a => {
+      const { audioData, ...rest } = a;
+      return { ...rest, hasAudio: !!audioData };
+    });
+    localStorage.setItem('cricketTimesCMS_editorState', JSON.stringify({
+      articles: articlesWithoutAudio,
+      tickerItems,
+      liveScores,
+      nextArticleId,
+      nextScoreId
+    }));
+  } catch(e) {}
 }
+
+// Wrap persistToLocalStorage to also save editor state
+const _originalPersist = persistToLocalStorage;
+persistToLocalStorage = function() {
+  _originalPersist();
+  saveEditorState();
+};
+
+// Load saved editor state on init
+loadFromLocalStorage();
+
+// Close modal on overlay click
+document.getElementById('articleModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Initialize
+renderArticles();
+loadAudioSettings();
+
+// Push initial data to localStorage so news.html has content
+persistToLocalStorage();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// QUIZ WIDGET — fetched from GitHub repo (no localStorage)
+// QUIZ — GitHub-backed, no localStorage
 // ═══════════════════════════════════════════════════════════════════════════
-(async function loadQuiz() {
-  const OWNER  = 'joidevivre689103';
-  const REPO   = 'congenial-eureka';
-  const BRANCH = 'main';
-  const FILE   = 'quiz.json';
+const QUIZ_REPO_OWNER = 'joidevivre689103';
+const QUIZ_REPO_NAME  = 'congenial-eureka';
+const QUIZ_FILE_PATH  = 'quiz.json';
+const QUIZ_BRANCH     = 'main';
+
+function getQuizToken() {
+  return document.getElementById('quizGithubToken').value.trim();
+}
+
+function toggleQuizTokenVisibility() {
+  const inp = document.getElementById('quizGithubToken');
+  const eye = document.getElementById('quizTokenEye');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+async function verifyQuizToken() {
+  const token = getQuizToken();
+  const statusEl = document.getElementById('quizTokenStatus');
+  statusEl.style.display = 'block';
+  if (!token) {
+    statusEl.innerHTML = '<span style="color:var(--red)">⚠ Please enter a token first.</span>';
+    return;
+  }
+  statusEl.innerHTML = '<span style="color:var(--text3)">Verifying…</span>';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.ok) {
+      statusEl.innerHTML = '<span style="color:var(--green)">✓ Token verified — repo access confirmed.</span>';
+    } else {
+      const err = await res.json();
+      statusEl.innerHTML = `<span style="color:var(--red)">✗ ${err.message || 'Access denied. Check token scope.'}</span>`;
+    }
+  } catch(e) {
+    statusEl.innerHTML = `<span style="color:var(--red)">✗ Network error: ${e.message}</span>`;
+  }
+}
+
+function updateQuizPreview() {
+  const q  = document.getElementById('quizQuestion').value;
+  const a  = document.getElementById('quizOptionA').value;
+  const b  = document.getElementById('quizOptionB').value;
+  const c  = document.getElementById('quizOptionC').value;
+  const ok = document.getElementById('quizCorrectAnswer').value;
+  const by = document.getElementById('quizContributedBy').value;
+  const el = document.getElementById('quizPreview');
+  if (!q) { el.innerHTML = 'Fill in the fields above to see a preview.'; return; }
+  const map = { A: a, B: b, C: c };
+  el.innerHTML = `
+    <div style="font-weight:700;margin-bottom:10px;color:var(--text)">${q}</div>
+    ${['A','B','C'].map(opt => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:6px;border-radius:6px;
+                  background:${ok===opt?'var(--green-dim)':'var(--surface3)'};
+                  border:1px solid ${ok===opt?'var(--green)':'var(--border)'}">
+        <span style="font-size:11px;font-weight:700;color:${ok===opt?'var(--green)':'var(--text3)'};width:16px">${opt}</span>
+        <span style="color:${ok===opt?'var(--green)':'var(--text2)'}">
+          ${map[opt] || '<em style="opacity:0.4">No option entered</em>'}
+        </span>
+        ${ok===opt ? '<span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">✓ CORRECT</span>' : ''}
+      </div>`).join('')}
+    ${by ? `<div style="margin-top:8px;font-size:11px;color:var(--text3);font-style:italic">Contributed by: ${by}</div>` : ''}
+  `;
+}
+
+async function initQuizView() {
+  // Load currently published quiz from GitHub raw
+  const url = `https://raw.githubusercontent.com/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/${QUIZ_BRANCH}/${QUIZ_FILE_PATH}`;
+  try {
+    const res = await fetch(url + '?t=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      // Support new { today, queue } format and old flat format
+      const quiz = data.today || (data.question ? data : null);
+      if (!quiz) return;
+      const panel = document.getElementById('quizCurrentPanel');
+      const text  = document.getElementById('quizCurrentText');
+      panel.style.display = 'block';
+      // Show the New Quiz button now that there's a live quiz
+      document.getElementById('newQuizBtn').style.display = 'inline-flex';
+      text.innerHTML = `<strong>${quiz.question}</strong><br>
+        A: ${quiz.optionA} &nbsp;|&nbsp; B: ${quiz.optionB} &nbsp;|&nbsp; C: ${quiz.optionC}<br>
+        <span style="color:var(--green)">✓ Correct: Option ${quiz.correctAnswer}</span>
+        ${quiz.contributedBy ? ` &nbsp;·&nbsp; <em>by ${quiz.contributedBy}</em>` : ''}`;
+      // Pre-fill form with current values
+      document.getElementById('quizQuestion').value       = quiz.question       || '';
+      document.getElementById('quizOptionA').value        = quiz.optionA        || '';
+      document.getElementById('quizOptionB').value        = quiz.optionB        || '';
+      document.getElementById('quizOptionC').value        = quiz.optionC        || '';
+      document.getElementById('quizCorrectAnswer').value  = quiz.correctAnswer  || '';
+      document.getElementById('quizContributedBy').value  = quiz.contributedBy  || '';
+      updateQuizPreview();
+    }
+  } catch(e) { /* no quiz published yet — that's fine */ }
+}
+
+// Holds the quiz data that was live when New Quiz was clicked, used for archiving
+let _liveQuizSnapshot = null;
+
+async function loadCorrectSubmitters() {
+  const listEl = document.getElementById('quizSubmittersList');
+  listEl.innerHTML = '<span style="color:var(--text3)">Loading…</span>';
+  let db = window._db;
+  if (!db) {
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 100));
+      db = window._db;
+      if (db) break;
+    }
+  }
+  if (!db) { listEl.innerHTML = '<span style="color:var(--red)">✗ Firestore not ready. Reload the page.</span>'; return; }
+  try {
+    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    // Answers are stored in 'quiz_answers' collection with fields: name, answer, quizQuestion
+    const liveQuestion = document.getElementById('quizQuestion').value.trim();
+    const correctOpt   = document.getElementById('quizCorrectAnswer').value;
+    const q = query(
+      collection(db, 'quiz_answers'),
+      where('answer', '==', correctOpt),
+      where('quizQuestion', '==', liveQuestion)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      listEl.innerHTML = '<span style="color:var(--text3);font-style:italic">No correct answers submitted yet.</span>';
+      return;
+    }
+    const names = [];
+    snap.forEach(doc => { const d = doc.data(); names.push(d.name || d.email || 'Anonymous'); });
+    listEl.innerHTML = names.map(n =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-dim);color:var(--green);
+        border:1px solid var(--green);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 4px 3px 0">
+        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        ${n}
+      </span>`
+    ).join('');
+  } catch(e) {
+    listEl.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`;
+  }
+}
+
+async function startNewQuiz() {
+  let db = window._db;
+  if (!db) {
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 100));
+      db = window._db;
+      if (db) break;
+    }
+  }
+  // Snapshot the current live quiz data from the form (already populated by initQuizView)
+  const currentQuestion = document.getElementById('quizQuestion').value.trim();
+  const currentA        = document.getElementById('quizOptionA').value.trim();
+  const currentB        = document.getElementById('quizOptionB').value.trim();
+  const currentC        = document.getElementById('quizOptionC').value.trim();
+  const currentCorrect  = document.getElementById('quizCorrectAnswer').value;
+  const currentBy       = document.getElementById('quizContributedBy').value.trim();
+
+  if (!currentQuestion) {
+    showToast('error', 'No Live Quiz', 'No quiz is currently loaded to archive.');
+    return;
+  }
+
+  // Fetch correct submitters before archiving
+  let correctSubmitters = [];
+  if (db) {
+    try {
+      const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const q = query(
+        collection(db, 'quiz_answers'),
+        where('answer', '==', currentCorrect),
+        where('quizQuestion', '==', currentQuestion)
+      );
+      const snap = await getDocs(q);
+      snap.forEach(doc => {
+        const d = doc.data();
+        correctSubmitters.push({ name: d.name || '', email: d.email || '', answeredAt: d.answeredAt || null });
+      });
+    } catch(e) {
+      console.warn('Could not fetch submitters for archive:', e);
+    }
+  }
+
+  // Archive to Firestore
+  if (db) {
+    try {
+      const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await addDoc(collection(db, 'quiz_archive'), {
+        question:     currentQuestion,
+        optionA:      currentA,
+        optionB:      currentB,
+        optionC:      currentC,
+        correctAnswer: currentCorrect,
+        contributedBy: currentBy,
+        correctSubmitters: correctSubmitters,
+        correctCount:  correctSubmitters.length,
+        archivedAt:    serverTimestamp(),
+        date:          new Date().toISOString().slice(0, 10)
+      });
+      showToast('success', 'Quiz Archived', `Previous quiz saved to Firestore with ${correctSubmitters.length} correct submission(s).`);
+    } catch(e) {
+      showToast('error', 'Archive Failed', e.message);
+      return; // Don't clear the form if archive failed
+    }
+  }
+
+  // Clear form for new quiz
+  ['quizQuestion', 'quizOptionA', 'quizOptionB', 'quizOptionC', 'quizContributedBy'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('quizCorrectAnswer').value = '';
+  document.getElementById('quizCurrentPanel').style.display = 'none';
+  document.getElementById('newQuizBtn').style.display = 'none';
+  document.getElementById('quizSubmittersList').innerHTML = 'Click "Load Submitters" to fetch.';
+  updateQuizPreview();
+  showToast('success', 'Ready for New Quiz', 'Fill in the form and publish when ready.');
+}
+
+async function saveQuizToGitHub() {
+  const token = getQuizToken();
+  if (!token) {
+    showToast('error', 'No Token', 'Enter your GitHub Personal Access Token first.');
+    return;
+  }
+  const q  = document.getElementById('quizQuestion').value.trim();
+  const a  = document.getElementById('quizOptionA').value.trim();
+  const b  = document.getElementById('quizOptionB').value.trim();
+  const c  = document.getElementById('quizOptionC').value.trim();
+  const ok = document.getElementById('quizCorrectAnswer').value;
+  const by = document.getElementById('quizContributedBy').value.trim();
+  if (!q || !a || !b || !c || !ok) {
+    showToast('error', 'Incomplete Quiz', 'Fill in the question, all three options, and the correct answer.');
+    return;
+  }
+
+  const quiz = { question: q, optionA: a, optionB: b, optionC: c, correctAnswer: ok, contributedBy: by };
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(quiz, null, 2))));
+
+  // Check if file already exists (need its SHA to update)
+  const apiUrl = `https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/contents/${QUIZ_FILE_PATH}`;
+  const headers = { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+
+  let sha = null;
+  try {
+    const check = await fetch(apiUrl, { headers });
+    if (check.ok) { const data = await check.json(); sha = data.sha; }
+  } catch(e) {}
+
+  const body = { message: 'Update quiz.json via CMS', content, branch: QUIZ_BRANCH };
+  if (sha) body.sha = sha;
 
   try {
-    const res = await fetch(
-      `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${FILE}?t=${Date.now()}`
-    );
-    if (!res.ok) return;
-    const data = await res.json();
-
-    // Support both new { today, queue } format and old flat format
-    const quiz = data.today || (data.question ? data : null);
-    if (!quiz || !quiz.question || !quiz.optionA || !quiz.optionB || !quiz.optionC || !quiz.correctAnswer) return;
-
-    document.getElementById('quizQuestionText').textContent = quiz.question;
-
-    const options = [
-      { label: 'A', text: quiz.optionA },
-      { label: 'B', text: quiz.optionB },
-      { label: 'C', text: quiz.optionC }
-    ];
-
-    const container = document.getElementById('quizOptionsContainer');
-    let answered = false;
-
-    // Show a name prompt only after a correct answer — built lazily
-    function buildNamePrompt(onSubmit) {
-      const wrap = document.createElement('div');
-      wrap.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
-      wrap.innerHTML = `
-        <input id="quizNameInput" type="text" placeholder="Your name (optional)"
-               style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #c8bca8;
-                      background:#f5f0e8;font-family:inherit;font-size:13px;outline:none;border-radius:3px">
-        <button id="quizNameSubmit"
-                style="padding:7px 14px;background:#1a1208;color:#f5f0e8;border:none;
-                       font-family:inherit;font-size:13px;cursor:pointer;border-radius:3px;white-space:nowrap">
-          Submit name
-        </button>
-      `;
-      wrap.querySelector('#quizNameSubmit').addEventListener('click', () => {
-        const name = wrap.querySelector('#quizNameInput').value.trim();
-        onSubmit(name);
-        wrap.remove();
-      });
-      return wrap;
+    const res = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (res.ok) {
+      showToast('success', 'Quiz Published', 'quiz.json committed to GitHub — live on the site.');
+      initQuizView();
+    } else {
+      const err = await res.json();
+      showToast('error', 'GitHub Error', err.message || 'Could not save to GitHub.');
     }
-
-    options.forEach(opt => {
-      const label = document.createElement('label');
-      label.className = 'quiz-option';
-      label.innerHTML = `<input type="radio" name="quizAnswer" value="${opt.label}"><span>${opt.text}</span>`;
-
-      label.addEventListener('click', () => {
-        if (answered) return;
-        answered = true;
-        const resultEl = document.getElementById('quizResult');
-        const isCorrect = opt.label === quiz.correctAnswer;
-
-        // Style all options
-        container.querySelectorAll('.quiz-option').forEach(el => {
-          el.classList.add('disabled');
-          const val = el.querySelector('input').value;
-          if (val === quiz.correctAnswer) el.classList.add('correct');
-          else if (val === opt.label && !isCorrect) el.classList.add('wrong');
-        });
-        label.querySelector('input').checked = true;
-
-        if (isCorrect) {
-          resultEl.textContent = '🎉 Congratulations! That\'s the correct answer!';
-          resultEl.className = 'quiz-result show correct';
-
-          // Prompt for name, then write to Firestore
-          const prompt = buildNamePrompt(async (name) => {
-            try {
-              const db  = window._quizDb;
-              const col = window._quizFsCollection;
-              const add = window._quizFsAddDoc;
-              const ts  = window._quizFsTimestamp;
-              if (db && col && add) {
-                await add(col(db, 'quiz_answers'), {
-                  quizQuestion:  quiz.question,
-                  answer:        opt.label,
-                  name:          name || 'Anonymous',
-                  answeredAt:    ts ? ts() : new Date().toISOString(),
-                  quizDate:      quiz.date || new Date().toISOString().slice(0, 10)
-                });
-              }
-            } catch(e) {
-              console.warn('Could not save quiz answer:', e);
-            }
-          });
-          resultEl.after(prompt);
-
-        } else {
-          const correctText = options.find(o => o.label === quiz.correctAnswer).text;
-          resultEl.textContent = `Not quite — the correct answer is: ${correctText}`;
-          resultEl.className = 'quiz-result show wrong';
-        }
-      });
-      container.appendChild(label);
-    });
-
-    if (quiz.contributedBy) {
-      document.getElementById('quizContributedBy').textContent = `Contributed by: ${quiz.contributedBy}`;
-    }
-
-    document.getElementById('quizWidget').style.display = 'block';
   } catch(e) {
-    // quiz.json not found yet or network error — widget stays hidden
+    showToast('error', 'Network Error', e.message);
   }
-})();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUIZ QUEUE — sequencing reader submissions after CMS today quiz
+// ═══════════════════════════════════════════════════════════════════════════
+
+let queueState = { today: null, queue: [] };
+let pendingSubmissions = [];
+let dragSrcIndex = null;
+
+function syncQueueToken() {
+  const t = document.getElementById('quizGithubToken').value.trim();
+  if (t) {
+    document.getElementById('queueGithubToken').value = t;
+    showQueueStatus('<span style="color:var(--green)">✓ Token synced from Quiz panel.</span>');
+  } else {
+    showQueueStatus('<span style="color:var(--yellow)">⚠ Quiz panel token is empty. Enter it there first.</span>');
+  }
+}
+function showQueueStatus(html) {
+  const el = document.getElementById('queueTokenStatus');
+  el.style.display = 'block'; el.innerHTML = html;
+}
+function getQueueToken() {
+  return document.getElementById('queueGithubToken').value.trim()
+      || document.getElementById('quizGithubToken').value.trim();
+}
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function formatDateNice(dateStr) {
+  if (!dateStr) return '';
+  const [y,m,dd] = dateStr.split('-');
+  return new Date(+y, +m-1, +dd).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+
+async function loadQuizQueue() {
+  showQueueStatus('<span style="color:var(--text3)">Loading quiz.json…</span>');
+  const url = `https://raw.githubusercontent.com/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/${QUIZ_BRANCH}/${QUIZ_FILE_PATH}?t=${Date.now()}`;
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.today !== undefined || data.queue !== undefined) {
+        queueState.today = data.today || null;
+        queueState.queue = data.queue || [];
+      } else if (data.question) {
+        queueState.today = { ...data, date: data.date || todayStr() };
+        queueState.queue = [];
+      } else {
+        queueState = { today: null, queue: [] };
+      }
+      showQueueStatus('<span style="color:var(--green)">✓ Loaded from GitHub.</span>');
+    } else {
+      showQueueStatus('<span style="color:var(--yellow)">⚠ quiz.json not found — starting fresh.</span>');
+      queueState = { today: null, queue: [] };
+    }
+  } catch(e) {
+    showQueueStatus(`<span style="color:var(--red)">✗ ${e.message}</span>`);
+    queueState = { today: null, queue: [] };
+  }
+  document.getElementById('todayDateLabel').textContent = formatDateNice(todayStr());
+  renderTodayPanel(); renderQueuePanel(); updateQueueBadge();
+}
+
+function renderTodayPanel() {
+  const panel = document.getElementById('todayQuizPanel');
+  const q = queueState.today;
+  if (!q) {
+    panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No quiz set for today. Publish one from the Quiz panel — queued items will be shifted to subsequent days automatically.</span>';
+    return;
+  }
+  panel.innerHTML = `
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">${q.question}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+      ${['A','B','C'].map(opt => `
+        <div style="padding:6px 12px;border-radius:6px;font-size:12px;
+                    background:${q.correctAnswer===opt?'var(--green-dim)':'var(--surface3)'};
+                    border:1px solid ${q.correctAnswer===opt?'var(--green)':'var(--border)'};
+                    color:${q.correctAnswer===opt?'var(--green)':'var(--text2)'}">
+          <strong>${opt}:</strong> ${q['option'+opt]||'—'}${q.correctAnswer===opt?' ✓':''}
+        </div>`).join('')}
+    </div>
+    ${q.contributedBy?`<div style="font-size:11px;color:var(--text3)">Contributed by: ${q.contributedBy}</div>`:''}
+    <div style="font-size:11px;color:var(--text3);margin-top:4px">Date: ${formatDateNice(q.date||todayStr())}</div>
+  `;
+}
+
+function renderQueuePanel() {
+  const panel = document.getElementById('queueSchedulePanel');
+  if (!queueState.queue.length) {
+    panel.innerHTML = '<span style="color:var(--text3);font-style:italic">Queue is empty. Approve pending submissions below to add them.</span>';
+    return;
+  }
+  panel.innerHTML = '';
+  queueState.queue.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'queue-item';
+    div.draggable = true;
+    div.addEventListener('dragstart', () => { dragSrcIndex = idx; });
+    div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('drag-over'); });
+    div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+    div.addEventListener('drop', e => {
+      e.preventDefault(); div.classList.remove('drag-over');
+      if (dragSrcIndex === null || dragSrcIndex === idx) return;
+      const moved = queueState.queue.splice(dragSrcIndex, 1)[0];
+      queueState.queue.splice(idx, 0, moved);
+      resequenceDates(); renderQueuePanel();
+    });
+    div.addEventListener('dragend', () => { dragSrcIndex = null; document.querySelectorAll('.queue-item').forEach(el=>el.classList.remove('drag-over')); });
+    div.innerHTML = `
+      <div class="queue-item-drag" title="Drag to reorder">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="5" y1="8" x2="19" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="16" x2="19" y2="16"/>
+        </svg>
+      </div>
+      <div class="queue-item-body">
+        <div class="queue-item-question">${item.question}</div>
+        <div class="queue-item-meta">
+          <span>A: ${item.optionA||'—'} &nbsp;·&nbsp; B: ${item.optionB||'—'} &nbsp;·&nbsp; C: ${item.optionC||'—'}</span>
+          ${item.contributedBy?`<span>· by <strong>${item.contributedBy}</strong></span>`:''}
+          ${item.source?`<span style="color:var(--accent)">· 📥 ${item.source}</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+        <input type="date" class="queue-item-date-input" value="${item.date||''}"
+               onchange="queueState.queue[${idx}].date=this.value;updateQueueBadge()">
+        <div class="queue-item-actions">
+          <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},-1)" ${idx===0?'disabled':''}>↑</button>
+          <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},1)" ${idx===queueState.queue.length-1?'disabled':''}>↓</button>
+          <button class="btn btn-sm btn-danger" onclick="removeFromQueue(${idx})">×</button>
+        </div>
+      </div>
+    `;
+    panel.appendChild(div);
+  });
+  updateQueueBadge();
+}
+
+function moveQueueItem(idx, dir) {
+  const t = idx + dir;
+  if (t < 0 || t >= queueState.queue.length) return;
+  [queueState.queue[idx], queueState.queue[t]] = [queueState.queue[t], queueState.queue[idx]];
+  resequenceDates(); renderQueuePanel();
+}
+function removeFromQueue(idx) {
+  queueState.queue.splice(idx, 1);
+  resequenceDates(); renderQueuePanel();
+}
+function resequenceDates() {
+  const base = queueState.today ? (queueState.today.date || todayStr()) : addDays(todayStr(), -1);
+  queueState.queue.forEach((item, i) => { item.date = addDays(base, i + 1); });
+}
+
+async function loadPendingSubmissions() {
+  const panel = document.getElementById('pendingSubmissionsPanel');
+  panel.innerHTML = '<span style="color:var(--text3)">Loading from Firestore…</span>';
+  let db = window._db;
+  if (!db) {
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 100));
+      db = window._db;
+      if (db) break;
+    }
+  }
+  if (!db) { panel.innerHTML = '<span style="color:var(--red)">✗ Firestore not ready. Reload the page.</span>'; return; }
+  try {
+    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const q = query(collection(db, 'submissions'), where('type','==','quiz'), where('status','==','pending'));
+    const snap = await getDocs(q);
+    pendingSubmissions = [];
+    snap.forEach(doc => pendingSubmissions.push({ firestoreId: doc.id, ...doc.data() }));
+    if (!pendingSubmissions.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No pending quiz submissions found.</span>'; return; }
+    renderPendingSubmissions();
+  } catch(e) { panel.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
+}
+
+function renderPendingSubmissions() {
+  const panel = document.getElementById('pendingSubmissionsPanel');
+  if (!pendingSubmissions.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No pending submissions.</span>'; return; }
+  panel.innerHTML = '';
+  pendingSubmissions.forEach((sub, sIdx) => {
+    const div = document.createElement('div');
+    div.className = 'submission-card';
+    const qCount = sub.questions ? sub.questions.length : 0;
+    div.innerHTML = `
+      <div class="submission-card-header">
+        <div>
+          <div class="submission-card-title">📋 ${sub.title||'Untitled Quiz'}</div>
+          <div class="submission-card-meta">
+            ${sub.author?`By <strong>${sub.author}</strong>`:''}
+            ${sub.email?` · ${sub.email}`:''}
+            · ${qCount} question${qCount!==1?'s':''}
+            ${sub.submittedAt?` · ${typeof sub.submittedAt==='string'?new Date(sub.submittedAt).toLocaleDateString():new Date(sub.submittedAt.seconds*1000).toLocaleDateString()}`:''}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn btn-sm btn-ghost" onclick="toggleSubmissionDetail(${sIdx})" id="detailBtn_${sIdx}">Preview</button>
+          <button class="btn btn-sm btn-primary" onclick="approveSubmission(${sIdx})">+ Add to Queue</button>
+          <button class="btn btn-sm btn-danger" onclick="dismissSubmission(${sIdx})">Dismiss</button>
+        </div>
+      </div>
+      <div id="submissionDetail_${sIdx}" style="display:none">
+        ${sub.questions?sub.questions.map((q,qi)=>`
+          <div style="background:var(--surface3);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:12px">
+            <div style="font-weight:600;color:var(--text);margin-bottom:6px">Q${qi+1}: ${q.question}</div>
+            ${(q.options||[]).map((opt,oi)=>`
+              <div style="padding:4px 8px;border-radius:4px;margin-bottom:3px;
+                          background:${q.correctIndex===oi?'var(--green-dim)':'transparent'};
+                          color:${q.correctIndex===oi?'var(--green)':'var(--text2)'}">
+                ${String.fromCharCode(65+oi)}: ${opt}${q.correctIndex===oi?' ✓':''}
+              </div>`).join('')}
+          </div>`).join(''):'<em style="color:var(--text3)">No question data</em>'}
+      </div>
+    `;
+    panel.appendChild(div);
+  });
+}
+
+function toggleSubmissionDetail(sIdx) {
+  const el = document.getElementById(`submissionDetail_${sIdx}`);
+  const btn = document.getElementById(`detailBtn_${sIdx}`);
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? 'Preview' : 'Hide';
+}
+
+function approveSubmission(sIdx) {
+  const sub = pendingSubmissions[sIdx];
+  if (!sub.questions || !sub.questions.length) { showToast('error','No Questions','This submission has no question data.'); return; }
+  sub.questions.forEach(q => {
+    const opts = q.options || [];
+    queueState.queue.push({
+      question: q.question,
+      optionA: opts[0]||'', optionB: opts[1]||'', optionC: opts[2]||'',
+      correctAnswer: ['A','B','C'][q.correctIndex]||'A',
+      contributedBy: sub.author||'',
+      source: sub.title||'reader submission',
+      date: ''
+    });
+  });
+  resequenceDates(); renderQueuePanel(); updateQueueBadge();
+  pendingSubmissions.splice(sIdx, 1); renderPendingSubmissions();
+  showToast('success','Added to Queue',`${sub.questions.length} question(s) from "${sub.title||'submission'}" queued.`);
+}
+
+function dismissSubmission(sIdx) {
+  pendingSubmissions.splice(sIdx, 1);
+  renderPendingSubmissions();
+}
+
+function updateQueueBadge() {
+  document.getElementById('queueNavBadge').textContent = queueState.queue.length;
+}
+
+async function publishQueueToGitHub() {
+  const token = getQueueToken();
+  if (!token) { showToast('error','No Token','Enter your GitHub token above.'); return; }
+  if (!queueState.today && !queueState.queue.length) { showToast('error','Nothing to Publish','Set today\'s quiz or add items to the queue.'); return; }
+  const payload = { today: queueState.today, queue: queueState.queue, lastUpdated: new Date().toISOString() };
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+  const apiUrl = `https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/contents/${QUIZ_FILE_PATH}`;
+  const headers = { Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' };
+  let sha = null;
+  try { const c = await fetch(apiUrl,{headers}); if(c.ok){const d=await c.json();sha=d.sha;} } catch(e){}
+  const body = { message:'Update quiz schedule via CMS queue manager', content, branch:QUIZ_BRANCH };
+  if (sha) body.sha = sha;
+  try {
+    const res = await fetch(apiUrl, { method:'PUT', headers, body:JSON.stringify(body) });
+    if (res.ok) {
+      showToast('success','Schedule Published',`Today\'s quiz + ${queueState.queue.length} queued item(s) committed to GitHub.`);
+    } else {
+      const err = await res.json();
+      showToast('error','GitHub Error', err.message||'Could not save.');
+    }
+  } catch(e) { showToast('error','Network Error',e.message); }
+}
+
+// Hook: when today's quiz is saved from the Quiz panel, sync queueState and re-sequence
+const _origSaveQuiz = saveQuizToGitHub;
+saveQuizToGitHub = async function() {
+  const q  = document.getElementById('quizQuestion').value.trim();
+  const a  = document.getElementById('quizOptionA').value.trim();
+  const b  = document.getElementById('quizOptionB').value.trim();
+  const c  = document.getElementById('quizOptionC').value.trim();
+  const ok = document.getElementById('quizCorrectAnswer').value;
+  const by = document.getElementById('quizContributedBy').value.trim();
+  if (q && queueState.queue.length > 0) {
+    queueState.today = { question:q, optionA:a, optionB:b, optionC:c, correctAnswer:ok, contributedBy:by, date:todayStr() };
+    resequenceDates();
+    await publishQueueToGitHub();
+    initQuizView();
+  } else {
+    await _origSaveQuiz();
+    if (q) queueState.today = { question:q, optionA:a, optionB:b, optionC:c, correctAnswer:ok, contributedBy:by, date:todayStr() };
+  }
+};
 </script>
 
 </body>
