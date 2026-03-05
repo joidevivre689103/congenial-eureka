@@ -1292,6 +1292,10 @@ textarea.form-input{
       <div class="main-header">
         <h1 class="main-title">Quiz</h1>
         <div class="main-actions">
+          <button class="btn btn-secondary" id="newQuizBtn" onclick="startNewQuiz()" style="display:none">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Quiz
+          </button>
           <button class="btn btn-primary" onclick="saveQuizToGitHub()">
             <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Save &amp; Publish Quiz
@@ -1387,9 +1391,20 @@ textarea.form-input{
           </div>
 
           <!-- Current Published Quiz -->
-          <div id="quizCurrentPanel" style="display:none;background:var(--green-dim);border:1px solid var(--green);border-radius:10px;padding:16px">
-            <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Currently Live on Site</div>
-            <div id="quizCurrentText" style="font-size:13px;color:var(--text)"></div>
+          <div id="quizCurrentPanel" style="display:none;border:1px solid var(--green);border-radius:10px;overflow:hidden">
+            <div style="background:var(--green-dim);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Currently Live on Site</div>
+              <button class="btn btn-sm" onclick="loadCorrectSubmitters()" style="background:rgba(34,197,94,0.2);color:var(--green);border:1px solid var(--green);font-size:11px;padding:4px 10px">
+                <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Load Submitters
+              </button>
+            </div>
+            <div id="quizCurrentText" style="font-size:13px;color:var(--text);padding:14px 16px;border-bottom:1px solid var(--border)"></div>
+            <!-- Who got it right -->
+            <div id="quizSubmittersWrap" style="padding:14px 16px">
+              <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Who Got It Right</div>
+              <div id="quizSubmittersList" style="font-size:13px;color:var(--text3);font-style:italic">Click "Load Submitters" to fetch.</div>
+            </div>
           </div>
 
         </div>
@@ -2838,6 +2853,8 @@ async function initQuizView() {
       const panel = document.getElementById('quizCurrentPanel');
       const text  = document.getElementById('quizCurrentText');
       panel.style.display = 'block';
+      // Show the New Quiz button now that there's a live quiz
+      document.getElementById('newQuizBtn').style.display = 'inline-flex';
       text.innerHTML = `<strong>${quiz.question}</strong><br>
         A: ${quiz.optionA} &nbsp;|&nbsp; B: ${quiz.optionB} &nbsp;|&nbsp; C: ${quiz.optionC}<br>
         <span style="color:var(--green)">✓ Correct: Option ${quiz.correctAnswer}</span>
@@ -2852,6 +2869,113 @@ async function initQuizView() {
       updateQuizPreview();
     }
   } catch(e) { /* no quiz published yet — that's fine */ }
+}
+
+// Holds the quiz data that was live when New Quiz was clicked, used for archiving
+let _liveQuizSnapshot = null;
+
+async function loadCorrectSubmitters() {
+  const listEl = document.getElementById('quizSubmittersList');
+  listEl.innerHTML = '<span style="color:var(--text3)">Loading…</span>';
+  const db = window._db;
+  if (!db) { listEl.innerHTML = '<span style="color:var(--red)">✗ Firestore not ready.</span>'; return; }
+  try {
+    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    // Answers are stored in 'quiz_answers' collection with fields: name, answer, quizQuestion
+    const liveQuestion = document.getElementById('quizQuestion').value.trim();
+    const correctOpt   = document.getElementById('quizCorrectAnswer').value;
+    const q = query(
+      collection(db, 'quiz_answers'),
+      where('answer', '==', correctOpt),
+      where('quizQuestion', '==', liveQuestion)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      listEl.innerHTML = '<span style="color:var(--text3);font-style:italic">No correct answers submitted yet.</span>';
+      return;
+    }
+    const names = [];
+    snap.forEach(doc => { const d = doc.data(); names.push(d.name || d.email || 'Anonymous'); });
+    listEl.innerHTML = names.map(n =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-dim);color:var(--green);
+        border:1px solid var(--green);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 4px 3px 0">
+        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        ${n}
+      </span>`
+    ).join('');
+  } catch(e) {
+    listEl.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`;
+  }
+}
+
+async function startNewQuiz() {
+  const db = window._db;
+  // Snapshot the current live quiz data from the form (already populated by initQuizView)
+  const currentQuestion = document.getElementById('quizQuestion').value.trim();
+  const currentA        = document.getElementById('quizOptionA').value.trim();
+  const currentB        = document.getElementById('quizOptionB').value.trim();
+  const currentC        = document.getElementById('quizOptionC').value.trim();
+  const currentCorrect  = document.getElementById('quizCorrectAnswer').value;
+  const currentBy       = document.getElementById('quizContributedBy').value.trim();
+
+  if (!currentQuestion) {
+    showToast('error', 'No Live Quiz', 'No quiz is currently loaded to archive.');
+    return;
+  }
+
+  // Fetch correct submitters before archiving
+  let correctSubmitters = [];
+  if (db) {
+    try {
+      const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const q = query(
+        collection(db, 'quiz_answers'),
+        where('answer', '==', currentCorrect),
+        where('quizQuestion', '==', currentQuestion)
+      );
+      const snap = await getDocs(q);
+      snap.forEach(doc => {
+        const d = doc.data();
+        correctSubmitters.push({ name: d.name || '', email: d.email || '', answeredAt: d.answeredAt || null });
+      });
+    } catch(e) {
+      console.warn('Could not fetch submitters for archive:', e);
+    }
+  }
+
+  // Archive to Firestore
+  if (db) {
+    try {
+      const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await addDoc(collection(db, 'quiz_archive'), {
+        question:     currentQuestion,
+        optionA:      currentA,
+        optionB:      currentB,
+        optionC:      currentC,
+        correctAnswer: currentCorrect,
+        contributedBy: currentBy,
+        correctSubmitters: correctSubmitters,
+        correctCount:  correctSubmitters.length,
+        archivedAt:    serverTimestamp(),
+        date:          new Date().toISOString().slice(0, 10)
+      });
+      showToast('success', 'Quiz Archived', `Previous quiz saved to Firestore with ${correctSubmitters.length} correct submission(s).`);
+    } catch(e) {
+      showToast('error', 'Archive Failed', e.message);
+      return; // Don't clear the form if archive failed
+    }
+  }
+
+  // Clear form for new quiz
+  ['quizQuestion', 'quizOptionA', 'quizOptionB', 'quizOptionC', 'quizContributedBy'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('quizCorrectAnswer').value = '';
+  document.getElementById('quizCurrentPanel').style.display = 'none';
+  document.getElementById('newQuizBtn').style.display = 'none';
+  document.getElementById('quizSubmittersList').innerHTML = 'Click "Load Submitters" to fetch.';
+  updateQuizPreview();
+  showToast('success', 'Ready for New Quiz', 'Fill in the form and publish when ready.');
 }
 
 async function saveQuizToGitHub() {
