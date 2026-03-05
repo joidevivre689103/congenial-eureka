@@ -920,6 +920,10 @@ textarea.form-input{
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Live Scores
         </a>
+        <a href="#" class="nav-item" data-view="quiz">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Quiz
+        </a>
       </div>
       
       <div class="nav-section">
@@ -1186,6 +1190,115 @@ textarea.form-input{
         </div>
         <div style="padding:20px" id="scoresEditor">
           <!-- Score cards populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ VIEW -->
+    <div id="quiz-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Quiz</h1>
+        <div class="main-actions">
+          <button class="btn btn-primary" onclick="saveQuizToGitHub()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save &amp; Publish Quiz
+          </button>
+        </div>
+      </div>
+
+      <!-- GitHub Token Panel -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">GitHub Access</h2>
+          <span style="font-size:11px;color:var(--text3)">Token is never stored — enter each session</span>
+        </div>
+        <div style="padding:20px;display:flex;gap:12px;align-items:flex-end">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Personal Access Token <span style="color:var(--red)">*</span></label>
+            <div style="display:flex;gap:6px">
+              <input type="password" class="form-input" id="quizGithubToken"
+                     placeholder="ghp_..."
+                     style="flex:1;font-family:monospace;font-size:13px">
+              <button type="button" onclick="toggleQuizTokenVisibility()"
+                      style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
+                <svg id="quizTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">
+              Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope.
+              <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create one →</a>
+            </span>
+          </div>
+          <button class="btn btn-secondary" onclick="verifyQuizToken()" style="height:44px;white-space:nowrap">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="20 6 9 17 4 12"/></svg>
+            Verify Token
+          </button>
+        </div>
+        <div id="quizTokenStatus" style="display:none;padding:0 20px 16px;font-size:12px"></div>
+      </div>
+
+      <!-- Quiz Form -->
+      <div class="content-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Cricket Quiz of the Day</h2>
+          <span style="font-size:12px;color:var(--text3)">Saved as <code style="background:var(--surface3);padding:1px 6px;border-radius:3px;font-size:11px">quiz.json</code> in your repo</span>
+        </div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:20px">
+
+          <div class="form-group">
+            <label class="form-label">Question <span style="color:var(--red)">*</span></label>
+            <textarea class="form-input" id="quizQuestion"
+                      placeholder="e.g. Who was the first batsman to score 10,000 Test runs?"
+                      style="min-height:80px"
+                      oninput="updateQuizPreview()"></textarea>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+            <div class="form-group">
+              <label class="form-label">Option A <span style="color:var(--red)">*</span></label>
+              <input type="text" class="form-input" id="quizOptionA" placeholder="First option" oninput="updateQuizPreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Option B <span style="color:var(--red)">*</span></label>
+              <input type="text" class="form-input" id="quizOptionB" placeholder="Second option" oninput="updateQuizPreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Option C <span style="color:var(--red)">*</span></label>
+              <input type="text" class="form-input" id="quizOptionC" placeholder="Third option" oninput="updateQuizPreview()">
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group">
+              <label class="form-label">Correct Answer <span style="color:var(--red)">*</span></label>
+              <select class="form-select" id="quizCorrectAnswer" onchange="updateQuizPreview()">
+                <option value="">— Select correct answer —</option>
+                <option value="A">Option A</option>
+                <option value="B">Option B</option>
+                <option value="C">Option C</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contributed By</label>
+              <input type="text" class="form-input" id="quizContributedBy"
+                     placeholder="e.g. Rahul Dravid" oninput="updateQuizPreview()">
+            </div>
+          </div>
+
+          <!-- Live Preview -->
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+            <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Preview</div>
+            <div id="quizPreview" style="font-size:13px;color:var(--text2)">Fill in the fields above to see a preview.</div>
+          </div>
+
+          <!-- Current Published Quiz -->
+          <div id="quizCurrentPanel" style="display:none;background:var(--green-dim);border:1px solid var(--green);border-radius:10px;padding:16px">
+            <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Currently Live on Site</div>
+            <div id="quizCurrentText" style="font-size:13px;color:var(--text)"></div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1590,10 +1703,12 @@ document.querySelectorAll('.nav-item[data-view]').forEach(item => {
     document.getElementById('audio-settings-view').style.display = view === 'audio-settings' ? 'block' : 'none';
     document.getElementById('ticker-view').style.display = view === 'ticker' ? 'block' : 'none';
     document.getElementById('scores-view').style.display = view === 'scores' ? 'block' : 'none';
-    
+    document.getElementById('quiz-view').style.display = view === 'quiz' ? 'block' : 'none';
+
     // Initialize views
     if (view === 'ticker') renderTickerEditor();
     if (view === 'scores') renderScoresEditor();
+    if (view === 'quiz') initQuizView();
   });
 });
 
@@ -2461,6 +2576,153 @@ loadAudioSettings();
 
 // Push initial data to localStorage so news.html has content
 persistToLocalStorage();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUIZ — GitHub-backed, no localStorage
+// ═══════════════════════════════════════════════════════════════════════════
+const QUIZ_REPO_OWNER = 'joidevivre689103';
+const QUIZ_REPO_NAME  = 'congenial-eureka';
+const QUIZ_FILE_PATH  = 'quiz.json';
+const QUIZ_BRANCH     = 'main';
+
+function getQuizToken() {
+  return document.getElementById('quizGithubToken').value.trim();
+}
+
+function toggleQuizTokenVisibility() {
+  const inp = document.getElementById('quizGithubToken');
+  const eye = document.getElementById('quizTokenEye');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+async function verifyQuizToken() {
+  const token = getQuizToken();
+  const statusEl = document.getElementById('quizTokenStatus');
+  statusEl.style.display = 'block';
+  if (!token) {
+    statusEl.innerHTML = '<span style="color:var(--red)">⚠ Please enter a token first.</span>';
+    return;
+  }
+  statusEl.innerHTML = '<span style="color:var(--text3)">Verifying…</span>';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.ok) {
+      statusEl.innerHTML = '<span style="color:var(--green)">✓ Token verified — repo access confirmed.</span>';
+    } else {
+      const err = await res.json();
+      statusEl.innerHTML = `<span style="color:var(--red)">✗ ${err.message || 'Access denied. Check token scope.'}</span>`;
+    }
+  } catch(e) {
+    statusEl.innerHTML = `<span style="color:var(--red)">✗ Network error: ${e.message}</span>`;
+  }
+}
+
+function updateQuizPreview() {
+  const q  = document.getElementById('quizQuestion').value;
+  const a  = document.getElementById('quizOptionA').value;
+  const b  = document.getElementById('quizOptionB').value;
+  const c  = document.getElementById('quizOptionC').value;
+  const ok = document.getElementById('quizCorrectAnswer').value;
+  const by = document.getElementById('quizContributedBy').value;
+  const el = document.getElementById('quizPreview');
+  if (!q) { el.innerHTML = 'Fill in the fields above to see a preview.'; return; }
+  const map = { A: a, B: b, C: c };
+  el.innerHTML = `
+    <div style="font-weight:700;margin-bottom:10px;color:var(--text)">${q}</div>
+    ${['A','B','C'].map(opt => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:6px;border-radius:6px;
+                  background:${ok===opt?'var(--green-dim)':'var(--surface3)'};
+                  border:1px solid ${ok===opt?'var(--green)':'var(--border)'}">
+        <span style="font-size:11px;font-weight:700;color:${ok===opt?'var(--green)':'var(--text3)'};width:16px">${opt}</span>
+        <span style="color:${ok===opt?'var(--green)':'var(--text2)'}">
+          ${map[opt] || '<em style="opacity:0.4">No option entered</em>'}
+        </span>
+        ${ok===opt ? '<span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">✓ CORRECT</span>' : ''}
+      </div>`).join('')}
+    ${by ? `<div style="margin-top:8px;font-size:11px;color:var(--text3);font-style:italic">Contributed by: ${by}</div>` : ''}
+  `;
+}
+
+async function initQuizView() {
+  // Load currently published quiz from GitHub raw
+  const url = `https://raw.githubusercontent.com/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/${QUIZ_BRANCH}/${QUIZ_FILE_PATH}`;
+  try {
+    const res = await fetch(url + '?t=' + Date.now());
+    if (res.ok) {
+      const quiz = await res.json();
+      const panel = document.getElementById('quizCurrentPanel');
+      const text  = document.getElementById('quizCurrentText');
+      panel.style.display = 'block';
+      text.innerHTML = `<strong>${quiz.question}</strong><br>
+        A: ${quiz.optionA} &nbsp;|&nbsp; B: ${quiz.optionB} &nbsp;|&nbsp; C: ${quiz.optionC}<br>
+        <span style="color:var(--green)">✓ Correct: Option ${quiz.correctAnswer}</span>
+        ${quiz.contributedBy ? ` &nbsp;·&nbsp; <em>by ${quiz.contributedBy}</em>` : ''}`;
+      // Pre-fill form with current values
+      document.getElementById('quizQuestion').value       = quiz.question       || '';
+      document.getElementById('quizOptionA').value        = quiz.optionA        || '';
+      document.getElementById('quizOptionB').value        = quiz.optionB        || '';
+      document.getElementById('quizOptionC').value        = quiz.optionC        || '';
+      document.getElementById('quizCorrectAnswer').value  = quiz.correctAnswer  || '';
+      document.getElementById('quizContributedBy').value  = quiz.contributedBy  || '';
+      updateQuizPreview();
+    }
+  } catch(e) { /* no quiz published yet — that's fine */ }
+}
+
+async function saveQuizToGitHub() {
+  const token = getQuizToken();
+  if (!token) {
+    showToast('error', 'No Token', 'Enter your GitHub Personal Access Token first.');
+    return;
+  }
+  const q  = document.getElementById('quizQuestion').value.trim();
+  const a  = document.getElementById('quizOptionA').value.trim();
+  const b  = document.getElementById('quizOptionB').value.trim();
+  const c  = document.getElementById('quizOptionC').value.trim();
+  const ok = document.getElementById('quizCorrectAnswer').value;
+  const by = document.getElementById('quizContributedBy').value.trim();
+  if (!q || !a || !b || !c || !ok) {
+    showToast('error', 'Incomplete Quiz', 'Fill in the question, all three options, and the correct answer.');
+    return;
+  }
+
+  const quiz = { question: q, optionA: a, optionB: b, optionC: c, correctAnswer: ok, contributedBy: by };
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(quiz, null, 2))));
+
+  // Check if file already exists (need its SHA to update)
+  const apiUrl = `https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/contents/${QUIZ_FILE_PATH}`;
+  const headers = { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+
+  let sha = null;
+  try {
+    const check = await fetch(apiUrl, { headers });
+    if (check.ok) { const data = await check.json(); sha = data.sha; }
+  } catch(e) {}
+
+  const body = { message: 'Update quiz.json via CMS', content, branch: QUIZ_BRANCH };
+  if (sha) body.sha = sha;
+
+  try {
+    const res = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (res.ok) {
+      showToast('success', 'Quiz Published', 'quiz.json committed to GitHub — live on the site.');
+      initQuizView();
+    } else {
+      const err = await res.json();
+      showToast('error', 'GitHub Error', err.message || 'Could not save to GitHub.');
+    }
+  } catch(e) {
+    showToast('error', 'Network Error', e.message);
+  }
+}
 </script>
 
 </body>

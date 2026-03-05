@@ -379,6 +379,106 @@ body{
   margin-top:8px;
 }
 
+/* ── QUIZ WIDGET ── */
+.quiz-widget{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:16px;
+  margin-top:16px;
+}
+.quiz-widget-label{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.quiz-question-text{
+  font-family:'Playfair Display',serif;
+  font-size:14px;
+  font-weight:600;
+  line-height:1.45;
+  color:var(--text);
+  margin-bottom:12px;
+}
+.quiz-options{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.quiz-option{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  cursor:pointer;
+  padding:8px 10px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  transition:all 0.15s;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  color:var(--text2);
+  user-select:none;
+}
+.quiz-option:hover{
+  border-color:var(--accent);
+  background:var(--accent-dim);
+  color:var(--accent);
+}
+.quiz-option input[type="radio"]{
+  accent-color:var(--accent);
+  width:14px;
+  height:14px;
+  flex-shrink:0;
+  pointer-events:none;
+}
+.quiz-option.correct{
+  border-color:var(--green);
+  background:rgba(26,104,72,0.1);
+  color:var(--green);
+  font-weight:600;
+}
+.quiz-option.wrong{
+  border-color:#b03030;
+  background:rgba(176,48,48,0.08);
+  color:#b03030;
+}
+.quiz-option.disabled{ pointer-events:none; }
+.quiz-result{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:4px;
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  display:none;
+}
+.quiz-result.show{ display:block }
+.quiz-result.correct{
+  background:rgba(26,104,72,0.12);
+  border:1px solid var(--green);
+  color:var(--green);
+}
+.quiz-result.wrong{
+  background:rgba(176,48,48,0.08);
+  border:1px solid #b03030;
+  color:#b03030;
+}
+.quiz-contributed{
+  margin-top:9px;
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  color:var(--text3);
+  font-style:italic;
+}
+
 @media(max-width:900px){
   .hero-section{
     grid-template-columns:1fr;
@@ -936,6 +1036,18 @@ body{
           </div>
           <div class="score-status">PAK lead by 123 runs</div>
         </div>
+      </div>
+
+      <!-- Quiz Widget — populated from quiz.json in GitHub repo -->
+      <div class="quiz-widget" id="quizWidget" style="display:none">
+        <div class="quiz-widget-label">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Quiz
+        </div>
+        <div class="quiz-question-text" id="quizQuestionText"></div>
+        <div class="quiz-options" id="quizOptionsContainer"></div>
+        <div class="quiz-result" id="quizResult"></div>
+        <div class="quiz-contributed" id="quizContributedBy"></div>
       </div>
     </aside>
   </section>
@@ -1591,6 +1703,77 @@ if (window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
   window.speechSynthesis.getVoices();
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUIZ WIDGET — fetched from GitHub repo (no localStorage)
+// ═══════════════════════════════════════════════════════════════════════════
+(async function loadQuiz() {
+  const OWNER  = 'joidevivre689103';
+  const REPO   = 'congenial-eureka';
+  const BRANCH = 'main';
+  const FILE   = 'quiz.json';
+
+  try {
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${FILE}?t=${Date.now()}`
+    );
+    if (!res.ok) return;
+    const quiz = await res.json();
+    if (!quiz.question || !quiz.optionA || !quiz.optionB || !quiz.optionC || !quiz.correctAnswer) return;
+
+    document.getElementById('quizQuestionText').textContent = quiz.question;
+
+    const options = [
+      { label: 'A', text: quiz.optionA },
+      { label: 'B', text: quiz.optionB },
+      { label: 'C', text: quiz.optionC }
+    ];
+
+    const container = document.getElementById('quizOptionsContainer');
+    let answered = false;
+
+    options.forEach(opt => {
+      const label = document.createElement('label');
+      label.className = 'quiz-option';
+      label.innerHTML = `<input type="radio" name="quizAnswer" value="${opt.label}"><span>${opt.text}</span>`;
+
+      label.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        const resultEl = document.getElementById('quizResult');
+        const isCorrect = opt.label === quiz.correctAnswer;
+
+        // Style all options
+        container.querySelectorAll('.quiz-option').forEach(el => {
+          el.classList.add('disabled');
+          const val = el.querySelector('input').value;
+          if (val === quiz.correctAnswer) el.classList.add('correct');
+          else if (val === opt.label && !isCorrect) el.classList.add('wrong');
+        });
+        // Check the clicked radio
+        label.querySelector('input').checked = true;
+
+        if (isCorrect) {
+          resultEl.textContent = '🎉 Congratulations! That\'s the correct answer!';
+          resultEl.className = 'quiz-result show correct';
+        } else {
+          const correctText = options.find(o => o.label === quiz.correctAnswer).text;
+          resultEl.textContent = `Not quite — the correct answer is: ${correctText}`;
+          resultEl.className = 'quiz-result show wrong';
+        }
+      });
+      container.appendChild(label);
+    });
+
+    if (quiz.contributedBy) {
+      document.getElementById('quizContributedBy').textContent = `Contributed by: ${quiz.contributedBy}`;
+    }
+
+    document.getElementById('quizWidget').style.display = 'block';
+  } catch(e) {
+    // quiz.json not found yet or network error — widget stays hidden
+  }
+})();
 </script>
 
 </body>
