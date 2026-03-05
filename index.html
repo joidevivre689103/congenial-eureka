@@ -1691,69 +1691,160 @@ function showShareDialog(url, playerNames){
   }
 }
 
-// Export to Excel function
+// Export to Excel function — exports only the active tab's data with active filters
 function exportToExcel(){
   const players = activeSel();
   if(players.length < 2){alert('Select at least 2 players to export');return;}
-  
-  // Get filtered row sets
-  const f=getF(), any=f.opp.length||f.city||f.gnd||f.ha||f.inn||f.res||f.toss||f.together;
-  let rowSets = players.map(p=>getRows(p));
-  
-  // Calculate stats
-  const stats = players.map((p,i)=>agg(p,rowSets[i],any));
-  
-  // Create workbook
+
+  // Determine active tab
+  const activeTabBtn = document.querySelector('.tab.on');
+  const activeTab = activeTabBtn ? activeTabBtn.textContent.trim().toLowerCase().replace(' ', '') : 'overview';
+
+  // Get filtered row sets (same logic as render())
+  const f = getF(), any = f.opp.length||f.city||f.gnd||f.ha||f.inn||f.res||f.toss||f.together;
+  let displayPlayers = players;
+  let rowSets = players.map(p => getRows(p));
+
+  // Apply "played together" filter (mirrors render() logic)
+  if(f.together === 'yes'){
+    const matchSets = rowSets.map(idxs => { const ms = new Set(); idxs.forEach(i => ms.add(SCD[i][0])); return ms; });
+    let commonMatches = new Set(matchSets[0]);
+    for(let i = 1; i < matchSets.length; i++) commonMatches = new Set([...commonMatches].filter(m => matchSets[i].has(m)));
+    if(commonMatches.size === 0 && players.length > 2){
+      const playersWithShared = [], sharedByPlayer = [];
+      for(let i = 0; i < players.length; i++){
+        let hasShared = false; const myShared = new Set();
+        for(let j = 0; j < players.length; j++){
+          if(i !== j){ const sh = [...matchSets[i]].filter(m => matchSets[j].has(m)); if(sh.length > 0){ hasShared = true; sh.forEach(m => myShared.add(m)); } }
+        }
+        if(hasShared){ playersWithShared.push(i); sharedByPlayer.push(myShared); }
+      }
+      if(playersWithShared.length >= 2){
+        displayPlayers = playersWithShared.map(i => players[i]);
+        rowSets = playersWithShared.map((pIdx, i) => rowSets[pIdx].filter(idx => sharedByPlayer[i].has(SCD[idx][0])));
+      } else { displayPlayers = []; rowSets = []; }
+    } else if(commonMatches.size > 0){
+      rowSets = rowSets.map(idxs => idxs.filter(i => commonMatches.has(SCD[i][0])));
+    } else { displayPlayers = []; rowSets = []; }
+  }
+
+  if(displayPlayers.length < 2){ alert('Not enough data to export with current filters.'); return; }
+
+  const stats = displayPlayers.map((p, i) => agg(p, rowSets[i], any));
+
+  // Build filter summary string for metadata row
+  const filterParts = [];
+  if(f.opp.length) filterParts.push('vs ' + f.opp.map(o => TEAMS[o]).join(', '));
+  if(f.city) filterParts.push('in ' + CITIES[f.city]);
+  if(f.gnd) filterParts.push('at ' + GROUNDS[f.gnd]);
+  if(f.ha) filterParts.push(f.ha);
+  if(f.inn) filterParts.push(ordinal(f.inn) + ' innings');
+  if(f.res) filterParts.push(f.res);
+  if(f.toss) filterParts.push(f.toss + ' toss');
+  if(f.together) filterParts.push('played together');
+  const filterSummary = filterParts.length ? 'Filters: ' + filterParts.join(' · ') : 'No filters applied';
+
   const wb = XLSX.utils.book_new();
-  
-  // Batting stats sheet
-  const battingData = stats.map(s => ({
-    'Player': s.name,
-    'Country': s.country,
-    'Tests': s.tests,
-    'Innings': s.inns,
-    'Not Outs': s.no,
-    'Runs': s.runs,
-    'Average': s.batAvg > 0 ? s.batAvg.toFixed(2) : '—',
-    'Strike Rate': s.sr ? s.sr.toFixed(2) : '—',
-    'High Score': s.hs,
-    '50s': s.fifties,
-    '100s': s.hundreds
-  }));
-  const wsBat = XLSX.utils.json_to_sheet(battingData);
-  wsBat['!cols'] = [{wch:25},{wch:12},{wch:6},{wch:8},{wch:10},{wch:8},{wch:10},{wch:12},{wch:10},{wch:6},{wch:6}];
-  XLSX.utils.book_append_sheet(wb, wsBat, 'Batting');
-  
-  // Bowling stats sheet
-  const bowlingData = stats.map(s => ({
-    'Player': s.name,
-    'Country': s.country,
-    'Overs': s.overs.toFixed(1),
-    'Maidens': s.mdns,
-    'Runs': s.bowlRuns,
-    'Wickets': s.wkts,
-    'Average': s.bowlAvg > 0 ? s.bowlAvg.toFixed(2) : '—',
-    'Economy': s.econ > 0 ? s.econ.toFixed(2) : '—',
-    'Best': s.bestBowl
-  }));
-  const wsBowl = XLSX.utils.json_to_sheet(bowlingData);
-  wsBowl['!cols'] = [{wch:25},{wch:12},{wch:8},{wch:8},{wch:8},{wch:8},{wch:10},{wch:10},{wch:10}];
-  XLSX.utils.book_append_sheet(wb, wsBowl, 'Bowling');
-  
-  // Fielding & extras sheet
-  const fieldingData = stats.map(s => ({
-    'Player': s.name,
-    'Catches': s.catches,
-    'Stumpings': s.stumpings,
-    'Man of Match': s.mom
-  }));
-  const wsField = XLSX.utils.json_to_sheet(fieldingData);
-  wsField['!cols'] = [{wch:25},{wch:10},{wch:10},{wch:12}];
-  XLSX.utils.book_append_sheet(wb, wsField, 'Fielding');
-  
-  // Generate filename
+
+  // Helper to prepend a metadata header row to a sheet
+  function addMetaHeader(ws, headers, filterStr, tab){
+    XLSX.utils.sheet_add_aoa(ws, [
+      ['Cricket Times — Test Cricket Comparison'],
+      ['View: ' + tab + '  |  ' + filterStr],
+      [],
+      headers
+    ], {origin: 'A1'});
+  }
+
+  // Helper: safe number formatting
+  const n2 = v => typeof v === 'number' && v > 0 ? parseFloat(v.toFixed(2)) : (v || 0);
+  const n1 = v => typeof v === 'number' ? parseFloat(v.toFixed(1)) : 0;
+  const str = v => (v != null && v !== 0 && v !== '—') ? v : '—';
+
+  // ---- BUILD SHEETS BASED ON ACTIVE TAB ----
+
+  if(activeTab === 'overview' || activeTab === 'allstats'){
+    // Batting block
+    const batHeaders = ['Player','Country','Tests','Innings','N.O.','Runs','Average','Strike Rate','H.S.','50s','100s'];
+    const batRows = stats.map(s => [
+      s.name, s.country, s.tests, s.inns, s.no, s.runs,
+      n2(s.batAvg), str(s.sr ? n2(s.sr) : null), s.hs, s.fifties, s.hundreds
+    ]);
+    const wsBat = XLSX.utils.aoa_to_sheet([]);
+    addMetaHeader(wsBat, batHeaders, filterSummary, 'Batting');
+    XLSX.utils.sheet_add_aoa(wsBat, batRows, {origin: 'A5'});
+    wsBat['!cols'] = [{wch:25},{wch:14},{wch:7},{wch:8},{wch:6},{wch:8},{wch:10},{wch:12},{wch:7},{wch:6},{wch:6}];
+
+    // Bowling block
+    const bowlHeaders = ['Player','Country','Overs','Maidens','Runs','Wickets','Average','Economy','B/W','Best'];
+    const bowlRows = stats.map(s => [
+      s.name, s.country, n1(s.overs), s.mdns, s.bowlRuns, s.wkts,
+      n2(s.bowlAvg), n2(s.econ), n2(s.bpw), str(s.bestBowl)
+    ]);
+
+    if(activeTab === 'overview'){
+      // Overview: Batting + Bowling + Fielding in one sheet
+      const fieldHeaders = ['Player','Catches','Stumpings','Man of Match'];
+      const fieldRows = stats.map(s => [s.name, s.catches, s.stumpings, s.mom]);
+
+      XLSX.utils.sheet_add_aoa(wsBat, [[]], {origin: 'A' + (5 + batRows.length + 1)});
+      XLSX.utils.sheet_add_aoa(wsBat, [['Bowling']], {origin: 'A' + (5 + batRows.length + 2)});
+      XLSX.utils.sheet_add_aoa(wsBat, [bowlHeaders], {origin: 'A' + (5 + batRows.length + 3)});
+      XLSX.utils.sheet_add_aoa(wsBat, bowlRows, {origin: 'A' + (5 + batRows.length + 4)});
+      const fieldStart = 5 + batRows.length + 4 + bowlRows.length + 2;
+      XLSX.utils.sheet_add_aoa(wsBat, [['Fielding (career totals — unaffected by filters)']], {origin: 'A' + fieldStart});
+      XLSX.utils.sheet_add_aoa(wsBat, [fieldHeaders], {origin: 'A' + (fieldStart + 1)});
+      XLSX.utils.sheet_add_aoa(wsBat, fieldRows, {origin: 'A' + (fieldStart + 2)});
+      XLSX.utils.book_append_sheet(wb, wsBat, 'Overview');
+    } else {
+      // All Stats: separate sheets
+      XLSX.utils.book_append_sheet(wb, wsBat, 'Batting');
+
+      const wsBowl = XLSX.utils.aoa_to_sheet([]);
+      addMetaHeader(wsBowl, bowlHeaders, filterSummary, 'Bowling');
+      XLSX.utils.sheet_add_aoa(wsBowl, bowlRows, {origin: 'A5'});
+      wsBowl['!cols'] = [{wch:25},{wch:14},{wch:8},{wch:8},{wch:8},{wch:8},{wch:10},{wch:10},{wch:8},{wch:10}];
+      XLSX.utils.book_append_sheet(wb, wsBowl, 'Bowling');
+
+      const fieldHeaders = ['Player','Catches','Stumpings','Man of Match'];
+      const fieldRows = stats.map(s => [s.name, s.catches, s.stumpings, s.mom]);
+      const wsField = XLSX.utils.aoa_to_sheet([]);
+      addMetaHeader(wsField, fieldHeaders, 'Career totals — unaffected by filters', 'Fielding');
+      XLSX.utils.sheet_add_aoa(wsField, fieldRows, {origin: 'A5'});
+      wsField['!cols'] = [{wch:25},{wch:10},{wch:10},{wch:14}];
+      XLSX.utils.book_append_sheet(wb, wsField, 'Fielding');
+    }
+
+  } else if(activeTab === 'batting'){
+    const batHeaders = ['Player','Country','Tests','Innings','N.O.','Runs','Balls','Average','Strike Rate','H.S.','50s','100s'];
+    const batRows = stats.map(s => [
+      s.name, s.country, s.tests, s.inns, s.no, s.runs, s.balls,
+      n2(s.batAvg), str(s.sr ? n2(s.sr) : null), s.hs, s.fifties, s.hundreds
+    ]);
+    const ws = XLSX.utils.aoa_to_sheet([]);
+    addMetaHeader(ws, batHeaders, filterSummary, 'Batting');
+    XLSX.utils.sheet_add_aoa(ws, batRows, {origin: 'A5'});
+    ws['!cols'] = [{wch:25},{wch:14},{wch:7},{wch:8},{wch:6},{wch:8},{wch:8},{wch:10},{wch:12},{wch:7},{wch:6},{wch:6}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Batting');
+
+  } else if(activeTab === 'bowling'){
+    const bowlHeaders = ['Player','Country','Bowl Innings','Overs','Maidens','Runs','Wickets','Average','Economy','B/W','Best'];
+    const bowlRows = stats.map(s => [
+      s.name, s.country, s.bowlInns, n1(s.overs), s.mdns, s.bowlRuns, s.wkts,
+      n2(s.bowlAvg), n2(s.econ), n2(s.bpw), str(s.bestBowl)
+    ]);
+    const ws = XLSX.utils.aoa_to_sheet([]);
+    addMetaHeader(ws, bowlHeaders, filterSummary, 'Bowling');
+    XLSX.utils.sheet_add_aoa(ws, bowlRows, {origin: 'A5'});
+    ws['!cols'] = [{wch:25},{wch:14},{wch:12},{wch:8},{wch:8},{wch:8},{wch:8},{wch:10},{wch:10},{wch:8},{wch:10}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Bowling');
+  }
+
+  // Generate context-aware filename
+  const tabLabel = activeTab === 'allstats' ? 'AllStats' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
   const playerNames = stats.map(s => s.name.split(' ').pop()).join('_vs_');
-  const fname = 'player_comparison_' + playerNames + '.xlsx';
+  const filterTag = filterParts.length ? '_filtered' : '';
+  const fname = `CricketTimes_${tabLabel}_${playerNames}${filterTag}.xlsx`;
   XLSX.writeFile(wb, fname);
 }
 
