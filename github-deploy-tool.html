@@ -65,6 +65,21 @@
   .cloud-badge { display: inline-block; font-size: 0.6rem; background: rgba(0,136,255,0.15); color: var(--accent2); border-radius: 4px; padding: 0.1rem 0.4rem; margin-left: 0.5rem; letter-spacing: 0.05em; }
   #loginModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
   #loginModal.open { display: flex; }
+  #confirmModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
+  #confirmModal.open { display: flex; }
+  .confirm-card { background: var(--surface); border: 1px solid rgba(255,68,102,0.4); border-radius: 14px; padding: 2rem; width: 100%; max-width: 420px; }
+  .confirm-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .confirm-title { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--danger); margin-bottom: 0.5rem; }
+  .confirm-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.7; }
+  .confirm-detail { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.75rem; line-height: 1.8; }
+  .confirm-detail .label { color: var(--muted); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .confirm-detail .value { color: var(--text); }
+  .confirm-detail .value.highlight { color: var(--yellow); font-weight: 700; }
+  .confirm-actions { display: flex; gap: 0.75rem; }
+  .confirm-actions .btn-cancel { flex: 1; background: var(--border); color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem; border-radius: 6px; border: none; cursor: pointer; }
+  .confirm-actions .btn-cancel:hover { background: #3a3a4a; color: var(--text); }
+  .confirm-actions .btn-confirm { flex: 2; background: linear-gradient(135deg, var(--danger), #cc2244); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem; border-radius: 6px; border: none; cursor: pointer; }
+  .confirm-actions .btn-confirm:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,68,102,0.3); }
   .modal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; width: 100%; max-width: 380px; }
   .modal-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 0.3rem; }
   .modal-sub { font-size: 0.7rem; color: var(--muted); margin-bottom: 1.5rem; }
@@ -89,8 +104,11 @@
     <label>Email</label>
     <input type="email" id="authEmail" placeholder="you@example.com" />
     <label>Password</label>
-    <input type="password" id="authPassword" placeholder="••••••••" />
-    <button class="btn btn-primary" id="authSubmitBtn" onclick="submitAuth()" style="margin-top:0.25rem">Sign In</button>
+    <div class="token-row">
+      <input type="password" id="authPassword" placeholder="••••••••" style="margin-bottom:0" />
+      <button class="btn btn-ghost" type="button" onclick="toggleAuthPassword()" id="authPasswordToggle">show</button>
+    </div>
+    <button class="btn btn-primary" id="authSubmitBtn" onclick="submitAuth()" style="margin-top:0.75rem">Sign In</button>
     <div class="modal-footer">
       <span id="authToggleText">Don't have an account?</span>
       <a onclick="toggleAuthMode()"> <span id="authToggleLink">Create one</span></a>
@@ -100,7 +118,33 @@
   </div>
 </div>
 
-<div class="container">
+<!-- Confirm Deploy Modal -->
+<div id="confirmModal">
+  <div class="confirm-card">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title">Confirm Deploy</div>
+    <div class="confirm-sub">You are about to overwrite a file in your GitHub repository. Please check the details below before proceeding.</div>
+    <div class="confirm-detail">
+      <div class="label">Repository</div>
+      <div class="value" id="confirmRepo">—</div>
+      <br>
+      <div class="label">File Path</div>
+      <div class="value highlight" id="confirmPath">—</div>
+      <br>
+      <div class="label">Branch</div>
+      <div class="value" id="confirmBranch">—</div>
+      <br>
+      <div class="label">Commit Message</div>
+      <div class="value" id="confirmMsg">—</div>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmDeploy()">&#10230; Yes, Deploy</button>
+    </div>
+  </div>
+</div>
+
+
   <div class="header">
     <h1>&#10230; Deploy to GitHub</h1>
     <p>// push files directly to your repo via GitHub API</p>
@@ -162,7 +206,7 @@
       <label>Commit Message</label>
       <input type="text" id="commitMsg" value="Update via Claude deploy tool" />
     </div>
-    <button class="btn btn-primary" id="deployBtn" onclick="deploy()">&#10230; Deploy to GitHub</button>
+    <button class="btn btn-primary" id="deployBtn" onclick="showConfirm()">&#10230; Deploy to GitHub</button>
     <div class="status" id="status"></div>
   </div>
 </div>
@@ -400,6 +444,12 @@
     document.getElementById('vaultMsg').textContent = 'Token loaded from encrypted cloud storage ✓';
     document.getElementById('tokenSource').textContent = '(from cloud)';
   }
+  function toggleAuthPassword() {
+    const p = document.getElementById('authPassword');
+    const btn = document.getElementById('authPasswordToggle');
+    p.type = p.type === 'password' ? 'text' : 'password';
+    btn.textContent = p.type === 'password' ? 'show' : 'hide';
+  }
   function toggleToken() {
     const t = document.getElementById('token');
     t.type = t.type === 'password' ? 'text' : 'password';
@@ -408,6 +458,30 @@
     const el = document.getElementById('status');
     el.className = 'status ' + type;
     el.innerHTML = msg;
+  }
+  function showConfirm() {
+    const owner = document.getElementById('owner').value.trim();
+    const repo = document.getElementById('repo').value.trim();
+    const branch = document.getElementById('branch').value.trim() || 'main';
+    const filepath = document.getElementById('filepath').value.trim();
+    const token = document.getElementById('token').value.trim();
+    const content = document.getElementById('content').value;
+    const commitMsg = document.getElementById('commitMsg').value.trim() || 'Update via Claude deploy tool';
+    if (!owner || !repo || !filepath || !token || !content) {
+      showStatus('Please fill in all fields.', 'error'); return;
+    }
+    document.getElementById('confirmRepo').textContent = owner + '/' + repo;
+    document.getElementById('confirmPath').textContent = filepath;
+    document.getElementById('confirmBranch').textContent = branch;
+    document.getElementById('confirmMsg').textContent = commitMsg;
+    document.getElementById('confirmModal').classList.add('open');
+  }
+  function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('open');
+  }
+  function confirmDeploy() {
+    closeConfirmModal();
+    deploy();
   }
   async function deploy() {
     const owner = document.getElementById('owner').value.trim();
