@@ -616,11 +616,11 @@ body{
     <div class="snippets-header">
       <h2 class="snippets-title">From the Desk</h2>
       <div class="snippets-nav">
-        <button class="snippets-btn" id="snippetsPrev" onclick="snippetsPage(-1)" disabled>
+        <button class="snippets-btn" id="snippetsPrev" onclick="snippetsPage(-1, true)">
           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <span class="snippets-page-label" id="snippetsPageLabel"></span>
-        <button class="snippets-btn" id="snippetsNext" onclick="snippetsPage(1)">
+        <button class="snippets-btn" id="snippetsNext" onclick="snippetsPage(1, true)">
           <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -1038,11 +1038,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SNIPPETS — from snippets.json, paginated
+// SNIPPETS — from snippets.json, paginated + autorotate every 60s
 // ═══════════════════════════════════════════════════════════════════════════
-const SNIPPETS_PER_PAGE = 4; // matches 4-column grid
+const SNIPPETS_PER_PAGE  = 4;
+const SNIPPETS_ROTATE_MS = 60000;
 let allSnippets   = [];
 let snippetPage   = 0;
+let snippetTimer  = null;
+let snippetPaused = false;
 
 function renderSnippetPage() {
   const grid    = document.getElementById('snippetsGrid');
@@ -1054,22 +1057,48 @@ function renderSnippetPage() {
   const start      = snippetPage * SNIPPETS_PER_PAGE;
   const page       = allSnippets.slice(start, start + SNIPPETS_PER_PAGE);
 
-  grid.innerHTML = page.map(s => `
-    <div class="snippet-card">
-      <div class="snippet-card-rule"></div>
-      <p class="snippet-card-text">${escapeHTML(s.text)}</p>
-    </div>`).join('');
+  // Fade out, swap content, fade in
+  grid.style.transition = 'opacity 0.4s ease';
+  grid.style.opacity = '0';
+  setTimeout(() => {
+    grid.innerHTML = page.map(s => `
+      <div class="snippet-card">
+        <div class="snippet-card-rule"></div>
+        <p class="snippet-card-text">${escapeHTML(s.text)}</p>
+      </div>`).join('');
+    grid.style.opacity = '1';
+  }, 400);
 
   prevBtn.disabled = snippetPage === 0;
   nextBtn.disabled = snippetPage >= totalPages - 1;
-  label.textContent = totalPages > 1 ? `${snippetPage + 1} / ${totalPages}` : '';
+
+  // Dot indicators
+  if (totalPages > 1) {
+    label.innerHTML = Array.from({ length: totalPages }, (_, i) =>
+      `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;margin:0 3px;background:${i === snippetPage ? 'var(--accent)' : 'var(--border2)'};transition:background 0.3s"></span>`
+    ).join('');
+  }
 }
 
-function snippetsPage(dir) {
+function snippetsPage(dir, manual) {
   const totalPages = Math.ceil(allSnippets.length / SNIPPETS_PER_PAGE);
-  snippetPage = Math.max(0, Math.min(snippetPage + dir, totalPages - 1));
+  if (dir > 0) {
+    snippetPage = snippetPage >= totalPages - 1 ? 0 : snippetPage + 1;
+  } else {
+    snippetPage = snippetPage <= 0 ? totalPages - 1 : snippetPage - 1;
+  }
   renderSnippetPage();
+  if (manual !== false) resetSnippetTimer();
 }
+
+function startSnippetTimer() {
+  if (snippetTimer) clearInterval(snippetTimer);
+  snippetTimer = setInterval(() => {
+    if (!snippetPaused) snippetsPage(1, false);
+  }, SNIPPETS_ROTATE_MS);
+}
+
+function resetSnippetTimer() { startSnippetTimer(); }
 
 (async function loadSnippets() {
   try {
@@ -1081,12 +1110,20 @@ function snippetsPage(dir) {
 
     document.getElementById('snippetsSection').style.display = 'block';
 
-    // Hide prev/next entirely if everything fits on one page
-    if (allSnippets.length <= SNIPPETS_PER_PAGE) {
+    const totalPages = Math.ceil(allSnippets.length / SNIPPETS_PER_PAGE);
+
+    if (totalPages <= 1) {
       document.querySelector('.snippets-nav').style.display = 'none';
     }
 
     renderSnippetPage();
+
+    if (totalPages > 1) {
+      startSnippetTimer();
+      const section = document.getElementById('snippetsSection');
+      section.addEventListener('mouseenter', () => { snippetPaused = true; });
+      section.addEventListener('mouseleave', () => { snippetPaused = false; });
+    }
   } catch(e) {
     console.warn('Could not load snippets.json:', e);
   }
