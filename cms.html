@@ -4,30 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cricket Times — Content Management</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0f1117;
-  --surface:#1a1d24;
-  --surface2:#252830;
-  --surface3:#2f333d;
-  --border:#3a3f4a;
-  --border2:#4a505c;
-  --text:#f0f2f5;
-  --text2:#a0a8b8;
-  --text3:#6a7080;
-  --accent:#3b82f6;
-  --accent-hover:#2563eb;
-  --accent-dim:rgba(59,130,246,0.15);
-  --green:#22c55e;
-  --green-dim:rgba(34,197,94,0.15);
-  --yellow:#eab308;
-  --yellow-dim:rgba(234,179,8,0.15);
-  --red:#ef4444;
-  --red-dim:rgba(239,68,68,0.15);
-  --orange:#f97316;
-  --purple:#a855f7;
+  --bg:#f5f3ef;
+  --surface:#ffffff;
+  --surface2:#eeeae3;
+  --surface3:#e2ddd6;
+  --border:#d8d2c8;
+  --border2:#c8c0b4;
+  --text:#1c1917;
+  --text2:#44403c;
+  --text3:#78716c;
+  --accent:#2563eb;
+  --accent-hover:#1d4ed8;
+  --accent-dim:rgba(37,99,235,0.1);
+  --green:#16a34a;
+  --green-dim:rgba(22,163,74,0.1);
+  --yellow:#d97706;
+  --yellow-dim:rgba(217,119,6,0.1);
+  --red:#dc2626;
+  --red-dim:rgba(220,38,38,0.1);
+  --orange:#ea580c;
+  --purple:#9333ea;
+  /* Sidebar stays dark for contrast */
+  --sidebar-bg:#1c1917;
+  --sidebar-border:#2c2927;
+  --sidebar-text:#e7e5e4;
+  --sidebar-text2:#a8a29e;
+  --sidebar-text3:#57534e;
+  --sidebar-active-bg:rgba(37,99,235,0.2);
+  --sidebar-active:rgb(147,197,253);
+  --sidebar-hover:rgba(255,255,255,0.07);
 }
 
 body{
@@ -49,8 +58,8 @@ body{
 
 /* ─── SIDEBAR ─── */
 .sidebar{
-  background:var(--surface);
-  border-right:1px solid var(--border);
+  background:var(--sidebar-bg);
+  border-right:1px solid var(--sidebar-border);
   padding:20px 0;
   display:flex;
   flex-direction:column;
@@ -61,20 +70,22 @@ body{
 }
 .sidebar-brand{
   padding:0 20px 20px;
-  border-bottom:1px solid var(--border);
+  border-bottom:1px solid var(--sidebar-border);
   margin-bottom:20px;
 }
 .sidebar-brand h1{
+  font-family:'Syne',sans-serif;
   font-size:18px;
   font-weight:800;
   letter-spacing:-0.3px;
+  color:var(--sidebar-text);
 }
 .sidebar-brand span{
-  color:var(--accent);
+  color:rgb(147,197,253);
 }
 .sidebar-brand p{
   font-size:11px;
-  color:var(--text3);
+  color:var(--sidebar-text3);
   margin-top:4px;
 }
 
@@ -90,7 +101,7 @@ body{
   font-weight:700;
   letter-spacing:1.2px;
   text-transform:uppercase;
-  color:var(--text3);
+  color:var(--sidebar-text3);
   padding:0 8px;
   margin-bottom:8px;
 }
@@ -98,9 +109,9 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-  padding:10px 12px;
-  border-radius:8px;
-  color:var(--text2);
+  padding:9px 12px;
+  border-radius:7px;
+  color:var(--sidebar-text2);
   text-decoration:none;
   font-size:13px;
   font-weight:500;
@@ -108,16 +119,16 @@ body{
   transition:all 0.15s;
 }
 .nav-item:hover{
-  background:var(--surface2);
-  color:var(--text);
+  background:var(--sidebar-hover);
+  color:var(--sidebar-text);
 }
 .nav-item.active{
-  background:var(--accent-dim);
-  color:var(--accent);
+  background:var(--sidebar-active-bg);
+  color:var(--sidebar-active);
 }
 .nav-item svg{
-  width:18px;
-  height:18px;
+  width:17px;
+  height:17px;
   stroke:currentColor;
   fill:none;
   stroke-width:2;
@@ -125,12 +136,12 @@ body{
 }
 .nav-item-badge{
   margin-left:auto;
-  background:var(--surface3);
+  background:rgba(255,255,255,0.1);
   padding:2px 8px;
   border-radius:10px;
   font-size:11px;
   font-weight:600;
-  color:var(--text3);
+  color:var(--sidebar-text3);
 }
 .nav-item.active .nav-item-badge{
   background:var(--accent);
@@ -139,7 +150,7 @@ body{
 
 .sidebar-footer{
   padding:16px 20px;
-  border-top:1px solid var(--border);
+  border-top:1px solid var(--sidebar-border);
 }
 .sidebar-user{
   display:flex;
@@ -161,10 +172,11 @@ body{
 .sidebar-user-info h4{
   font-size:13px;
   font-weight:600;
+  color:var(--sidebar-text);
 }
 .sidebar-user-info p{
   font-size:11px;
-  color:var(--text3);
+  color:var(--sidebar-text3);
 }
 
 /* ─── MAIN CONTENT ─── */
@@ -179,9 +191,10 @@ body{
   margin-bottom:28px;
 }
 .main-title{
-  font-size:24px;
+  font-size:22px;
   font-weight:700;
   letter-spacing:-0.3px;
+  color:var(--text);
 }
 .main-actions{
   display:flex;
@@ -195,7 +208,7 @@ body{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  padding:10px 18px;
+  padding:9px 16px;
   border-radius:8px;
   font-family:inherit;
   font-size:13px;
@@ -215,37 +228,43 @@ body{
 .btn-primary{
   background:var(--accent);
   color:#fff;
+  box-shadow:0 1px 4px rgba(37,99,235,0.2);
 }
 .btn-primary:hover{
   background:var(--accent-hover);
+  box-shadow:0 2px 8px rgba(37,99,235,0.3);
 }
 .btn-secondary{
-  background:var(--surface2);
+  background:var(--surface);
   color:var(--text);
   border:1px solid var(--border);
 }
 .btn-secondary:hover{
-  background:var(--surface3);
+  background:var(--surface2);
   border-color:var(--border2);
 }
 .btn-ghost{
   background:transparent;
   color:var(--text2);
+  border:1px solid transparent;
 }
 .btn-ghost:hover{
   background:var(--surface2);
   color:var(--text);
+  border-color:var(--border);
 }
 .btn-danger{
   background:var(--red-dim);
   color:var(--red);
+  border:1px solid rgba(220,38,38,0.2);
 }
 .btn-danger:hover{
   background:var(--red);
   color:#fff;
+  border-color:var(--red);
 }
 .btn-sm{
-  padding:6px 12px;
+  padding:5px 11px;
   font-size:12px;
 }
 .btn-sm svg{
@@ -267,6 +286,7 @@ body{
   border:1px solid var(--border);
   border-radius:12px;
   padding:20px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.04);
 }
 .stat-card-header{
   display:flex;
@@ -294,7 +314,7 @@ body{
 .stat-card-icon.green svg{stroke:var(--green)}
 .stat-card-icon.yellow{background:var(--yellow-dim)}
 .stat-card-icon.yellow svg{stroke:var(--yellow)}
-.stat-card-icon.purple{background:rgba(168,85,247,0.15)}
+.stat-card-icon.purple{background:rgba(147,51,234,0.1)}
 .stat-card-icon.purple svg{stroke:var(--purple)}
 
 .stat-card-trend{
@@ -311,6 +331,7 @@ body{
   font-weight:700;
   letter-spacing:-0.5px;
   margin-bottom:4px;
+  color:var(--text);
 }
 .stat-card-label{
   font-size:13px;
@@ -325,6 +346,7 @@ body{
   border:1px solid var(--border);
   border-radius:12px;
   overflow:hidden;
+  box-shadow:0 1px 6px rgba(0,0,0,0.05);
 }
 .panel-header{
   display:flex;
@@ -332,17 +354,19 @@ body{
   align-items:center;
   padding:16px 20px;
   border-bottom:1px solid var(--border);
+  background:var(--surface);
 }
 .panel-title{
   font-size:15px;
   font-weight:600;
+  color:var(--text);
 }
 .panel-tabs{
   display:flex;
   gap:4px;
 }
 .panel-tab{
-  padding:8px 14px;
+  padding:7px 13px;
   border-radius:6px;
   font-size:12px;
   font-weight:500;
@@ -359,12 +383,13 @@ body{
 .panel-tab.active{
   color:var(--accent);
   background:var(--accent-dim);
+  font-weight:600;
 }
 
 .panel-filters{
   display:flex;
   gap:12px;
-  padding:16px 20px;
+  padding:14px 20px;
   border-bottom:1px solid var(--border);
   background:var(--surface2);
 }
@@ -385,29 +410,32 @@ body{
 }
 .filter-search input{
   width:100%;
-  padding:10px 12px 10px 40px;
+  padding:9px 12px 9px 38px;
   border-radius:8px;
-  border:1px solid var(--border);
+  border:1.5px solid var(--border);
   background:var(--surface);
   color:var(--text);
   font-family:inherit;
   font-size:13px;
+  transition:border-color 0.15s,box-shadow 0.15s;
 }
 .filter-search input::placeholder{color:var(--text3)}
 .filter-search input:focus{
   outline:none;
   border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(37,99,235,0.1);
 }
 
 .filter-select{
-  padding:10px 14px;
+  padding:9px 14px;
   border-radius:8px;
-  border:1px solid var(--border);
+  border:1.5px solid var(--border);
   background:var(--surface);
   color:var(--text);
   font-family:inherit;
   font-size:13px;
   cursor:pointer;
+  transition:border-color 0.15s;
 }
 .filter-select:focus{
   outline:none;
@@ -420,7 +448,7 @@ body{
 }
 .content-table th{
   text-align:left;
-  padding:12px 16px;
+  padding:11px 16px;
   font-size:11px;
   font-weight:600;
   letter-spacing:0.5px;
@@ -430,12 +458,13 @@ body{
   border-bottom:1px solid var(--border);
 }
 .content-table td{
-  padding:16px;
+  padding:15px 16px;
   border-bottom:1px solid var(--border);
   vertical-align:middle;
+  color:var(--text);
 }
 .content-table tr:last-child td{border-bottom:none}
-.content-table tr:hover td{background:var(--surface2)}
+.content-table tr:hover td{background:rgba(238,234,227,0.6)}
 
 .article-cell{
   display:flex;
@@ -449,12 +478,14 @@ body{
   object-fit:cover;
   flex-shrink:0;
   background:var(--surface3);
+  border:1px solid var(--border);
 }
 .article-info h4{
   font-size:14px;
   font-weight:600;
   margin-bottom:4px;
   line-height:1.35;
+  color:var(--text);
 }
 .article-info p{
   font-size:12px;
@@ -465,24 +496,24 @@ body{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:5px 10px;
+  padding:4px 10px;
   border-radius:6px;
   font-size:11px;
   font-weight:600;
 }
 .status-badge::before{
   content:'';
-  width:6px;
-  height:6px;
+  width:5px;
+  height:5px;
   border-radius:50%;
 }
-.status-badge.published{background:var(--green-dim);color:var(--green)}
+.status-badge.published{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,0.2)}
 .status-badge.published::before{background:var(--green)}
-.status-badge.draft{background:var(--yellow-dim);color:var(--yellow)}
+.status-badge.draft{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(217,119,6,0.2)}
 .status-badge.draft::before{background:var(--yellow)}
-.status-badge.scheduled{background:var(--accent-dim);color:var(--accent)}
+.status-badge.scheduled{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(37,99,235,0.2)}
 .status-badge.scheduled::before{background:var(--accent)}
-.status-badge.archived{background:var(--surface3);color:var(--text3)}
+.status-badge.archived{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
 .status-badge.archived::before{background:var(--text3)}
 
 .placement-badge{
@@ -490,11 +521,12 @@ body{
   border-radius:5px;
   font-size:11px;
   font-weight:600;
-  background:var(--surface3);
+  background:var(--surface2);
   color:var(--text2);
+  border:1px solid var(--border);
 }
-.placement-badge.hero{background:var(--purple);color:#fff}
-.placement-badge.featured{background:var(--orange);color:#fff}
+.placement-badge.hero{background:var(--purple);color:#fff;border-color:transparent}
+.placement-badge.featured{background:var(--orange);color:#fff;border-color:transparent}
 
 .table-actions{
   display:flex;
@@ -507,8 +539,8 @@ body{
 .modal-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(4px);
+  background:rgba(28,25,23,0.5);
+  backdrop-filter:blur(3px);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -531,8 +563,9 @@ body{
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  transform:scale(0.95);
+  transform:scale(0.96);
   transition:transform 0.2s;
+  box-shadow:0 20px 60px rgba(0,0,0,0.15);
 }
 .modal-overlay.active .modal{
   transform:scale(1);
@@ -543,16 +576,18 @@ body{
   align-items:center;
   padding:20px 24px;
   border-bottom:1px solid var(--border);
+  background:var(--surface);
 }
 .modal-header h2{
-  font-size:18px;
+  font-size:17px;
   font-weight:700;
+  color:var(--text);
 }
 .modal-close{
   width:32px;
   height:32px;
   border-radius:8px;
-  border:none;
+  border:1px solid var(--border);
   background:var(--surface2);
   color:var(--text2);
   cursor:pointer;
@@ -564,10 +599,11 @@ body{
 .modal-close:hover{
   background:var(--red-dim);
   color:var(--red);
+  border-color:rgba(220,38,38,0.3);
 }
 .modal-close svg{
-  width:18px;
-  height:18px;
+  width:17px;
+  height:17px;
   stroke:currentColor;
   fill:none;
   stroke-width:2;
@@ -577,6 +613,7 @@ body{
   padding:24px;
   overflow-y:auto;
   flex:1;
+  background:var(--surface);
 }
 
 .form-row{
@@ -591,21 +628,23 @@ body{
 .form-group{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:7px;
 }
 .form-label{
   font-size:12px;
   font-weight:600;
   color:var(--text2);
+  text-transform:uppercase;
+  letter-spacing:0.4px;
 }
 .form-label span{
   color:var(--red);
 }
 .form-input{
-  padding:12px 14px;
+  padding:10px 13px;
   border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--surface2);
+  border:1.5px solid var(--border);
+  background:var(--bg);
   color:var(--text);
   font-family:inherit;
   font-size:14px;
@@ -615,6 +654,7 @@ body{
   outline:none;
   border-color:var(--accent);
   background:var(--surface);
+  box-shadow:0 0 0 3px rgba(37,99,235,0.1);
 }
 .form-input::placeholder{color:var(--text3)}
 
@@ -625,14 +665,15 @@ textarea.form-input{
 }
 
 .form-select{
-  padding:12px 14px;
+  padding:10px 13px;
   border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--surface2);
+  border:1.5px solid var(--border);
+  background:var(--bg);
   color:var(--text);
   font-family:inherit;
   font-size:14px;
   cursor:pointer;
+  transition:border-color 0.15s;
 }
 .form-select:focus{
   outline:none;
@@ -646,6 +687,7 @@ textarea.form-input{
   text-align:center;
   cursor:pointer;
   transition:all 0.15s;
+  background:var(--bg);
 }
 .image-upload:hover{
   border-color:var(--accent);
@@ -738,6 +780,7 @@ textarea.form-input{
 .score-match-title{
   font-size:14px;
   font-weight:600;
+  color:var(--text);
 }
 .score-teams-editor{
   display:flex;
@@ -751,13 +794,14 @@ textarea.form-input{
   align-items:center;
 }
 .score-team-row input{
-  padding:10px 12px;
+  padding:9px 12px;
   border-radius:6px;
-  border:1px solid var(--border);
+  border:1.5px solid var(--border);
   background:var(--surface);
   color:var(--text);
   font-family:inherit;
   font-size:13px;
+  transition:border-color 0.15s;
 }
 .score-team-row input:focus{
   outline:none;
@@ -768,13 +812,18 @@ textarea.form-input{
 }
 .score-status-row input{
   width:100%;
-  padding:10px 12px;
+  padding:9px 12px;
   border-radius:6px;
-  border:1px solid var(--border);
+  border:1.5px solid var(--border);
   background:var(--surface);
   color:var(--text);
   font-family:inherit;
   font-size:13px;
+  transition:border-color 0.15s;
+}
+.score-status-row input:focus{
+  outline:none;
+  border-color:var(--accent);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -798,13 +847,14 @@ textarea.form-input{
 }
 .ticker-item input{
   flex:1;
-  padding:10px 12px;
+  padding:9px 12px;
   border-radius:6px;
-  border:1px solid var(--border);
-  background:var(--surface2);
+  border:1.5px solid var(--border);
+  background:var(--surface);
   color:var(--text);
   font-family:inherit;
   font-size:13px;
+  transition:border-color 0.15s;
 }
 .ticker-item input:focus{
   outline:none;
@@ -831,7 +881,7 @@ textarea.form-input{
   display:flex;
   align-items:center;
   gap:12px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
   animation:slideIn 0.3s ease;
 }
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -862,6 +912,7 @@ textarea.form-input{
   font-size:13px;
   font-weight:600;
   margin-bottom:2px;
+  color:var(--text);
 }
 .toast-content p{
   font-size:12px;
@@ -882,7 +933,7 @@ textarea.form-input{
   gap: 14px;
   transition: border-color 0.15s, background 0.15s;
 }
-.queue-item:hover { border-color: var(--border2); }
+.queue-item:hover { border-color: var(--border2); background:var(--surface); }
 .queue-item.drag-over { border-color: var(--accent); background: var(--accent-dim); }
 .queue-item-drag {
   color: var(--text3);
@@ -911,12 +962,13 @@ textarea.form-input{
 .queue-item-date-input {
   padding: 4px 8px;
   border-radius: 5px;
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   background: var(--surface);
   color: var(--text);
   font-family: inherit;
   font-size: 12px;
   width: 140px;
+  transition:border-color 0.15s;
 }
 .queue-item-date-input:focus { outline: none; border-color: var(--accent); }
 .queue-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
@@ -927,7 +979,9 @@ textarea.form-input{
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
+  transition:border-color 0.15s;
 }
+.submission-card:hover { border-color:var(--border2); }
 .submission-card-header {
   display: flex;
   justify-content: space-between;
@@ -956,6 +1010,19 @@ textarea.form-input{
 }
 .submission-questions-preview.expanded { max-height: none; }
 
+/* Info banners */
+.info-banner {
+  background:var(--accent-dim);
+  border:1px solid rgba(37,99,235,0.25);
+  border-radius:10px;
+  padding:14px 18px;
+  margin-bottom:20px;
+  font-size:13px;
+  color:var(--text2);
+  line-height:1.6;
+}
+.info-banner strong { color:var(--accent); }
+
 /* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════════════════════════ */
@@ -983,9 +1050,6 @@ textarea.form-input{
 <body>
 
 <div class="app">
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       SIDEBAR
-  ═══════════════════════════════════════════════════════════════════════════ -->
   <aside class="sidebar">
     <div class="sidebar-brand">
       <h1>Cricket <span>Times</span></h1>
@@ -1105,7 +1169,7 @@ textarea.form-input{
           <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           View Live Site
         </a>
-        <a href="#" class="nav-item" onclick="event.preventDefault(); persistToLocalStorage(); showToast('success','Pushed to Live','All published content is now live on the site.');" style="color:var(--green)">
+        <a href="#" class="nav-item" style="color:var(--sidebar-active)" onclick="event.preventDefault(); persistToLocalStorage(); showToast('success','Pushed to Live','All published content is now live on the site.');">
           <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
           Push All to Live
         </a>
@@ -1123,9 +1187,6 @@ textarea.form-input{
     </div>
   </aside>
   
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       MAIN CONTENT
-  ═══════════════════════════════════════════════════════════════════════════ -->
   <main class="main">
     <!-- ARTICLES VIEW -->
     <div id="articles-view">
@@ -1143,7 +1204,6 @@ textarea.form-input{
         </div>
       </div>
       
-      <!-- Stats Cards -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-card-header">
@@ -1155,7 +1215,6 @@ textarea.form-input{
           <div class="stat-card-value">24</div>
           <div class="stat-card-label">Total Articles</div>
         </div>
-        
         <div class="stat-card">
           <div class="stat-card-header">
             <div class="stat-card-icon green">
@@ -1165,7 +1224,6 @@ textarea.form-input{
           <div class="stat-card-value">18</div>
           <div class="stat-card-label">Published</div>
         </div>
-        
         <div class="stat-card">
           <div class="stat-card-header">
             <div class="stat-card-icon yellow">
@@ -1175,7 +1233,6 @@ textarea.form-input{
           <div class="stat-card-value">4</div>
           <div class="stat-card-label">Drafts</div>
         </div>
-        
         <div class="stat-card">
           <div class="stat-card-header">
             <div class="stat-card-icon purple">
@@ -1187,7 +1244,6 @@ textarea.form-input{
         </div>
       </div>
       
-      <!-- Content Panel -->
       <div class="content-panel">
         <div class="panel-header">
           <h2 class="panel-title">All Content</h2>
@@ -1198,7 +1254,6 @@ textarea.form-input{
             <button class="panel-tab" data-filter="scheduled">Scheduled</button>
           </div>
         </div>
-        
         <div class="panel-filters">
           <div class="filter-search">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1218,7 +1273,6 @@ textarea.form-input{
             <option value="standard">Standard</option>
           </select>
         </div>
-        
         <table class="content-table">
           <thead>
             <tr>
@@ -1231,9 +1285,7 @@ textarea.form-input{
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="articlesTable">
-            <!-- Articles populated by JS -->
-          </tbody>
+          <tbody id="articlesTable"></tbody>
         </table>
       </div>
     </div>
@@ -1249,7 +1301,6 @@ textarea.form-input{
           </button>
         </div>
       </div>
-      
       <div class="content-panel">
         <div class="panel-header">
           <h2 class="panel-title">Ticker Items</h2>
@@ -1259,12 +1310,8 @@ textarea.form-input{
           </button>
         </div>
         <div style="padding:20px">
-          <p style="font-size:13px;color:var(--text3);margin-bottom:16px">
-            Add headlines that will scroll across the breaking news ticker. Each item should be concise.
-          </p>
-          <div class="ticker-items" id="tickerItems">
-            <!-- Ticker items populated by JS -->
-          </div>
+          <p style="font-size:13px;color:var(--text3);margin-bottom:16px">Add headlines that will scroll across the breaking news ticker. Each item should be concise.</p>
+          <div class="ticker-items" id="tickerItems"></div>
         </div>
       </div>
     </div>
@@ -1284,14 +1331,9 @@ textarea.form-input{
           </button>
         </div>
       </div>
-      
       <div class="content-panel">
-        <div class="panel-header">
-          <h2 class="panel-title">Current Matches</h2>
-        </div>
-        <div style="padding:20px" id="scoresEditor">
-          <!-- Score cards populated by JS -->
-        </div>
+        <div class="panel-header"><h2 class="panel-title">Current Matches</h2></div>
+        <div style="padding:20px" id="scoresEditor"></div>
       </div>
     </div>
 
@@ -1311,7 +1353,6 @@ textarea.form-input{
         </div>
       </div>
 
-      <!-- GitHub Token Panel -->
       <div class="content-panel" style="margin-bottom:20px">
         <div class="panel-header">
           <h2 class="panel-title">GitHub Access</h2>
@@ -1321,20 +1362,12 @@ textarea.form-input{
           <div class="form-group" style="flex:1">
             <label class="form-label">Personal Access Token <span style="color:var(--red)">*</span></label>
             <div style="display:flex;gap:6px">
-              <input type="password" class="form-input" id="quizGithubToken"
-                     placeholder="ghp_..."
-                     style="flex:1;font-family:monospace;font-size:13px">
-              <button type="button" onclick="toggleQuizTokenVisibility()"
-                      style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
-                <svg id="quizTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
+              <input type="password" class="form-input" id="quizGithubToken" placeholder="ghp_..." style="flex:1;font-family:monospace;font-size:13px">
+              <button type="button" onclick="toggleQuizTokenVisibility()" style="width:36px;height:44px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:all 0.15s">
+                <svg id="quizTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">
-              Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope.
-              <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create one →</a>
-            </span>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">Needs <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">repo</code> write scope. <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create one →</a></span>
           </div>
           <button class="btn btn-secondary" onclick="verifyQuizToken()" style="height:44px;white-space:nowrap">
             <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1344,22 +1377,16 @@ textarea.form-input{
         <div id="quizTokenStatus" style="display:none;padding:0 20px 16px;font-size:12px"></div>
       </div>
 
-      <!-- Quiz Form -->
       <div class="content-panel">
         <div class="panel-header">
           <h2 class="panel-title">Cricket Quiz of the Day</h2>
-          <span style="font-size:12px;color:var(--text3)">Saved as <code style="background:var(--surface3);padding:1px 6px;border-radius:3px;font-size:11px">quiz.json</code> in your repo</span>
+          <span style="font-size:12px;color:var(--text3)">Saved as <code style="background:var(--surface2);padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid var(--border)">quiz.json</code> in your repo</span>
         </div>
         <div style="padding:24px;display:flex;flex-direction:column;gap:20px">
-
           <div class="form-group">
             <label class="form-label">Question <span style="color:var(--red)">*</span></label>
-            <textarea class="form-input" id="quizQuestion"
-                      placeholder="e.g. Who was the first batsman to score 10,000 Test runs?"
-                      style="min-height:80px"
-                      oninput="updateQuizPreview()"></textarea>
+            <textarea class="form-input" id="quizQuestion" placeholder="e.g. Who was the first batsman to score 10,000 Test runs?" style="min-height:80px" oninput="updateQuizPreview()"></textarea>
           </div>
-
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
             <div class="form-group">
               <label class="form-label">Option A <span style="color:var(--red)">*</span></label>
@@ -1374,7 +1401,6 @@ textarea.form-input{
               <input type="text" class="form-input" id="quizOptionC" placeholder="Third option" oninput="updateQuizPreview()">
             </div>
           </div>
-
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div class="form-group">
               <label class="form-label">Correct Answer <span style="color:var(--red)">*</span></label>
@@ -1387,34 +1413,27 @@ textarea.form-input{
             </div>
             <div class="form-group">
               <label class="form-label">Contributed By</label>
-              <input type="text" class="form-input" id="quizContributedBy"
-                     placeholder="e.g. Rahul Dravid" oninput="updateQuizPreview()">
+              <input type="text" class="form-input" id="quizContributedBy" placeholder="e.g. Rahul Dravid" oninput="updateQuizPreview()">
             </div>
           </div>
-
-          <!-- Live Preview -->
           <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
             <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Preview</div>
             <div id="quizPreview" style="font-size:13px;color:var(--text2)">Fill in the fields above to see a preview.</div>
           </div>
-
-          <!-- Current Published Quiz -->
           <div id="quizCurrentPanel" style="display:none;border:1px solid var(--green);border-radius:10px;overflow:hidden">
             <div style="background:var(--green-dim);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
               <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Currently Live on Site</div>
-              <button class="btn btn-sm" onclick="loadCorrectSubmitters()" style="background:rgba(34,197,94,0.2);color:var(--green);border:1px solid var(--green);font-size:11px;padding:4px 10px">
+              <button class="btn btn-sm" onclick="loadCorrectSubmitters()" style="background:rgba(22,163,74,0.15);color:var(--green);border:1px solid rgba(22,163,74,0.3);font-size:11px;padding:4px 10px">
                 <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                 Load Submitters
               </button>
             </div>
             <div id="quizCurrentText" style="font-size:13px;color:var(--text);padding:14px 16px;border-bottom:1px solid var(--border)"></div>
-            <!-- Who got it right -->
             <div id="quizSubmittersWrap" style="padding:14px 16px">
               <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Who Got It Right</div>
               <div id="quizSubmittersList" style="font-size:13px;color:var(--text3);font-style:italic">Click "Load Submitters" to fetch.</div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -1435,16 +1454,14 @@ textarea.form-input{
         </div>
       </div>
 
-      <!-- Info banner -->
-      <div style="background:var(--accent-dim);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--accent)">How sequencing works:</strong>
+      <div class="info-banner">
+        <strong>How sequencing works:</strong>
         Quizzes submitted via the reader form appear below as <em>Pending</em>. 
         When you publish today's quiz from the Quiz panel, any approved submissions here are automatically 
         assigned to subsequent days — Day +1, Day +2, etc. You can also manually set dates or reorder the queue.
-        The schedule is saved as <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">quiz.json</code> with a <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">queue</code> array.
+        The schedule is saved as <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">quiz.json</code> with a <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">queue</code> array.
       </div>
 
-      <!-- GitHub token (shared with quiz panel) -->
       <div class="content-panel" style="margin-bottom:20px">
         <div class="panel-header">
           <h2 class="panel-title">GitHub Access</h2>
@@ -1453,9 +1470,7 @@ textarea.form-input{
         <div style="padding:16px 20px;display:flex;gap:12px;align-items:flex-end">
           <div class="form-group" style="flex:1">
             <label class="form-label">Personal Access Token</label>
-            <input type="password" class="form-input" id="queueGithubToken"
-                   placeholder="ghp_ … (same token as Quiz panel)"
-                   style="font-family:monospace;font-size:13px">
+            <input type="password" class="form-input" id="queueGithubToken" placeholder="ghp_ … (same token as Quiz panel)" style="font-family:monospace;font-size:13px">
           </div>
           <button class="btn btn-secondary" onclick="syncQueueToken()" style="height:44px;white-space:nowrap">Sync from Quiz Panel</button>
           <button class="btn btn-secondary" onclick="loadQuizQueue()" style="height:44px;white-space:nowrap">Load Current Schedule</button>
@@ -1463,29 +1478,22 @@ textarea.form-input{
         <div id="queueTokenStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
       </div>
 
-      <!-- Today's scheduled quiz -->
       <div class="content-panel" style="margin-bottom:20px">
         <div class="panel-header">
           <h2 class="panel-title">Today's Quiz</h2>
           <span id="todayDateLabel" style="font-size:12px;color:var(--text3)"></span>
         </div>
-        <div id="todayQuizPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
-          No quiz loaded. Click "Load Current Schedule".
-        </div>
+        <div id="todayQuizPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">No quiz loaded. Click "Load Current Schedule".</div>
       </div>
 
-      <!-- Upcoming scheduled queue -->
       <div class="content-panel" style="margin-bottom:20px">
         <div class="panel-header">
           <h2 class="panel-title">Upcoming Schedule</h2>
           <span style="font-size:11px;color:var(--text3)">Drag rows to reorder · click date to edit</span>
         </div>
-        <div id="queueSchedulePanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
-          No queue loaded yet.
-        </div>
+        <div id="queueSchedulePanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">No queue loaded yet.</div>
       </div>
 
-      <!-- Pending submissions from Firestore -->
       <div class="content-panel">
         <div class="panel-header">
           <h2 class="panel-title">Pending Submissions</h2>
@@ -1494,9 +1502,7 @@ textarea.form-input{
             Load from Firestore
           </button>
         </div>
-        <div id="pendingSubmissionsPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
-          Click "Load from Firestore" to fetch reader-submitted quizzes awaiting review.
-        </div>
+        <div id="pendingSubmissionsPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">Click "Load from Firestore" to fetch reader-submitted quizzes awaiting review.</div>
       </div>
     </div>
 
@@ -1505,26 +1511,19 @@ textarea.form-input{
       <div class="main-header">
         <h1 class="main-title">Audio Settings</h1>
       </div>
-      
       <div class="content-panel">
-        <div class="panel-header">
-          <h2 class="panel-title">ElevenLabs Voice Cloning</h2>
-        </div>
+        <div class="panel-header"><h2 class="panel-title">ElevenLabs Voice Cloning</h2></div>
         <div style="padding:24px">
-          <p style="font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.6">
-            Connect your ElevenLabs account to generate article narrations in your cloned voice. 
-            Upload your voice sample at <a href="https://elevenlabs.io" target="_blank" style="color:var(--accent)">elevenlabs.io</a> to create a voice clone, then enter your credentials below.
-          </p>
-          
+          <p style="font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.6">Connect your ElevenLabs account to generate article narrations in your cloned voice. Upload your voice sample at <a href="https://elevenlabs.io" target="_blank" style="color:var(--accent)">elevenlabs.io</a> to create a voice clone, then enter your credentials below.</p>
           <div class="form-row">
             <div class="form-group" style="flex:2">
               <label class="form-label">API Key <span style="color:var(--red)">*</span></label>
               <div style="position:relative;display:flex;gap:6px">
                 <input type="password" class="form-input" id="elevenLabsApiKey" placeholder="sk_..." value="" style="flex:1;font-family:'Consolas','Monaco','Courier New',monospace;font-size:13px;letter-spacing:0.3px">
-                <button type="button" onclick="toggleApiKeyVisibility()" id="apiKeyToggleBtn" style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:all 0.15s" title="Show/hide API key">
+                <button type="button" onclick="toggleApiKeyVisibility()" id="apiKeyToggleBtn" style="width:36px;height:36px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:all 0.15s" title="Show/hide API key">
                   <svg id="apiKeyEyeIcon" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
-                <button type="button" onclick="copyApiKey()" id="apiKeyCopyBtn" style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:all 0.15s" title="Copy API key">
+                <button type="button" onclick="copyApiKey()" id="apiKeyCopyBtn" style="width:36px;height:36px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:all 0.15s" title="Copy API key">
                   <svg id="apiKeyCopyIcon" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 </button>
               </div>
@@ -1534,7 +1533,6 @@ textarea.form-input{
               <input type="text" class="form-input" id="elevenLabsVoiceId" placeholder="e.g., pNInz6obpgDQGcFmaJgB" value="">
             </div>
           </div>
-          
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Model</label>
@@ -1550,7 +1548,6 @@ textarea.form-input{
               <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)"><span>Variable</span><span>Stable</span></div>
             </div>
           </div>
-          
           <div style="display:flex;gap:12px;margin-top:20px">
             <button class="btn btn-primary" onclick="saveAudioSettings()">
               <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -1561,10 +1558,7 @@ textarea.form-input{
               Test Voice
             </button>
           </div>
-          
-          <div id="testVoiceResult" style="display:none;margin-top:16px">
-            <audio id="testAudioPlayer" controls style="width:100%;height:36px"></audio>
-          </div>
+          <div id="testVoiceResult" style="display:none;margin-top:16px"></div>
         </div>
       </div>
       
@@ -1579,7 +1573,7 @@ textarea.form-input{
         <div style="padding:20px">
           <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Generate audio for all published articles that don't have audio yet.</p>
           <div id="bulkProgress" style="display:none">
-            <div style="background:var(--surface3);border-radius:6px;height:8px;overflow:hidden;margin-bottom:8px">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;height:8px;overflow:hidden;margin-bottom:8px">
               <div id="bulkProgressBar" style="background:var(--accent);height:100%;width:0%;transition:width 0.3s;border-radius:6px"></div>
             </div>
             <div id="bulkProgressText" style="font-size:12px;color:var(--text3)"></div>
@@ -1603,9 +1597,7 @@ textarea.form-input{
   </main>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     CREATE/EDIT MODAL
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- CREATE/EDIT MODAL -->
 <div class="modal-overlay" id="articleModal">
   <div class="modal">
     <div class="modal-header">
@@ -1614,17 +1606,14 @@ textarea.form-input{
         <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    
     <div class="modal-body">
       <input type="hidden" id="articleId">
-      
       <div class="form-row full">
         <div class="form-group">
           <label class="form-label">Headline <span>*</span></label>
           <input type="text" class="form-input" id="articleHeadline" placeholder="Enter article headline...">
         </div>
       </div>
-      
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Category <span>*</span></label>
@@ -1640,21 +1629,18 @@ textarea.form-input{
           <input type="text" class="form-input" id="articleAuthor" placeholder="Author name">
         </div>
       </div>
-      
       <div class="form-row full">
         <div class="form-group">
           <label class="form-label">Summary</label>
           <textarea class="form-input" id="articleSummary" placeholder="Brief summary for article cards..."></textarea>
         </div>
       </div>
-      
       <div class="form-row full">
         <div class="form-group">
           <label class="form-label">Full Content</label>
           <textarea class="form-input" id="articleContent" placeholder="Full article content..." style="min-height:180px"></textarea>
         </div>
       </div>
-      
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Placement</label>
@@ -1669,8 +1655,6 @@ textarea.form-input{
           <input type="number" class="form-input" id="articleReadTime" placeholder="e.g., 8" min="1">
         </div>
       </div>
-      
-
       <div class="form-row full" style="background:var(--surface2);margin:0 -24px;padding:16px 24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
         <div class="form-group" style="gap:12px">
           <div style="display:flex;align-items:center;justify-content:space-between">
@@ -1696,7 +1680,6 @@ textarea.form-input{
           </div>
         </div>
       </div>
-
       <div class="form-row full">
         <div class="form-group">
           <label class="form-label">Featured Image</label>
@@ -1709,7 +1692,6 @@ textarea.form-input{
         </div>
       </div>
     </div>
-    
     <div class="modal-footer">
       <div class="modal-footer-left">
         <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteArticle()" style="display:none">
@@ -1725,134 +1707,20 @@ textarea.form-input{
   </div>
 </div>
 
-<!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
-
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// DATA STORE (In production, this would connect to a backend/database)
+// DATA STORE
 // ═══════════════════════════════════════════════════════════════════════════
 let articles = [
-  {
-    id: 1,
-    headline: "India's Dominance at Home: How Spin Bowling Has Redefined Test Cricket Strategy",
-    summary: "A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack has forced visiting teams to fundamentally rethink their approach to subcontinent tours.",
-    content: "",
-    category: "analysis",
-    author: "Rahul Dravid",
-    status: "published",
-    placement: "hero",
-    readTime: 12,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-02-27"
-  },
-  {
-    id: 2,
-    headline: "England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination",
-    summary: "The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.",
-    content: "",
-    category: "news",
-    author: "Staff",
-    status: "published",
-    placement: "featured",
-    readTime: 5,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-02-27"
-  },
-  {
-    id: 3,
-    headline: "The Numbers Behind Bradman: Why His Records May Never Be Broken",
-    summary: "Statistical analysis reveals just how far ahead of his peers the Don truly was.",
-    content: "",
-    category: "features",
-    author: "Dr. Sarah Williams",
-    status: "published",
-    placement: "featured",
-    readTime: 15,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-02-26"
-  },
-  {
-    id: 4,
-    headline: "Test Cricket's Survival Depends on Embracing Change, Not Fighting It",
-    summary: "The game's oldest format must evolve or risk becoming a museum piece.",
-    content: "",
-    category: "opinion",
-    author: "Michael Holding",
-    status: "published",
-    placement: "featured",
-    readTime: 8,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-02-26"
-  },
-  {
-    id: 5,
-    headline: "Smith's technique evolution: The making of a modern master",
-    summary: "An in-depth look at how Steve Smith reinvented his batting technique.",
-    content: "",
-    category: "analysis",
-    author: "Mark Taylor",
-    status: "published",
-    placement: "standard",
-    readTime: 10,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-02-25"
-  },
-  {
-    id: 6,
-    headline: "Warner's farewell century seals dominant win",
-    summary: "David Warner bows out of Test cricket with a memorable hundred.",
-    content: "",
-    category: "news",
-    author: "Staff",
-    status: "published",
-    placement: "standard",
-    readTime: 4,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-02-27"
-  },
-  {
-    id: 7,
-    headline: "Upcoming: Preview of the Ashes Series",
-    summary: "Everything you need to know about the upcoming Ashes.",
-    content: "",
-    category: "features",
-    author: "Jonathan Liew",
-    status: "draft",
-    placement: "standard",
-    readTime: 12,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-02-28"
-  },
-  {
-    id: 8,
-    headline: "ICC Announces New Test Championship Format",
-    summary: "Major changes coming to the World Test Championship cycle.",
-    content: "",
-    category: "news",
-    author: "Staff",
-    status: "scheduled",
-    placement: "standard",
-    readTime: 6,
-    image: null,
-    audioEnabled: true,
-    audioData: null,
-    date: "2026-03-01"
-  }
+  { id:1, headline:"India's Dominance at Home: How Spin Bowling Has Redefined Test Cricket Strategy", summary:"A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack has forced visiting teams to fundamentally rethink their approach to subcontinent tours.", content:"", category:"analysis", author:"Rahul Dravid", status:"published", placement:"hero", readTime:12, image:null, audioEnabled:true, audioData:null, date:"2026-02-27" },
+  { id:2, headline:"England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination", summary:"The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.", content:"", category:"news", author:"Staff", status:"published", placement:"featured", readTime:5, image:null, audioEnabled:true, audioData:null, date:"2026-02-27" },
+  { id:3, headline:"The Numbers Behind Bradman: Why His Records May Never Be Broken", summary:"Statistical analysis reveals just how far ahead of his peers the Don truly was.", content:"", category:"features", author:"Dr. Sarah Williams", status:"published", placement:"featured", readTime:15, image:null, audioEnabled:true, audioData:null, date:"2026-02-26" },
+  { id:4, headline:"Test Cricket's Survival Depends on Embracing Change, Not Fighting It", summary:"The game's oldest format must evolve or risk becoming a museum piece.", content:"", category:"opinion", author:"Michael Holding", status:"published", placement:"featured", readTime:8, image:null, audioEnabled:true, audioData:null, date:"2026-02-26" },
+  { id:5, headline:"Smith's technique evolution: The making of a modern master", summary:"An in-depth look at how Steve Smith reinvented his batting technique.", content:"", category:"analysis", author:"Mark Taylor", status:"published", placement:"standard", readTime:10, image:null, audioEnabled:true, audioData:null, date:"2026-02-25" },
+  { id:6, headline:"Warner's farewell century seals dominant win", summary:"David Warner bows out of Test cricket with a memorable hundred.", content:"", category:"news", author:"Staff", status:"published", placement:"standard", readTime:4, image:null, audioEnabled:true, audioData:null, date:"2026-02-27" },
+  { id:7, headline:"Upcoming: Preview of the Ashes Series", summary:"Everything you need to know about the upcoming Ashes.", content:"", category:"features", author:"Jonathan Liew", status:"draft", placement:"standard", readTime:12, image:null, audioEnabled:true, audioData:null, date:"2026-02-28" },
+  { id:8, headline:"ICC Announces New Test Championship Format", summary:"Major changes coming to the World Test Championship cycle.", content:"", category:"news", author:"Staff", status:"scheduled", placement:"standard", readTime:6, image:null, audioEnabled:true, audioData:null, date:"2026-03-01" }
 ];
 
 let tickerItems = [
@@ -1864,70 +1732,48 @@ let tickerItems = [
 ];
 
 let liveScores = [
-  {
-    id: 1,
-    match: "3rd Test • Day 2 • Johannesburg",
-    team1: { name: "South Africa", score: "284 & 45/2" },
-    team2: { name: "England", score: "312" },
-    status: "SA lead by 17 runs"
-  },
-  {
-    id: 2,
-    match: "1st Test • Day 4 • Karachi",
-    team1: { name: "Pakistan", score: "388 & 156/4" },
-    team2: { name: "New Zealand", score: "421" },
-    status: "PAK lead by 123 runs"
-  }
+  { id:1, match:"3rd Test • Day 2 • Johannesburg", team1:{name:"South Africa",score:"284 & 45/2"}, team2:{name:"England",score:"312"}, status:"SA lead by 17 runs" },
+  { id:2, match:"1st Test • Day 4 • Karachi", team1:{name:"Pakistan",score:"388 & 156/4"}, team2:{name:"New Zealand",score:"421"}, status:"PAK lead by 123 runs" }
 ];
 
 let nextArticleId = 9;
 let nextScoreId = 3;
 
-// ═══════════════════════════════════════════════════════════════════════════
 // VIEW SWITCHING
-// ═══════════════════════════════════════════════════════════════════════════
 document.querySelectorAll('.nav-item[data-view]').forEach(item => {
   item.addEventListener('click', (e) => {
     e.preventDefault();
     const view = item.dataset.view;
-    
-    // Update nav active state
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     item.classList.add('active');
-    
-    // Show correct view
     document.getElementById('articles-view').style.display = view === 'articles' ? 'block' : 'none';
     document.getElementById('audio-settings-view').style.display = view === 'audio-settings' ? 'block' : 'none';
     document.getElementById('ticker-view').style.display = view === 'ticker' ? 'block' : 'none';
     document.getElementById('scores-view').style.display = view === 'scores' ? 'block' : 'none';
     document.getElementById('quiz-view').style.display = view === 'quiz' ? 'block' : 'none';
-
-    // Initialize views
+    document.getElementById('quiz-queue-view').style.display = view === 'quiz-queue' ? 'block' : 'none';
     if (view === 'ticker') renderTickerEditor();
     if (view === 'scores') renderScoresEditor();
     if (view === 'quiz') initQuizView();
   });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════
 // ARTICLES MANAGEMENT
-// ═══════════════════════════════════════════════════════════════════════════
 function renderArticles(filteredArticles = null) {
   const data = filteredArticles || articles;
   const tbody = document.getElementById('articlesTable');
-  
   tbody.innerHTML = data.map(article => `
     <tr data-id="${article.id}" data-status="${article.status}" data-category="${article.category}" data-placement="${article.placement}">
       <td>
         <div class="article-cell">
-          <div class="article-thumb" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48)"></div>
+          <div class="article-thumb" style="background:linear-gradient(135deg,#c8d8e8,#d8e8f0)"></div>
           <div class="article-info">
             <h4>${article.headline}</h4>
             <p>${article.author} • ${article.readTime} min read</p>
           </div>
         </div>
       </td>
-      <td><span style="text-transform:capitalize">${article.category}</span></td>
+      <td><span style="text-transform:capitalize;color:var(--text2)">${article.category}</span></td>
       <td><span class="status-badge ${article.status}">${article.status}</span></td>
       <td><span class="placement-badge ${article.placement}">${article.placement}</span></td>
       <td>
@@ -1940,7 +1786,7 @@ function renderArticles(filteredArticles = null) {
           ${article.audioEnabled !== false ? (article.audioData ? '✓ Ready' : 'Pending') : 'Off'}
         </span>
       </td>
-      <td>${formatDate(article.date)}</td>
+      <td style="color:var(--text2)">${formatDate(article.date)}</td>
       <td>
         <div class="table-actions">
           <button class="btn btn-ghost btn-sm" onclick="editArticle(${article.id})">
@@ -1960,21 +1806,16 @@ function filterArticles() {
   const category = document.getElementById('categoryFilter').value;
   const placement = document.getElementById('placementFilter').value;
   const statusTab = document.querySelector('.panel-tab.active').dataset.filter;
-  
   let filtered = articles.filter(article => {
-    const matchSearch = article.headline.toLowerCase().includes(search) || 
-                       article.author.toLowerCase().includes(search);
+    const matchSearch = article.headline.toLowerCase().includes(search) || article.author.toLowerCase().includes(search);
     const matchCategory = !category || article.category === category;
     const matchPlacement = !placement || article.placement === placement;
     const matchStatus = statusTab === 'all' || article.status === statusTab;
-    
     return matchSearch && matchCategory && matchPlacement && matchStatus;
   });
-  
   renderArticles(filtered);
 }
 
-// Tab filtering
 document.querySelectorAll('.panel-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
@@ -1987,8 +1828,6 @@ function openModal(mode, articleId = null) {
   const modal = document.getElementById('articleModal');
   const title = document.getElementById('modalTitle');
   const deleteBtn = document.getElementById('deleteBtn');
-  
-  // Reset form
   document.getElementById('articleId').value = '';
   document.getElementById('articleHeadline').value = '';
   document.getElementById('articleCategory').value = 'news';
@@ -2000,13 +1839,11 @@ function openModal(mode, articleId = null) {
   document.getElementById('articleAudioEnabled').checked = true;
   resetAudioUI();
   resetImageUpload();
-  
   if (mode === 'edit' && articleId) {
     const article = articles.find(a => a.id === articleId);
     if (article) {
       title.textContent = 'Edit Article';
       deleteBtn.style.display = 'flex';
-      
       document.getElementById('articleId').value = article.id;
       document.getElementById('articleHeadline').value = article.headline;
       document.getElementById('articleCategory').value = article.category;
@@ -2016,36 +1853,22 @@ function openModal(mode, articleId = null) {
       document.getElementById('articlePlacement').value = article.placement;
       document.getElementById('articleReadTime').value = article.readTime;
       document.getElementById('articleAudioEnabled').checked = article.audioEnabled !== false;
-      if (article.audioData) {
-        showAudioReady(article.audioData);
-      }
+      if (article.audioData) showAudioReady(article.audioData);
     }
   } else {
     title.textContent = 'Create New Article';
     deleteBtn.style.display = 'none';
   }
-  
   modal.classList.add('active');
 }
 
-function closeModal() {
-  document.getElementById('articleModal').classList.remove('active');
-}
-
-function editArticle(id) {
-  openModal('edit', id);
-}
+function closeModal() { document.getElementById('articleModal').classList.remove('active'); }
+function editArticle(id) { openModal('edit', id); }
 
 function duplicateArticle(id) {
   const article = articles.find(a => a.id === id);
   if (article) {
-    const newArticle = {
-      ...article,
-      id: nextArticleId++,
-      headline: article.headline + ' (Copy)',
-      status: 'draft',
-      date: new Date().toISOString().split('T')[0]
-    };
+    const newArticle = { ...article, id: nextArticleId++, headline: article.headline + ' (Copy)', status: 'draft', date: new Date().toISOString().split('T')[0] };
     articles.unshift(newArticle);
     renderArticles();
     updateStats();
@@ -2062,47 +1885,22 @@ function saveArticle(status) {
   const content = document.getElementById('articleContent').value.trim();
   const placement = document.getElementById('articlePlacement').value;
   const readTime = parseInt(document.getElementById('articleReadTime').value) || 5;
-  
-  if (!headline) {
-    showToast('error', 'Validation Error', 'Headline is required.');
-    return;
-  }
-  
+  if (!headline) { showToast('error', 'Validation Error', 'Headline is required.'); return; }
   const audioEnabled = document.getElementById('articleAudioEnabled').checked;
-
-  const articleData = {
-    headline,
-    category,
-    author,
-    summary,
-    content,
-    placement,
-    readTime,
-    audioEnabled,
-    status,
-    date: new Date().toISOString().split('T')[0],
-    image: null
-  };
-  
+  const articleData = { headline, category, author, summary, content, placement, readTime, audioEnabled, status, date: new Date().toISOString().split('T')[0], image: null };
   if (id) {
-    // Update existing
     const index = articles.findIndex(a => a.id === parseInt(id));
     if (index !== -1) {
-      // Preserve existing audioData unless explicitly removed
-      if (!articleData.audioData && articles[index].audioData) {
-        articleData.audioData = articles[index].audioData;
-      }
+      if (!articleData.audioData && articles[index].audioData) articleData.audioData = articles[index].audioData;
       articles[index] = { ...articles[index], ...articleData };
     }
-    showToast('success', 'Article Updated', status === 'published' ? 'Changes are now live on the site.' : 'Draft saved.');
+    showToast('success', 'Article Updated', status === 'published' ? 'Changes are now live.' : 'Draft saved.');
   } else {
-    // Create new
     articleData.id = nextArticleId++;
     articleData.audioData = window._pendingAudioData || null;
     articles.unshift(articleData);
-    showToast('success', 'Article Created', status === 'published' ? 'Article is now live on the site.' : 'Draft saved.');
+    showToast('success', 'Article Created', status === 'published' ? 'Article is now live.' : 'Draft saved.');
   }
-  
   persistToLocalStorage();
   closeModal();
   renderArticles();
@@ -2117,7 +1915,7 @@ function deleteArticle() {
     renderArticles();
     updateStats();
     persistToLocalStorage();
-    showToast('success', 'Article Deleted', 'The article has been removed from the live site.');
+    showToast('success', 'Article Deleted', 'The article has been removed.');
   }
 }
 
@@ -2128,12 +1926,7 @@ function handleImageUpload(event) {
     reader.onload = (e) => {
       const upload = document.getElementById('imageUpload');
       upload.classList.add('has-image');
-      upload.innerHTML = `
-        <img src="${e.target.result}" alt="Preview">
-        <button class="remove-image" onclick="event.stopPropagation(); resetImageUpload()">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      `;
+      upload.innerHTML = `<img src="${e.target.result}" alt="Preview"><button class="remove-image" onclick="event.stopPropagation(); resetImageUpload()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
     };
     reader.readAsDataURL(file);
   }
@@ -2142,11 +1935,7 @@ function handleImageUpload(event) {
 function resetImageUpload() {
   const upload = document.getElementById('imageUpload');
   upload.classList.remove('has-image');
-  upload.innerHTML = `
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    <p>Click to upload image</p>
-    <span>PNG, JPG up to 5MB</span>
-  `;
+  upload.innerHTML = `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Click to upload image</p><span>PNG, JPG up to 5MB</span>`;
   document.getElementById('imageInput').value = '';
 }
 
@@ -2155,31 +1944,16 @@ function updateStats() {
   const published = articles.filter(a => a.status === 'published').length;
   const drafts = articles.filter(a => a.status === 'draft').length;
   const scheduled = articles.filter(a => a.status === 'scheduled').length;
-  
   const cards = document.querySelectorAll('.stat-card-value');
-  if (cards.length >= 4) {
-    cards[0].textContent = total;
-    cards[1].textContent = published;
-    cards[2].textContent = drafts;
-    cards[3].textContent = scheduled;
-  }
-  
-  // Update nav badge
+  if (cards.length >= 4) { cards[0].textContent = total; cards[1].textContent = published; cards[2].textContent = drafts; cards[3].textContent = scheduled; }
   document.querySelector('.nav-item[data-view="articles"] .nav-item-badge').textContent = total;
 }
 
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ELEVENLABS AUDIO GENERATION
-// ═══════════════════════════════════════════════════════════════════════════
+// ELEVENLABS AUDIO
 function getAudioSettings() {
-  try {
-    const saved = localStorage.getItem('cricketTimesAudioSettings');
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
+  try { const saved = localStorage.getItem('cricketTimesAudioSettings'); if (saved) return JSON.parse(saved); } catch(e) {}
   return { apiKey: '', voiceId: '', model: 'eleven_multilingual_v2', stability: 50 };
 }
-
 function loadAudioSettings() {
   const s = getAudioSettings();
   document.getElementById('elevenLabsApiKey').value = s.apiKey || '';
@@ -2187,22 +1961,13 @@ function loadAudioSettings() {
   document.getElementById('elevenLabsModel').value = s.model || 'eleven_multilingual_v2';
   document.getElementById('elevenLabsStability').value = s.stability || 50;
 }
-
 function toggleApiKeyVisibility() {
   const input = document.getElementById('elevenLabsApiKey');
   const icon = document.getElementById('apiKeyEyeIcon');
   const btn = document.getElementById('apiKeyToggleBtn');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-    btn.style.color = 'var(--accent)';
-  } else {
-    input.type = 'password';
-    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-    btn.style.color = 'var(--text3)';
-  }
+  if (input.type === 'password') { input.type = 'text'; icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'; btn.style.color = 'var(--accent)'; }
+  else { input.type = 'password'; icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'; btn.style.color = 'var(--text3)'; }
 }
-
 function copyApiKey() {
   const input = document.getElementById('elevenLabsApiKey');
   const btn = document.getElementById('apiKeyCopyBtn');
@@ -2210,188 +1975,99 @@ function copyApiKey() {
   const val = input.value.trim();
   if (!val) { showToast('error', 'Nothing to Copy', 'API key field is empty.'); return; }
   navigator.clipboard.writeText(val).then(() => {
-    icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
-    btn.style.color = 'var(--green)';
-    btn.style.borderColor = 'var(--green)';
+    icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'var(--green)';
     showToast('success', 'Copied', 'API key copied to clipboard.');
-    setTimeout(() => {
-      icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
-      btn.style.color = 'var(--text3)';
-      btn.style.borderColor = 'var(--border)';
-    }, 2000);
-  }).catch(() => {
-    input.select();
-    document.execCommand('copy');
-    showToast('success', 'Copied', 'API key copied to clipboard.');
-  });
+    setTimeout(() => { icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'; btn.style.color = 'var(--text3)'; btn.style.borderColor = 'var(--border)'; }, 2000);
+  }).catch(() => { input.select(); document.execCommand('copy'); showToast('success', 'Copied', 'API key copied.'); });
 }
-
 function saveAudioSettings() {
-  const settings = {
-    apiKey: document.getElementById('elevenLabsApiKey').value.trim(),
-    voiceId: document.getElementById('elevenLabsVoiceId').value.trim(),
-    model: document.getElementById('elevenLabsModel').value,
-    stability: parseInt(document.getElementById('elevenLabsStability').value)
-  };
-  
-  document.getElementById('elevenLabsApiKey').value = settings.apiKey;
-  document.getElementById('elevenLabsVoiceId').value = settings.voiceId;
-  
+  const settings = { apiKey: document.getElementById('elevenLabsApiKey').value.trim(), voiceId: document.getElementById('elevenLabsVoiceId').value.trim(), model: document.getElementById('elevenLabsModel').value, stability: parseInt(document.getElementById('elevenLabsStability').value) };
   localStorage.setItem('cricketTimesAudioSettings', JSON.stringify(settings));
-  
-  const keyPreview = settings.apiKey ? settings.apiKey.substring(0, 8) + '...' : '(empty)';
-  const voicePreview = settings.voiceId || '(empty)';
-  showToast('success', 'Settings Saved', `API Key: ${keyPreview} | Voice: ${voicePreview}`);
+  showToast('success', 'Settings Saved', `Key: ${settings.apiKey ? settings.apiKey.substring(0,8)+'...' : '(empty)'}`);
 }
-
 async function callElevenLabs(text) {
   const s = getAudioSettings();
   const apiKey = (s.apiKey || '').trim();
   const voiceId = (s.voiceId || '').trim();
-  
-  if (!apiKey || !voiceId) {
-    throw new Error('Please configure your ElevenLabs API Key and Voice ID in Audio Settings first.');
-  }
-
+  if (!apiKey || !voiceId) throw new Error('Please configure your ElevenLabs API Key and Voice ID in Audio Settings first.');
   const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
-  
-  const body = {
-    text: text,
-    model_id: s.model || 'eleven_multilingual_v2',
-    voice_settings: {
-      stability: (s.stability || 50) / 100,
-      similarity_boost: 0.75
-    }
-  };
-
+  const body = { text, model_id: s.model || 'eleven_multilingual_v2', voice_settings: { stability: (s.stability || 50) / 100, similarity_boost: 0.75 } };
   let response;
-  try {
-    response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'xi-api-key': apiKey
-      },
-      body: JSON.stringify(body)
-    });
-  } catch(networkErr) {
-    throw new Error('Network error — could not reach ElevenLabs. Error: ' + networkErr.message);
-  }
-
-  if (!response.ok) {
-    let errDetail = '';
-    try { errDetail = await response.text(); } catch(e) {}
-    if (response.status === 401) {
-      throw new Error(`Auth failed (401): ${errDetail.substring(0, 200)}.`);
-    }
-    if (response.status === 422) {
-      throw new Error('Invalid request (422). Detail: ' + errDetail.substring(0, 200));
-    }
-    throw new Error(`ElevenLabs error ${response.status}: ${errDetail.substring(0, 300)}`);
-  }
-
+  try { response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'xi-api-key': apiKey }, body: JSON.stringify(body) }); }
+  catch(networkErr) { throw new Error('Network error: ' + networkErr.message); }
+  if (!response.ok) { let errDetail = ''; try { errDetail = await response.text(); } catch(e) {} throw new Error(`ElevenLabs error ${response.status}: ${errDetail.substring(0, 200)}`); }
   const blob = await response.blob();
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('Failed to convert audio to base64'));
-    reader.readAsDataURL(blob);
-  });
+  return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => reject(new Error('Failed to convert audio')); reader.readAsDataURL(blob); });
 }
-
 async function testVoice() {
   const resultDiv = document.getElementById('testVoiceResult');
   resultDiv.style.display = 'block';
-  resultDiv.innerHTML = '<div style="font-size:12px;color:var(--text3)">Generating test audio with your voice...</div>';
-
+  resultDiv.innerHTML = '<div style="font-size:12px;color:var(--text3)">Generating test audio…</div>';
   const s = getAudioSettings();
   if (!s.apiKey) { showToast('error', 'No API Key', 'Enter your API key first.'); return; }
   if (!s.voiceId) { showToast('error', 'No Voice ID', 'Enter your Voice ID first.'); return; }
-
   try {
     const audioData = await callElevenLabs('This is a test of the Cricket Times audio narration.');
     resultDiv.innerHTML = '<div style="margin-bottom:8px"><audio controls style="width:100%;height:36px"></audio></div><span style="color:var(--green);font-size:12px;font-weight:600">✓ Voice test successful!</span>';
-    const player = resultDiv.querySelector('audio');
-    player.src = audioData;
-    player.play();
+    const player = resultDiv.querySelector('audio'); player.src = audioData; player.play();
     showToast('success', 'Voice Test Passed', 'Audio generated successfully.');
   } catch(err) {
-    resultDiv.innerHTML = '<pre style="font-size:11px;color:var(--red);white-space:pre-wrap;background:var(--surface);padding:12px;border-radius:8px;border:1px solid var(--red)">' + err.message + '</pre>';
+    resultDiv.innerHTML = `<pre style="font-size:11px;color:var(--red);white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:8px;border:1px solid rgba(220,38,38,0.3)">${err.message}</pre>`;
     showToast('error', 'Voice Test Failed', err.message.substring(0, 100));
   }
 }
-
 function resetAudioUI() {
   const status = document.getElementById('audioStatus');
   const playerWrap = document.getElementById('audioPlayerWrap');
   const player = document.getElementById('audioPreviewPlayer');
   const genBtn = document.getElementById('generateAudioBtn');
-  status.style.display = 'none';
-  playerWrap.style.display = 'none';
-  player.src = '';
+  status.style.display = 'none'; playerWrap.style.display = 'none'; player.src = '';
   genBtn.disabled = false;
   genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Generate Audio';
   window._pendingAudioData = null;
 }
-
 function showAudioReady(audioDataUri) {
   const status = document.getElementById('audioStatus');
   const statusText = document.getElementById('audioStatusText');
   const playerWrap = document.getElementById('audioPlayerWrap');
   const player = document.getElementById('audioPreviewPlayer');
-  status.style.display = 'block';
-  statusText.innerHTML = '<span style="color:var(--green);font-weight:600">✓ Audio ready</span>';
-  playerWrap.style.display = 'block';
-  player.src = audioDataUri;
+  status.style.display = 'block'; statusText.innerHTML = '<span style="color:var(--green);font-weight:600">✓ Audio ready</span>'; playerWrap.style.display = 'block'; player.src = audioDataUri;
   window._pendingAudioData = audioDataUri;
 }
-
 function removeGeneratedAudio() {
   const id = document.getElementById('articleId').value;
-  if (id) {
-    const idx = articles.findIndex(a => a.id === parseInt(id));
-    if (idx !== -1) { articles[idx].audioData = null; persistToLocalStorage(); }
-  }
+  if (id) { const idx = articles.findIndex(a => a.id === parseInt(id)); if (idx !== -1) { articles[idx].audioData = null; persistToLocalStorage(); } }
   resetAudioUI();
   showToast('success', 'Audio Removed', 'The generated narration has been removed.');
 }
-
 async function generateAudioForArticle() {
   const headline = document.getElementById('articleHeadline').value.trim();
   const summary = document.getElementById('articleSummary').value.trim();
   const content = document.getElementById('articleContent').value.trim();
   const text = content || (headline + '. ' + summary);
   if (!text || text.length < 10) { showToast('error', 'No Content', 'Add content before generating audio.'); return; }
-
   const genBtn = document.getElementById('generateAudioBtn');
   const status = document.getElementById('audioStatus');
   const statusText = document.getElementById('audioStatusText');
-
   genBtn.disabled = true;
   genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2" stroke-dasharray="30 70"/></svg> Generating...';
-  status.style.display = 'block';
-  statusText.innerHTML = 'Calling ElevenLabs API...';
-
+  status.style.display = 'block'; statusText.innerHTML = 'Calling ElevenLabs API...';
   try {
     const audioData = await callElevenLabs(text);
     const id = document.getElementById('articleId').value;
-    if (id) {
-      const idx = articles.findIndex(a => a.id === parseInt(id));
-      if (idx !== -1) { articles[idx].audioData = audioData; persistToLocalStorage(); }
-    }
+    if (id) { const idx = articles.findIndex(a => a.id === parseInt(id)); if (idx !== -1) { articles[idx].audioData = audioData; persistToLocalStorage(); } }
     window._pendingAudioData = audioData;
     showAudioReady(audioData);
     genBtn.disabled = false;
     genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Regenerate';
     showToast('success', 'Audio Generated', 'Narration created.');
   } catch(err) {
-    statusText.innerHTML = '<span style="color:var(--red)">✗ ' + err.message + '</span>';
+    statusText.innerHTML = `<span style="color:var(--red)">✗ ${err.message}</span>`;
     genBtn.disabled = false;
     genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Retry';
     showToast('error', 'Generation Failed', err.message);
   }
 }
-
 async function generateAllAudio() {
   const s = getAudioSettings();
   if (!s.apiKey || !s.voiceId) { showToast('error', 'Not Configured', 'Set up ElevenLabs credentials first.'); return; }
@@ -2406,43 +2082,26 @@ async function generateAllAudio() {
     progressText.textContent = `Generating ${done + 1} of ${pending.length}: ${article.headline.substring(0, 50)}...`;
     progressBar.style.width = ((done / pending.length) * 100) + '%';
     const text = article.content || (article.headline + '. ' + article.summary);
-    try {
-      article.audioData = await callElevenLabs(text);
-      persistToLocalStorage();
-    } catch(err) {
-      progressText.textContent = `Error: ${err.message}`;
-      showToast('error', 'Generation Error', err.message);
-      break;
-    }
+    try { article.audioData = await callElevenLabs(text); persistToLocalStorage(); }
+    catch(err) { progressText.textContent = `Error: ${err.message}`; showToast('error', 'Generation Error', err.message); break; }
     done++;
   }
-  progressBar.style.width = '100%';
-  progressText.textContent = `Done! Generated audio for ${done} articles.`;
-  renderArticles();
-  showToast('success', 'Bulk Generation Complete', `${done} articles now have audio.`);
+  progressBar.style.width = '100%'; progressText.textContent = `Done! Generated audio for ${done} articles.`;
+  renderArticles(); showToast('success', 'Bulk Generation Complete', `${done} articles now have audio.`);
 }
-
 function runAudioDiagnostic() {
   const out = document.getElementById('audioDiagOutput');
   let lines = [];
   lines.push('=== ARTICLES IN MEMORY ===');
-  articles.forEach(a => {
-    lines.push(`  ID:${a.id} | "${a.headline.substring(0,45)}..." | audio:${a.audioEnabled!==false?'ON':'OFF'} | hasData:${!!a.audioData}`);
-  });
-  lines.push('');
-  lines.push('=== LOCALSTORAGE KEYS ===');
+  articles.forEach(a => { lines.push(`  ID:${a.id} | "${a.headline.substring(0,45)}..." | audio:${a.audioEnabled!==false?'ON':'OFF'} | hasData:${!!a.audioData}`); });
+  lines.push(''); lines.push('=== LOCALSTORAGE KEYS ===');
   const allKeys = [];
   for (let i = 0; i < localStorage.length; i++) allKeys.push(localStorage.key(i));
-  allKeys.sort().forEach(key => {
-    const val = localStorage.getItem(key);
-    lines.push(`  ${key} (${val ? (val.length/1024).toFixed(0)+'KB' : '0KB'})`);
-  });
+  allKeys.sort().forEach(key => { const val = localStorage.getItem(key); lines.push(`  ${key} (${val ? (val.length/1024).toFixed(0)+'KB' : '0KB'})`); });
   out.textContent = lines.join('\n');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// TICKER MANAGEMENT
-// ═══════════════════════════════════════════════════════════════════════════
+// TICKER
 function renderTickerEditor() {
   const container = document.getElementById('tickerItems');
   container.innerHTML = tickerItems.map((item, index) => `
@@ -2454,15 +2113,12 @@ function renderTickerEditor() {
     </div>
   `).join('');
 }
-
 function addTickerItem() { tickerItems.push('New breaking news headline...'); renderTickerEditor(); }
 function updateTickerItem(index, value) { tickerItems[index] = value; }
 function removeTickerItem(index) { tickerItems.splice(index, 1); renderTickerEditor(); }
 function saveTicker() { persistToLocalStorage(); showToast('success', 'Ticker Updated', 'Breaking news headlines saved.'); }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// LIVE SCORES MANAGEMENT
-// ═══════════════════════════════════════════════════════════════════════════
+// SCORES
 function renderScoresEditor() {
   const container = document.getElementById('scoresEditor');
   container.innerHTML = liveScores.map(score => `
@@ -2487,12 +2143,7 @@ function renderScoresEditor() {
     </div>
   `).join('');
 }
-
-function addScoreCard() {
-  liveScores.push({ id: nextScoreId++, match: "New Match • Day 1", team1: { name: "Team A", score: "0/0" }, team2: { name: "Team B", score: "" }, status: "Match in progress" });
-  renderScoresEditor();
-}
-
+function addScoreCard() { liveScores.push({ id: nextScoreId++, match: "New Match • Day 1", team1: { name: "Team A", score: "0/0" }, team2: { name: "Team B", score: "" }, status: "Match in progress" }); renderScoresEditor(); }
 function updateScore(id, field, value) {
   const score = liveScores.find(s => s.id === id);
   if (score) {
@@ -2504,54 +2155,38 @@ function updateScore(id, field, value) {
     else if (field === 'status') score.status = value;
   }
 }
-
 function removeScoreCard(id) { liveScores = liveScores.filter(s => s.id !== id); renderScoresEditor(); }
 function saveScores() { persistToLocalStorage(); showToast('success', 'Scores Updated', 'Live scores saved.'); }
 
-// ═══════════════════════════════════════════════════════════════════════════
 // UTILITIES
-// ═══════════════════════════════════════════════════════════════════════════
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
   if (date.toDateString() === today.toDateString()) return 'Today';
   if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
-
 function showToast(type, title, message) {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
   toast.className = 'toast';
-  toast.innerHTML = `
-    <div class="toast-icon ${type}">
-      <svg viewBox="0 0 24 24">${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}</svg>
-    </div>
-    <div class="toast-content"><h4>${title}</h4><p>${message}</p></div>
-  `;
+  toast.innerHTML = `<div class="toast-icon ${type}"><svg viewBox="0 0 24 24">${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}</svg></div><div class="toast-content"><h4>${title}</h4><p>${message}</p></div>`;
   container.appendChild(toast);
   setTimeout(() => { toast.style.animation = 'slideIn 0.3s ease reverse'; setTimeout(() => toast.remove(), 300); }, 3000);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// LOCALSTORAGE PERSISTENCE
-// ═══════════════════════════════════════════════════════════════════════════
+// LOCALSTORAGE
 function persistToLocalStorage() {
   const publishedArticles = articles.filter(a => a.status === 'published');
   publishedArticles.forEach(a => {
     const audioKey = 'cricketTimesAudio_' + a.id;
-    try {
-      if (a.audioData) localStorage.setItem(audioKey, a.audioData);
-      else localStorage.removeItem(audioKey);
-    } catch(e) {}
+    try { if (a.audioData) localStorage.setItem(audioKey, a.audioData); else localStorage.removeItem(audioKey); } catch(e) {}
   });
   const articlesForPayload = publishedArticles.map(a => { const { audioData, ...rest } = a; return { ...rest, hasAudio: !!audioData }; });
   const payload = { articles: articlesForPayload, tickerItems, liveScores, lastUpdated: new Date().toISOString() };
   try { localStorage.setItem('cricketTimesCMS', JSON.stringify(payload)); } catch(e) {}
 }
-
 function loadFromLocalStorage() {
   try {
     const saved = localStorage.getItem('cricketTimesCMS_editorState');
@@ -2575,54 +2210,36 @@ function loadFromLocalStorage() {
     }
   } catch(e) {}
 }
-
 function saveEditorState() {
   try {
     articles.forEach(a => {
-      try {
-        if (a.audioData) localStorage.setItem('cricketTimesEditorAudio_' + a.id, a.audioData);
-        else localStorage.removeItem('cricketTimesEditorAudio_' + a.id);
-      } catch(e) {}
+      try { if (a.audioData) localStorage.setItem('cricketTimesEditorAudio_' + a.id, a.audioData); else localStorage.removeItem('cricketTimesEditorAudio_' + a.id); } catch(e) {}
     });
     const articlesWithoutAudio = articles.map(a => { const { audioData, ...rest } = a; return { ...rest, hasAudio: !!audioData }; });
     localStorage.setItem('cricketTimesCMS_editorState', JSON.stringify({ articles: articlesWithoutAudio, tickerItems, liveScores, nextArticleId, nextScoreId }));
   } catch(e) {}
 }
-
 const _originalPersist = persistToLocalStorage;
 persistToLocalStorage = function() { _originalPersist(); saveEditorState(); };
-
 loadFromLocalStorage();
-
 document.getElementById('articleModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-
 renderArticles();
 loadAudioSettings();
 persistToLocalStorage();
 
-// ═══════════════════════════════════════════════════════════════════════════
 // QUIZ
-// ═══════════════════════════════════════════════════════════════════════════
 const QUIZ_REPO_OWNER = 'joidevivre689103';
 const QUIZ_REPO_NAME  = 'congenial-eureka';
 const QUIZ_FILE_PATH  = 'quiz.json';
 const QUIZ_BRANCH     = 'main';
-
 function getQuizToken() { return document.getElementById('quizGithubToken').value.trim(); }
-
 function toggleQuizTokenVisibility() {
   const inp = document.getElementById('quizGithubToken');
   const eye = document.getElementById('quizTokenEye');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  } else {
-    inp.type = 'password';
-    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  }
+  if (inp.type === 'password') { inp.type = 'text'; eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'; }
+  else { inp.type = 'password'; eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'; }
 }
-
 async function verifyQuizToken() {
   const token = getQuizToken();
   const statusEl = document.getElementById('quizTokenStatus');
@@ -2635,7 +2252,6 @@ async function verifyQuizToken() {
     else { const err = await res.json(); statusEl.innerHTML = `<span style="color:var(--red)">✗ ${err.message}</span>`; }
   } catch(e) { statusEl.innerHTML = `<span style="color:var(--red)">✗ Network error: ${e.message}</span>`; }
 }
-
 function updateQuizPreview() {
   const q = document.getElementById('quizQuestion').value;
   const a = document.getElementById('quizOptionA').value;
@@ -2646,19 +2262,8 @@ function updateQuizPreview() {
   const el = document.getElementById('quizPreview');
   if (!q) { el.innerHTML = 'Fill in the fields above to see a preview.'; return; }
   const map = { A: a, B: b, C: c };
-  el.innerHTML = `
-    <div style="font-weight:700;margin-bottom:10px;color:var(--text)">${q}</div>
-    ${['A','B','C'].map(opt => `
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:6px;border-radius:6px;
-                  background:${ok===opt?'var(--green-dim)':'var(--surface3)'};border:1px solid ${ok===opt?'var(--green)':'var(--border)'}">
-        <span style="font-size:11px;font-weight:700;color:${ok===opt?'var(--green)':'var(--text3)'};width:16px">${opt}</span>
-        <span style="color:${ok===opt?'var(--green)':'var(--text2)'}">${map[opt] || '<em style="opacity:0.4">No option entered</em>'}</span>
-        ${ok===opt ? '<span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">✓ CORRECT</span>' : ''}
-      </div>`).join('')}
-    ${by ? `<div style="margin-top:8px;font-size:11px;color:var(--text3);font-style:italic">Contributed by: ${by}</div>` : ''}
-  `;
+  el.innerHTML = `<div style="font-weight:700;margin-bottom:10px;color:var(--text)">${q}</div>${['A','B','C'].map(opt => `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:6px;border-radius:6px;background:${ok===opt?'var(--green-dim)':'var(--surface3)'};border:1px solid ${ok===opt?'rgba(22,163,74,0.3)':'var(--border)'}"><span style="font-size:11px;font-weight:700;color:${ok===opt?'var(--green)':'var(--text3)'};width:16px">${opt}</span><span style="color:${ok===opt?'var(--green)':'var(--text2)'}">${map[opt] || '<em style="opacity:0.4">No option entered</em>'}</span>${ok===opt ? '<span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">✓ CORRECT</span>' : ''}</div>`).join('')}${by ? `<div style="margin-top:8px;font-size:11px;color:var(--text3);font-style:italic">Contributed by: ${by}</div>` : ''}`;
 }
-
 async function initQuizView() {
   const url = `https://raw.githubusercontent.com/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/${QUIZ_BRANCH}/${QUIZ_FILE_PATH}`;
   try {
@@ -2682,7 +2287,6 @@ async function initQuizView() {
     }
   } catch(e) {}
 }
-
 async function loadCorrectSubmitters() {
   const listEl = document.getElementById('quizSubmittersList');
   listEl.innerHTML = '<span style="color:var(--text3)">Loading…</span>';
@@ -2697,10 +2301,9 @@ async function loadCorrectSubmitters() {
     if (snap.empty) { listEl.innerHTML = '<span style="color:var(--text3);font-style:italic">No correct answers yet.</span>'; return; }
     const names = [];
     snap.forEach(doc => { const d = doc.data(); names.push(d.name || d.email || 'Anonymous'); });
-    listEl.innerHTML = names.map(n => `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-dim);color:var(--green);border:1px solid var(--green);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 4px 3px 0">${n}</span>`).join('');
+    listEl.innerHTML = names.map(n => `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,0.3);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 4px 3px 0">${n}</span>`).join('');
   } catch(e) { listEl.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
 }
-
 async function startNewQuiz() {
   const db = window._db;
   const currentQuestion = document.getElementById('quizQuestion').value.trim();
@@ -2729,7 +2332,6 @@ async function startNewQuiz() {
   updateQuizPreview();
   showToast('success', 'Ready for New Quiz', 'Fill in the form and publish when ready.');
 }
-
 async function saveQuizToGitHub() {
   const token = getQuizToken();
   if (!token) { showToast('error', 'No Token', 'Enter your GitHub token first.'); return; }
@@ -2755,18 +2357,12 @@ async function saveQuizToGitHub() {
   } catch(e) { showToast('error', 'Network Error', e.message); }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 // QUIZ QUEUE
-// ═══════════════════════════════════════════════════════════════════════════
 let queueState = { today: null, queue: [] };
 let pendingSubmissions = [];
 let dragSrcIndex = null;
 
-function syncQueueToken() {
-  const t = document.getElementById('quizGithubToken').value.trim();
-  if (t) { document.getElementById('queueGithubToken').value = t; showQueueStatus('<span style="color:var(--green)">✓ Token synced.</span>'); }
-  else { showQueueStatus('<span style="color:var(--yellow)">⚠ Quiz panel token is empty.</span>'); }
-}
+function syncQueueToken() { const t = document.getElementById('quizGithubToken').value.trim(); if (t) { document.getElementById('queueGithubToken').value = t; showQueueStatus('<span style="color:var(--green)">✓ Token synced.</span>'); } else { showQueueStatus('<span style="color:var(--yellow)">⚠ Quiz panel token is empty.</span>'); } }
 function showQueueStatus(html) { const el = document.getElementById('queueTokenStatus'); el.style.display = 'block'; el.innerHTML = html; }
 function getQueueToken() { return document.getElementById('queueGithubToken').value.trim() || document.getElementById('quizGithubToken').value.trim(); }
 function todayStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -2789,17 +2385,12 @@ async function loadQuizQueue() {
   document.getElementById('todayDateLabel').textContent = formatDateNice(todayStr());
   renderTodayPanel(); renderQueuePanel(); updateQueueBadge();
 }
-
 function renderTodayPanel() {
   const panel = document.getElementById('todayQuizPanel');
   const q = queueState.today;
   if (!q) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No quiz set for today.</span>'; return; }
-  panel.innerHTML = `<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">${q.question}</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      ${['A','B','C'].map(opt => `<div style="padding:6px 12px;border-radius:6px;font-size:12px;background:${q.correctAnswer===opt?'var(--green-dim)':'var(--surface3)'};border:1px solid ${q.correctAnswer===opt?'var(--green)':'var(--border)'};color:${q.correctAnswer===opt?'var(--green)':'var(--text2)'}"><strong>${opt}:</strong> ${q['option'+opt]||'—'}${q.correctAnswer===opt?' ✓':''}</div>`).join('')}
-    </div>`;
+  panel.innerHTML = `<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">${q.question}</div><div style="display:flex;gap:10px;flex-wrap:wrap">${['A','B','C'].map(opt => `<div style="padding:6px 12px;border-radius:6px;font-size:12px;background:${q.correctAnswer===opt?'var(--green-dim)':'var(--surface2)'};border:1px solid ${q.correctAnswer===opt?'rgba(22,163,74,0.3)':'var(--border)'};color:${q.correctAnswer===opt?'var(--green)':'var(--text2)'}"><strong>${opt}:</strong> ${q['option'+opt]||'—'}${q.correctAnswer===opt?' ✓':''}</div>`).join('')}</div>`;
 }
-
 function renderQueuePanel() {
   const panel = document.getElementById('queueSchedulePanel');
   if (!queueState.queue.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">Queue is empty.</span>'; return; }
@@ -2811,36 +2402,15 @@ function renderQueuePanel() {
     div.addEventListener('dragstart', () => { dragSrcIndex = idx; });
     div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('drag-over'); });
     div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
-    div.addEventListener('drop', e => {
-      e.preventDefault(); div.classList.remove('drag-over');
-      if (dragSrcIndex === null || dragSrcIndex === idx) return;
-      const moved = queueState.queue.splice(dragSrcIndex, 1)[0];
-      queueState.queue.splice(idx, 0, moved);
-      resequenceDates(); renderQueuePanel();
-    });
-    div.innerHTML = `
-      <div class="queue-item-drag"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="8" x2="19" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="16" x2="19" y2="16"/></svg></div>
-      <div class="queue-item-body">
-        <div class="queue-item-question">${item.question}</div>
-        <div class="queue-item-meta"><span>A: ${item.optionA||'—'} · B: ${item.optionB||'—'} · C: ${item.optionC||'—'}</span>${item.contributedBy?`<span>· by <strong>${item.contributedBy}</strong></span>`:''}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <input type="date" class="queue-item-date-input" value="${item.date||''}" onchange="queueState.queue[${idx}].date=this.value;updateQueueBadge()">
-        <div class="queue-item-actions">
-          <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},-1)" ${idx===0?'disabled':''}>↑</button>
-          <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},1)" ${idx===queueState.queue.length-1?'disabled':''}>↓</button>
-          <button class="btn btn-sm btn-danger" onclick="removeFromQueue(${idx})">×</button>
-        </div>
-      </div>`;
+    div.addEventListener('drop', e => { e.preventDefault(); div.classList.remove('drag-over'); if (dragSrcIndex === null || dragSrcIndex === idx) return; const moved = queueState.queue.splice(dragSrcIndex, 1)[0]; queueState.queue.splice(idx, 0, moved); resequenceDates(); renderQueuePanel(); });
+    div.innerHTML = `<div class="queue-item-drag"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="8" x2="19" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="16" x2="19" y2="16"/></svg></div><div class="queue-item-body"><div class="queue-item-question">${item.question}</div><div class="queue-item-meta"><span>A: ${item.optionA||'—'} · B: ${item.optionB||'—'} · C: ${item.optionC||'—'}</span>${item.contributedBy?`<span>· by <strong>${item.contributedBy}</strong></span>`:''}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0"><input type="date" class="queue-item-date-input" value="${item.date||''}" onchange="queueState.queue[${idx}].date=this.value;updateQueueBadge()"><div class="queue-item-actions"><button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},-1)" ${idx===0?'disabled':''}>↑</button><button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},1)" ${idx===queueState.queue.length-1?'disabled':''}>↓</button><button class="btn btn-sm btn-danger" onclick="removeFromQueue(${idx})">×</button></div></div>`;
     panel.appendChild(div);
   });
   updateQueueBadge();
 }
-
-function moveQueueItem(idx, dir) { const t = idx+dir; if(t<0||t>=queueState.queue.length)return; [queueState.queue[idx],queueState.queue[t]]=[queueState.queue[t],queueState.queue[idx]]; resequenceDates();renderQueuePanel(); }
+function moveQueueItem(idx, dir) { const t=idx+dir; if(t<0||t>=queueState.queue.length)return; [queueState.queue[idx],queueState.queue[t]]=[queueState.queue[t],queueState.queue[idx]]; resequenceDates();renderQueuePanel(); }
 function removeFromQueue(idx) { queueState.queue.splice(idx,1); resequenceDates();renderQueuePanel(); }
-function resequenceDates() { const base = queueState.today?(queueState.today.date||todayStr()):addDays(todayStr(),-1); queueState.queue.forEach((item,i)=>{item.date=addDays(base,i+1);}); }
-
+function resequenceDates() { const base=queueState.today?(queueState.today.date||todayStr()):addDays(todayStr(),-1); queueState.queue.forEach((item,i)=>{item.date=addDays(base,i+1);}); }
 async function loadPendingSubmissions() {
   const panel = document.getElementById('pendingSubmissionsPanel');
   panel.innerHTML = '<span style="color:var(--text3)">Loading from Firestore…</span>';
@@ -2856,7 +2426,6 @@ async function loadPendingSubmissions() {
     renderPendingSubmissions();
   } catch(e) { panel.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
 }
-
 function renderPendingSubmissions() {
   const panel = document.getElementById('pendingSubmissionsPanel');
   if (!pendingSubmissions.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No pending submissions.</span>'; return; }
@@ -2865,20 +2434,10 @@ function renderPendingSubmissions() {
     const div = document.createElement('div');
     div.className = 'submission-card';
     const qCount = sub.questions ? sub.questions.length : 0;
-    div.innerHTML = `
-      <div class="submission-card-header">
-        <div><div class="submission-card-title">📋 ${sub.title||'Untitled Quiz'}</div><div class="submission-card-meta">${sub.author?`By <strong>${sub.author}</strong>`:''} · ${qCount} question${qCount!==1?'s':''}</div></div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button class="btn btn-sm btn-ghost" onclick="toggleSubmissionDetail(${sIdx})" id="detailBtn_${sIdx}">Preview</button>
-          <button class="btn btn-sm btn-primary" onclick="approveSubmission(${sIdx})">+ Add to Queue</button>
-          <button class="btn btn-sm btn-danger" onclick="dismissSubmission(${sIdx})">Dismiss</button>
-        </div>
-      </div>
-      <div id="submissionDetail_${sIdx}" style="display:none">${sub.questions?sub.questions.map((q,qi)=>`<div style="background:var(--surface3);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:12px"><div style="font-weight:600;color:var(--text);margin-bottom:6px">Q${qi+1}: ${q.question}</div>${(q.options||[]).map((opt,oi)=>`<div style="padding:4px 8px;border-radius:4px;margin-bottom:3px;background:${q.correctIndex===oi?'var(--green-dim)':'transparent'};color:${q.correctIndex===oi?'var(--green)':'var(--text2)'}">${String.fromCharCode(65+oi)}: ${opt}${q.correctIndex===oi?' ✓':''}</div>`).join('')}</div>`).join(''):'<em style="color:var(--text3)">No data</em>'}</div>`;
+    div.innerHTML = `<div class="submission-card-header"><div><div class="submission-card-title">📋 ${sub.title||'Untitled Quiz'}</div><div class="submission-card-meta">${sub.author?`By <strong>${sub.author}</strong>`:''} · ${qCount} question${qCount!==1?'s':''}</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button class="btn btn-sm btn-ghost" onclick="toggleSubmissionDetail(${sIdx})" id="detailBtn_${sIdx}">Preview</button><button class="btn btn-sm btn-primary" onclick="approveSubmission(${sIdx})">+ Add to Queue</button><button class="btn btn-sm btn-danger" onclick="dismissSubmission(${sIdx})">Dismiss</button></div></div><div id="submissionDetail_${sIdx}" style="display:none">${sub.questions?sub.questions.map((q,qi)=>`<div style="background:var(--surface3);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:12px"><div style="font-weight:600;color:var(--text);margin-bottom:6px">Q${qi+1}: ${q.question}</div>${(q.options||[]).map((opt,oi)=>`<div style="padding:4px 8px;border-radius:4px;margin-bottom:3px;background:${q.correctIndex===oi?'var(--green-dim)':'transparent'};color:${q.correctIndex===oi?'var(--green)':'var(--text2)'}">${String.fromCharCode(65+oi)}: ${opt}${q.correctIndex===oi?' ✓':''}</div>`).join('')}</div>`).join(''):'<em style="color:var(--text3)">No data</em>'}</div>`;
     panel.appendChild(div);
   });
 }
-
 function toggleSubmissionDetail(sIdx) { const el=document.getElementById(`submissionDetail_${sIdx}`);const btn=document.getElementById(`detailBtn_${sIdx}`);const open=el.style.display!=='none';el.style.display=open?'none':'block';btn.textContent=open?'Preview':'Hide'; }
 function approveSubmission(sIdx) {
   const sub = pendingSubmissions[sIdx];
@@ -2890,7 +2449,6 @@ function approveSubmission(sIdx) {
 }
 function dismissSubmission(sIdx) { pendingSubmissions.splice(sIdx,1); renderPendingSubmissions(); }
 function updateQueueBadge() { document.getElementById('queueNavBadge').textContent = queueState.queue.length; }
-
 async function publishQueueToGitHub() {
   const token = getQueueToken();
   if (!token) { showToast('error','No Token','Enter your GitHub token.'); return; }
@@ -2909,7 +2467,6 @@ async function publishQueueToGitHub() {
     else { const err=await res.json(); showToast('error','GitHub Error',err.message||'Could not save.'); }
   } catch(e) { showToast('error','Network Error',e.message); }
 }
-
 const _origSaveQuiz = saveQuizToGitHub;
 saveQuizToGitHub = async function() {
   const q=document.getElementById('quizQuestion').value.trim();
@@ -2927,6 +2484,5 @@ saveQuizToGitHub = async function() {
   }
 };
 </script>
-
 </body>
 </html>
