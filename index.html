@@ -892,10 +892,11 @@ function initSearch(n){
     if(q.length<2){dd.classList.remove('open');return}
     const already=sel.filter(Boolean).map(p=>p.id);
     const m=PLAYERS.filter(p=>!already.includes(p.id)&&(p.name.toLowerCase().includes(q)||p.fullName.toLowerCase().includes(q)||p.country.toLowerCase().includes(q))).slice(0,15);
-    dd.innerHTML=m.map(p=>`<div class="dd-item" onclick="pickP(${n},${p.id})"><span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span><span class="ct">${p.country}</span></div>`).join('');
+    dd.innerHTML=m.map(p=>`<div class="dd-item" onmousedown="event.preventDefault();pickP(${n},${p.id})"><span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span><span class="ct">${p.country}</span></div>`).join('');
     dd.classList.add('open');
   });
   inp.addEventListener('focus',()=>{if(inp.value.trim().length>=2)dd.classList.add('open')});
+  inp.addEventListener('blur',()=>{ setTimeout(()=>dd.classList.remove('open'),150); });
   document.addEventListener('click',e=>{if(!e.target.closest('#c'+n))dd.classList.remove('open')});
 }
 [1,2].forEach(initSearch);
@@ -1892,10 +1893,11 @@ function initPartnershipSearch(slots){
       const otherSlot = slot.charAt(1) === 'a' ? partnershipNum + 'b' : partnershipNum + 'a';
       const excludeIds = partnershipSel[otherSlot] ? [partnershipSel[otherSlot].id] : [];
       const m = PLAYERS.filter(p => !excludeIds.includes(p.id) && (p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q) || p.country.toLowerCase().includes(q))).slice(0, 15);
-      dd.innerHTML = m.map(p => `<div class="dd-item" onclick="pickPartnershipPlayer('${slot}',${p.id})"><span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span><span class="ct">${p.country}</span></div>`).join('');
+      dd.innerHTML = m.map(p => `<div class="dd-item" onmousedown="event.preventDefault();pickPartnershipPlayer('${slot}',${p.id})"><span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span><span class="ct">${p.country}</span></div>`).join('');
       dd.classList.add('open');
     });
     inp.addEventListener('focus', () => { if(inp.value.trim().length >= 2) dd.classList.add('open'); });
+    inp.addEventListener('blur', () => { setTimeout(() => dd.classList.remove('open'), 150); });
     document.addEventListener('click', e => { if(!e.target.closest('#pc'+slot)) dd.classList.remove('open'); });
   });
 }
