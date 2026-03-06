@@ -387,30 +387,20 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 @media(min-width:768px) and (max-width:1024px){
   .main{padding:20px 24px 60px}
   .header{padding:18px 24px 14px}
-  
-  /* Make player cards stack 2 per row on iPad */
   .sel-area{gap:10px}
   .sel-card{flex:1 1 calc(50% - 5px);min-width:280px;max-width:calc(50% - 5px)}
   .add-player-btn{flex:1 1 calc(50% - 5px);min-width:280px;max-width:calc(50% - 5px)}
-  
-  /* Optimize filter grid for iPad */
   .fp-grid{grid-template-columns:repeat(3,1fr);gap:8px}
-  
-  /* Table optimizations for iPad - make it scrollable horizontally */
   .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .cmp-table{min-width:800px}
   .cmp-table thead th{padding:9px 10px;font-size:10px}
   .cmp-table tbody td{padding:9px 10px;font-size:12px}
   .cmp-table tbody td.player-cell{min-width:140px}
-  
-  /* Improve touch targets for iPad */
   .sel-input{font-size:14px;padding:10px 12px}
   .dd-item{padding:10px 14px;font-size:13px}
   .fp-select{padding:8px 12px;font-size:13px}
   .ms-toggle{padding:8px 12px;font-size:13px;min-height:36px}
   .tab{padding:10px 18px;font-size:12.5px}
-  
-  /* Optimize dropdowns for touch */
   .dd{max-height:300px}
   .ms-dd{max-height:280px}
 }
@@ -590,6 +580,10 @@ header.header{display:none !important}
       <select class="fp-select" id="fRecordType" onchange="handleRecordTypeChange()">
         <option value="player" selected>Player</option>
         <option value="partnerships">Partnerships</option>
+        <option value="triples">Triples</option>
+        <option value="quartet">Quartet</option>
+        <option value="quintet">Quintet</option>
+        <option value="elevens">Elevens</option>
       </select>
     </div>
   </div>
@@ -613,27 +607,27 @@ header.header{display:none !important}
     <button class="add-player-btn" id="addPlayerBtn" onclick="addPlayerSlot()"><span class="plus">+</span> Add Player</button>
   </div>
 
-  <!-- Partnership Selection Area (hidden by default) -->
+  <!-- Partnership / Combo Selection Area (hidden by default) -->
   <div class="partnership-area hidden" id="partnershipArea">
     <div class="partnership-group" id="pg1">
       <div class="partnership-label" style="border-left:3px solid var(--p1);color:var(--p1)">Partnership 1</div>
       <div class="partnership-cards">
-        <div class="sel-card partnership-card" id="pc1a">
+        <div class="sel-card partnership-card" id="pc1_0">
           <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
-          <div class="sel-label" style="margin-left:18px">Player A</div>
-          <input class="sel-input" id="ps1a" placeholder="Search player..." autocomplete="off">
-          <button class="sel-clear" id="px1a" onclick="clearPartnershipPlayer('1a')">&times;</button>
-          <div class="dd" id="pd1a"></div>
-          <div class="sel-info" id="pi1a"><div class="si-name" id="pn1a"></div><div class="si-meta" id="pm1a"></div></div>
+          <div class="sel-label" style="margin-left:18px">Player 1</div>
+          <input class="sel-input" id="ps1_0" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px1_0" onclick="clearPartnershipPlayer('1_0')">&times;</button>
+          <div class="dd" id="pd1_0"></div>
+          <div class="sel-info" id="pi1_0"><div class="si-name" id="pn1_0"></div><div class="si-meta" id="pm1_0"></div></div>
         </div>
         <div class="partnership-plus">&</div>
-        <div class="sel-card partnership-card" id="pc1b">
+        <div class="sel-card partnership-card" id="pc1_1">
           <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
-          <div class="sel-label" style="margin-left:18px">Player B</div>
-          <input class="sel-input" id="ps1b" placeholder="Search player..." autocomplete="off">
-          <button class="sel-clear" id="px1b" onclick="clearPartnershipPlayer('1b')">&times;</button>
-          <div class="dd" id="pd1b"></div>
-          <div class="sel-info" id="pi1b"><div class="si-name" id="pn1b"></div><div class="si-meta" id="pm1b"></div></div>
+          <div class="sel-label" style="margin-left:18px">Player 2</div>
+          <input class="sel-input" id="ps1_1" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px1_1" onclick="clearPartnershipPlayer('1_1')">&times;</button>
+          <div class="dd" id="pd1_1"></div>
+          <div class="sel-info" id="pi1_1"><div class="si-name" id="pn1_1"></div><div class="si-meta" id="pm1_1"></div></div>
         </div>
       </div>
     </div>
@@ -641,22 +635,22 @@ header.header{display:none !important}
     <div class="partnership-group" id="pg2">
       <div class="partnership-label" style="border-left:3px solid var(--p2);color:var(--p2)">Partnership 2</div>
       <div class="partnership-cards">
-        <div class="sel-card partnership-card" id="pc2a">
+        <div class="sel-card partnership-card" id="pc2_0">
           <div class="sel-pcolor" style="color:var(--p2);background:var(--p2)"></div>
-          <div class="sel-label" style="margin-left:18px">Player A</div>
-          <input class="sel-input" id="ps2a" placeholder="Search player..." autocomplete="off">
-          <button class="sel-clear" id="px2a" onclick="clearPartnershipPlayer('2a')">&times;</button>
-          <div class="dd" id="pd2a"></div>
-          <div class="sel-info" id="pi2a"><div class="si-name" id="pn2a"></div><div class="si-meta" id="pm2a"></div></div>
+          <div class="sel-label" style="margin-left:18px">Player 1</div>
+          <input class="sel-input" id="ps2_0" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px2_0" onclick="clearPartnershipPlayer('2_0')">&times;</button>
+          <div class="dd" id="pd2_0"></div>
+          <div class="sel-info" id="pi2_0"><div class="si-name" id="pn2_0"></div><div class="si-meta" id="pm2_0"></div></div>
         </div>
         <div class="partnership-plus">&</div>
-        <div class="sel-card partnership-card" id="pc2b">
+        <div class="sel-card partnership-card" id="pc2_1">
           <div class="sel-pcolor" style="color:var(--p2);background:var(--p2)"></div>
-          <div class="sel-label" style="margin-left:18px">Player B</div>
-          <input class="sel-input" id="ps2b" placeholder="Search player..." autocomplete="off">
-          <button class="sel-clear" id="px2b" onclick="clearPartnershipPlayer('2b')">&times;</button>
-          <div class="dd" id="pd2b"></div>
-          <div class="sel-info" id="pi2b"><div class="si-name" id="pn2b"></div><div class="si-meta" id="pm2b"></div></div>
+          <div class="sel-label" style="margin-left:18px">Player 2</div>
+          <input class="sel-input" id="ps2_1" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="px2_1" onclick="clearPartnershipPlayer('2_1')">&times;</button>
+          <div class="dd" id="pd2_1"></div>
+          <div class="sel-info" id="pi2_1"><div class="si-name" id="pn2_1"></div><div class="si-meta" id="pm2_1"></div></div>
         </div>
       </div>
     </div>
@@ -785,44 +779,27 @@ function initSearch(n){
 // ---- Load comparison from URL parameters ----
 function loadFromURL(){
   const params = new URLSearchParams(window.location.search);
-  
-  // Load players
   const playerIds = [];
   for(let i = 1; i <= MAX_PLAYERS; i++){
     const pid = params.get(`p${i}`);
-    if(pid){
-      playerIds.push({slot: i, id: parseInt(pid)});
-    }
+    if(pid) playerIds.push({slot: i, id: parseInt(pid)});
   }
-  
   if(playerIds.length > 0){
-    // Add slots if needed
-    while(slotCount < playerIds.length){
-      addPlayerSlot();
-    }
-    
-    // Pick players
+    while(slotCount < playerIds.length) addPlayerSlot();
     playerIds.forEach(({slot, id}) => {
       const player = PLAYERS.find(p => p.id === id);
-      if(player){
-        pickP(slot, id);
-      }
+      if(player) pickP(slot, id);
     });
-    
-    // Load filters after players are selected
     setTimeout(() => {
       const opp = params.get('opp');
       if(opp){
         opp.split(',').forEach(o => {
           const oppId = parseInt(o);
-          if(!selectedOpps.includes(oppId)){
-            selectedOpps.push(oppId);
-          }
+          if(!selectedOpps.includes(oppId)) selectedOpps.push(oppId);
         });
         updateOppToggleLabel();
         populateFilters();
       }
-      
       if(params.get('city')) document.getElementById('fCity').value = params.get('city');
       if(params.get('gnd')) document.getElementById('fGnd').value = params.get('gnd');
       if(params.get('ha')) document.getElementById('fHA').value = params.get('ha');
@@ -830,14 +807,10 @@ function loadFromURL(){
       if(params.get('res')) document.getElementById('fRes').value = params.get('res');
       if(params.get('toss')) document.getElementById('fToss').value = params.get('toss');
       if(params.get('together')) document.getElementById('fTogether').value = params.get('together');
-      
-      // Render with filters applied
       if(hasEnough()) render();
     }, 100);
   }
 }
-
-// Load from URL on page load
 window.addEventListener('DOMContentLoaded', loadFromURL);
 
 function addPlayerSlot(){
@@ -914,7 +887,6 @@ function updateOppToggleLabel(){
   else if(selectedOpps.length===1)btn.textContent=TEAMS[selectedOpps[0]];
   else btn.textContent=selectedOpps.map(o=>TEAMS[o]).join(', ');
 }
-// Close dropdown on outside click
 document.addEventListener('click',e=>{if(!e.target.closest('#fOppWrap')){document.getElementById('fOppDD').classList.remove('open');document.getElementById('fOppToggle').classList.remove('open')}});
 
 // ---- Filters ----
@@ -992,25 +964,19 @@ function agg(player,idxs,isFiltered){
       if(br>hs)hs=br;if(br>=100)hundreds++;else if(br>=50)fifties++;
     }
     const bo=typeof r[6]==='number'?r[6]:0;
-    if(bo>0) bowlInns++; // Count innings where player bowled
+    if(bo>0) bowlInns++;
     overs+=bo;mdns+=typeof r[7]==='number'?r[7]:0;
     const brn=typeof r[8]==='number'?r[8]:0, bw=typeof r[9]==='number'?r[9]:0;
     bR+=brn;wkts+=bw;
     if(bw>bestW||(bw===bestW&&brn<bestR)){bestW=bw;bestR=brn}
   });
-  
-  // Calculate strike rate
   let sr;
   if(!isFiltered){
-    // No filters: use career totals from player data
     sr = player.batBalls>0 ? (player.batRuns/player.batBalls)*100 : null;
   } else {
-    // Filters active: only show SR for modern players (1990+) with actual balls data
-    // For pre-1990 players, balls data is incomplete/unreliable
     const isModernPlayer = player.fromYear >= 1990;
     sr = (isModernPlayer && balls>0) ? (runs/balls)*100 : null;
   }
-  
   return{
     tests:tests.size, inns, no, runs, balls,
     batAvg:(inns-no)>0?runs/(inns-no):0,
@@ -1028,39 +994,23 @@ function agg(player,idxs,isFiltered){
 // ---- Multi-player Table Builder ----
 function buildTable(stats, cols, options = {}) {
   const { showBowlInns = false, showTotals = false, sharedStats = null } = options;
-  
-  // Build header row
   let hdr = '<th>Player</th>';
   cols.forEach(c => {
     if(c.sec) hdr += `<th class="sec-head">${c.sec}</th>`;
     else hdr += `<th>${c.label}</th>`;
   });
-
-  // Pre-compute best values for each column
   const bestVals = {};
   cols.forEach(c => {
     if(c.sec || c.higher === null) return;
-    const vals = stats.map(s => {
-      const v = s[c.key];
-      return typeof v === 'number' ? v : 0;
-    });
+    const vals = stats.map(s => { const v = s[c.key]; return typeof v === 'number' ? v : 0; });
     if(c.higher) bestVals[c.key] = Math.max(...vals);
-    else {
-      const nonZero = vals.filter(v => v > 0);
-      bestVals[c.key] = nonZero.length > 0 ? Math.min(...nonZero) : 0;
-    }
+    else { const nonZero = vals.filter(v => v > 0); bestVals[c.key] = nonZero.length > 0 ? Math.min(...nonZero) : 0; }
   });
-
-  // Build player rows
   let rows = '';
   stats.forEach((s, idx) => {
-    // Build player cell - show bowling innings if requested
     let playerMeta = `${s.country} · ${s.tests} Tests`;
-    if(showBowlInns && s.bowlInns !== undefined) {
-      playerMeta += ` · ${s.bowlInns} bowl inn`;
-    }
+    if(showBowlInns && s.bowlInns !== undefined) playerMeta += ` · ${s.bowlInns} bowl inn`;
     let row = `<td class="player-cell"><span class="pc-name">${s.name}</span><span class="pc-meta">${playerMeta}</span></td>`;
-    
     cols.forEach(c => {
       if(c.sec) { row += '<td class="sec-div"></td>'; return; }
       const v = s[c.key];
@@ -1068,105 +1018,54 @@ function buildTable(stats, cols, options = {}) {
       let cls2 = '';
       if(c.higher !== null && bestVals[c.key] !== undefined) {
         const bv = bestVals[c.key];
-        const allSame = stats.every(os => {
-          const ov = typeof os[c.key]==='number'?os[c.key]:0;
-          return ov === n;
-        });
+        const allSame = stats.every(os => { const ov = typeof os[c.key]==='number'?os[c.key]:0; return ov === n; });
         if(!allSame && (n > 0 || c.higher)) {
           if(c.higher) cls2 = n === bv && n > 0 ? 'best' : (n < bv ? 'worse' : '');
-          else {
-            if(n === 0) cls2 = '';
-            else cls2 = n === bv ? 'best' : 'worse';
-          }
+          else { if(n === 0) cls2 = ''; else cls2 = n === bv ? 'best' : 'worse'; }
         }
       }
       row += `<td class="${cls2}">${fmt(v, c.dec||2)}</td>`;
     });
     rows += `<tr class="p${idx+1}-row">${row}</tr>`;
   });
-  
-  // Add totals row if requested
   if(showTotals && stats.length >= 2 && sharedStats) {
     const totals = {};
-    
-    // Use shared stats for tests (for display purposes)
     totals.tests = sharedStats.sharedTests;
     totals.bowlInns = sharedStats.sharedBowlInns;
-    
-    // Use combined batting stats from SHARED batting innings only
     totals.inns = sharedStats.combinedBatInnsCount;
     totals.no = sharedStats.combinedNO;
     totals.runs = sharedStats.combinedBatRuns;
     totals.balls = sharedStats.combinedBalls;
     const combinedDismissals = totals.inns - totals.no;
-    
-    // Use combined bowling stats from SHARED bowling innings only
     totals.bowlRuns = sharedStats.combinedBowlRuns;
     totals.wkts = sharedStats.combinedWkts;
     totals.overs = sharedStats.combinedOvers;
-    
-    // Sum up other fields that don't need shared innings filtering
     const otherSumFields = ['fifties', 'hundreds', 'mdns', 'catches', 'stumpings', 'mom'];
     otherSumFields.forEach(key => {
-      totals[key] = stats.reduce((sum, s) => {
-        const v = s[key];
-        return sum + (typeof v === 'number' ? v : 0);
-      }, 0);
+      totals[key] = stats.reduce((sum, s) => { const v = s[key]; return sum + (typeof v === 'number' ? v : 0); }, 0);
     });
-    
-    // Sum up other numeric columns that aren't already handled
     cols.forEach(c => {
       if(c.sec) return;
-      if(c.key === 'tests' || c.key === 'inns' || c.key === 'no' || c.key === 'bowlInns') return; // Already set
-      if(c.key === 'runs' || c.key === 'balls' || c.key === 'bowlRuns' || c.key === 'wkts' || c.key === 'overs') return; // Using shared stats
-      if(otherSumFields.includes(c.key)) return; // Already summed above
-      if(c.key === 'batAvg' || c.key === 'bowlAvg' || c.key === 'sr' || c.key === 'econ' || c.key === 'bpw') {
-        // These are calculated fields, we'll compute them from totals
-        return;
+      if(['tests','inns','no','bowlInns','runs','balls','bowlRuns','wkts','overs'].includes(c.key)) return;
+      if(otherSumFields.includes(c.key)) return;
+      if(['batAvg','bowlAvg','sr','econ','bpw'].includes(c.key)) return;
+      if(c.key === 'hs') { totals[c.key] = Math.max(...stats.map(s => typeof s[c.key] === 'number' ? s[c.key] : 0)); return; }
+      if(c.key === 'bestBowl') {
+        let bestW = 0, bestR = 9999;
+        stats.forEach(s => { if(s.bestBowl && s.bestBowl !== '—') { const [w, r] = s.bestBowl.split('/').map(Number); if(w > bestW || (w === bestW && r < bestR)) { bestW = w; bestR = r; } } });
+        totals[c.key] = bestW > 0 ? `${bestW}/${bestR}` : '—'; return;
       }
-      if(c.key === 'bestBowl' || c.key === 'hs') {
-        // Take the best value
-        if(c.key === 'hs') {
-          totals[c.key] = Math.max(...stats.map(s => typeof s[c.key] === 'number' ? s[c.key] : 0));
-        } else {
-          // For bestBowl, find the best
-          let bestW = 0, bestR = 9999;
-          stats.forEach(s => {
-            if(s.bestBowl && s.bestBowl !== '—') {
-              const [w, r] = s.bestBowl.split('/').map(Number);
-              if(w > bestW || (w === bestW && r < bestR)) {
-                bestW = w; bestR = r;
-              }
-            }
-          });
-          totals[c.key] = bestW > 0 ? `${bestW}/${bestR}` : '—';
-        }
-        return;
-      }
-      // Sum numeric values for any remaining columns
       if(totals[c.key] === undefined) {
-        totals[c.key] = stats.reduce((sum, s) => {
-          const v = s[c.key];
-          return sum + (typeof v === 'number' ? v : 0);
-        }, 0);
+        totals[c.key] = stats.reduce((sum, s) => { const v = s[c.key]; return sum + (typeof v === 'number' ? v : 0); }, 0);
       }
     });
-    
-    // Calculate derived stats for totals (using shared innings data)
-    // Batting average: combined runs / combined dismissals (from shared batting innings)
     totals.batAvg = combinedDismissals > 0 ? totals.runs / combinedDismissals : 0;
-    // Bowling stats: from shared bowling innings only
     totals.bowlAvg = totals.wkts > 0 ? totals.bowlRuns / totals.wkts : 0;
     totals.econ = totals.overs > 0 ? totals.bowlRuns / totals.overs : 0;
     totals.bpw = totals.wkts > 0 ? (totals.overs * 6) / totals.wkts : 0;
     totals.sr = totals.balls > 0 ? (totals.runs / totals.balls) * 100 : null;
-    
-    // Determine what to show in the meta line based on view type
     let totalsMeta = `${stats.length} players · ${totals.tests} Tests together`;
-    if(showBowlInns) {
-      totalsMeta += ` · ${totals.bowlInns} bowl inn together`;
-    }
-    
+    if(showBowlInns) totalsMeta += ` · ${totals.bowlInns} bowl inn together`;
     let totalRow = `<td class="player-cell" style="background:var(--surface2);border-left:3px solid var(--accent);"><span class="pc-name" style="color:var(--accent);">Combined Total</span><span class="pc-meta">${totalsMeta}</span></td>`;
     cols.forEach(c => {
       if(c.sec) { totalRow += '<td class="sec-div" style="background:var(--surface2);"></td>'; return; }
@@ -1175,7 +1074,6 @@ function buildTable(stats, cols, options = {}) {
     });
     rows += `<tr class="totals-row">${totalRow}</tr>`;
   }
-
   return `<div class="tbl-wrap"><table class="cmp-table"><thead><tr>${hdr}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
@@ -1191,91 +1089,39 @@ function render(){
   if(players.length<2)return;
   document.getElementById('emptyState').style.display='none';
   document.getElementById('comp').classList.add('show');
-
-  // Check filters first
   const f=getF(), any=f.opp.length||f.city||f.gnd||f.ha||f.inn||f.res||f.toss||f.together;
-  
   let displayPlayers = players;
   let rowSets = players.map(p=>getRows(p));
-  
-  // Handle "played together" filter
   if(f.together === 'yes'){
-    // Get match IDs for each player (after applying other filters)
-    const matchSets = rowSets.map(idxs => {
-      const matches = new Set();
-      idxs.forEach(i => matches.add(SCD[i][0]));
-      return matches;
-    });
-    
-    // Find common matches between ALL selected players
+    const matchSets = rowSets.map(idxs => { const matches = new Set(); idxs.forEach(i => matches.add(SCD[i][0])); return matches; });
     let commonMatches = new Set(matchSets[0]);
-    for(let i = 1; i < matchSets.length; i++){
-      commonMatches = new Set([...commonMatches].filter(m => matchSets[i].has(m)));
-    }
-    
-    // If no common matches among all players, find players who share matches with at least one other
+    for(let i = 1; i < matchSets.length; i++) commonMatches = new Set([...commonMatches].filter(m => matchSets[i].has(m)));
     if(commonMatches.size === 0 && players.length > 2){
-      // Find which players played together in at least one match
-      const playersWithSharedMatches = [];
-      const sharedMatchesByPlayer = [];
-      
+      const playersWithSharedMatches = [], sharedMatchesByPlayer = [];
       for(let i = 0; i < players.length; i++){
-        let hasShared = false;
-        const mySharedMatches = new Set();
+        let hasShared = false; const mySharedMatches = new Set();
         for(let j = 0; j < players.length; j++){
-          if(i !== j){
-            const shared = [...matchSets[i]].filter(m => matchSets[j].has(m));
-            if(shared.length > 0){
-              hasShared = true;
-              shared.forEach(m => mySharedMatches.add(m));
-            }
-          }
+          if(i !== j){ const shared = [...matchSets[i]].filter(m => matchSets[j].has(m)); if(shared.length > 0){ hasShared = true; shared.forEach(m => mySharedMatches.add(m)); } }
         }
-        if(hasShared){
-          playersWithSharedMatches.push(i);
-          sharedMatchesByPlayer.push(mySharedMatches);
-        }
+        if(hasShared){ playersWithSharedMatches.push(i); sharedMatchesByPlayer.push(mySharedMatches); }
       }
-      
       if(playersWithSharedMatches.length >= 2){
-        // Filter to only players who played together
         displayPlayers = playersWithSharedMatches.map(i => players[i]);
-        // Filter row sets to only include shared matches
-        rowSets = playersWithSharedMatches.map((pIdx, i) => {
-          const sharedMatches = sharedMatchesByPlayer[i];
-          return rowSets[pIdx].filter(idx => sharedMatches.has(SCD[idx][0]));
-        });
-      } else {
-        // No players played together at all
-        displayPlayers = [];
-        rowSets = [];
-      }
+        rowSets = playersWithSharedMatches.map((pIdx, i) => { const sharedMatches = sharedMatchesByPlayer[i]; return rowSets[pIdx].filter(idx => sharedMatches.has(SCD[idx][0])); });
+      } else { displayPlayers = []; rowSets = []; }
     } else if(commonMatches.size > 0){
-      // All players share common matches - filter to those matches
-      rowSets = rowSets.map(idxs => 
-        idxs.filter(i => commonMatches.has(SCD[i][0]))
-      );
-    } else {
-      // Only 2 players and no common matches
-      displayPlayers = [];
-      rowSets = [];
-    }
+      rowSets = rowSets.map(idxs => idxs.filter(i => commonMatches.has(SCD[i][0])));
+    } else { displayPlayers = []; rowSets = []; }
   }
-  
-  // Show message if no players played together
   if(f.together === 'yes' && displayPlayers.length < 2){
     document.getElementById('tblOverview').innerHTML = '<div class="verd"><div class="verd-lb">No shared matches</div><div class="verd-tx">The selected players never played in the same match together. Try selecting different players or change the filter to "No (all stats)".</div></div>';
     document.getElementById('tblBatting').innerHTML = '';
     document.getElementById('tblBowling').innerHTML = '';
     document.getElementById('tblAll').innerHTML = '';
     document.getElementById('filtSummary').innerHTML = '';
-    showTags();
-    return;
+    showTags(); return;
   }
-  
   const stats=displayPlayers.map((p,i)=>agg(p,rowSets[i],any));
-
-  // Filter summary
   const sumEl=document.getElementById('filtSummary');
   if(any){
     const parts=[];
@@ -1295,285 +1141,77 @@ function render(){
     sumEl.innerHTML = summaryHTML;
   } else sumEl.innerHTML='';
 
-  // Verdict — score each player across key metrics
   const scores=stats.map(()=>0);
   const metricWins=stats.map(()=>[]);
-  const metricLabels = {
-    batAvg: 'Batting Average',
-    runs: 'Runs',
-    hundreds: 'Centuries',
-    wkts: 'Wickets',
-    bowlAvg: 'Bowling Average'
-  };
-  
   function scoreMetric(key, higher, label){
     const vals=stats.map(s=>{const v=s[key];return typeof v==='number'?v:0});
-    if(higher){
-      const mx=Math.max(...vals);
-      if(vals.filter(v=>v===mx).length===1) {
-        const winnerIdx = vals.indexOf(mx);
-        scores[winnerIdx]++;
-        metricWins[winnerIdx].push(label);
-      }
-    } else {
-      const nonZero=vals.map((v,i)=>({v,i})).filter(x=>x.v>0);
-      if(nonZero.length>1){
-        const mn=Math.min(...nonZero.map(x=>x.v));
-        const winners=nonZero.filter(x=>x.v===mn);
-        if(winners.length===1) {
-          scores[winners[0].i]++;
-          metricWins[winners[0].i].push(label);
-        }
-      }
-    }
+    if(higher){const mx=Math.max(...vals);if(vals.filter(v=>v===mx).length===1){const winnerIdx=vals.indexOf(mx);scores[winnerIdx]++;metricWins[winnerIdx].push(label);}}
+    else{const nonZero=vals.map((v,i)=>({v,i})).filter(x=>x.v>0);if(nonZero.length>1){const mn=Math.min(...nonZero.map(x=>x.v));const winners=nonZero.filter(x=>x.v===mn);if(winners.length===1){scores[winners[0].i]++;metricWins[winners[0].i].push(label);}}}
   }
   scoreMetric('batAvg',true,'Batting Average');
   scoreMetric('runs',true,'Runs');
   scoreMetric('hundreds',true,'Centuries');
   scoreMetric('wkts',true,'Wickets');
   scoreMetric('bowlAvg',false,'Bowling Average');
+  const allDetails = stats.map((s, i) => { const wins = metricWins[i]; if(wins.length > 0) return `${s.name} ahead in ${wins.join(', ')}`; return null; }).filter(Boolean);
+  const verdictHTML=`<div class="verd"><div class="verd-lb">Summary</div><div class="verd-tx">${allDetails.join(' · ')}</div></div>`;
 
-  const maxSc=Math.max(...scores);
-  const leaders=scores.map((s,i)=>({s,i})).filter(x=>x.s===maxSc);
-  
-  // Build factual summary of who leads in what
-  const allDetails = stats.map((s, i) => {
-    const wins = metricWins[i];
-    if(wins.length > 0){
-      return `${s.name} ahead in ${wins.join(', ')}`;
-    }
-    return null;
-  }).filter(Boolean);
-  
-  const summaryText = allDetails.join(' · ');
-  
-  const verdictHTML=`<div class="verd"><div class="verd-lb">Summary</div><div class="verd-tx">${summaryText}</div></div>`;
-
-  // ---- Calculate shared stats for "played together" totals ----
   let sharedStats = null;
   if(f.together === 'yes') {
-    // Find matches where ALL displayed players participated
     const allMatchIds = rowSets.map(idxs => new Set(idxs.map(i => SCD[i][0])));
     let sharedMatchIds = new Set(allMatchIds[0]);
-    for(let i = 1; i < allMatchIds.length; i++) {
-      sharedMatchIds = new Set([...sharedMatchIds].filter(m => allMatchIds[i].has(m)));
-    }
-    
-    // Count innings where ALL players batted together (same match AND same innings number)
-    // Build map of match+innings -> set of players who batted
-    const batInningsMap = new Map(); // key: "matchId-innNum", value: count of players
-    rowSets.forEach((idxs, pIdx) => {
-      idxs.forEach(i => {
-        const r = SCD[i];
-        const matchId = r[0];
-        const innNum = r[2];
-        const didBat = r[4] !== null; // isNO field exists means they batted
-        if(didBat && sharedMatchIds.has(matchId)) {
-          const key = `${matchId}-${innNum}`;
-          if(!batInningsMap.has(key)) batInningsMap.set(key, new Set());
-          batInningsMap.get(key).add(pIdx);
-        }
-      });
-    });
-    
-    // Count innings where all players batted
+    for(let i = 1; i < allMatchIds.length; i++) sharedMatchIds = new Set([...sharedMatchIds].filter(m => allMatchIds[i].has(m)));
+    const batInningsMap = new Map();
+    rowSets.forEach((idxs, pIdx) => { idxs.forEach(i => { const r = SCD[i]; const matchId = r[0]; const innNum = r[2]; const didBat = r[4] !== null; if(didBat && sharedMatchIds.has(matchId)) { const key = `${matchId}-${innNum}`; if(!batInningsMap.has(key)) batInningsMap.set(key, new Set()); batInningsMap.get(key).add(pIdx); } }); });
     let sharedBatInns = 0;
-    batInningsMap.forEach((playerSet, key) => {
-      if(playerSet.size === displayPlayers.length) sharedBatInns++;
-    });
-    
-    // Count innings where ALL players bowled together
+    batInningsMap.forEach((playerSet, key) => { if(playerSet.size === displayPlayers.length) sharedBatInns++; });
     const bowlInningsMap = new Map();
-    rowSets.forEach((idxs, pIdx) => {
-      idxs.forEach(i => {
-        const r = SCD[i];
-        const matchId = r[0];
-        const innNum = r[2];
-        const didBowl = typeof r[6] === 'number' && r[6] > 0; // overs > 0
-        if(didBowl && sharedMatchIds.has(matchId)) {
-          const key = `${matchId}-${innNum}`;
-          if(!bowlInningsMap.has(key)) bowlInningsMap.set(key, new Set());
-          bowlInningsMap.get(key).add(pIdx);
-        }
-      });
-    });
-    
-    let sharedBowlInns = 0;
-    const sharedBowlInningsKeys = new Set();
-    bowlInningsMap.forEach((playerSet, key) => {
-      if(playerSet.size === displayPlayers.length) {
-        sharedBowlInns++;
-        sharedBowlInningsKeys.add(key);
-      }
-    });
-    
-    // Calculate combined bowling stats ONLY from innings where ALL players bowled
+    rowSets.forEach((idxs, pIdx) => { idxs.forEach(i => { const r = SCD[i]; const matchId = r[0]; const innNum = r[2]; const didBowl = typeof r[6] === 'number' && r[6] > 0; if(didBowl && sharedMatchIds.has(matchId)) { const key = `${matchId}-${innNum}`; if(!bowlInningsMap.has(key)) bowlInningsMap.set(key, new Set()); bowlInningsMap.get(key).add(pIdx); } }); });
+    let sharedBowlInns = 0; const sharedBowlInningsKeys = new Set();
+    bowlInningsMap.forEach((playerSet, key) => { if(playerSet.size === displayPlayers.length) { sharedBowlInns++; sharedBowlInningsKeys.add(key); } });
     let combinedBowlRuns = 0, combinedWkts = 0, combinedOvers = 0;
-    rowSets.forEach((idxs, pIdx) => {
-      idxs.forEach(i => {
-        const r = SCD[i];
-        const matchId = r[0];
-        const innNum = r[2];
-        const key = `${matchId}-${innNum}`;
-        if(sharedBowlInningsKeys.has(key)) {
-          combinedOvers += typeof r[6] === 'number' ? r[6] : 0;
-          combinedBowlRuns += typeof r[8] === 'number' ? r[8] : 0;
-          combinedWkts += typeof r[9] === 'number' ? r[9] : 0;
-        }
-      });
-    });
-    
-    // Similarly, calculate combined batting stats ONLY from innings where ALL players batted
+    rowSets.forEach((idxs, pIdx) => { idxs.forEach(i => { const r = SCD[i]; const key = `${r[0]}-${r[2]}`; if(sharedBowlInningsKeys.has(key)) { combinedOvers += typeof r[6] === 'number' ? r[6] : 0; combinedBowlRuns += typeof r[8] === 'number' ? r[8] : 0; combinedWkts += typeof r[9] === 'number' ? r[9] : 0; } }); });
     const sharedBatInningsKeys = new Set();
-    batInningsMap.forEach((playerSet, key) => {
-      if(playerSet.size === displayPlayers.length) {
-        sharedBatInningsKeys.add(key);
-      }
-    });
-    
+    batInningsMap.forEach((playerSet, key) => { if(playerSet.size === displayPlayers.length) sharedBatInningsKeys.add(key); });
     let combinedBatRuns = 0, combinedBalls = 0, combinedBatInnsCount = 0, combinedNO = 0;
-    rowSets.forEach((idxs, pIdx) => {
-      idxs.forEach(i => {
-        const r = SCD[i];
-        const matchId = r[0];
-        const innNum = r[2];
-        const key = `${matchId}-${innNum}`;
-        if(sharedBatInningsKeys.has(key)) {
-          const didBat = r[4] !== null;
-          if(didBat) {
-            combinedBatInnsCount++;
-            if(r[4]) combinedNO++; // is not out
-            combinedBatRuns += typeof r[3] === 'number' ? r[3] : 0;
-            combinedBalls += typeof r[5] === 'number' ? r[5] : 0;
-          }
-        }
-      });
-    });
-    
-    sharedStats = {
-      sharedTests: sharedMatchIds.size,
-      sharedBatInns: sharedBatInns,
-      sharedBowlInns: sharedBowlInns,
-      // Combined batting from shared innings
-      combinedBatRuns: combinedBatRuns,
-      combinedBalls: combinedBalls,
-      combinedBatInnsCount: combinedBatInnsCount,
-      combinedNO: combinedNO,
-      // Combined bowling from shared innings
-      combinedBowlRuns: combinedBowlRuns,
-      combinedWkts: combinedWkts,
-      combinedOvers: combinedOvers
-    };
+    rowSets.forEach((idxs, pIdx) => { idxs.forEach(i => { const r = SCD[i]; const key = `${r[0]}-${r[2]}`; if(sharedBatInningsKeys.has(key)) { const didBat = r[4] !== null; if(didBat) { combinedBatInnsCount++; if(r[4]) combinedNO++; combinedBatRuns += typeof r[3] === 'number' ? r[3] : 0; combinedBalls += typeof r[5] === 'number' ? r[5] : 0; } } }); });
+    sharedStats = { sharedTests: sharedMatchIds.size, sharedBatInns, sharedBowlInns, combinedBatRuns, combinedBalls, combinedBatInnsCount, combinedNO, combinedBowlRuns, combinedWkts, combinedOvers };
   }
 
-  // ---- OVERVIEW ----
   const ovCols = [
-    {sec:'Batting'},
-    {label:'Tests',key:'tests',higher:true,dec:0},
-    {label:'Inns',key:'inns',higher:true,dec:0},
-    {label:'Runs',key:'runs',higher:true,dec:0},
-    {label:'Bat Avg',key:'batAvg',higher:true},
-    {label:'100s',key:'hundreds',higher:true,dec:0},
-    {label:'HS',key:'hs',higher:true,dec:0},
-    {sec:'Bowling'},
-    {label:'Wkts',key:'wkts',higher:true,dec:0},
-    {label:'Bowl Avg',key:'bowlAvg',higher:false},
-    {label:'Econ',key:'econ',higher:false},
-    {label:'Best',key:'bestBowl',higher:null},
-    {sec:'Fielding *'},
-    {label:'Catches',key:'catches',higher:true,dec:0},
-    {label:'St',key:'stumpings',higher:true,dec:0},
-    {label:'MoM',key:'mom',higher:true,dec:0},
+    {sec:'Batting'},{label:'Tests',key:'tests',higher:true,dec:0},{label:'Inns',key:'inns',higher:true,dec:0},{label:'Runs',key:'runs',higher:true,dec:0},{label:'Bat Avg',key:'batAvg',higher:true},{label:'100s',key:'hundreds',higher:true,dec:0},{label:'HS',key:'hs',higher:true,dec:0},
+    {sec:'Bowling'},{label:'Wkts',key:'wkts',higher:true,dec:0},{label:'Bowl Avg',key:'bowlAvg',higher:false},{label:'Econ',key:'econ',higher:false},{label:'Best',key:'bestBowl',higher:null},
+    {sec:'Fielding *'},{label:'Catches',key:'catches',higher:true,dec:0},{label:'St',key:'stumpings',higher:true,dec:0},{label:'MoM',key:'mom',higher:true,dec:0},
   ];
-  
-  // Determine if we should show totals (only when "played together" is active)
   const showTotals = f.together === 'yes';
-  
-  document.getElementById('tblOverview').innerHTML =
-    buildTable(stats, ovCols, { showTotals, sharedStats }) + verdictHTML +
-    '<div class="foot-note">* Career totals — not affected by filters</div>';
+  document.getElementById('tblOverview').innerHTML = buildTable(stats, ovCols, { showTotals, sharedStats }) + verdictHTML + '<div class="foot-note">* Career totals — not affected by filters</div>';
 
-  // ---- BATTING ----
   const batCols = [
-    {label:'Tests',key:'tests',higher:true,dec:0},
-    {label:'Innings',key:'inns',higher:true,dec:0},
-    {label:'N.O.',key:'no',higher:true,dec:0},
-    {label:'Runs',key:'runs',higher:true,dec:0},
-    {label:'Balls',key:'balls',higher:true,dec:0},
-    {label:'Average',key:'batAvg',higher:true},
-    {label:'S/R',key:'sr',higher:true},
-    {label:'H.S.',key:'hs',higher:true,dec:0},
-    {label:'50s',key:'fifties',higher:true,dec:0},
-    {label:'100s',key:'hundreds',higher:true,dec:0},
+    {label:'Tests',key:'tests',higher:true,dec:0},{label:'Innings',key:'inns',higher:true,dec:0},{label:'N.O.',key:'no',higher:true,dec:0},{label:'Runs',key:'runs',higher:true,dec:0},{label:'Balls',key:'balls',higher:true,dec:0},{label:'Average',key:'batAvg',higher:true},{label:'S/R',key:'sr',higher:true},{label:'H.S.',key:'hs',higher:true,dec:0},{label:'50s',key:'fifties',higher:true,dec:0},{label:'100s',key:'hundreds',higher:true,dec:0},
   ];
   document.getElementById('tblBatting').innerHTML = buildTable(stats, batCols, { showTotals, sharedStats });
 
-  // ---- BOWLING ----
   const bowlCols = [
-    {label:'Overs',key:'overs',higher:true,dec:1},
-    {label:'Maidens',key:'mdns',higher:true,dec:0},
-    {label:'Runs',key:'bowlRuns',higher:false,dec:0},
-    {label:'Wickets',key:'wkts',higher:true,dec:0},
-    {label:'Average',key:'bowlAvg',higher:false},
-    {label:'Economy',key:'econ',higher:false},
-    {label:'B/W',key:'bpw',higher:false,dec:1},
-    {label:'Best',key:'bestBowl',higher:null},
+    {label:'Overs',key:'overs',higher:true,dec:1},{label:'Maidens',key:'mdns',higher:true,dec:0},{label:'Runs',key:'bowlRuns',higher:false,dec:0},{label:'Wickets',key:'wkts',higher:true,dec:0},{label:'Average',key:'bowlAvg',higher:false},{label:'Economy',key:'econ',higher:false},{label:'B/W',key:'bpw',higher:false,dec:1},{label:'Best',key:'bestBowl',higher:null},
   ];
   document.getElementById('tblBowling').innerHTML = buildTable(stats, bowlCols, { showBowlInns: true, showTotals, sharedStats });
 
-  // ---- ALL STATS ----
   const allCols = [
-    {sec:'Batting'},
-    {label:'Tests',key:'tests',higher:true,dec:0},
-    {label:'Inns',key:'inns',higher:true,dec:0},
-    {label:'N.O.',key:'no',higher:true,dec:0},
-    {label:'Runs',key:'runs',higher:true,dec:0},
-    {label:'Balls',key:'balls',higher:true,dec:0},
-    {label:'Avg',key:'batAvg',higher:true},
-    {label:'S/R',key:'sr',higher:true},
-    {label:'H.S.',key:'hs',higher:true,dec:0},
-    {label:'50s',key:'fifties',higher:true,dec:0},
-    {label:'100s',key:'hundreds',higher:true,dec:0},
-    {sec:'Bowling'},
-    {label:'Overs',key:'overs',higher:true,dec:1},
-    {label:'Mdns',key:'mdns',higher:true,dec:0},
-    {label:'Runs',key:'bowlRuns',higher:false,dec:0},
-    {label:'Wkts',key:'wkts',higher:true,dec:0},
-    {label:'Avg',key:'bowlAvg',higher:false},
-    {label:'Econ',key:'econ',higher:false},
-    {label:'B/W',key:'bpw',higher:false,dec:1},
-    {label:'Best',key:'bestBowl',higher:null},
-    {sec:'Fielding *'},
-    {label:'Ct',key:'catches',higher:true,dec:0},
-    {label:'St',key:'stumpings',higher:true,dec:0},
-    {label:'MoM',key:'mom',higher:true,dec:0},
+    {sec:'Batting'},{label:'Tests',key:'tests',higher:true,dec:0},{label:'Inns',key:'inns',higher:true,dec:0},{label:'N.O.',key:'no',higher:true,dec:0},{label:'Runs',key:'runs',higher:true,dec:0},{label:'Balls',key:'balls',higher:true,dec:0},{label:'Avg',key:'batAvg',higher:true},{label:'S/R',key:'sr',higher:true},{label:'H.S.',key:'hs',higher:true,dec:0},{label:'50s',key:'fifties',higher:true,dec:0},{label:'100s',key:'hundreds',higher:true,dec:0},
+    {sec:'Bowling'},{label:'Overs',key:'overs',higher:true,dec:1},{label:'Mdns',key:'mdns',higher:true,dec:0},{label:'Runs',key:'bowlRuns',higher:false,dec:0},{label:'Wkts',key:'wkts',higher:true,dec:0},{label:'Avg',key:'bowlAvg',higher:false},{label:'Econ',key:'econ',higher:false},{label:'B/W',key:'bpw',higher:false,dec:1},{label:'Best',key:'bestBowl',higher:null},
+    {sec:'Fielding *'},{label:'Ct',key:'catches',higher:true,dec:0},{label:'St',key:'stumpings',higher:true,dec:0},{label:'MoM',key:'mom',higher:true,dec:0},
   ];
-  document.getElementById('tblAll').innerHTML =
-    buildTable(stats, allCols, { showTotals, sharedStats }) + verdictHTML +
-    '<div class="foot-note">* Career totals — not affected by filters</div>';
-
+  document.getElementById('tblAll').innerHTML = buildTable(stats, allCols, { showTotals, sharedStats }) + verdictHTML + '<div class="foot-note">* Career totals — not affected by filters</div>';
   showTags();
 }
 
 // ---- Share Function ----
 function shareComparison(){
   const players = activeSel();
-  if(players.length < 2){
-    alert('Please select at least 2 players to share a comparison.');
-    return;
-  }
-  
+  if(players.length < 2){ alert('Please select at least 2 players to share a comparison.'); return; }
   const playerNames = players.map(p => p.fullName || p.name).join(' vs ');
-  
-  // Build URL with player IDs and filters
   const params = new URLSearchParams();
-  
-  // Add player IDs
-  players.forEach((p, i) => {
-    params.append(`p${i+1}`, p.id);
-  });
-  
-  // Add active filters
+  players.forEach((p, i) => { params.append(`p${i+1}`, p.id); });
   const f = getF();
   if(f.opp.length) params.set('opp', f.opp.join(','));
   if(f.city) params.set('city', f.city);
@@ -1583,142 +1221,56 @@ function shareComparison(){
   if(f.res) params.set('res', f.res);
   if(f.toss) params.set('toss', f.toss);
   if(f.together) params.set('together', f.together);
-  
   const shareUrl = window.location.origin + window.location.pathname + '?' + params.toString();
-  
-  // Get current stats and build summary
   const rowSets = players.map(p => getRows(p));
   const stats = players.map((p, i) => agg(p, rowSets[i], f.opp.length || f.city || f.gnd || f.ha || f.inn || f.res || f.toss || f.together));
-  
-  // Calculate metric wins for summary
   const metricWins = stats.map(() => []);
-  const metricLabels = {
-    batAvg: 'Batting Average',
-    runs: 'Runs',
-    hundreds: 'Centuries',
-    wkts: 'Wickets',
-    bowlAvg: 'Bowling Average'
-  };
-  
   function scoreMetricForShare(key, higher, label){
     const vals = stats.map(s => {const v = s[key]; return typeof v === 'number' ? v : 0});
-    if(higher){
-      const mx = Math.max(...vals);
-      if(vals.filter(v => v === mx).length === 1) {
-        const winnerIdx = vals.indexOf(mx);
-        metricWins[winnerIdx].push(label);
-      }
-    } else {
-      const nonZero = vals.map((v, i) => ({v, i})).filter(x => x.v > 0);
-      if(nonZero.length > 1){
-        const mn = Math.min(...nonZero.map(x => x.v));
-        const winners = nonZero.filter(x => x.v === mn);
-        if(winners.length === 1) {
-          metricWins[winners[0].i].push(label);
-        }
-      }
-    }
+    if(higher){ const mx = Math.max(...vals); if(vals.filter(v => v === mx).length === 1){ const winnerIdx = vals.indexOf(mx); metricWins[winnerIdx].push(label); } }
+    else { const nonZero = vals.map((v, i) => ({v, i})).filter(x => x.v > 0); if(nonZero.length > 1){ const mn = Math.min(...nonZero.map(x => x.v)); const winners = nonZero.filter(x => x.v === mn); if(winners.length === 1) metricWins[winners[0].i].push(label); } }
   }
-  
   scoreMetricForShare('batAvg', true, 'Batting Average');
   scoreMetricForShare('runs', true, 'Runs');
   scoreMetricForShare('hundreds', true, 'Centuries');
   scoreMetricForShare('wkts', true, 'Wickets');
   scoreMetricForShare('bowlAvg', false, 'Bowling Average');
-  
-  // Build summary text
-  const summaryParts = stats.map((s, i) => {
-    const wins = metricWins[i];
-    if(wins.length > 0){
-      return `${s.name} ahead in ${wins.join(', ')}`;
-    }
-    return null;
-  }).filter(Boolean);
-  
+  const summaryParts = stats.map((s, i) => { const wins = metricWins[i]; if(wins.length > 0) return `${s.name} ahead in ${wins.join(', ')}`; return null; }).filter(Boolean);
   const summary = summaryParts.length > 0 ? summaryParts.join('. ') + '.' : '';
-  
   const shareTitle = `Test Cricket: ${playerNames}`;
-  const shareText = summary 
-    ? `Compare ${playerNames}. ${summary}` 
-    : `Compare ${playerNames} on Test Cricket Side by Side`;
-  
-  // Try native Web Share API first (works on mobile/iPad)
+  const shareText = summary ? `Compare ${playerNames}. ${summary}` : `Compare ${playerNames} on Test Cricket Side by Side`;
   if(navigator.share && navigator.canShare && navigator.canShare({url: shareUrl})){
-    navigator.share({
-      title: shareTitle,
-      text: shareText,
-      url: shareUrl
-    }).catch(err => {
-      // Only show fallback if it's not a user cancellation
-      if(err.name !== 'AbortError'){
-        console.log('Share API failed, using fallback');
-        fallbackShare(shareUrl, playerNames);
-      }
-    });
-  } else {
-    // Fallback for desktop browsers or if share not supported
-    fallbackShare(shareUrl, playerNames);
-  }
+    navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).catch(err => { if(err.name !== 'AbortError') fallbackShare(shareUrl, playerNames); });
+  } else { fallbackShare(shareUrl, playerNames); }
 }
 
 function fallbackShare(url, playerNames){
-  // Try clipboard first (may fail due to permissions)
   const tryClipboard = () => {
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      return navigator.clipboard.writeText(url).then(()=>{
-        showCopiedFeedback();
-        return true;
-      }).catch(()=>false);
-    }
+    if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(url).then(()=>{ showCopiedFeedback(); return true; }).catch(()=>false);
     return Promise.resolve(false);
   };
-  
-  tryClipboard().then(success => {
-    if(!success){
-      // Clipboard failed or unavailable - use prompt dialog
-      showShareDialog(url, playerNames);
-    }
-  });
+  tryClipboard().then(success => { if(!success) showShareDialog(url, playerNames); });
 }
-
 function showCopiedFeedback(){
-  const btn = document.querySelector('.share-btn');
-  const originalHTML = btn.innerHTML;
+  const btn = document.querySelector('.share-btn'); const originalHTML = btn.innerHTML;
   btn.innerHTML = '<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;stroke:currentColor;fill:none"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
-  btn.style.color = 'var(--green)';
-  btn.style.borderColor = 'var(--green)';
-  setTimeout(()=>{
-    btn.innerHTML = originalHTML;
-    btn.style.color = '';
-    btn.style.borderColor = '';
-  }, 2000);
+  btn.style.color = 'var(--green)'; btn.style.borderColor = 'var(--green)';
+  setTimeout(()=>{ btn.innerHTML = originalHTML; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
 }
-
 function showShareDialog(url, playerNames){
-  // Use prompt to allow easy copy/paste - works everywhere
   const copied = prompt('Copy this URL to share your comparison:', url);
-  
-  // If user copied (didn't cancel), show feedback
-  if(copied !== null){
-    showCopiedFeedback();
-  }
+  if(copied !== null) showCopiedFeedback();
 }
 
-// Export to Excel function — exports only the active tab's data with active filters
+// Export to Excel function
 function exportToExcel(){
   const players = activeSel();
   if(players.length < 2){alert('Select at least 2 players to export');return;}
-
-  // Determine active tab
   const activeTabBtn = document.querySelector('.tab.on');
   const activeTab = activeTabBtn ? activeTabBtn.textContent.trim().toLowerCase().replace(' ', '') : 'overview';
-
-  // Get filtered row sets (same logic as render())
   const f = getF(), any = f.opp.length||f.city||f.gnd||f.ha||f.inn||f.res||f.toss||f.together;
   let displayPlayers = players;
   let rowSets = players.map(p => getRows(p));
-
-  // Apply "played together" filter (mirrors render() logic)
   if(f.together === 'yes'){
     const matchSets = rowSets.map(idxs => { const ms = new Set(); idxs.forEach(i => ms.add(SCD[i][0])); return ms; });
     let commonMatches = new Set(matchSets[0]);
@@ -1727,25 +1279,16 @@ function exportToExcel(){
       const playersWithShared = [], sharedByPlayer = [];
       for(let i = 0; i < players.length; i++){
         let hasShared = false; const myShared = new Set();
-        for(let j = 0; j < players.length; j++){
-          if(i !== j){ const sh = [...matchSets[i]].filter(m => matchSets[j].has(m)); if(sh.length > 0){ hasShared = true; sh.forEach(m => myShared.add(m)); } }
-        }
+        for(let j = 0; j < players.length; j++){ if(i !== j){ const sh = [...matchSets[i]].filter(m => matchSets[j].has(m)); if(sh.length > 0){ hasShared = true; sh.forEach(m => myShared.add(m)); } } }
         if(hasShared){ playersWithShared.push(i); sharedByPlayer.push(myShared); }
       }
-      if(playersWithShared.length >= 2){
-        displayPlayers = playersWithShared.map(i => players[i]);
-        rowSets = playersWithShared.map((pIdx, i) => rowSets[pIdx].filter(idx => sharedByPlayer[i].has(SCD[idx][0])));
-      } else { displayPlayers = []; rowSets = []; }
-    } else if(commonMatches.size > 0){
-      rowSets = rowSets.map(idxs => idxs.filter(i => commonMatches.has(SCD[i][0])));
-    } else { displayPlayers = []; rowSets = []; }
+      if(playersWithShared.length >= 2){ displayPlayers = playersWithShared.map(i => players[i]); rowSets = playersWithShared.map((pIdx, i) => rowSets[pIdx].filter(idx => sharedByPlayer[i].has(SCD[idx][0]))); }
+      else { displayPlayers = []; rowSets = []; }
+    } else if(commonMatches.size > 0){ rowSets = rowSets.map(idxs => idxs.filter(i => commonMatches.has(SCD[i][0]))); }
+    else { displayPlayers = []; rowSets = []; }
   }
-
   if(displayPlayers.length < 2){ alert('Not enough data to export with current filters.'); return; }
-
   const stats = displayPlayers.map((p, i) => agg(p, rowSets[i], any));
-
-  // Build filter summary string for metadata row
   const filterParts = [];
   if(f.opp.length) filterParts.push('vs ' + f.opp.map(o => TEAMS[o]).join(', '));
   if(f.city) filterParts.push('in ' + CITIES[f.city]);
@@ -1756,50 +1299,23 @@ function exportToExcel(){
   if(f.toss) filterParts.push(f.toss + ' toss');
   if(f.together) filterParts.push('played together');
   const filterSummary = filterParts.length ? 'Filters: ' + filterParts.join(' · ') : 'No filters applied';
-
   const wb = XLSX.utils.book_new();
-
-  // Helper to prepend a metadata header row to a sheet
-  function addMetaHeader(ws, headers, filterStr, tab){
-    XLSX.utils.sheet_add_aoa(ws, [
-      ['Cricket Times — Test Cricket Comparison'],
-      ['View: ' + tab + '  |  ' + filterStr],
-      [],
-      headers
-    ], {origin: 'A1'});
-  }
-
-  // Helper: safe number formatting
+  function addMetaHeader(ws, headers, filterStr, tab){ XLSX.utils.sheet_add_aoa(ws, [['Cricket Times — Test Cricket Comparison'],['View: ' + tab + '  |  ' + filterStr],[],headers], {origin: 'A1'}); }
   const n2 = v => typeof v === 'number' && v > 0 ? parseFloat(v.toFixed(2)) : (v || 0);
   const n1 = v => typeof v === 'number' ? parseFloat(v.toFixed(1)) : 0;
   const str = v => (v != null && v !== 0 && v !== '—') ? v : '—';
-
-  // ---- BUILD SHEETS BASED ON ACTIVE TAB ----
-
   if(activeTab === 'overview' || activeTab === 'allstats'){
-    // Batting block
     const batHeaders = ['Player','Country','Tests','Innings','N.O.','Runs','Average','Strike Rate','H.S.','50s','100s'];
-    const batRows = stats.map(s => [
-      s.name, s.country, s.tests, s.inns, s.no, s.runs,
-      n2(s.batAvg), str(s.sr ? n2(s.sr) : null), s.hs, s.fifties, s.hundreds
-    ]);
+    const batRows = stats.map(s => [s.name, s.country, s.tests, s.inns, s.no, s.runs, n2(s.batAvg), str(s.sr ? n2(s.sr) : null), s.hs, s.fifties, s.hundreds]);
     const wsBat = XLSX.utils.aoa_to_sheet([]);
     addMetaHeader(wsBat, batHeaders, filterSummary, 'Batting');
     XLSX.utils.sheet_add_aoa(wsBat, batRows, {origin: 'A5'});
     wsBat['!cols'] = [{wch:25},{wch:14},{wch:7},{wch:8},{wch:6},{wch:8},{wch:10},{wch:12},{wch:7},{wch:6},{wch:6}];
-
-    // Bowling block
     const bowlHeaders = ['Player','Country','Overs','Maidens','Runs','Wickets','Average','Economy','B/W','Best'];
-    const bowlRows = stats.map(s => [
-      s.name, s.country, n1(s.overs), s.mdns, s.bowlRuns, s.wkts,
-      n2(s.bowlAvg), n2(s.econ), n2(s.bpw), str(s.bestBowl)
-    ]);
-
+    const bowlRows = stats.map(s => [s.name, s.country, n1(s.overs), s.mdns, s.bowlRuns, s.wkts, n2(s.bowlAvg), n2(s.econ), n2(s.bpw), str(s.bestBowl)]);
     if(activeTab === 'overview'){
-      // Overview: Batting + Bowling + Fielding in one sheet
       const fieldHeaders = ['Player','Catches','Stumpings','Man of Match'];
       const fieldRows = stats.map(s => [s.name, s.catches, s.stumpings, s.mom]);
-
       XLSX.utils.sheet_add_aoa(wsBat, [[]], {origin: 'A' + (5 + batRows.length + 1)});
       XLSX.utils.sheet_add_aoa(wsBat, [['Bowling']], {origin: 'A' + (5 + batRows.length + 2)});
       XLSX.utils.sheet_add_aoa(wsBat, [bowlHeaders], {origin: 'A' + (5 + batRows.length + 3)});
@@ -1810,15 +1326,12 @@ function exportToExcel(){
       XLSX.utils.sheet_add_aoa(wsBat, fieldRows, {origin: 'A' + (fieldStart + 2)});
       XLSX.utils.book_append_sheet(wb, wsBat, 'Overview');
     } else {
-      // All Stats: separate sheets
       XLSX.utils.book_append_sheet(wb, wsBat, 'Batting');
-
       const wsBowl = XLSX.utils.aoa_to_sheet([]);
       addMetaHeader(wsBowl, bowlHeaders, filterSummary, 'Bowling');
       XLSX.utils.sheet_add_aoa(wsBowl, bowlRows, {origin: 'A5'});
       wsBowl['!cols'] = [{wch:25},{wch:14},{wch:8},{wch:8},{wch:8},{wch:8},{wch:10},{wch:10},{wch:8},{wch:10}];
       XLSX.utils.book_append_sheet(wb, wsBowl, 'Bowling');
-
       const fieldHeaders = ['Player','Catches','Stumpings','Man of Match'];
       const fieldRows = stats.map(s => [s.name, s.catches, s.stumpings, s.mom]);
       const wsField = XLSX.utils.aoa_to_sheet([]);
@@ -1827,33 +1340,23 @@ function exportToExcel(){
       wsField['!cols'] = [{wch:25},{wch:10},{wch:10},{wch:14}];
       XLSX.utils.book_append_sheet(wb, wsField, 'Fielding');
     }
-
   } else if(activeTab === 'batting'){
     const batHeaders = ['Player','Country','Tests','Innings','N.O.','Runs','Balls','Average','Strike Rate','H.S.','50s','100s'];
-    const batRows = stats.map(s => [
-      s.name, s.country, s.tests, s.inns, s.no, s.runs, s.balls,
-      n2(s.batAvg), str(s.sr ? n2(s.sr) : null), s.hs, s.fifties, s.hundreds
-    ]);
+    const batRows = stats.map(s => [s.name, s.country, s.tests, s.inns, s.no, s.runs, s.balls, n2(s.batAvg), str(s.sr ? n2(s.sr) : null), s.hs, s.fifties, s.hundreds]);
     const ws = XLSX.utils.aoa_to_sheet([]);
     addMetaHeader(ws, batHeaders, filterSummary, 'Batting');
     XLSX.utils.sheet_add_aoa(ws, batRows, {origin: 'A5'});
     ws['!cols'] = [{wch:25},{wch:14},{wch:7},{wch:8},{wch:6},{wch:8},{wch:8},{wch:10},{wch:12},{wch:7},{wch:6},{wch:6}];
     XLSX.utils.book_append_sheet(wb, ws, 'Batting');
-
   } else if(activeTab === 'bowling'){
     const bowlHeaders = ['Player','Country','Bowl Innings','Overs','Maidens','Runs','Wickets','Average','Economy','B/W','Best'];
-    const bowlRows = stats.map(s => [
-      s.name, s.country, s.bowlInns, n1(s.overs), s.mdns, s.bowlRuns, s.wkts,
-      n2(s.bowlAvg), n2(s.econ), n2(s.bpw), str(s.bestBowl)
-    ]);
+    const bowlRows = stats.map(s => [s.name, s.country, s.bowlInns, n1(s.overs), s.mdns, s.bowlRuns, s.wkts, n2(s.bowlAvg), n2(s.econ), n2(s.bpw), str(s.bestBowl)]);
     const ws = XLSX.utils.aoa_to_sheet([]);
     addMetaHeader(ws, bowlHeaders, filterSummary, 'Bowling');
     XLSX.utils.sheet_add_aoa(ws, bowlRows, {origin: 'A5'});
     ws['!cols'] = [{wch:25},{wch:14},{wch:12},{wch:8},{wch:8},{wch:8},{wch:8},{wch:10},{wch:10},{wch:8},{wch:10}];
     XLSX.utils.book_append_sheet(wb, ws, 'Bowling');
   }
-
-  // Generate context-aware filename
   const tabLabel = activeTab === 'allstats' ? 'AllStats' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
   const playerNames = stats.map(s => s.name.split(' ').pop()).join('_vs_');
   const filterTag = filterParts.length ? '_filtered' : '';
@@ -1861,56 +1364,124 @@ function exportToExcel(){
   XLSX.writeFile(wb, fname);
 }
 
-// Show/hide export button based on results
 function updateExportButton(){
   const btn = document.getElementById('exportBtn');
-  const players = activeSel();
-  if(players.length >= 2){
-    btn.style.display = 'flex';
-  } else {
-    btn.style.display = 'none';
-  }
+  document.getElementById('exportBtn').style.display = activeSel().length >= 2 ? 'flex' : 'none';
 }
-
-// Override render to show export button
 const originalRender = render;
-render = function(){
-  originalRender();
-  updateExportButton();
-}
+render = function(){ originalRender(); updateExportButton(); }
 
-// ---- Partnership Mode ----
-let partnershipMode = false;
-let partnershipSlotCount = 2; // Start with 2 partnerships visible
-const MAX_PARTNERSHIPS = 4;
-let partnershipSel = {
-  '1a': null, '1b': null,
-  '2a': null, '2b': null,
-  '3a': null, '3b': null,
-  '4a': null, '4b': null
+// ════════════════════════════════════════════════════════
+// ---- COMBO MODES: Partnerships / Triples / Quartet / Quintet / Elevens ----
+// ════════════════════════════════════════════════════════
+
+// groupSize = players per combination, maxGroups = max combinations allowed
+const COMBO_MODES = {
+  partnerships: { groupSize: 2,  maxGroups: 4, label: 'Partnership' },
+  triples:      { groupSize: 3,  maxGroups: 4, label: 'Triple'      },
+  quartet:      { groupSize: 4,  maxGroups: 4, label: 'Quartet'     },
+  quintet:      { groupSize: 5,  maxGroups: 4, label: 'Quintet'     },
+  elevens:      { groupSize: 11, maxGroups: 2, label: 'Eleven'      }
 };
+let currentComboMode = 'partnerships';
 
-// Partnership colors matching player colors
+let partnershipMode = false;
+let partnershipSlotCount = 2;
+let partnershipSel = {};
+
 const PARTNERSHIP_COLORS = ['p1', 'p2', 'p3', 'p4'];
 
-// Handle Record Type filter change
-function handleRecordTypeChange(){
+// Build a player-group DOM element for N players
+function buildGroupHTML(groupNum, cfg) {
+  const pColor = PARTNERSHIP_COLORS[groupNum - 1];
+  const div = document.createElement('div');
+  div.className = 'partnership-group';
+  div.id = 'pg' + groupNum;
+  let cardsHTML = '';
+  for(let p = 0; p < cfg.groupSize; p++) {
+    const slot = groupNum + '_' + p;
+    if(p > 0) cardsHTML += '<div class="partnership-plus">&</div>';
+    cardsHTML += `
+      <div class="sel-card partnership-card" id="pc${slot}">
+        <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
+        <div class="sel-label" style="margin-left:18px">Player ${p + 1}</div>
+        <input class="sel-input" id="ps${slot}" placeholder="Search player..." autocomplete="off">
+        <button class="sel-clear" id="px${slot}" onclick="clearPartnershipPlayer('${slot}')">&times;</button>
+        <div class="dd" id="pd${slot}"></div>
+        <div class="sel-info" id="pi${slot}"><div class="si-name" id="pn${slot}"></div><div class="si-meta" id="pm${slot}"></div></div>
+      </div>`;
+  }
+  div.innerHTML = `
+    <div class="partnership-label" style="border-left:3px solid var(--${pColor});color:var(--${pColor})">${cfg.label} ${groupNum}</div>
+    <div class="partnership-cards" style="flex-wrap:wrap;gap:8px;">${cardsHTML}</div>`;
+  return div;
+}
+
+// Build a VS divider element
+function buildVSHTML(id) {
+  const div = document.createElement('div');
+  div.className = 'partnership-vs';
+  if(id) div.id = id;
+  div.textContent = 'VS';
+  return div;
+}
+
+// Rebuild the partnership area for a new mode (called on dropdown change)
+function rebuildPartnershipArea(mode) {
+  const cfg = COMBO_MODES[mode];
+  partnershipSlotCount = 2;
+  partnershipSel = {};
+
+  const area = document.getElementById('partnershipArea');
+  const btn = document.getElementById('addPartnershipBtn');
+  // Remove all children except the add button
+  while(area.firstChild && area.firstChild !== btn) area.removeChild(area.firstChild);
+
+  // Insert: Group1 | VS | Group2
+  const g1 = buildGroupHTML(1, cfg);
+  const vs = buildVSHTML();
+  const g2 = buildGroupHTML(2, cfg);
+  area.insertBefore(g2, btn);
+  area.insertBefore(vs, g2);
+  area.insertBefore(g1, vs);
+
+  // Update add button: hide if maxGroups = 2 (Elevens), show otherwise
+  btn.style.display = cfg.maxGroups <= 2 ? 'none' : '';
+  btn.innerHTML = `<span class="plus">+</span> Add ${cfg.label}`;
+
+  // Init search for the 2 initial groups
+  const slots = [];
+  for(let g = 1; g <= 2; g++)
+    for(let p = 0; p < cfg.groupSize; p++)
+      slots.push(g + '_' + p);
+  initPartnershipSearch(slots);
+}
+
+// Handle Record Type dropdown change
+function handleRecordTypeChange() {
   const recordType = document.getElementById('fRecordType').value;
-  partnershipMode = (recordType === 'partnerships');
-  
-  // Toggle visibility of selection areas using class
+  partnershipMode = (recordType !== 'player');
+  currentComboMode = recordType;
+
   const selArea = document.getElementById('selArea');
   const partnershipArea = document.getElementById('partnershipArea');
   const emptyState = document.getElementById('emptyState');
   const partnershipEmptyState = document.getElementById('partnershipEmptyState');
-  
-  if(partnershipMode){
+
+  if(partnershipMode) {
     selArea.classList.add('hidden');
+    rebuildPartnershipArea(recordType);
     partnershipArea.classList.remove('hidden');
     partnershipArea.style.display = 'flex';
     emptyState.classList.add('hidden');
     partnershipEmptyState.classList.remove('hidden');
     partnershipEmptyState.style.display = 'block';
+    // Update empty state messaging
+    const cfg = COMBO_MODES[recordType];
+    document.querySelector('#partnershipEmptyState h2').textContent = 'Select ' + cfg.label.toLowerCase() + 's to compare';
+    document.querySelector('#partnershipEmptyState p').textContent =
+      'Choose ' + cfg.groupSize + ' players for each ' + cfg.label.toLowerCase() +
+      ' to compare their combined batting statistics.';
   } else {
     selArea.classList.remove('hidden');
     partnershipArea.classList.add('hidden');
@@ -1918,152 +1489,113 @@ function handleRecordTypeChange(){
     emptyState.style.display = 'block';
     partnershipEmptyState.classList.add('hidden');
   }
-  
-  // Hide results
+
   document.getElementById('comp').classList.remove('show');
   document.getElementById('partnershipComp').style.display = 'none';
-  
-  // Hide filters panel when switching modes
   document.getElementById('filtersPanel').classList.remove('show');
-  
-  // Initialize partnership search if not done
-  if(partnershipMode && !window.partnershipSearchInit){
-    initPartnershipSearch(['1a','1b','2a','2b']);
-    window.partnershipSearchInit = true;
-  }
-  
-  // Check if we should show results
-  if(partnershipMode && hasEnoughPartnerships()){
-    renderPartnerships();
-  }
+
+  if(partnershipMode && hasEnoughPartnerships()) renderPartnerships();
 }
 
-function addPartnershipSlot(){
-  if(partnershipSlotCount >= MAX_PARTNERSHIPS) return;
+// Add another combination group
+function addPartnershipSlot() {
+  const cfg = COMBO_MODES[currentComboMode] || COMBO_MODES.partnerships;
+  if(partnershipSlotCount >= cfg.maxGroups) return;
   partnershipSlotCount++;
   const n = partnershipSlotCount;
-  const pColor = PARTNERSHIP_COLORS[n-1];
-  
+
   const area = document.getElementById('partnershipArea');
   const btn = document.getElementById('addPartnershipBtn');
-  
-  // Add VS divider
-  const vs = document.createElement('div');
-  vs.className = 'partnership-vs';
-  vs.id = 'pvs' + (n-1);
-  vs.textContent = 'VS';
+
+  const vs = buildVSHTML('pvs' + (n - 1));
   area.insertBefore(vs, btn);
-  
-  // Add partnership group
-  const group = document.createElement('div');
-  group.className = 'partnership-group';
-  group.id = 'pg' + n;
-  group.innerHTML = `
-    <div class="partnership-label" style="border-left:3px solid var(--${pColor});color:var(--${pColor})">Partnership ${n}</div>
-    <div class="partnership-cards">
-      <div class="sel-card partnership-card" id="pc${n}a">
-        <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
-        <div class="sel-label" style="margin-left:18px">Player A</div>
-        <input class="sel-input" id="ps${n}a" placeholder="Search player..." autocomplete="off">
-        <button class="sel-clear" id="px${n}a" onclick="clearPartnershipPlayer('${n}a')">&times;</button>
-        <div class="dd" id="pd${n}a"></div>
-        <div class="sel-info" id="pi${n}a"><div class="si-name" id="pn${n}a"></div><div class="si-meta" id="pm${n}a"></div></div>
-      </div>
-      <div class="partnership-plus">&</div>
-      <div class="sel-card partnership-card" id="pc${n}b">
-        <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
-        <div class="sel-label" style="margin-left:18px">Player B</div>
-        <input class="sel-input" id="ps${n}b" placeholder="Search player..." autocomplete="off">
-        <button class="sel-clear" id="px${n}b" onclick="clearPartnershipPlayer('${n}b')">&times;</button>
-        <div class="dd" id="pd${n}b"></div>
-        <div class="sel-info" id="pi${n}b"><div class="si-name" id="pn${n}b"></div><div class="si-meta" id="pm${n}b"></div></div>
-      </div>
-    </div>
-  `;
+  const group = buildGroupHTML(n, cfg);
   area.insertBefore(group, btn);
-  
-  // Initialize search for new slots
-  initPartnershipSearch([n+'a', n+'b']);
-  
-  // Hide button if max reached
-  if(partnershipSlotCount >= MAX_PARTNERSHIPS){
-    btn.style.display = 'none';
-  }
+
+  const slots = [];
+  for(let p = 0; p < cfg.groupSize; p++) slots.push(n + '_' + p);
+  initPartnershipSearch(slots);
+
+  if(partnershipSlotCount >= cfg.maxGroups) btn.style.display = 'none';
 }
 
-function initPartnershipSearch(slots){
+// Init search for a set of slot IDs (format: "groupNum_playerIdx")
+function initPartnershipSearch(slots) {
   slots.forEach(slot => {
-    const inp = document.getElementById('ps'+slot);
-    const dd = document.getElementById('pd'+slot);
-    
+    const inp = document.getElementById('ps' + slot);
+    const dd = document.getElementById('pd' + slot);
+    if(!inp || !dd) return;
+
     inp.addEventListener('input', () => {
       const q = inp.value.trim().toLowerCase();
-      if(q.length < 2){ dd.classList.remove('open'); return; }
-      
-      // Only exclude the other player in the SAME partnership
-      const partnershipNum = slot.charAt(0);
-      const otherSlot = slot.charAt(1) === 'a' ? partnershipNum + 'b' : partnershipNum + 'a';
-      const partnerInSameGroup = partnershipSel[otherSlot];
-      const excludeIds = partnerInSameGroup ? [partnerInSameGroup.id] : [];
-      
-      const m = PLAYERS.filter(p => 
-        !excludeIds.includes(p.id) && 
-        (p.name.toLowerCase().includes(q) || 
-         p.fullName.toLowerCase().includes(q) || 
+      if(q.length < 2) { dd.classList.remove('open'); return; }
+
+      // Exclude players already selected in the SAME group
+      const groupNum = slot.split('_')[0];
+      const cfg = COMBO_MODES[currentComboMode] || COMBO_MODES.partnerships;
+      const excludeIds = [];
+      for(let p = 0; p < cfg.groupSize; p++) {
+        const s = groupNum + '_' + p;
+        if(s !== slot && partnershipSel[s]) excludeIds.push(partnershipSel[s].id);
+      }
+
+      const m = PLAYERS.filter(p =>
+        !excludeIds.includes(p.id) &&
+        (p.name.toLowerCase().includes(q) ||
+         p.fullName.toLowerCase().includes(q) ||
          p.country.toLowerCase().includes(q))
       ).slice(0, 15);
-      
-      dd.innerHTML = m.map(p => 
+
+      dd.innerHTML = m.map(p =>
         `<div class="dd-item" onclick="pickPartnershipPlayer('${slot}',${p.id})">
-          <span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span>
+          <span><span class="nm">${p.fullName || p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span>
           <span class="ct">${p.country}</span>
         </div>`
       ).join('');
       dd.classList.add('open');
     });
-    
+
     inp.addEventListener('focus', () => {
       if(inp.value.trim().length >= 2) dd.classList.add('open');
     });
-    
+
     document.addEventListener('click', e => {
-      if(!e.target.closest('#pc'+slot)) dd.classList.remove('open');
+      if(!e.target.closest('#pc' + slot)) dd.classList.remove('open');
     });
   });
 }
 
-function pickPartnershipPlayer(slot, id){
+function pickPartnershipPlayer(slot, id) {
   const p = PLAYERS.find(x => x.id === id);
   if(!p) return;
-  
+
   partnershipSel[slot] = p;
-  document.getElementById('ps'+slot).value = '';
-  document.getElementById('pd'+slot).classList.remove('open');
-  document.getElementById('pn'+slot).textContent = p.fullName || p.name;
-  document.getElementById('pm'+slot).innerHTML = badge(p.country) + ` ${p.fromYear}–${p.toYear}`;
-  document.getElementById('pi'+slot).classList.add('show');
-  document.getElementById('px'+slot).classList.add('show');
-  
-  // Add active class based on partnership group
-  const groupNum = slot.charAt(0);
-  document.getElementById('pc'+slot).classList.add('active-'+groupNum);
-  
-  if(hasEnoughPartnerships()){
+  document.getElementById('ps' + slot).value = '';
+  document.getElementById('pd' + slot).classList.remove('open');
+  document.getElementById('pn' + slot).textContent = p.fullName || p.name;
+  document.getElementById('pm' + slot).innerHTML = badge(p.country) + ' ' + p.fromYear + '–' + p.toYear;
+  document.getElementById('pi' + slot).classList.add('show');
+  document.getElementById('px' + slot).classList.add('show');
+
+  const groupNum = slot.split('_')[0];
+  document.getElementById('pc' + slot).classList.add('active-' + groupNum);
+
+  if(hasEnoughPartnerships()) {
     document.getElementById('partnershipEmptyState').style.display = 'none';
     renderPartnerships();
   }
 }
 
-function clearPartnershipPlayer(slot){
+function clearPartnershipPlayer(slot) {
   partnershipSel[slot] = null;
-  document.getElementById('pi'+slot).classList.remove('show');
-  document.getElementById('px'+slot).classList.remove('show');
-  document.getElementById('ps'+slot).value = '';
-  
-  const groupNum = slot.charAt(0);
-  document.getElementById('pc'+slot).classList.remove('active-'+groupNum);
-  
-  if(!hasEnoughPartnerships()){
+  document.getElementById('pi' + slot).classList.remove('show');
+  document.getElementById('px' + slot).classList.remove('show');
+  document.getElementById('ps' + slot).value = '';
+
+  const groupNum = slot.split('_')[0];
+  document.getElementById('pc' + slot).classList.remove('active-' + groupNum);
+
+  if(!hasEnoughPartnerships()) {
     document.getElementById('partnershipComp').style.display = 'none';
     document.getElementById('partnershipEmptyState').style.display = 'block';
   } else {
@@ -2071,199 +1603,154 @@ function clearPartnershipPlayer(slot){
   }
 }
 
-function hasEnoughPartnerships(){
-  // Need at least 2 complete partnerships
+// Returns true when at least 2 complete groups exist
+function hasEnoughPartnerships() {
+  const cfg = COMBO_MODES[currentComboMode] || COMBO_MODES.partnerships;
   let completeCount = 0;
-  for(let i = 1; i <= partnershipSlotCount; i++){
-    if(partnershipSel[i+'a'] && partnershipSel[i+'b']){
-      completeCount++;
+  for(let i = 1; i <= partnershipSlotCount; i++) {
+    let allFilled = true;
+    for(let p = 0; p < cfg.groupSize; p++) {
+      if(!partnershipSel[i + '_' + p]) { allFilled = false; break; }
     }
+    if(allFilled) completeCount++;
   }
   return completeCount >= 2;
 }
 
-// Get all complete partnerships
-function getCompletePartnerships(){
-  const partnerships = [];
-  for(let i = 1; i <= partnershipSlotCount; i++){
-    if(partnershipSel[i+'a'] && partnershipSel[i+'b']){
-      partnerships.push({
-        num: i,
-        playerA: partnershipSel[i+'a'],
-        playerB: partnershipSel[i+'b']
-      });
+// Returns array of complete group objects
+function getCompletePartnerships() {
+  const cfg = COMBO_MODES[currentComboMode] || COMBO_MODES.partnerships;
+  const groups = [];
+  for(let i = 1; i <= partnershipSlotCount; i++) {
+    const players = [];
+    let allFilled = true;
+    for(let p = 0; p < cfg.groupSize; p++) {
+      const pl = partnershipSel[i + '_' + p];
+      if(!pl) { allFilled = false; break; }
+      players.push(pl);
     }
+    if(allFilled) groups.push({ num: i, players, playerA: players[0], playerB: players[1] });
   }
-  return partnerships;
+  return groups;
 }
 
-// Calculate partnership stats for two players
-function calcPartnershipStats(playerA, playerB){
-  const idxA = SCD_IDX[playerA.id] || [];
-  const idxB = SCD_IDX[playerB.id] || [];
-  
-  // Build map of match+innings for player A
-  const aInnings = {};
-  idxA.forEach(i => {
-    const r = SCD[i];
-    const matchId = r[0];
-    const innNum = r[2];
-    const key = matchId + '_' + innNum;
-    // Only count if player actually batted (runs not null)
-    if(r[3] !== null && r[4] !== null){
-      aInnings[key] = {
-        matchId: matchId,
-        innings: innNum,
-        runs: typeof r[3] === 'number' ? r[3] : 0,
-        balls: typeof r[5] === 'number' ? r[5] : 0,
-        scdIdx: i
-      };
-    }
+// Calculate combined stats for N players: only count innings where ALL played
+function calcPartnershipStats(players) {
+  const inningsMaps = players.map(pl => {
+    const map = {};
+    (SCD_IDX[pl.id] || []).forEach(i => {
+      const r = SCD[i];
+      if(r[3] !== null && r[4] !== null) {
+        const key = r[0] + '_' + r[2];
+        map[key] = {
+          matchId: r[0],
+          runs: typeof r[3] === 'number' ? r[3] : 0,
+          balls: typeof r[5] === 'number' ? r[5] : 0
+        };
+      }
+    });
+    return map;
   });
-  
-  // Find common innings where both batted
-  const commonInnings = [];
+
+  // Find innings keys present in ALL players' maps
+  const commonKeys = Object.keys(inningsMaps[0])
+    .filter(k => inningsMaps.every(m => m[k]));
+
   const testsPlayed = new Set();
-  
-  idxB.forEach(i => {
-    const r = SCD[i];
-    const matchId = r[0];
-    const innNum = r[2];
-    const key = matchId + '_' + innNum;
-    
-    // Only count if player B actually batted
-    if(r[3] !== null && r[4] !== null && aInnings[key]){
-      testsPlayed.add(matchId);
-      commonInnings.push({
-        matchId: matchId,
-        innings: innNum,
-        runsA: aInnings[key].runs,
-        ballsA: aInnings[key].balls,
-        runsB: typeof r[3] === 'number' ? r[3] : 0,
-        ballsB: typeof r[5] === 'number' ? r[5] : 0
-      });
-    }
+  let totalRuns = 0, totalBalls = 0;
+  commonKeys.forEach(k => {
+    testsPlayed.add(inningsMaps[0][k].matchId);
+    inningsMaps.forEach(m => { totalRuns += m[k].runs; totalBalls += m[k].balls; });
   });
-  
-  // Calculate combined stats
-  let totalRuns = 0;
-  let totalBalls = 0;
-  let dismissals = 0; // We'll approximate as number of innings (each innings ends with dismissal or declaration)
-  
-  commonInnings.forEach(inn => {
-    totalRuns += inn.runsA + inn.runsB;
-    totalBalls += inn.ballsA + inn.ballsB;
-    dismissals++; // Each common innings represents at least one partnership ending
-  });
-  
-  // Partnership average (runs per innings together)
-  const partnershipAvg = commonInnings.length > 0 ? totalRuns / commonInnings.length : 0;
-  
-  // Partnership strike rate
-  const partnershipSR = totalBalls > 0 ? (totalRuns / totalBalls) * 100 : null;
-  
+
+  const innings = commonKeys.length;
   return {
     tests: testsPlayed.size,
-    innings: commonInnings.length,
+    innings,
     runs: totalRuns,
-    average: partnershipAvg,
-    strikeRate: partnershipSR,
-    playerA: playerA,
-    playerB: playerB
+    average: innings > 0 ? totalRuns / innings : 0,
+    strikeRate: totalBalls > 0 ? (totalRuns / totalBalls) * 100 : null,
+    players,
+    playerA: players[0],
+    playerB: players[1]
   };
 }
 
-function renderPartnerships(){
-  const completePartnerships = getCompletePartnerships();
-  
-  if(completePartnerships.length < 2) return;
-  
-  // Calculate stats for all partnerships
-  const partnerships = completePartnerships.map(p => {
-    const stats = calcPartnershipStats(p.playerA, p.playerB);
-    stats.num = p.num;
+// Render the combo comparison table
+function renderPartnerships() {
+  const completeGroups = getCompletePartnerships();
+  if(completeGroups.length < 2) return;
+
+  const cfg = COMBO_MODES[currentComboMode] || COMBO_MODES.partnerships;
+
+  const groups = completeGroups.map(g => {
+    const stats = calcPartnershipStats(g.players);
+    stats.num = g.num;
     return stats;
   });
-  
-  // Build comparison table
+
   const cols = [
-    {key:'tests', label:'Tests Together', higher:true},
-    {key:'innings', label:'Innings Together', higher:true},
-    {key:'runs', label:'Partnership Runs', higher:true},
-    {key:'average', label:'Partnership Avg', higher:true},
-    {key:'strikeRate', label:'Partnership SR', higher:true}
+    { key: 'tests',      label: 'Tests Together',  higher: true },
+    { key: 'innings',    label: 'Innings Together', higher: true },
+    { key: 'runs',       label: 'Combined Runs',    higher: true },
+    { key: 'average',    label: 'Avg Runs/Innings', higher: true },
+    { key: 'strikeRate', label: 'Combined SR',      higher: true }
   ];
-  
+
   // Pre-compute best values
   const bestVals = {};
   cols.forEach(c => {
-    const vals = partnerships.map(s => typeof s[c.key] === 'number' ? s[c.key] : 0);
-    bestVals[c.key] = Math.max(...vals);
+    bestVals[c.key] = Math.max(...groups.map(s => typeof s[c.key] === 'number' ? s[c.key] : 0));
   });
-  
-  // Build header
-  let hdr = '<th>Partnership</th>';
-  cols.forEach(c => {
-    hdr += `<th>${c.label}</th>`;
-  });
-  
-  // Build rows
+
+  let hdr = `<th>${cfg.label}</th>`;
+  cols.forEach(c => { hdr += `<th>${c.label}</th>`; });
+
   let rows = '';
-  partnerships.forEach((s, idx) => {
+  groups.forEach(s => {
     const pColor = PARTNERSHIP_COLORS[s.num - 1];
-    const pNames = `${s.playerA.name} & ${s.playerB.name}`;
-    const pCountry = s.playerA.country === s.playerB.country ? s.playerA.country : `${s.playerA.country} / ${s.playerB.country}`;
-    
+    const pNames = s.players.map(p => p.name).join(' & ');
+    const countries = [...new Set(s.players.map(p => p.country))].join(' / ');
+
     let row = `<td class="player-cell" style="border-left:3px solid var(--${pColor})">
       <span class="pc-name">${pNames}</span>
-      <span class="pc-meta">${pCountry}</span>
+      <span class="pc-meta">${countries}</span>
     </td>`;
-    
+
     cols.forEach(c => {
       const v = s[c.key];
       const n = typeof v === 'number' ? v : 0;
       let cls = '';
-      
-      // Highlight best value
-      if(bestVals[c.key] !== undefined){
-        const allSame = partnerships.every(os => {
-          const ov = typeof os[c.key] === 'number' ? os[c.key] : 0;
-          return ov === n;
-        });
-        if(!allSame && n > 0){
-          cls = n === bestVals[c.key] ? 'best' : 'worse';
-        }
-      }
-      
-      // Format value
+      const allSame = groups.every(os => (typeof os[c.key] === 'number' ? os[c.key] : 0) === n);
+      if(!allSame && n > 0) cls = n === bestVals[c.key] ? 'best' : 'worse';
       let display;
-      if(c.key === 'average'){
-        display = n > 0 ? n.toFixed(2) : '—';
-      } else if(c.key === 'strikeRate'){
-        display = v !== null && v > 0 ? v.toFixed(2) : '—';
-      } else {
-        display = n > 0 ? n.toLocaleString() : '—';
-      }
-      
+      if(c.key === 'average') display = n > 0 ? n.toFixed(2) : '—';
+      else if(c.key === 'strikeRate') display = v !== null && v > 0 ? v.toFixed(2) : '—';
+      else display = n > 0 ? n.toLocaleString() : '—';
       row += `<td class="${cls}">${display}</td>`;
     });
-    
-    rows += `<tr class="${pColor}-row">${row}</tr>`;
+    rows += `<tr class="p${s.num}-row">${row}</tr>`;
   });
-  
-  const html = `
+
+  document.getElementById('partnershipResults').innerHTML = `
     <div class="tbl-wrap">
       <table class="cmp-table">
         <thead><tr>${hdr}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
-    <p class="foot-note">* Partnership stats show combined batting when both players batted in the same innings. Strike rate only shown when balls faced data is available.</p>
-  `;
-  
-  document.getElementById('partnershipResults').innerHTML = html;
+    <p class="foot-note">* Stats show combined batting when ALL players in the group batted in the same innings. Strike rate requires balls-faced data.</p>`;
   document.getElementById('partnershipComp').style.display = 'block';
 }
+
+// Initialise search for the default partnerships layout on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const slots = [];
+  for(let g = 1; g <= 2; g++)
+    for(let p = 0; p < 2; p++)
+      slots.push(g + '_' + p);
+  initPartnershipSearch(slots);
+});
 </script>
 
 <!-- SheetJS for Excel Export -->
@@ -2314,114 +1801,66 @@ async function isDailyAuthed() { try { const doc = await db.collection('daily_au
 const DEFAULT_PASSWORD = 'mylaptopismAI!';
 let sitePassword = DEFAULT_PASSWORD;
 
-// Eye icons SVG
 const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
 const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
 
 function togglePassword() {
   const input = document.getElementById('passwordInput');
   const icon = document.getElementById('eyeIcon');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.innerHTML = eyeClosed;
-  } else {
-    input.type = 'password';
-    icon.innerHTML = eyeOpen;
-  }
+  if (input.type === 'password') { input.type = 'text'; icon.innerHTML = eyeClosed; }
+  else { input.type = 'password'; icon.innerHTML = eyeOpen; }
 }
 
-// Load password from Firestore
 async function loadPassword() {
   try {
     const doc = await db.collection('settings').doc('site').get();
-    if (doc.exists && doc.data().password) {
-      sitePassword = doc.data().password;
-    } else {
-      // Initialize with default password
-      await db.collection('settings').doc('site').set({ password: DEFAULT_PASSWORD });
-    }
-  } catch (e) {
-    console.error('Error loading password:', e);
-  }
+    if (doc.exists && doc.data().password) { sitePassword = doc.data().password; }
+    else { await db.collection('settings').doc('site').set({ password: DEFAULT_PASSWORD }); }
+  } catch (e) { console.error('Error loading password:', e); }
 }
 
 async function checkPassword() {
   const emailInput = document.getElementById('emailInput');
   const passwordInput = document.getElementById('passwordInput');
   const error = document.getElementById('passwordError');
-  
   const email = emailInput.value.trim();
   const password = passwordInput.value;
-  
-  if (!email) {
-    emailInput.classList.add('error');
-    setTimeout(() => emailInput.classList.remove('error'), 400);
-    return;
-  }
-  
+  if (!email) { emailInput.classList.add('error'); setTimeout(() => emailInput.classList.remove('error'), 400); return; }
   await loadPassword();
-  
   if (password === sitePassword) {
-    // Log the login to Firestore
     try {
-      await db.collection('logins').add({
-        email: email,
-        page: 'index.html',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      
-      // Start session tracking
-      const sessionRef = await db.collection('sessions').add({
-        email: email,
-        startTime: firebase.firestore.FieldValue.serverTimestamp(),
-        page: 'index.html'
-      });
+      await db.collection('logins').add({ email: email, page: 'index.html', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+      const sessionRef = await db.collection('sessions').add({ email: email, startTime: firebase.firestore.FieldValue.serverTimestamp(), page: 'index.html' });
       sessionStorage.setItem('cricket_session_id', sessionRef.id);
       sessionStorage.setItem('cricket_session_start', Date.now().toString());
-    } catch (e) {
-      console.error('Error logging login:', e);
-    }
-    
+    } catch (e) { console.error('Error logging login:', e); }
     sessionStorage.setItem(STORAGE_KEY, 'authenticated');
     sessionStorage.setItem('cricket_user_email', email);
-    // Set daily auth if admin email
     if (email.toLowerCase() === ADMIN_EMAIL) { await setDailyAuth(email.toLowerCase()); }
     unlockSite();
   } else {
     passwordInput.classList.add('error');
     error.classList.add('show');
-    setTimeout(() => {
-      passwordInput.classList.remove('error');
-    }, 400);
+    setTimeout(() => { passwordInput.classList.remove('error'); }, 400);
   }
 }
 
 function unlockSite() {
   document.getElementById('passwordOverlay').classList.add('hidden');
   document.getElementById('siteContent').classList.add('unlocked');
-  setTimeout(() => {
-    document.getElementById('passwordOverlay').style.display = 'none';
-  }, 400);
+  setTimeout(() => { document.getElementById('passwordOverlay').style.display = 'none'; }, 400);
 }
 
-// Track session end on page unload
 window.addEventListener('beforeunload', async () => {
   const sessionId = sessionStorage.getItem('cricket_session_id');
   const sessionStart = sessionStorage.getItem('cricket_session_start');
   if (sessionId && sessionStart) {
     const duration = Math.round((Date.now() - parseInt(sessionStart)) / 1000);
-    try {
-      await db.collection('sessions').doc(sessionId).update({
-        endTime: firebase.firestore.FieldValue.serverTimestamp(),
-        duration: duration
-      });
-    } catch (e) {
-      console.error('Error updating session:', e);
-    }
+    try { await db.collection('sessions').doc(sessionId).update({ endTime: firebase.firestore.FieldValue.serverTimestamp(), duration: duration }); }
+    catch (e) { console.error('Error updating session:', e); }
   }
 });
 
-// Check if already authenticated this session
 if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
   unlockSite();
 } else {
@@ -2430,9 +1869,7 @@ if (sessionStorage.getItem(STORAGE_KEY) === 'authenticated') {
       sessionStorage.setItem(STORAGE_KEY, 'authenticated');
       sessionStorage.setItem('cricket_user_email', ADMIN_EMAIL);
       unlockSite();
-    } else {
-      document.getElementById('emailInput').focus();
-    }
+    } else { document.getElementById('emailInput').focus(); }
   })();
 }
 </script>
