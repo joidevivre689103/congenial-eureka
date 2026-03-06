@@ -916,7 +916,10 @@ function applyStatsTypeToTabs(){
 }
 
 function handleStatsTypeChange(){
-  if(hasEnough()){
+  if(cohortMode && hasEnoughCohorts()){
+    applyStatsTypeToTabs();
+    renderCohorts();
+  } else if(hasEnough()){
     applyStatsTypeToTabs();
     render();
   } else if(partnershipMode && hasEnoughPartnerships()){
@@ -1075,7 +1078,11 @@ function populateFilters(){
 }
 
 function getF(){return{opp:selectedOpps,city:document.getElementById('fCity').value,gnd:document.getElementById('fGnd').value,ha:document.getElementById('fHA').value,inn:document.getElementById('fInn').value,res:document.getElementById('fRes').value,toss:document.getElementById('fToss').value,together:document.getElementById('fTogether').value}}
-function applyFilters(){if(hasEnough())render();showTags()}
+function applyFilters(){
+  if(cohortMode && hasEnoughCohorts()) renderCohorts();
+  else if(hasEnough()) render();
+  showTags();
+}
 function resetFilters(){selectedOpps=[];['fCity','fGnd','fHA','fInn','fRes','fToss','fTogether'].forEach(id=>{document.getElementById(id).value=''});document.getElementById('activeFilt').innerHTML='';updateOppToggleLabel();document.querySelectorAll('#fOppDD .ms-dd-item').forEach(el=>el.classList.remove('checked'));if(hasEnough())render()}
 function ordinal(n){return['','1st','2nd','3rd','4th'][n]||n}
 function showTags(){
@@ -1714,19 +1721,22 @@ function exportToExcel(){
   }
 
   // Write individual rows + blank line + cohort totals
-  function writeSection(ws, title, hdr, statsArr, rowFn, r, cw, showField){
+  function writeSection(ws, title, hdr, statsArr, rowFn, r, cw){
     const cohorts = splitCohorts(statsArr);
-    const cALabel = cohorts && cohorts.a.length>1 ? 'Cohort A — '+cohorts.a.map(s=>s.name.split(' ').pop()).join(', ') : (cohorts?cohorts.a[0].name+' Total':'');
-    const cBLabel = cohorts && cohorts.b.length>1 ? 'Cohort B — '+cohorts.b.map(s=>s.name.split(' ').pop()).join(', ') : (cohorts?cohorts.b[0].name+' Total':'');
+    const cohortTypeName = cohortMode
+      ? ({duo:'Duo',triple:'Triple',quartet:'Quartet',quintet:'Quintet',eleven:'Eleven'}[document.getElementById('fRecordType').value]||'Cohort')
+      : 'Cohort';
+    const cALabel = cohorts
+      ? (cohorts.a.length>1 ? cohortTypeName+' A — '+cohorts.a.map(s=>s.name.split(' ').pop()).join(', ') : cohorts.a[0].name+' Total')
+      : '';
+    const cBLabel = cohorts && cohorts.b.length>0
+      ? (cohorts.b.length>1 ? cohortTypeName+' B — '+cohorts.b.map(s=>s.name.split(' ').pop()).join(', ') : cohorts.b[0].name+' Total')
+      : '';
     const cA = cohorts ? cohortTotal(cohorts.a, cALabel) : null;
-    const cB = cohorts ? cohortTotal(cohorts.b, cBLabel) : null;
+    const cB = cohorts && cohorts.b.length>0 ? cohortTotal(cohorts.b, cBLabel) : null;
     const dataRows = statsArr.map(rowFn);
-    const totRows  = [[], ...(cA?[rowFn(cA)]:[]), ...(cB?[rowFn(cB)]:[])] ;
+    const totRows = [[], ...(cA?[rowFn(cA)]:[]), ...(cB?[rowFn(cB)]:[])];
     r = writeBlock(ws, title, hdr, [...dataRows, ...totRows], r, cw);
-    if(showField){
-      r++;
-      r = writeBlock(ws, 'FIELDING (career totals)', fieldHdr, statsArr.map(fieldRow), r, null);
-    }
     return r + 2;
   }
 
@@ -1734,8 +1744,8 @@ function exportToExcel(){
   function buildSheet(ws, statsArr, sheetTitle, fStr, incBat, incBowl, incField){
     XLSX.utils.sheet_add_aoa(ws, [['Cricket Times — Test Cricket Comparison'],['View: '+sheetTitle+' | '+fStr],[]], {origin:'A1'});
     let r = 4;
-    if(incBat)  r = writeSection(ws, incBowl||incField?'BATTING':null, batHdr,  statsArr, batRow,  r, batCW,  false);
-    if(incBowl) r = writeSection(ws, incBat ||incField?'BOWLING':null, bowlHdr, statsArr, bowlRow, r, bowlCW, false);
+    if(incBat)  r = writeSection(ws, incBowl||incField?'BATTING':null, batHdr,  statsArr, batRow,  r, batCW);
+    if(incBowl) r = writeSection(ws, incBat ||incField?'BOWLING':null, bowlHdr, statsArr, bowlRow, r, bowlCW);
     if(incField) writeBlock(ws, 'FIELDING (career totals)', fieldHdr, statsArr.map(fieldRow), r, null);
   }
 
@@ -1778,7 +1788,8 @@ function exportToExcel(){
   const dualTag   = dualViewOn ? '_Dual' : '';
   const filterTag = filterParts.length ? '_filtered' : '';
   const stTag     = st!=='both' ? '_'+st : '';
-  XLSX.writeFile(wb, 'CricketTimes_'+tabLabel.replace(/\s/g,'')+'_'+nameParts+stTag+dualTag+filterTag+'.xlsx');
+  const modeTag   = cohortMode ? '_'+(document.getElementById('fRecordType').value) : '';
+  XLSX.writeFile(wb, 'CricketTimes_'+tabLabel.replace(/\s/g,'')+'_'+nameParts+stTag+modeTag+dualTag+filterTag+'.xlsx');
 }
 // ---- Dual view (Career vs Together) toggle ----
 let dualViewOn = false; // false = career only, true = show both side by side
@@ -1791,7 +1802,8 @@ function toggleDualView(){
   track.classList.toggle('on', dualViewOn);
   lCareer.classList.toggle('active', !dualViewOn);
   lTogether.classList.toggle('active', dualViewOn);
-  if(hasEnough()) render();
+  if(cohortMode && hasEnoughCohorts()) renderCohorts();
+  else if(hasEnough()) render();
 }
 
 function updateExportButton(){
@@ -1799,7 +1811,7 @@ function updateExportButton(){
   const show = players.length >= 2;
   document.getElementById('exportBtn').style.display = show ? 'flex' : 'none';
   const toggle = document.getElementById('dualToggle');
-  toggle.classList.toggle('show', show && !cohortMode); // hide career/together toggle in cohort mode
+  toggle.classList.toggle('show', show); // show toggle in all modes
   if(!show){
     dualViewOn = false;
     document.getElementById('dualToggleTrack').classList.remove('on');
@@ -1963,23 +1975,23 @@ function hasEnoughCohorts(){
 }
 
 function renderCohorts(){
-  // Flatten all selected cohort players into the main sel array and render normally
-  // Cohort A = first half, Cohort B = second half — render() handles cohort totals
   const allPlayers = [...cohortSel.a.filter(Boolean), ...cohortSel.b.filter(Boolean)];
   if(allPlayers.length < 2) return;
 
-  // Temporarily override activeSel for the render
-  const savedSel = sel.slice();
-  // Fill sel array with cohort players
-  for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = allPlayers[i] || null;
-
-  // Tag cohort boundary so export knows where to split
+  // Tag cohort boundary so export and buildDualOrSingle know where to split
   window._cohortSplit = cohortSel.a.filter(Boolean).length;
 
-  render();
+  // Temporarily fill sel[] with cohort players so render() works normally
+  const savedSel = sel.slice();
+  for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = allPlayers[i] || null;
 
-  // Restore sel
+  // Call the original render (before the wrapper that calls updateExportButton)
+  originalRender();
+
+  // Restore sel[]
   for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = savedSel[i];
+
+  updateExportButton();
 }
 
 function addPartnershipSlot(){
