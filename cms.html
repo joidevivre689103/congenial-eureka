@@ -850,9 +850,13 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New Quiz
           </button>
+          <button class="btn btn-secondary" onclick="loadQuizFromGitHub()">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Load from GitHub
+          </button>
           <button class="btn btn-primary" onclick="saveQuizToGitHub()">
             <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Save &amp; Publish Quiz
+            Publish to GitHub
           </button>
         </div>
       </div>
@@ -2039,6 +2043,38 @@ async function saveQuizToGitHub() {
     if(resp.ok){showToast('success','Quiz Published','Quiz saved to quiz.json successfully.');/* quiz state lives in quiz.json on GitHub */}
     else{const err=await resp.json();showToast('error','GitHub Error',err.message||'Failed to save.');}
   } catch(err){showToast('error','Error',err.message.substring(0,100));}
+}
+async function loadQuizFromGitHub() {
+  const token = document.getElementById('quizGithubToken').value.trim();
+  if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
+  const status = document.getElementById('quizTokenStatus');
+  status.style.display = 'block';
+  status.innerHTML = '<span style="color:var(--text3)">Loading quiz.json from GitHub…</span>';
+  try {
+    const result = await ghGet('quiz.json', token);
+    if (!result) {
+      status.innerHTML = '<span style="color:var(--yellow)">quiz.json not found — publish a quiz first.</span>';
+      return;
+    }
+    const quiz = result.data.today || (result.data.question ? result.data : null);
+    if (!quiz) {
+      status.innerHTML = '<span style="color:var(--yellow)">No active quiz found in quiz.json.</span>';
+      return;
+    }
+    // Populate form fields
+    document.getElementById('quizQuestion').value      = quiz.question      || '';
+    document.getElementById('quizOptionA').value       = quiz.optionA       || quiz.options?.A || '';
+    document.getElementById('quizOptionB').value       = quiz.optionB       || quiz.options?.B || '';
+    document.getElementById('quizOptionC').value       = quiz.optionC       || quiz.options?.C || '';
+    document.getElementById('quizCorrectAnswer').value = quiz.correctAnswer  || quiz.answer    || '';
+    document.getElementById('quizContributedBy').value = quiz.contributedBy  || '';
+    updateQuizPreview();
+    status.innerHTML = `<span style="color:var(--green)">✓ Loaded quiz from GitHub (last updated ${quiz.date || 'unknown date'}).</span>`;
+    showToast('success', 'Quiz Loaded', 'Form populated from quiz.json.');
+  } catch(e) {
+    status.innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`;
+    showToast('error', 'Load Failed', e.message.substring(0, 100));
+  }
 }
 function verifyQuizToken() {
   const token=document.getElementById('quizGithubToken').value.trim();
