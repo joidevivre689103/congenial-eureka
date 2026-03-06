@@ -84,9 +84,30 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .max-duration.superadmin{color:var(--green)}
 .saving-indicator{font-size:10px;color:var(--accent);margin-left:6px;display:none}
 .saving-indicator.show{display:inline}
-.fe-nav-strip{display:flex;align-items:center;gap:6px;padding:7px 16px;background:#f0efe9;border-bottom:1px solid #d8d4cc;font-family:'Outfit',sans-serif,system-ui;font-size:12px;flex-wrap:wrap}
+
+/* Site URLs */
+.urls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:8px}
+.url-group-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);grid-column:1/-1;margin-top:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.url-group-label:first-child{margin-top:0}
+.url-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;transition:all 0.15s}
+.url-row:hover{border-color:var(--accent);background:var(--accent-dim)}
+.url-icon{font-size:15px;flex-shrink:0;width:22px;text-align:center}
+.url-info{flex:1;min-width:0}
+.url-page-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.url-path{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:monospace;margin-top:1px}
+.url-actions{display:flex;gap:4px;flex-shrink:0}
+.copy-btn{padding:5px 10px;background:var(--surface);border:1px solid var(--border);border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;color:var(--text2);transition:all 0.15s;white-space:nowrap}
+.copy-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.copy-btn.copied{background:var(--green);border-color:var(--green);color:#fff}
+.open-btn{padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:5px;font-size:12px;cursor:pointer;color:var(--text3);transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;line-height:1}
+.open-btn:hover{background:var(--surface2);border-color:var(--text3);color:var(--text)}
+.copy-all-btn{margin-top:14px;padding:8px 16px;background:var(--accent-dim);color:#8a5810;border:1px solid var(--accent);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.15s}
+.copy-all-btn:hover{background:var(--accent);color:#fff}
+.copy-all-btn.copied{background:var(--green);border-color:var(--green);color:#fff}
+
+.fe-nav-strip{display:flex;align-items:center;gap:10px;padding:10px 24px;background:#f0efe9;border-bottom:1px solid #d8d4cc;font-family:'Outfit',sans-serif,system-ui;font-size:12px;flex-wrap:wrap}
 .fe-nav-label{font-weight:700;color:#7a7a74;text-transform:uppercase;letter-spacing:1px;font-size:10px}
-.fe-nav-link{color:#4a4a46;text-decoration:none;padding:3px 8px;border-radius:6px;font-weight:500;transition:all 0.2s}
+.fe-nav-link{color:#4a4a46;text-decoration:none;padding:4px 12px;border-radius:6px;font-weight:500;transition:all 0.2s}
 .fe-nav-link:hover{background:#a03020;color:#fff}
 .fe-nav-link.be{color:#5a6578}
 .fe-nav-link.be:hover{background:#2d3340;color:#fff}
@@ -131,8 +152,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     <a href="architecture.html" class="fe-nav-link be">Architecture</a>
     <a href="test.html" class="fe-nav-link be">Tests</a>
     <a href="reference.html" class="fe-nav-link be">Reference</a>
-    <a href="github-deploy-tool.html" class="fe-nav-link be">Deploy</a>
-    <a href="secrets.html" class="fe-nav-link be">Secrets</a>
   </nav>
   <div class="admin-header">
     <h1 class="admin-title">🏏 Cricket Stats Admin</h1>
@@ -161,6 +180,15 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       <div class="stat-value" id="avgSessionTime">0m</div>
       <div class="stat-label">Avg Session Time</div>
     </div>
+  </div>
+
+  <!-- Site URLs -->
+  <div class="card">
+    <div class="card-title">Site URLs</div>
+    <div class="urls-grid" id="urlsGrid">
+      <!-- Populated by JS -->
+    </div>
+    <button class="copy-all-btn" id="copyAllBtn" onclick="copyAllUrls()">📋 Copy All URLs</button>
   </div>
 
   <!-- User Analytics -->
@@ -236,10 +264,104 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Default admin password (will be stored in Firestore)
 const DEFAULT_ADMIN_PASSWORD = 'admin123';
 const DAILY_AUTH_KEY = 'cricket_daily_auth';
 const ADMIN_EMAIL = 'joseph.ivan@outlook.com';
+
+// ── Site URLs ─────────────────────────────────────────────────────────────────
+const SITE_PAGES = [
+  { group: 'Front End' },
+  { name: 'News / Stories',     file: 'news.html',            icon: '📰' },
+  { name: 'Country Results',    file: 'country-results.html', icon: '🌍' },
+  { name: 'Batting Records',    file: 'batting-records.html', icon: '🏏' },
+  { name: 'Player Compare',     file: 'index.html',           icon: '⚖️' },
+  { name: 'Simulation',         file: 'simulation.html',      icon: '🔮' },
+  { group: 'Back End' },
+  { name: 'Admin Panel',        file: 'admin.html',           icon: '🔐' },
+  { name: 'CMS',                file: 'cms.html',             icon: '✏️' },
+  { name: 'Sim Weights',        file: 'backsim.html',         icon: '⚙️' },
+  { name: 'Architecture',       file: 'architecture.html',    icon: '🏗️' },
+  { name: 'Tests',              file: 'test.html',            icon: '🧪' },
+  { name: 'Reference',          file: 'reference.html',       icon: '📖' },
+  { name: 'Submit',             file: 'submit.html',          icon: '📤' },
+  { name: 'Article Reader',     file: 'article.html',         icon: '📄' },
+];
+
+function getBaseUrl() {
+  const loc = window.location;
+  // Strip current filename, keep path up to directory
+  return loc.origin + loc.pathname.replace(/\/[^/]*$/, '/');
+}
+
+function buildUrlsGrid() {
+  const base = getBaseUrl();
+  const grid = document.getElementById('urlsGrid');
+  let html = '';
+
+  SITE_PAGES.forEach(p => {
+    if (p.group) {
+      html += `<div class="url-group-label">${p.group}</div>`;
+      return;
+    }
+    const fullUrl = base + p.file;
+    html += `
+      <div class="url-row">
+        <span class="url-icon">${p.icon}</span>
+        <div class="url-info">
+          <div class="url-page-name">${p.name}</div>
+          <div class="url-path" title="${fullUrl}">${fullUrl}</div>
+        </div>
+        <div class="url-actions">
+          <button class="copy-btn" onclick="copySingleUrl(this, '${fullUrl}')">Copy</button>
+          <a class="open-btn" href="${p.file}" target="_blank" title="Open in new tab">↗</a>
+        </div>
+      </div>`;
+  });
+
+  grid.innerHTML = html;
+}
+
+function copySingleUrl(btn, url) {
+  navigator.clipboard.writeText(url).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1800);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+function copyAllUrls() {
+  const base = getBaseUrl();
+  const lines = SITE_PAGES
+    .filter(p => !p.group)
+    .map(p => `${p.name.padEnd(20)} ${base + p.file}`)
+    .join('\n');
+
+  navigator.clipboard.writeText(lines).then(() => {
+    const btn = document.getElementById('copyAllBtn');
+    btn.textContent = '✓ All URLs Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 Copy All URLs';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function getTodayStr() { return new Date().toISOString().slice(0, 10); }
 async function setDailyAuth(email) {
@@ -255,81 +377,54 @@ async function isDailyAuthed() {
 
 let adminPassword = DEFAULT_ADMIN_PASSWORD;
 
-// Eye icons
 const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
 const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
 
 function toggleAdminPw() {
   const input = document.getElementById('adminPassword');
   const icon = document.getElementById('adminEyeIcon');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.innerHTML = eyeClosed;
-  } else {
-    input.type = 'password';
-    icon.innerHTML = eyeOpen;
-  }
+  if (input.type === 'password') { input.type = 'text'; icon.innerHTML = eyeClosed; }
+  else { input.type = 'password'; icon.innerHTML = eyeOpen; }
 }
-
 function toggleNewPw() {
   const input = document.getElementById('newPassword');
   const icon = document.getElementById('newPwEyeIcon');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.innerHTML = eyeClosed;
-  } else {
-    input.type = 'password';
-    icon.innerHTML = eyeOpen;
-  }
+  if (input.type === 'password') { input.type = 'text'; icon.innerHTML = eyeClosed; }
+  else { input.type = 'password'; icon.innerHTML = eyeOpen; }
 }
-
 function toggleNewAdminPw() {
   const input = document.getElementById('newAdminPassword');
   const icon = document.getElementById('newAdminPwEyeIcon');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.innerHTML = eyeClosed;
-  } else {
-    input.type = 'password';
-    icon.innerHTML = eyeOpen;
-  }
+  if (input.type === 'password') { input.type = 'text'; icon.innerHTML = eyeClosed; }
+  else { input.type = 'password'; icon.innerHTML = eyeOpen; }
 }
 
-// Load admin password from Firestore
 async function loadAdminPassword() {
   try {
     const doc = await db.collection('settings').doc('admin').get();
     if (doc.exists && doc.data().password) {
       adminPassword = doc.data().password;
     } else {
-      // Initialize with default
       await db.collection('settings').doc('admin').set({ password: DEFAULT_ADMIN_PASSWORD });
     }
-  } catch (e) {
-    console.error('Error loading admin password:', e);
-  }
+  } catch (e) { console.error('Error loading admin password:', e); }
 }
 
 async function adminLogin() {
   const input = document.getElementById('adminPassword');
   const error = document.getElementById('adminError');
-  
   await loadAdminPassword();
-  
   if (input.value === adminPassword) {
     sessionStorage.setItem('cricket_admin_auth', 'true');
-    // Also set daily auth in Firebase for cross-page unlock
     await setDailyAuth(ADMIN_EMAIL);
     document.getElementById('adminLoginOverlay').classList.add('hidden');
     document.getElementById('adminPanel').classList.add('visible');
+    buildUrlsGrid();
     loadLogins();
   } else {
     error.classList.add('show');
     input.style.borderColor = '#d04040';
-    setTimeout(() => {
-      error.classList.remove('show');
-      input.style.borderColor = '';
-    }, 2000);
+    setTimeout(() => { error.classList.remove('show'); input.style.borderColor = ''; }, 2000);
   }
 }
 
@@ -341,30 +436,24 @@ function adminLogout() {
 async function changePassword() {
   const newPw = document.getElementById('newPassword').value.trim();
   if (!newPw) return alert('Please enter a new password');
-  
   try {
     await db.collection('settings').doc('site').set({ password: newPw }, { merge: true });
     document.getElementById('pwSuccess').classList.add('show');
     document.getElementById('newPassword').value = '';
     setTimeout(() => document.getElementById('pwSuccess').classList.remove('show'), 3000);
-  } catch (e) {
-    alert('Error updating password: ' + e.message);
-  }
+  } catch (e) { alert('Error updating password: ' + e.message); }
 }
 
 async function changeAdminPassword() {
   const newPw = document.getElementById('newAdminPassword').value.trim();
   if (!newPw) return alert('Please enter a new admin password');
-  
   try {
     await db.collection('settings').doc('admin').set({ password: newPw }, { merge: true });
     adminPassword = newPw;
     document.getElementById('adminPwSuccess').classList.add('show');
     document.getElementById('newAdminPassword').value = '';
     setTimeout(() => document.getElementById('adminPwSuccess').classList.remove('show'), 3000);
-  } catch (e) {
-    alert('Error updating admin password: ' + e.message);
-  }
+  } catch (e) { alert('Error updating admin password: ' + e.message); }
 }
 
 async function loadLogins() {
@@ -372,84 +461,67 @@ async function loadLogins() {
     const snapshot = await db.collection('logins').orderBy('timestamp', 'desc').get();
     const logins = [];
     snapshot.forEach(doc => logins.push({ id: doc.id, ...doc.data() }));
-    
-    // Load sessions
+
     const sessionsSnapshot = await db.collection('sessions').orderBy('startTime', 'desc').get();
     const sessions = [];
     sessionsSnapshot.forEach(doc => sessions.push({ id: doc.id, ...doc.data() }));
-    
-    // Stats
+
     const uniqueEmails = new Set(logins.map(l => l.email)).size;
     const today = new Date().toDateString();
     const todayLogins = logins.filter(l => l.timestamp && new Date(l.timestamp.toDate()).toDateString() === today).length;
-    
+
     document.getElementById('totalLogins').textContent = logins.length;
     document.getElementById('uniqueUsers').textContent = uniqueEmails;
     document.getElementById('todayLogins').textContent = todayLogins;
     document.getElementById('totalSessions').textContent = sessions.length;
-    
-    // Calculate average session time
+
     const completedSessions = sessions.filter(s => s.duration);
-    const avgDuration = completedSessions.length > 0 
+    const avgDuration = completedSessions.length > 0
       ? Math.round(completedSessions.reduce((sum, s) => sum + (s.duration || 0), 0) / completedSessions.length / 60)
       : 0;
     document.getElementById('avgSessionTime').textContent = avgDuration + 'm';
-    
-    // User Analytics - aggregate by email
+
     const userStats = {};
     logins.forEach(l => {
       if (!l.email) return;
-      if (!userStats[l.email]) {
-        userStats[l.email] = { sessions: 0, totalTime: 0, lastSeen: null, dailyTime: {} };
-      }
+      if (!userStats[l.email]) userStats[l.email] = { sessions: 0, totalTime: 0, lastSeen: null, dailyTime: {} };
     });
-    
+
     sessions.forEach(s => {
       if (!s.email || !userStats[s.email]) return;
       userStats[s.email].sessions++;
       userStats[s.email].totalTime += (s.duration || 0);
-      
-      // Track daily time
       if (s.startTime) {
         const day = new Date(s.startTime.toDate()).toLocaleDateString();
-        if (!userStats[s.email].dailyTime[day]) {
-          userStats[s.email].dailyTime[day] = 0;
-        }
+        if (!userStats[s.email].dailyTime[day]) userStats[s.email].dailyTime[day] = 0;
         userStats[s.email].dailyTime[day] += (s.duration || 0);
-      }
-      
-      // Track last seen
-      if (s.startTime) {
         const startDate = s.startTime.toDate();
         if (!userStats[s.email].lastSeen || startDate > userStats[s.email].lastSeen) {
           userStats[s.email].lastSeen = startDate;
         }
       }
     });
-    
-    // User Analytics Table
+
     const analyticsContainer = document.getElementById('analyticsContainer');
     const userEmails = Object.keys(userStats);
     if (userEmails.length === 0) {
       analyticsContainer.innerHTML = '<div class="no-logins">No user analytics yet</div>';
     } else {
-      // Load user types from Firestore
       const userTypesDoc = await db.collection('settings').doc('userTypes').get();
       const userTypes = userTypesDoc.exists ? userTypesDoc.data() : {};
-      
+
       let html = `<table class="logins-table">
         <thead><tr><th>Email</th><th>User Type</th><th>Max Duration/Day</th><th>Sessions</th><th>Total Time</th><th>Avg Time/Day</th><th>Last Seen</th></tr></thead>
         <tbody>`;
       userEmails.forEach(email => {
         const stats = userStats[email];
-        const totalMins = Math.round(stats.totalTime / 60);
         const daysActive = Object.keys(stats.dailyTime).length || 1;
         const avgPerDay = Math.round(stats.totalTime / daysActive / 60);
         const lastSeen = stats.lastSeen ? stats.lastSeen.toLocaleDateString() : 'N/A';
         const emailKey = email.replace(/[.@]/g, '_');
         const currentType = userTypes[emailKey] || 'regular';
         const maxDuration = getMaxDuration(currentType);
-        
+
         html += `<tr>
           <td>${email}</td>
           <td>
@@ -471,8 +543,7 @@ async function loadLogins() {
       html += '</tbody></table>';
       analyticsContainer.innerHTML = html;
     }
-    
-    // Login History Table
+
     const container = document.getElementById('loginsContainer');
     if (logins.length === 0) {
       container.innerHTML = '<div class="no-logins">No logins recorded yet</div>';
@@ -495,14 +566,8 @@ async function loadLogins() {
   }
 }
 
-// User type duration mapping
 function getMaxDuration(userType) {
-  const durations = {
-    'regular': '30 mins',
-    'priority': '1 hour',
-    'admin': '2 hours',
-    'superadmin': '4 hours'
-  };
+  const durations = { 'regular': '30 mins', 'priority': '1 hour', 'admin': '2 hours', 'superadmin': '4 hours' };
   return durations[userType] || '30 mins';
 }
 
@@ -510,22 +575,12 @@ async function updateUserType(emailKey, email, newType) {
   const select = document.getElementById('type_' + emailKey);
   const saving = document.getElementById('saving_' + emailKey);
   const duration = document.getElementById('duration_' + emailKey);
-  
-  // Show saving indicator
   saving.classList.add('show');
-  
   try {
-    // Update Firestore
-    await db.collection('settings').doc('userTypes').set({
-      [emailKey]: newType
-    }, { merge: true });
-    
-    // Update UI
+    await db.collection('settings').doc('userTypes').set({ [emailKey]: newType }, { merge: true });
     select.className = 'user-type-select ' + newType;
     duration.className = 'max-duration ' + newType;
     duration.textContent = getMaxDuration(newType);
-    
-    // Hide saving indicator
     setTimeout(() => saving.classList.remove('show'), 500);
   } catch (e) {
     alert('Error updating user type: ' + e.message);
@@ -543,22 +598,20 @@ function formatDuration(seconds) {
 
 async function clearLogins() {
   if (!confirm('Are you sure you want to delete all login records?')) return;
-  
   try {
     const snapshot = await db.collection('logins').get();
     const batch = db.batch();
     snapshot.forEach(doc => batch.delete(doc.ref));
     await batch.commit();
     loadLogins();
-  } catch (e) {
-    alert('Error clearing logins: ' + e.message);
-  }
+  } catch (e) { alert('Error clearing logins: ' + e.message); }
 }
 
 // Check if already logged in
 if (sessionStorage.getItem('cricket_admin_auth') === 'true') {
   document.getElementById('adminLoginOverlay').classList.add('hidden');
   document.getElementById('adminPanel').classList.add('visible');
+  buildUrlsGrid();
   loadLogins();
 } else {
   (async () => {
@@ -566,6 +619,7 @@ if (sessionStorage.getItem('cricket_admin_auth') === 'true') {
       sessionStorage.setItem('cricket_admin_auth', 'true');
       document.getElementById('adminLoginOverlay').classList.add('hidden');
       document.getElementById('adminPanel').classList.add('visible');
+      buildUrlsGrid();
       loadLogins();
     } else {
       document.getElementById('adminPassword').focus();
