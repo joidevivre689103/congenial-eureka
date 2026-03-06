@@ -630,7 +630,6 @@ header.header{display:none !important}
           <div class="dd" id="pd1_0"></div>
           <div class="sel-info" id="pi1_0"><div class="si-name" id="pn1_0"></div><div class="si-meta" id="pm1_0"></div></div>
         </div>
-        <div class="partnership-plus">&</div>
         <div class="sel-card partnership-card" id="pc1_1">
           <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
           <div class="sel-label" style="margin-left:18px">Player 2</div>
@@ -653,7 +652,6 @@ header.header{display:none !important}
           <div class="dd" id="pd2_0"></div>
           <div class="sel-info" id="pi2_0"><div class="si-name" id="pn2_0"></div><div class="si-meta" id="pm2_0"></div></div>
         </div>
-        <div class="partnership-plus">&</div>
         <div class="sel-card partnership-card" id="pc2_1">
           <div class="sel-pcolor" style="color:var(--p2);background:var(--p2)"></div>
           <div class="sel-label" style="margin-left:18px">Player 2</div>
@@ -1411,8 +1409,6 @@ function buildGroupHTML(groupNum, cfg) {
   let cardsHTML = '';
   for(let p = 0; p < cfg.groupSize; p++) {
     const slot = groupNum + '_' + p;
-    // Only add & separator for non-eleven modes
-    if(p > 0 && !isEleven) cardsHTML += '<div class="partnership-plus">&</div>';
     cardsHTML += `
       <div class="sel-card partnership-card${isEleven ? ' partnership-card-eleven' : ''}" id="pc${slot}">
         <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
