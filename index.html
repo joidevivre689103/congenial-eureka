@@ -249,6 +249,28 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 /* Partnership Layout */
 .partnership-area{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:flex-start;margin-bottom:18px}
 .partnership-area.hidden{display:none !important}
+
+/* Cohort comparison area */
+.cohort-area{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-start;margin-bottom:18px}
+.cohort-area.hidden{display:none !important}
+.cohort-group{flex:1;min-width:280px}
+.cohort-label{
+  font-family:'DM Serif Display',serif;font-size:13px;font-weight:600;
+  padding:5px 12px;margin-bottom:10px;border-radius:6px;
+  background:var(--surface2);border:1px solid var(--border);color:var(--text2);
+  display:inline-block;
+}
+.cohort-group:first-child .cohort-label{border-left:3px solid var(--accent);color:var(--accent)}
+.cohort-group:last-child  .cohort-label{border-left:3px solid var(--blue);color:var(--blue)}
+.cohort-slots{display:flex;flex-direction:column;gap:8px}
+.cohort-vs{
+  align-self:center;font-family:'DM Serif Display',serif;font-size:20px;
+  color:var(--text3);font-weight:700;padding:0 4px;flex-shrink:0;
+}
+@media(max-width:700px){
+  .cohort-area{flex-direction:column}
+  .cohort-vs{text-align:center;padding:4px 0}
+}
 .empty.hidden{display:none !important}
 .partnership-group{flex:0 0 auto;min-width:340px}
 .partnership-label{
@@ -635,16 +657,20 @@ header.header{display:none !important}
 <div class="main">
   <!-- ═══ Record Type + Stats Type dropdowns ═══ -->
   <div class="record-type-filter" style="margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;">
-    <div class="fp-group" style="min-width:180px;">
+    <div class="fp-group" style="min-width:200px;">
       <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px;">Record Type</label>
       <select class="fp-select top-select" id="fRecordType" onchange="handleRecordTypeChange()">
-        <option value="player" selected>Player</option>
-        <option value="duo">Duo (2 players)</option>
-        <option value="triple">Triple (3 players)</option>
-        <option value="quartet">Quartet (4 players)</option>
-        <option value="quintet">Quintet (5 players)</option>
-        <option value="eleven">Eleven (11 players)</option>
-        <option value="partnerships">Partnerships</option>
+        <option value="player" selected>Player (free select)</option>
+        <optgroup label="── Together ──">
+          <option value="duo">Duo vs Duo (2 vs 2)</option>
+          <option value="triple">Triple vs Triple (3 vs 3)</option>
+          <option value="quartet">Quartet vs Quartet (4 vs 4)</option>
+          <option value="quintet">Quintet vs Quintet (5 vs 5)</option>
+          <option value="eleven">Eleven vs Eleven (11 vs 11)</option>
+        </optgroup>
+        <optgroup label="── Batting Partnerships ──">
+          <option value="partnerships">Partnerships</option>
+        </optgroup>
       </select>
     </div>
     <div class="fp-group" style="min-width:180px;">
@@ -675,6 +701,19 @@ header.header{display:none !important}
       <div class="sel-info" id="i2"><div class="si-name" id="n2"></div><div class="si-meta" id="m2"></div></div>
     </div>
     <button class="add-player-btn" id="addPlayerBtn" onclick="addPlayerSlot()"><span class="plus">+</span> Add Player</button>
+  </div>
+
+  <!-- Cohort Comparison Area (Together modes: duo/triple/quartet/quintet/eleven) -->
+  <div class="cohort-area hidden" id="cohortArea">
+    <div class="cohort-group" id="cg-a">
+      <div class="cohort-label" id="cg-a-label">Cohort A</div>
+      <div class="cohort-slots" id="cg-a-slots"></div>
+    </div>
+    <div class="cohort-vs">VS</div>
+    <div class="cohort-group" id="cg-b">
+      <div class="cohort-label" id="cg-b-label">Cohort B</div>
+      <div class="cohort-slots" id="cg-b-slots"></div>
+    </div>
   </div>
 
   <!-- Partnership Selection Area (hidden by default) -->
@@ -1569,7 +1608,9 @@ function showShareDialog(url, playerNames){ const copied = prompt('Copy this URL
 
 // Export to Excel — respects active tab, Stats Type, dual-view toggle, and cohort totals
 function exportToExcel(){
-  const players = activeSel();
+  const players = cohortMode
+    ? [...cohortSel.a.filter(Boolean), ...cohortSel.b.filter(Boolean)]
+    : activeSel();
   if(players.length < 2){ alert('Select at least 2 players to export'); return; }
 
   const activeTabBtn = document.querySelector('.tab.on:not(.hidden-tab)');
@@ -1645,10 +1686,10 @@ function exportToExcel(){
     return t;
   }
 
-  // Split into two cohorts (first half vs second half)
+  // Split into two cohorts — respect explicit boundary if set by cohort mode
   function splitCohorts(statsArr){
     if(statsArr.length<2) return null;
-    const mid = Math.ceil(statsArr.length/2);
+    const mid = (cohortMode && window._cohortSplit) ? window._cohortSplit : Math.ceil(statsArr.length/2);
     return { a: statsArr.slice(0,mid), b: statsArr.slice(mid) };
   }
 
@@ -1754,14 +1795,12 @@ function toggleDualView(){
 }
 
 function updateExportButton(){
-  const players = activeSel();
+  const players = cohortMode ? [...cohortSel.a, ...cohortSel.b].filter(Boolean) : activeSel();
   const show = players.length >= 2;
   document.getElementById('exportBtn').style.display = show ? 'flex' : 'none';
-  // Show dual toggle whenever 2+ players selected
   const toggle = document.getElementById('dualToggle');
-  toggle.classList.toggle('show', show);
+  toggle.classList.toggle('show', show && !cohortMode); // hide career/together toggle in cohort mode
   if(!show){
-    // Reset toggle when players are cleared
     dualViewOn = false;
     document.getElementById('dualToggleTrack').classList.remove('on');
     document.getElementById('dtLabelCareer').classList.add('active');
@@ -1779,70 +1818,168 @@ let partnershipSel = { '1a':null,'1b':null,'2a':null,'2b':null,'3a':null,'3b':nu
 const PARTNERSHIP_COLORS = ['p1','p2','p3','p4'];
 
 // Map Record Type value → target number of player slots (null = free/unlimited up to MAX)
-const RECORD_TYPE_SLOTS = { player:null, duo:2, triple:3, quartet:4, quintet:5, eleven:11, partnerships:null };
+const COHORT_SIZES = { duo:2, triple:3, quartet:4, quintet:5, eleven:11 };
+const TOGETHER_TYPES = new Set(Object.keys(COHORT_SIZES));
+
+// cohortSel['a'][0..n-1] and cohortSel['b'][0..n-1] hold selected players
+let cohortSel = { a: [], b: [] };
+let cohortMode = false;
+let cohortSize = 0;
 
 function handleRecordTypeChange(){
   const recordType = document.getElementById('fRecordType').value;
   partnershipMode = (recordType === 'partnerships');
-  const selArea = document.getElementById('selArea');
-  const partnershipArea = document.getElementById('partnershipArea');
-  const emptyState = document.getElementById('emptyState');
-  const partnershipEmptyState = document.getElementById('partnershipEmptyState');
+  cohortMode = TOGETHER_TYPES.has(recordType);
 
-  if(partnershipMode){
-    selArea.classList.add('hidden');
-    partnershipArea.classList.remove('hidden');
-    partnershipArea.style.display = 'flex';
-    emptyState.classList.add('hidden');
-    partnershipEmptyState.classList.remove('hidden');
-    partnershipEmptyState.style.display = 'block';
-  } else {
-    selArea.classList.remove('hidden');
-    partnershipArea.classList.add('hidden');
-    emptyState.classList.remove('hidden');
-    emptyState.style.display = 'block';
-    partnershipEmptyState.classList.add('hidden');
+  const selArea        = document.getElementById('selArea');
+  const cohortArea     = document.getElementById('cohortArea');
+  const partnershipArea= document.getElementById('partnershipArea');
+  const emptyState     = document.getElementById('emptyState');
+  const partnershipEmpty = document.getElementById('partnershipEmptyState');
 
-    // Set the target slot count for group types
-    const target = RECORD_TYPE_SLOTS[recordType]; // null means free
-    const addBtn = document.getElementById('addPlayerBtn');
-
-    if(target !== null){
-      // Add slots up to target
-      while(slotCount < target) addPlayerSlot();
-      // Hide/show slots: show exactly `target` slots, hide any beyond that
-      for(let i = 1; i <= MAX_PLAYERS; i++){
-        const card = document.getElementById('c'+i);
-        if(!card) continue;
-        if(i <= target){
-          card.style.display = '';
-        } else {
-          // Clear and hide extra slots
-          clearP(i);
-          card.style.display = 'none';
-        }
-      }
-      // Hide Add Player button — group size is fixed
-      addBtn.style.display = 'none';
-    } else {
-      // Free mode (Player): show all current slots, show Add Player button
-      for(let i = 1; i <= slotCount; i++){
-        const card = document.getElementById('c'+i);
-        if(card) card.style.display = '';
-      }
-      addBtn.style.display = slotCount >= MAX_PLAYERS ? 'none' : '';
-    }
-  }
+  // Hide all three areas first
+  selArea.classList.add('hidden');
+  cohortArea.classList.add('hidden');
+  partnershipArea.classList.add('hidden');
+  emptyState.classList.add('hidden');
+  partnershipEmpty.classList.add('hidden');
 
   document.getElementById('comp').classList.remove('show');
   document.getElementById('partnershipComp').style.display = 'none';
   document.getElementById('filtersPanel').classList.remove('show');
 
-  if(partnershipMode && !window.partnershipSearchInit){
-    initPartnershipSearch(['1a','1b','2a','2b']);
-    window.partnershipSearchInit = true;
+  if(partnershipMode){
+    partnershipArea.classList.remove('hidden');
+    partnershipArea.style.display = 'flex';
+    partnershipEmpty.classList.remove('hidden');
+    partnershipEmpty.style.display = 'block';
+    if(!window.partnershipSearchInit){
+      initPartnershipSearch(['1a','1b','2a','2b']);
+      window.partnershipSearchInit = true;
+    }
+    if(hasEnoughPartnerships()) renderPartnerships();
+
+  } else if(cohortMode){
+    cohortSize = COHORT_SIZES[recordType];
+    cohortSel = { a: Array(cohortSize).fill(null), b: Array(cohortSize).fill(null) };
+    const names = { duo:'Duo', triple:'Triple', quartet:'Quartet', quintet:'Quintet', eleven:'Eleven' };
+    const label = names[recordType];
+    document.getElementById('cg-a-label').textContent = label + ' A';
+    document.getElementById('cg-b-label').textContent = label + ' B';
+    buildCohortSlots('a', cohortSize);
+    buildCohortSlots('b', cohortSize);
+    cohortArea.classList.remove('hidden');
+    cohortArea.style.display = 'flex';
+    emptyState.classList.remove('hidden');
+    emptyState.style.display = 'block';
+
+  } else {
+    // Free player mode
+    selArea.classList.remove('hidden');
+    const addBtn = document.getElementById('addPlayerBtn');
+    for(let i = 1; i <= slotCount; i++){
+      const card = document.getElementById('c'+i);
+      if(card) card.style.display = '';
+    }
+    addBtn.style.display = slotCount >= MAX_PLAYERS ? 'none' : '';
+    emptyState.classList.remove('hidden');
+    emptyState.style.display = 'block';
   }
-  if(partnershipMode && hasEnoughPartnerships()) renderPartnerships();
+}
+
+// Build N player slots inside a cohort group
+function buildCohortSlots(side, n){
+  const container = document.getElementById('cg-'+side+'-slots');
+  container.innerHTML = '';
+  for(let i = 0; i < n; i++){
+    const slotId = side + i;
+    const color = side === 'a' ? 'var(--accent)' : 'var(--blue)';
+    const div = document.createElement('div');
+    div.className = 'sel-card'; div.id = 'cslot-'+slotId;
+    div.style.cssText = 'margin:0';
+    div.innerHTML = `
+      <div class="sel-pcolor" style="background:${color};color:${color}"></div>
+      <div class="sel-label" style="margin-left:18px">Player ${i+1}</div>
+      <input class="sel-input" id="ci-${slotId}" placeholder="Search player..." autocomplete="off">
+      <button class="sel-clear" id="cx-${slotId}" onclick="clearCohortSlot('${side}',${i})">&times;</button>
+      <div class="dd" id="cd-${slotId}"></div>
+      <div class="sel-info" id="cinfo-${slotId}">
+        <div class="si-name" id="cname-${slotId}"></div>
+        <div class="si-meta" id="cmeta-${slotId}"></div>
+      </div>`;
+    container.appendChild(div);
+    initCohortSearch(side, i);
+  }
+}
+
+function initCohortSearch(side, idx){
+  const slotId = side + idx;
+  const inp = document.getElementById('ci-'+slotId);
+  const dd  = document.getElementById('cd-'+slotId);
+  inp.addEventListener('input', () => {
+    const q = inp.value.trim().toLowerCase();
+    if(q.length < 2){ dd.classList.remove('open'); return; }
+    const taken = [...cohortSel.a, ...cohortSel.b].filter(Boolean).map(p=>p.id);
+    const m = PLAYERS.filter(p => !taken.includes(p.id) &&
+      (p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q) || p.country.toLowerCase().includes(q))
+    ).slice(0, 15);
+    dd.innerHTML = m.map(p =>
+      `<div class="dd-item" onmousedown="event.preventDefault();pickCohort('${side}',${idx},${p.id})">` +
+      `<span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span>` +
+      `<span class="ct">${p.country}</span></div>`
+    ).join('');
+    dd.classList.add('open');
+  });
+  inp.addEventListener('focus', () => { if(inp.value.trim().length >= 2) dd.classList.add('open'); });
+  inp.addEventListener('blur',  () => { setTimeout(() => dd.classList.remove('open'), 150); });
+  document.addEventListener('click', e => { if(!e.target.closest('#cslot-'+slotId)) dd.classList.remove('open'); });
+}
+
+function pickCohort(side, idx, id){
+  const p = PLAYERS.find(x => x.id === id); if(!p) return;
+  cohortSel[side][idx] = p;
+  const slotId = side + idx;
+  document.getElementById('ci-'+slotId).value = '';
+  document.getElementById('cd-'+slotId).classList.remove('open');
+  document.getElementById('cname-'+slotId).textContent = p.fullName || p.name;
+  document.getElementById('cmeta-'+slotId).innerHTML = badge(p.country) + ` ${p.fromYear}–${p.toYear} · ${p.tests} Tests`;
+  document.getElementById('cinfo-'+slotId).classList.add('show');
+  document.getElementById('cx-'+slotId).style.display = 'flex';
+  if(hasEnoughCohorts()){ document.getElementById('emptyState').style.display = 'none'; renderCohorts(); }
+}
+
+function clearCohortSlot(side, idx){
+  cohortSel[side][idx] = null;
+  const slotId = side + idx;
+  document.getElementById('ci-'+slotId).value = '';
+  document.getElementById('cinfo-'+slotId).classList.remove('show');
+  document.getElementById('cx-'+slotId).style.display = 'none';
+  if(!hasEnoughCohorts()){ document.getElementById('comp').classList.remove('show'); document.getElementById('emptyState').style.display = 'block'; }
+  else renderCohorts();
+}
+
+function hasEnoughCohorts(){
+  return cohortSel.a.filter(Boolean).length >= 1 && cohortSel.b.filter(Boolean).length >= 1;
+}
+
+function renderCohorts(){
+  // Flatten all selected cohort players into the main sel array and render normally
+  // Cohort A = first half, Cohort B = second half — render() handles cohort totals
+  const allPlayers = [...cohortSel.a.filter(Boolean), ...cohortSel.b.filter(Boolean)];
+  if(allPlayers.length < 2) return;
+
+  // Temporarily override activeSel for the render
+  const savedSel = sel.slice();
+  // Fill sel array with cohort players
+  for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = allPlayers[i] || null;
+
+  // Tag cohort boundary so export knows where to split
+  window._cohortSplit = cohortSel.a.filter(Boolean).length;
+
+  render();
+
+  // Restore sel
+  for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = savedSel[i];
 }
 
 function addPartnershipSlot(){
