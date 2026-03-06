@@ -1198,47 +1198,80 @@ function buildTable(stats, cols, options = {}) {
     });
     rows += `<tr class="p${idx+1}-row">${row}</tr>`;
   });
-  if(showTotals && stats.length >= 2 && sharedStats) {
-    const totals = {};
-    totals.tests = sharedStats.sharedTests;
-    totals.bowlInns = sharedStats.sharedBowlInns;
-    totals.inns = sharedStats.combinedBatInnsCount;
-    totals.no = sharedStats.combinedNO;
-    totals.runs = sharedStats.combinedBatRuns;
-    totals.balls = sharedStats.combinedBalls;
-    const combinedDismissals = totals.inns - totals.no;
-    totals.bowlRuns = sharedStats.combinedBowlRuns;
-    totals.wkts = sharedStats.combinedWkts;
-    totals.overs = sharedStats.combinedOvers;
-    const otherSumFields = ['fifties', 'hundreds', 'mdns', 'catches', 'stumpings', 'mom'];
-    otherSumFields.forEach(key => { totals[key] = stats.reduce((sum, s) => { const v = s[key]; return sum + (typeof v === 'number' ? v : 0); }, 0); });
-    cols.forEach(c => {
-      if(c.sec) return;
-      if(['tests','inns','no','bowlInns','runs','balls','bowlRuns','wkts','overs'].includes(c.key)) return;
-      if(otherSumFields.includes(c.key)) return;
-      if(['batAvg','bowlAvg','sr','econ','bpw'].includes(c.key)) return;
-      if(c.key === 'hs') { totals[c.key] = Math.max(...stats.map(s => typeof s[c.key] === 'number' ? s[c.key] : 0)); return; }
-      if(c.key === 'bestBowl') {
-        let bestW = 0, bestR = 9999;
-        stats.forEach(s => { if(s.bestBowl && s.bestBowl !== '—') { const [w, r] = s.bestBowl.split('/').map(Number); if(w > bestW || (w === bestW && r < bestR)){ bestW = w; bestR = r; } } });
-        totals[c.key] = bestW > 0 ? `${bestW}/${bestR}` : '—'; return;
+  // In cohort mode: per-cohort totals (by country grouping); no combined total
+  // In non-cohort together mode: per-cohort totals using _cohortBoundaries if set, else country grouping
+  if(showTotals && stats.length >= 2) {
+    // Helper: build aggregate totals object from a sub-array of stats + optional sharedStats scoped to them
+    function makeTotalsObj(subStats, ss){
+      const t = {};
+      if(ss){
+        t.tests = ss.sharedTests; t.bowlInns = ss.sharedBowlInns;
+        t.inns = ss.combinedBatInnsCount; t.no = ss.combinedNO;
+        t.runs = ss.combinedBatRuns; t.balls = ss.combinedBalls;
+        t.bowlRuns = ss.combinedBowlRuns; t.wkts = ss.combinedWkts; t.overs = ss.combinedOvers;
+      } else {
+        ['tests','inns','no','bowlInns','runs','balls','bowlRuns','wkts','overs'].forEach(k=>{
+          t[k] = subStats.reduce((a,s)=>a+(typeof s[k]==='number'?s[k]:0),0);
+        });
       }
-      if(totals[c.key] === undefined) { totals[c.key] = stats.reduce((sum, s) => { const v = s[c.key]; return sum + (typeof v === 'number' ? v : 0); }, 0); }
-    });
-    totals.batAvg = combinedDismissals > 0 ? totals.runs / combinedDismissals : 0;
-    totals.bowlAvg = totals.wkts > 0 ? totals.bowlRuns / totals.wkts : 0;
-    totals.econ = totals.overs > 0 ? totals.bowlRuns / totals.overs : 0;
-    totals.bpw = totals.wkts > 0 ? (totals.overs * 6) / totals.wkts : 0;
-    totals.sr = totals.balls > 0 ? (totals.runs / totals.balls) * 100 : null;
-    let totalsMeta = `${stats.length} players · ${totals.tests} Tests together`;
-    if(showBowlInns) totalsMeta += ` · ${totals.bowlInns} bowl inn together`;
-    let totalRow = `<td class="player-cell" style="background:var(--surface2);border-left:3px solid var(--accent);"><span class="pc-name" style="color:var(--accent);">Combined Total</span><span class="pc-meta">${totalsMeta}</span></td>`;
-    cols.forEach(c => {
-      if(c.sec) { totalRow += '<td class="sec-div" style="background:var(--surface2);"></td>'; return; }
-      const v = totals[c.key];
-      totalRow += `<td style="background:var(--surface2);font-weight:600;">${fmt(v, c.dec||2)}</td>`;
-    });
-    rows += `<tr class="totals-row">${totalRow}</tr>`;
+      ['fifties','hundreds','mdns','catches','stumpings','mom'].forEach(k=>{
+        t[k] = subStats.reduce((a,s)=>a+(typeof s[k]==='number'?s[k]:0),0);
+      });
+      t.hs = Math.max(...subStats.map(s=>typeof s.hs==='number'?s.hs:0));
+      let bW=0,bR=9999; subStats.forEach(s=>{ if(s.bestBowl&&s.bestBowl!=='—'){const[w,r]=s.bestBowl.split('/').map(Number);if(w>bW||(w===bW&&r<bR)){bW=w;bR=r;}} });
+      t.bestBowl = bW>0?bW+'/'+bR:'—';
+      const dism = t.inns - t.no;
+      t.batAvg  = dism>0 ? t.runs/dism : 0;
+      t.bowlAvg = t.wkts>0 ? t.bowlRuns/t.wkts : 0;
+      t.econ    = t.overs>0 ? t.bowlRuns/t.overs : 0;
+      t.bpw     = t.wkts>0 ? (t.overs*6)/t.wkts : 0;
+      t.sr      = t.balls>0 ? (t.runs/t.balls)*100 : null;
+      return t;
+    }
+    function renderTotalsRow(label, meta, t, accentColor){
+      let tr = `<td class="player-cell" style="background:var(--surface2);border-left:3px solid ${accentColor};"><span class="pc-name" style="color:${accentColor};">${label}</span><span class="pc-meta">${meta}</span></td>`;
+      cols.forEach(c => {
+        if(c.sec){ tr += '<td class="sec-div" style="background:var(--surface2);"></td>'; return; }
+        tr += `<td style="background:var(--surface2);font-weight:600;">${fmt(t[c.key], c.dec||2)}</td>`;
+      });
+      return `<tr class="totals-row">${tr}</tr>`;
+    }
+    // Determine cohort groups from boundaries
+    const boundaries = window._cohortBoundaries;
+    const cohortGroups_ = boundaries && boundaries.length >= 2
+      ? (() => { const gs=[]; let o=0; boundaries.forEach(n=>{ gs.push(stats.slice(o,o+n)); o+=n; }); return gs; })()
+      : null;
+    const tColors = ['var(--accent)','var(--blue)','var(--green)','var(--gold)'];
+    const tNames  = ['A','B','C','D'];
+    if(cohortGroups_ && cohortGroups_.length >= 2){
+      // Cohort mode: one totals row per cohort, no combined total
+      cohortGroups_.forEach((grp, gi) => {
+        if(!grp || grp.length === 0) return;
+        const t = makeTotalsObj(grp, null);
+        const country = grp.map(s=>s.country).filter((c,i,a)=>a.indexOf(c)===i).join('/');
+        const lbl = (cohortTypeName||'Cohort')+' '+tNames[gi]+' — '+country;
+        const meta = `${grp.length} players · ${t.tests} Tests`;
+        rows += renderTotalsRow(lbl, meta, t, tColors[gi%tColors.length]);
+      });
+    } else if(sharedStats){
+      // Non-cohort together mode: group by country then show combined
+      const countries = [...new Set(stats.map(s=>s.country))];
+      if(countries.length > 1){
+        countries.forEach((ctry, ci) => {
+          const grp = stats.filter(s=>s.country===ctry);
+          if(grp.length === 0) return;
+          const t = makeTotalsObj(grp, null);
+          const lbl = ctry+' Total';
+          const meta = `${grp.length} players · ${t.tests} Tests`;
+          rows += renderTotalsRow(lbl, meta, t, tColors[ci%tColors.length]);
+        });
+      }
+      // Combined total across all
+      const t = makeTotalsObj(stats, sharedStats);
+      let totalsMeta = `${stats.length} players · ${t.tests} Tests together`;
+      if(showBowlInns) totalsMeta += ` · ${t.bowlInns} bowl inn together`;
+      rows += renderTotalsRow('Combined Total', totalsMeta, t, 'var(--accent)');
+    }
   }
   return `<div class="tbl-wrap"><table class="cmp-table"><thead><tr>${hdr}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -1265,8 +1298,30 @@ function render(){
   let displayPlayers = players;
   let rowSets = players.map(p=>getRows(p));
 
-  // Handle "played together" filter
-  if(f.together === 'yes'){
+  // Helper: filter rowSets to within-cohort shared matches (each cohort independently)
+  function applyCohortSharedFilter(rSets){
+    if(!window._cohortBoundaries || window._cohortBoundaries.length < 2) return rSets;
+    let offset = 0;
+    const result = [];
+    window._cohortBoundaries.forEach(size => {
+      const grp = rSets.slice(offset, offset + size);
+      const matchSets = grp.map(idxs => new Set(idxs.map(i => SCD[i][0])));
+      let shared = new Set(matchSets[0]);
+      for(let i=1;i<matchSets.length;i++) shared = new Set([...shared].filter(m=>matchSets[i].has(m)));
+      grp.forEach(idxs => result.push(shared.size > 0 ? idxs.filter(i => shared.has(SCD[i][0])) : []));
+      offset += size;
+    });
+    return result;
+  }
+
+  // In cohort mode the default (single/Career) view ALWAYS shows within-cohort shared match stats
+  // so comparison is like-for-like. Together toggle switches to per-cohort shared stats explicitly.
+  if(cohortMode){
+    rowSets = applyCohortSharedFilter(rowSets);
+  }
+
+  // Handle "played together" filter (non-cohort mode)
+  if(f.together === 'yes' && !cohortMode){
     const matchSets = rowSets.map(idxs => {
       const matches = new Set();
       idxs.forEach(i => matches.add(SCD[i][0]));
@@ -1292,7 +1347,8 @@ function render(){
     } else { displayPlayers = []; rowSets = []; }
   }
 
-  if(f.together === 'yes' && displayPlayers.length < 2){
+
+  if(f.together === 'yes' && !cohortMode && displayPlayers.length < 2){
     document.getElementById('tblOverview').innerHTML = '<div class="verd"><div class="verd-lb">No shared matches</div><div class="verd-tx">The selected players never played in the same match together.</div></div>';
     document.getElementById('tblBatting').innerHTML = '';
     document.getElementById('tblBowling').innerHTML = '';
@@ -1351,9 +1407,9 @@ function render(){
 
   const verdictHTML=`<div class="verd"><div class="verd-lb">Summary</div><div class="verd-tx">${allDetails.join(' · ') || 'No clear leader'}</div></div>`;
 
-  // Shared stats for "played together"
+  // Shared stats for "played together" combined total (non-cohort mode only)
   let sharedStats = null;
-  if(f.together === 'yes') {
+  if(f.together === 'yes' && !cohortMode) {
     const allMatchIds = rowSets.map(idxs => new Set(idxs.map(i => SCD[i][0])));
     let sharedMatchIds = new Set(allMatchIds[0]);
     for(let i = 1; i < allMatchIds.length; i++) sharedMatchIds = new Set([...sharedMatchIds].filter(m => allMatchIds[i].has(m)));
@@ -1373,7 +1429,7 @@ function render(){
     sharedStats={ sharedTests:sharedMatchIds.size, sharedBatInns, sharedBowlInns, combinedBatRuns, combinedBalls, combinedBatInnsCount, combinedNO, combinedBowlRuns, combinedWkts, combinedOvers };
   }
 
-  const showTotals = f.together === 'yes';
+  const showTotals = f.together === 'yes' || cohortMode;
 
   // ---- Column definitions ----
   const ovCols = [
@@ -1463,73 +1519,71 @@ function render(){
     // Remove together filter for career column
     const careerStats = players.map((p, i) => agg(p, careerRowSets[i], any));
 
-    // Together stats: find shared matches across all players
-    const allMatchIds = careerRowSets.map(idxs => new Set(idxs.map(i => SCD[i][0])));
-    let sharedMatchIds = new Set(allMatchIds[0]);
-    for(let i = 1; i < allMatchIds.length; i++) sharedMatchIds = new Set([...sharedMatchIds].filter(m => allMatchIds[i].has(m)));
-
-    let togetherPlayers = players;
-    let togetherRowSets = careerRowSets.map(idxs => idxs.filter(i => sharedMatchIds.has(SCD[i][0])));
-
-    // Handle partial overlap (e.g. quartet where not all played together)
-    if(sharedMatchIds.size === 0 && players.length > 2){
-      const withShared = [], sharedByP = [];
-      for(let i = 0; i < players.length; i++){
-        const myShared = new Set();
-        for(let j = 0; j < players.length; j++){
-          if(i !== j) [...allMatchIds[i]].filter(m => allMatchIds[j].has(m)).forEach(m => myShared.add(m));
-        }
-        if(myShared.size > 0){ withShared.push(i); sharedByP.push(myShared); }
-      }
-      if(withShared.length >= 2){
-        togetherPlayers = withShared.map(i => players[i]);
-        togetherRowSets = withShared.map((pIdx, i) => careerRowSets[pIdx].filter(idx => sharedByP[i].has(SCD[idx][0])));
-      } else {
-        togetherPlayers = [];
-      }
+    // Helper: find per-cohort shared matches given a group of players + their rowSets
+    function cohortSharedRowSets(grpPlayers, grpRowSets){
+      const matchSets = grpRowSets.map(idxs => new Set(idxs.map(i => SCD[i][0])));
+      let shared = new Set(matchSets[0]);
+      for(let i=1;i<matchSets.length;i++) shared = new Set([...shared].filter(m=>matchSets[i].has(m)));
+      return { sharedIds: shared, filteredRowSets: grpRowSets.map(idxs=>idxs.filter(i=>shared.has(SCD[i][0]))) };
     }
 
-    // Build together sharedStats for combined total row
-    let dualSharedStats = null;
-    if(togetherPlayers.length >= 2){
-      const smIds = (() => {
-        const sets = togetherRowSets.map(idxs => new Set(idxs.map(i => SCD[i][0])));
-        let s = new Set(sets[0]); for(let i=1;i<sets.length;i++) s = new Set([...s].filter(m=>sets[i].has(m))); return s;
-      })();
-      const batMap = new Map();
-      togetherRowSets.forEach((idxs,pIdx)=>{ idxs.forEach(i=>{ const r=SCD[i],k=`${r[0]}-${r[2]}`; if(r[4]!==null&&smIds.has(r[0])){ if(!batMap.has(k))batMap.set(k,new Set()); batMap.get(k).add(pIdx); } }); });
-      const bowlMap = new Map();
-      togetherRowSets.forEach((idxs,pIdx)=>{ idxs.forEach(i=>{ const r=SCD[i],k=`${r[0]}-${r[2]}`; if(typeof r[6]==='number'&&r[6]>0&&smIds.has(r[0])){ if(!bowlMap.has(k))bowlMap.set(k,new Set()); bowlMap.get(k).add(pIdx); } }); });
-      const batKeys=new Set(), bowlKeys=new Set();
-      batMap.forEach((ps,k)=>{ if(ps.size===togetherPlayers.length)batKeys.add(k); });
-      bowlMap.forEach((ps,k)=>{ if(ps.size===togetherPlayers.length)bowlKeys.add(k); });
-      let cBR=0,cWk=0,cOv=0; togetherRowSets.forEach(idxs=>{ idxs.forEach(i=>{ const r=SCD[i],k=`${r[0]}-${r[2]}`; if(bowlKeys.has(k)){ cOv+=typeof r[6]==='number'?r[6]:0; cBR+=typeof r[8]==='number'?r[8]:0; cWk+=typeof r[9]==='number'?r[9]:0; } }); });
-      let cRuns=0,cBalls=0,cInns=0,cNO=0; togetherRowSets.forEach(idxs=>{ idxs.forEach(i=>{ const r=SCD[i],k=`${r[0]}-${r[2]}`; if(batKeys.has(k)&&r[4]!==null){ cInns++; if(r[4])cNO++; cRuns+=typeof r[3]==='number'?r[3]:0; cBalls+=typeof r[5]==='number'?r[5]:0; } }); });
-      dualSharedStats = { sharedTests:smIds.size, sharedBatInns:batKeys.size, sharedBowlInns:bowlKeys.size, combinedBatRuns:cRuns, combinedBalls:cBalls, combinedBatInnsCount:cInns, combinedNO:cNO, combinedBowlRuns:cBR, combinedWkts:cWk, combinedOvers:cOv };
-    }
+    // Determine player groups from _cohortBoundaries (cohort mode) or treat all as one group
+    const boundaries = window._cohortBoundaries;
+    const playerGroups = boundaries && boundaries.length >= 2
+      ? (() => { const gs=[]; let o=0; boundaries.forEach(n=>{ gs.push({players:players.slice(o,o+n), rowSets:careerRowSets.slice(o,o+n)}); o+=n; }); return gs; })()
+      : [{ players, rowSets: careerRowSets }];
 
-    const togetherStats = togetherPlayers.length >= 2 ? togetherPlayers.map((p, i) => agg(p, togetherRowSets[i], true)) : null;
+    // For each group, compute together row sets (matches where ALL in that group played)
+    const groupTogetherData = playerGroups.map(g => {
+      const { sharedIds, filteredRowSets } = cohortSharedRowSets(g.players, g.rowSets);
+      const togStats = sharedIds.size > 0 ? g.players.map((p,i) => agg(p, filteredRowSets[i], true)) : null;
+      return { players: g.players, sharedIds, filteredRowSets, togStats };
+    });
+
+    // Flatten together stats across all groups
+    const togetherStats = groupTogetherData.every(g=>g.togStats) ? groupTogetherData.flatMap(g=>g.togStats) : null;
+    const togetherRowSetsAll = groupTogetherData.flatMap(g=>g.filteredRowSets);
 
     const careerHTML = buildTable(careerStats, cols, { showBowlInns: isBowling });
-    const togetherHTML = togetherStats
-      ? buildTable(togetherStats, cols, { showBowlInns: isBowling, showTotals: true, sharedStats: dualSharedStats })
-      : '<div class="verd" style="margin-top:0"><div class="verd-lb">No shared matches</div><div class="verd-tx">These players never appeared in the same match.</div></div>';
 
-    // Excluded player note
-    let excludedNote = '';
-    if(togetherPlayers.length > 0 && togetherPlayers.length < players.length){
-      const excl = players.filter(p => !togetherPlayers.includes(p)).map(p => p.fullName||p.name).join(', ');
-      excludedNote = `<div class="filt-sum" style="background:rgba(208,64,64,0.1);color:var(--red);margin-bottom:10px;">Together column excludes ${excl} — no shared matches</div>`;
+    let togetherHTML;
+    if(!togetherStats){
+      // Check if some groups have shared matches
+      const someHave = groupTogetherData.some(g=>g.sharedIds.size>0);
+      if(someHave){
+        // Per-group together tables stacked
+        const parts = groupTogetherData.map((g,gi) => {
+          if(!g.togStats) return `<div class="filt-sum" style="background:rgba(208,64,64,0.1);color:var(--red);margin-bottom:8px;">${(cohortTypeName||'Cohort')+' '+(COHORT_NAMES_EN||['A','B','C','D'])[gi]}: no shared matches</div>`;
+          const label = (cohortTypeName||'Cohort')+' '+(COHORT_NAMES_EN||['A','B','C','D'])[gi];
+          return `<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">${label}</div>${buildTable(g.togStats, cols, { showBowlInns: isBowling, showTotals: true })}</div>`;
+        });
+        togetherHTML = parts.join('');
+      } else {
+        togetherHTML = '<div class="verd" style="margin-top:0"><div class="verd-lb">No shared matches</div><div class="verd-tx">No players in any group appeared in the same match.</div></div>';
+      }
+    } else if(playerGroups.length === 1){
+      // Single group (non-cohort mode): show together table normally
+      togetherHTML = buildTable(togetherStats, cols, { showBowlInns: isBowling, showTotals: true });
+    } else {
+      // Multiple cohort groups: show per-cohort together sub-tables with group labels
+      const parts = groupTogetherData.map((g, gi) => {
+        const label = (cohortTypeName||'Cohort')+' '+(COHORT_NAMES_EN||['A','B','C','D'])[gi];
+        if(!g.togStats || g.sharedIds.size === 0)
+          return `<div class="filt-sum" style="background:rgba(208,64,64,0.1);color:var(--red);margin-bottom:8px;">${label}: no shared matches</div>`;
+        const nTests = g.sharedIds.size;
+        return `<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">${label} — ${nTests} shared Test${nTests!==1?'s':''}</div>${buildTable(g.togStats, cols, { showBowlInns: isBowling, showTotals: true })}</div>`;
+      });
+      togetherHTML = parts.join('');
     }
 
     return `<div class="dual-view-wrap">
       <div class="dual-col">
-        <div class="dual-col-header career">Career</div>
+        <div class="dual-col-header career">${cohortMode ? 'Career (all Tests)' : 'Career'}</div>
         ${careerHTML}
       </div>
       <div class="dual-col">
-        <div class="dual-col-header together">Played Together</div>
-        ${excludedNote}${togetherHTML}
+        <div class="dual-col-header together">${cohortMode ? 'Played Together (within cohort)' : 'Played Together'}</div>
+        ${togetherHTML}
       </div>
     </div>${suffix}${fn}`;
   }
