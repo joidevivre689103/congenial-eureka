@@ -1054,11 +1054,16 @@ textarea.form-input{
           Test Suite
         </a>
         <a href="reference.html" class="nav-item" target="_blank">
-          <a href="reference.html" ...>Reference</a>
-<a href="github-deploy-tool.html" ...>Deploy</a>
-<a href="secrets.html" ...>Secrets</a>
           <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           Reference
+        </a>
+        <a href="github-deploy-tool.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Deploy
+        </a>
+        <a href="secrets.html" class="nav-item" target="_blank">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Secrets
         </a>
       </div>
 
@@ -2229,7 +2234,6 @@ function saveAudioSettings() {
     stability: parseInt(document.getElementById('elevenLabsStability').value)
   };
   
-  // Also trim the input fields visually
   document.getElementById('elevenLabsApiKey').value = settings.apiKey;
   document.getElementById('elevenLabsVoiceId').value = settings.voiceId;
   
@@ -2271,18 +2275,17 @@ async function callElevenLabs(text) {
       body: JSON.stringify(body)
     });
   } catch(networkErr) {
-    throw new Error('Network error — could not reach ElevenLabs. If running from a local file, try using a local server (e.g. python3 -m http.server) or deploy to your Firebase hosting. Error: ' + networkErr.message);
+    throw new Error('Network error — could not reach ElevenLabs. Error: ' + networkErr.message);
   }
 
   if (!response.ok) {
     let errDetail = '';
     try { errDetail = await response.text(); } catch(e) {}
-    
     if (response.status === 401) {
-      throw new Error(`Auth failed (401): ${errDetail.substring(0, 200)}. Key: "${apiKey.substring(0, 8)}...". Make sure your key has "Text to Speech" permission enabled at elevenlabs.io → Developers → API Keys → Edit key.`);
+      throw new Error(`Auth failed (401): ${errDetail.substring(0, 200)}.`);
     }
     if (response.status === 422) {
-      throw new Error('Invalid request (422). The Voice ID may be wrong, or the text is too short. Detail: ' + errDetail.substring(0, 200));
+      throw new Error('Invalid request (422). Detail: ' + errDetail.substring(0, 200));
     }
     throw new Error(`ElevenLabs error ${response.status}: ${errDetail.substring(0, 300)}`);
   }
@@ -2302,20 +2305,16 @@ async function testVoice() {
   resultDiv.innerHTML = '<div style="font-size:12px;color:var(--text3)">Generating test audio with your voice...</div>';
 
   const s = getAudioSettings();
-  const apiKey = (s.apiKey || '').trim();
-  const voiceId = (s.voiceId || '').trim();
+  if (!s.apiKey) { showToast('error', 'No API Key', 'Enter your API key first.'); return; }
+  if (!s.voiceId) { showToast('error', 'No Voice ID', 'Enter your Voice ID first.'); return; }
 
-  if (!apiKey) { showToast('error', 'No API Key', 'Enter your API key first.'); return; }
-  if (!voiceId) { showToast('error', 'No Voice ID', 'Enter your Voice ID first.'); return; }
-
-  showToast('success', 'Generating...', 'Calling ElevenLabs TTS API...');
   try {
-    const audioData = await callElevenLabs('This is a test of the Cricket Times audio narration. Your cloned voice is now ready for article playback.');
-    resultDiv.innerHTML = '<div style="margin-bottom:8px"><audio controls style="width:100%;height:36px"></audio></div><span style="color:var(--green);font-size:12px;font-weight:600">✓ Voice test successful! Your audio is working.</span>';
+    const audioData = await callElevenLabs('This is a test of the Cricket Times audio narration.');
+    resultDiv.innerHTML = '<div style="margin-bottom:8px"><audio controls style="width:100%;height:36px"></audio></div><span style="color:var(--green);font-size:12px;font-weight:600">✓ Voice test successful!</span>';
     const player = resultDiv.querySelector('audio');
     player.src = audioData;
     player.play();
-    showToast('success', 'Voice Test Passed', 'Audio generated successfully with your voice.');
+    showToast('success', 'Voice Test Passed', 'Audio generated successfully.');
   } catch(err) {
     resultDiv.innerHTML = '<pre style="font-size:11px;color:var(--red);white-space:pre-wrap;background:var(--surface);padding:12px;border-radius:8px;border:1px solid var(--red)">' + err.message + '</pre>';
     showToast('error', 'Voice Test Failed', err.message.substring(0, 100));
@@ -2324,7 +2323,6 @@ async function testVoice() {
 
 function resetAudioUI() {
   const status = document.getElementById('audioStatus');
-  const statusText = document.getElementById('audioStatusText');
   const playerWrap = document.getElementById('audioPlayerWrap');
   const player = document.getElementById('audioPreviewPlayer');
   const genBtn = document.getElementById('generateAudioBtn');
@@ -2342,7 +2340,7 @@ function showAudioReady(audioDataUri) {
   const playerWrap = document.getElementById('audioPlayerWrap');
   const player = document.getElementById('audioPreviewPlayer');
   status.style.display = 'block';
-  statusText.innerHTML = '<span style="color:var(--green);font-weight:600">✓ Audio ready</span> — narration generated with your cloned voice';
+  statusText.innerHTML = '<span style="color:var(--green);font-weight:600">✓ Audio ready</span>';
   playerWrap.style.display = 'block';
   player.src = audioDataUri;
   window._pendingAudioData = audioDataUri;
@@ -2352,10 +2350,7 @@ function removeGeneratedAudio() {
   const id = document.getElementById('articleId').value;
   if (id) {
     const idx = articles.findIndex(a => a.id === parseInt(id));
-    if (idx !== -1) {
-      articles[idx].audioData = null;
-      persistToLocalStorage();
-    }
+    if (idx !== -1) { articles[idx].audioData = null; persistToLocalStorage(); }
   }
   resetAudioUI();
   showToast('success', 'Audio Removed', 'The generated narration has been removed.');
@@ -2365,12 +2360,8 @@ async function generateAudioForArticle() {
   const headline = document.getElementById('articleHeadline').value.trim();
   const summary = document.getElementById('articleSummary').value.trim();
   const content = document.getElementById('articleContent').value.trim();
-  
   const text = content || (headline + '. ' + summary);
-  if (!text || text.length < 10) {
-    showToast('error', 'No Content', 'Add article content or summary before generating audio.');
-    return;
-  }
+  if (!text || text.length < 10) { showToast('error', 'No Content', 'Add content before generating audio.'); return; }
 
   const genBtn = document.getElementById('generateAudioBtn');
   const status = document.getElementById('audioStatus');
@@ -2379,26 +2370,20 @@ async function generateAudioForArticle() {
   genBtn.disabled = true;
   genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2" stroke-dasharray="30 70"/></svg> Generating...';
   status.style.display = 'block';
-  statusText.innerHTML = 'Calling ElevenLabs API... this may take a few seconds.';
+  statusText.innerHTML = 'Calling ElevenLabs API...';
 
   try {
     const audioData = await callElevenLabs(text);
-    
-    // Store on the article
     const id = document.getElementById('articleId').value;
     if (id) {
       const idx = articles.findIndex(a => a.id === parseInt(id));
-      if (idx !== -1) {
-        articles[idx].audioData = audioData;
-        persistToLocalStorage();
-      }
+      if (idx !== -1) { articles[idx].audioData = audioData; persistToLocalStorage(); }
     }
     window._pendingAudioData = audioData;
-    
     showAudioReady(audioData);
     genBtn.disabled = false;
     genBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Regenerate';
-    showToast('success', 'Audio Generated', 'Narration created using your cloned voice.');
+    showToast('success', 'Audio Generated', 'Narration created.');
   } catch(err) {
     statusText.innerHTML = '<span style="color:var(--red)">✗ ' + err.message + '</span>';
     genBtn.disabled = false;
@@ -2409,87 +2394,49 @@ async function generateAudioForArticle() {
 
 async function generateAllAudio() {
   const s = getAudioSettings();
-  if (!s.apiKey || !s.voiceId) {
-    showToast('error', 'Not Configured', 'Set up your ElevenLabs credentials in the settings above first.');
-    return;
-  }
-  
+  if (!s.apiKey || !s.voiceId) { showToast('error', 'Not Configured', 'Set up ElevenLabs credentials first.'); return; }
   const pending = articles.filter(a => a.status === 'published' && a.audioEnabled !== false && !a.audioData);
-  if (pending.length === 0) {
-    showToast('success', 'All Done', 'All published articles already have audio.');
-    return;
-  }
-  
+  if (!pending.length) { showToast('success', 'All Done', 'All published articles already have audio.'); return; }
   const progressDiv = document.getElementById('bulkProgress');
   const progressBar = document.getElementById('bulkProgressBar');
   const progressText = document.getElementById('bulkProgressText');
   progressDiv.style.display = 'block';
-  
   let done = 0;
   for (const article of pending) {
     progressText.textContent = `Generating ${done + 1} of ${pending.length}: ${article.headline.substring(0, 50)}...`;
     progressBar.style.width = ((done / pending.length) * 100) + '%';
-    
     const text = article.content || (article.headline + '. ' + article.summary);
     try {
       article.audioData = await callElevenLabs(text);
       persistToLocalStorage();
     } catch(err) {
-      progressText.textContent = `Error on "${article.headline.substring(0, 40)}": ${err.message}`;
+      progressText.textContent = `Error: ${err.message}`;
       showToast('error', 'Generation Error', err.message);
       break;
     }
     done++;
   }
-  
   progressBar.style.width = '100%';
-  progressText.textContent = `Done! Generated audio for ${done} of ${pending.length} articles.`;
+  progressText.textContent = `Done! Generated audio for ${done} articles.`;
   renderArticles();
-  showToast('success', 'Bulk Generation Complete', `${done} articles now have audio narration.`);
+  showToast('success', 'Bulk Generation Complete', `${done} articles now have audio.`);
 }
 
 function runAudioDiagnostic() {
   const out = document.getElementById('audioDiagOutput');
   let lines = [];
-  
   lines.push('=== ARTICLES IN MEMORY ===');
   articles.forEach(a => {
-    lines.push(`  ID:${a.id} | "${a.headline.substring(0,45)}..." | audio:${a.audioEnabled!==false?'ON':'OFF'} | hasData:${!!a.audioData} | dataSize:${a.audioData ? (a.audioData.length/1024).toFixed(0)+'KB' : 'none'}`);
+    lines.push(`  ID:${a.id} | "${a.headline.substring(0,45)}..." | audio:${a.audioEnabled!==false?'ON':'OFF'} | hasData:${!!a.audioData}`);
   });
-  
   lines.push('');
   lines.push('=== LOCALSTORAGE KEYS ===');
   const allKeys = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    allKeys.push(localStorage.key(i));
-  }
+  for (let i = 0; i < localStorage.length; i++) allKeys.push(localStorage.key(i));
   allKeys.sort().forEach(key => {
     const val = localStorage.getItem(key);
-    const size = val ? (val.length / 1024).toFixed(0) + 'KB' : '0KB';
-    const isAudio = key.startsWith('cricketTimesAudio_') || key.startsWith('cricketTimesEditorAudio_');
-    const preview = isAudio && val ? val.substring(0, 30) + '...' : '';
-    lines.push(`  ${key} (${size}) ${isAudio ? '🔊 ' + preview : ''}`);
+    lines.push(`  ${key} (${val ? (val.length/1024).toFixed(0)+'KB' : '0KB'})`);
   });
-  
-  lines.push('');
-  lines.push('=== CMS PAYLOAD CHECK ===');
-  try {
-    const raw = localStorage.getItem('cricketTimesCMS');
-    if (raw) {
-      const data = JSON.parse(raw);
-      lines.push(`  Articles in payload: ${data.articles ? data.articles.length : 0}`);
-      if (data.articles) {
-        data.articles.forEach(a => {
-          lines.push(`    ID:${a.id} | hasAudio flag:${a.hasAudio} | audioData inline:${!!a.audioData} | "${a.headline.substring(0,40)}..."`);
-        });
-      }
-    } else {
-      lines.push('  ⚠️ cricketTimesCMS key NOT FOUND in localStorage');
-    }
-  } catch(e) {
-    lines.push('  ⚠️ Error parsing: ' + e.message);
-  }
-  
   out.textContent = lines.join('\n');
 }
 
@@ -2508,24 +2455,10 @@ function renderTickerEditor() {
   `).join('');
 }
 
-function addTickerItem() {
-  tickerItems.push('New breaking news headline...');
-  renderTickerEditor();
-}
-
-function updateTickerItem(index, value) {
-  tickerItems[index] = value;
-}
-
-function removeTickerItem(index) {
-  tickerItems.splice(index, 1);
-  renderTickerEditor();
-}
-
-function saveTicker() {
-  persistToLocalStorage();
-  showToast('success', 'Ticker Updated', 'Breaking news headlines have been saved and pushed live.');
-}
+function addTickerItem() { tickerItems.push('New breaking news headline...'); renderTickerEditor(); }
+function updateTickerItem(index, value) { tickerItems[index] = value; }
+function removeTickerItem(index) { tickerItems.splice(index, 1); renderTickerEditor(); }
+function saveTicker() { persistToLocalStorage(); showToast('success', 'Ticker Updated', 'Breaking news headlines saved.'); }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // LIVE SCORES MANAGEMENT
@@ -2535,30 +2468,20 @@ function renderScoresEditor() {
   container.innerHTML = liveScores.map(score => `
     <div class="score-match-card" data-id="${score.id}">
       <div class="score-match-header">
-        <input type="text" class="form-input" value="${score.match}" 
-               onchange="updateScore(${score.id}, 'match', this.value)" 
-               style="background:var(--surface);max-width:300px">
-        <button class="btn btn-danger btn-sm" onclick="removeScoreCard(${score.id})">
-          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          Remove
-        </button>
+        <input type="text" class="form-input" value="${score.match}" onchange="updateScore(${score.id}, 'match', this.value)" style="background:var(--surface);max-width:300px">
+        <button class="btn btn-danger btn-sm" onclick="removeScoreCard(${score.id})">Remove</button>
       </div>
       <div class="score-teams-editor">
         <div class="score-team-row">
-          <input type="text" value="${score.team1.name}" placeholder="Team 1 Name"
-                 onchange="updateScore(${score.id}, 'team1Name', this.value)">
-          <input type="text" value="${score.team1.score}" placeholder="Score"
-                 onchange="updateScore(${score.id}, 'team1Score', this.value)">
+          <input type="text" value="${score.team1.name}" placeholder="Team 1 Name" onchange="updateScore(${score.id}, 'team1Name', this.value)">
+          <input type="text" value="${score.team1.score}" placeholder="Score" onchange="updateScore(${score.id}, 'team1Score', this.value)">
         </div>
         <div class="score-team-row">
-          <input type="text" value="${score.team2.name}" placeholder="Team 2 Name"
-                 onchange="updateScore(${score.id}, 'team2Name', this.value)">
-          <input type="text" value="${score.team2.score}" placeholder="Score"
-                 onchange="updateScore(${score.id}, 'team2Score', this.value)">
+          <input type="text" value="${score.team2.name}" placeholder="Team 2 Name" onchange="updateScore(${score.id}, 'team2Name', this.value)">
+          <input type="text" value="${score.team2.score}" placeholder="Score" onchange="updateScore(${score.id}, 'team2Score', this.value)">
         </div>
         <div class="score-status-row">
-          <input type="text" value="${score.status}" placeholder="Match status..."
-                 onchange="updateScore(${score.id}, 'status', this.value)">
+          <input type="text" value="${score.status}" placeholder="Match status..." onchange="updateScore(${score.id}, 'status', this.value)">
         </div>
       </div>
     </div>
@@ -2566,39 +2489,24 @@ function renderScoresEditor() {
 }
 
 function addScoreCard() {
-  liveScores.push({
-    id: nextScoreId++,
-    match: "New Match • Day 1",
-    team1: { name: "Team A", score: "0/0" },
-    team2: { name: "Team B", score: "" },
-    status: "Match in progress"
-  });
+  liveScores.push({ id: nextScoreId++, match: "New Match • Day 1", team1: { name: "Team A", score: "0/0" }, team2: { name: "Team B", score: "" }, status: "Match in progress" });
   renderScoresEditor();
 }
 
 function updateScore(id, field, value) {
   const score = liveScores.find(s => s.id === id);
   if (score) {
-    switch(field) {
-      case 'match': score.match = value; break;
-      case 'team1Name': score.team1.name = value; break;
-      case 'team1Score': score.team1.score = value; break;
-      case 'team2Name': score.team2.name = value; break;
-      case 'team2Score': score.team2.score = value; break;
-      case 'status': score.status = value; break;
-    }
+    if (field === 'match') score.match = value;
+    else if (field === 'team1Name') score.team1.name = value;
+    else if (field === 'team1Score') score.team1.score = value;
+    else if (field === 'team2Name') score.team2.name = value;
+    else if (field === 'team2Score') score.team2.score = value;
+    else if (field === 'status') score.status = value;
   }
 }
 
-function removeScoreCard(id) {
-  liveScores = liveScores.filter(s => s.id !== id);
-  renderScoresEditor();
-}
-
-function saveScores() {
-  persistToLocalStorage();
-  showToast('success', 'Scores Updated', 'Live scores have been saved and pushed live.');
-}
+function removeScoreCard(id) { liveScores = liveScores.filter(s => s.id !== id); renderScoresEditor(); }
+function saveScores() { persistToLocalStorage(); showToast('success', 'Scores Updated', 'Live scores saved.'); }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILITIES
@@ -2608,10 +2516,8 @@ function formatDate(dateStr) {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
   if (date.toDateString() === today.toDateString()) return 'Today';
   if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
-  
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
@@ -2621,62 +2527,29 @@ function showToast(type, title, message) {
   toast.className = 'toast';
   toast.innerHTML = `
     <div class="toast-icon ${type}">
-      <svg viewBox="0 0 24 24">
-        ${type === 'success' 
-          ? '<polyline points="20 6 9 17 4 12"/>' 
-          : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}
-      </svg>
+      <svg viewBox="0 0 24 24">${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}</svg>
     </div>
-    <div class="toast-content">
-      <h4>${title}</h4>
-      <p>${message}</p>
-    </div>
+    <div class="toast-content"><h4>${title}</h4><p>${message}</p></div>
   `;
   container.appendChild(toast);
-  
-  setTimeout(() => {
-    toast.style.animation = 'slideIn 0.3s ease reverse';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  setTimeout(() => { toast.style.animation = 'slideIn 0.3s ease reverse'; setTimeout(() => toast.remove(), 300); }, 3000);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LOCALSTORAGE PERSISTENCE (Bridge to news.html)
+// LOCALSTORAGE PERSISTENCE
 // ═══════════════════════════════════════════════════════════════════════════
 function persistToLocalStorage() {
   const publishedArticles = articles.filter(a => a.status === 'published');
-  
-  // Store audio data SEPARATELY per article (avoids localStorage quota on main payload)
   publishedArticles.forEach(a => {
     const audioKey = 'cricketTimesAudio_' + a.id;
     try {
-      if (a.audioData) {
-        localStorage.setItem(audioKey, a.audioData);
-      } else {
-        localStorage.removeItem(audioKey);
-      }
-    } catch(e) {
-      console.warn('Could not save audio for article ' + a.id + ':', e);
-    }
+      if (a.audioData) localStorage.setItem(audioKey, a.audioData);
+      else localStorage.removeItem(audioKey);
+    } catch(e) {}
   });
-  
-  // Main payload WITHOUT audioData (keeps it small)
-  const articlesForPayload = publishedArticles.map(a => {
-    const { audioData, ...rest } = a;
-    return { ...rest, hasAudio: !!audioData };
-  });
-  
-  const payload = {
-    articles: articlesForPayload,
-    tickerItems: tickerItems,
-    liveScores: liveScores,
-    lastUpdated: new Date().toISOString()
-  };
-  try {
-    localStorage.setItem('cricketTimesCMS', JSON.stringify(payload));
-  } catch(e) {
-    console.warn('Could not save to localStorage:', e);
-  }
+  const articlesForPayload = publishedArticles.map(a => { const { audioData, ...rest } = a; return { ...rest, hasAudio: !!audioData }; });
+  const payload = { articles: articlesForPayload, tickerItems, liveScores, lastUpdated: new Date().toISOString() };
+  try { localStorage.setItem('cricketTimesCMS', JSON.stringify(payload)); } catch(e) {}
 }
 
 function loadFromLocalStorage() {
@@ -2686,19 +2559,11 @@ function loadFromLocalStorage() {
       const state = JSON.parse(saved);
       if (state.articles) {
         articles = state.articles;
-        // Restore audioData from separate keys
         articles.forEach(a => {
-          const audioKey = 'cricketTimesEditorAudio_' + a.id;
           try {
-            const audioData = localStorage.getItem(audioKey);
-            if (audioData) {
-              a.audioData = audioData;
-            } else if (a.hasAudio) {
-              // Try the published audio key as fallback
-              const pubKey = 'cricketTimesAudio_' + a.id;
-              const pubAudio = localStorage.getItem(pubKey);
-              if (pubAudio) a.audioData = pubAudio;
-            }
+            const audioData = localStorage.getItem('cricketTimesEditorAudio_' + a.id);
+            if (audioData) a.audioData = audioData;
+            else if (a.hasAudio) { const pub = localStorage.getItem('cricketTimesAudio_' + a.id); if (pub) a.audioData = pub; }
           } catch(e) {}
           delete a.hasAudio;
         });
@@ -2708,78 +2573,43 @@ function loadFromLocalStorage() {
       if (state.nextArticleId) nextArticleId = state.nextArticleId;
       if (state.nextScoreId) nextScoreId = state.nextScoreId;
     }
-  } catch(e) {
-    console.warn('Could not load from localStorage:', e);
-  }
+  } catch(e) {}
 }
 
 function saveEditorState() {
   try {
-    // Save audio data separately per article
     articles.forEach(a => {
-      const audioKey = 'cricketTimesEditorAudio_' + a.id;
       try {
-        if (a.audioData) {
-          localStorage.setItem(audioKey, a.audioData);
-        } else {
-          localStorage.removeItem(audioKey);
-        }
+        if (a.audioData) localStorage.setItem('cricketTimesEditorAudio_' + a.id, a.audioData);
+        else localStorage.removeItem('cricketTimesEditorAudio_' + a.id);
       } catch(e) {}
     });
-    
-    // Save editor state WITHOUT audioData
-    const articlesWithoutAudio = articles.map(a => {
-      const { audioData, ...rest } = a;
-      return { ...rest, hasAudio: !!audioData };
-    });
-    localStorage.setItem('cricketTimesCMS_editorState', JSON.stringify({
-      articles: articlesWithoutAudio,
-      tickerItems,
-      liveScores,
-      nextArticleId,
-      nextScoreId
-    }));
+    const articlesWithoutAudio = articles.map(a => { const { audioData, ...rest } = a; return { ...rest, hasAudio: !!audioData }; });
+    localStorage.setItem('cricketTimesCMS_editorState', JSON.stringify({ articles: articlesWithoutAudio, tickerItems, liveScores, nextArticleId, nextScoreId }));
   } catch(e) {}
 }
 
-// Wrap persistToLocalStorage to also save editor state
 const _originalPersist = persistToLocalStorage;
-persistToLocalStorage = function() {
-  _originalPersist();
-  saveEditorState();
-};
+persistToLocalStorage = function() { _originalPersist(); saveEditorState(); };
 
-// Load saved editor state on init
 loadFromLocalStorage();
 
-// Close modal on overlay click
-document.getElementById('articleModal').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) closeModal();
-});
+document.getElementById('articleModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-// Close modal on Escape
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModal();
-});
-
-// Initialize
 renderArticles();
 loadAudioSettings();
-
-// Push initial data to localStorage so news.html has content
 persistToLocalStorage();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// QUIZ — GitHub-backed, no localStorage
+// QUIZ
 // ═══════════════════════════════════════════════════════════════════════════
 const QUIZ_REPO_OWNER = 'joidevivre689103';
 const QUIZ_REPO_NAME  = 'congenial-eureka';
 const QUIZ_FILE_PATH  = 'quiz.json';
 const QUIZ_BRANCH     = 'main';
 
-function getQuizToken() {
-  return document.getElementById('quizGithubToken').value.trim();
-}
+function getQuizToken() { return document.getElementById('quizGithubToken').value.trim(); }
 
 function toggleQuizTokenVisibility() {
   const inp = document.getElementById('quizGithubToken');
@@ -2797,31 +2627,20 @@ async function verifyQuizToken() {
   const token = getQuizToken();
   const statusEl = document.getElementById('quizTokenStatus');
   statusEl.style.display = 'block';
-  if (!token) {
-    statusEl.innerHTML = '<span style="color:var(--red)">⚠ Please enter a token first.</span>';
-    return;
-  }
+  if (!token) { statusEl.innerHTML = '<span style="color:var(--red)">⚠ Please enter a token first.</span>'; return; }
   statusEl.innerHTML = '<span style="color:var(--text3)">Verifying…</span>';
   try {
-    const res = await fetch(`https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}`, {
-      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
-    });
-    if (res.ok) {
-      statusEl.innerHTML = '<span style="color:var(--green)">✓ Token verified — repo access confirmed.</span>';
-    } else {
-      const err = await res.json();
-      statusEl.innerHTML = `<span style="color:var(--red)">✗ ${err.message || 'Access denied. Check token scope.'}</span>`;
-    }
-  } catch(e) {
-    statusEl.innerHTML = `<span style="color:var(--red)">✗ Network error: ${e.message}</span>`;
-  }
+    const res = await fetch(`https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}`, { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
+    if (res.ok) { statusEl.innerHTML = '<span style="color:var(--green)">✓ Token verified.</span>'; }
+    else { const err = await res.json(); statusEl.innerHTML = `<span style="color:var(--red)">✗ ${err.message}</span>`; }
+  } catch(e) { statusEl.innerHTML = `<span style="color:var(--red)">✗ Network error: ${e.message}</span>`; }
 }
 
 function updateQuizPreview() {
-  const q  = document.getElementById('quizQuestion').value;
-  const a  = document.getElementById('quizOptionA').value;
-  const b  = document.getElementById('quizOptionB').value;
-  const c  = document.getElementById('quizOptionC').value;
+  const q = document.getElementById('quizQuestion').value;
+  const a = document.getElementById('quizOptionA').value;
+  const b = document.getElementById('quizOptionB').value;
+  const c = document.getElementById('quizOptionC').value;
   const ok = document.getElementById('quizCorrectAnswer').value;
   const by = document.getElementById('quizContributedBy').value;
   const el = document.getElementById('quizPreview');
@@ -2831,12 +2650,9 @@ function updateQuizPreview() {
     <div style="font-weight:700;margin-bottom:10px;color:var(--text)">${q}</div>
     ${['A','B','C'].map(opt => `
       <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:6px;border-radius:6px;
-                  background:${ok===opt?'var(--green-dim)':'var(--surface3)'};
-                  border:1px solid ${ok===opt?'var(--green)':'var(--border)'}">
+                  background:${ok===opt?'var(--green-dim)':'var(--surface3)'};border:1px solid ${ok===opt?'var(--green)':'var(--border)'}">
         <span style="font-size:11px;font-weight:700;color:${ok===opt?'var(--green)':'var(--text3)'};width:16px">${opt}</span>
-        <span style="color:${ok===opt?'var(--green)':'var(--text2)'}">
-          ${map[opt] || '<em style="opacity:0.4">No option entered</em>'}
-        </span>
+        <span style="color:${ok===opt?'var(--green)':'var(--text2)'}">${map[opt] || '<em style="opacity:0.4">No option entered</em>'}</span>
         ${ok===opt ? '<span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">✓ CORRECT</span>' : ''}
       </div>`).join('')}
     ${by ? `<div style="margin-top:8px;font-size:11px;color:var(--text3);font-style:italic">Contributed by: ${by}</div>` : ''}
@@ -2844,38 +2660,28 @@ function updateQuizPreview() {
 }
 
 async function initQuizView() {
-  // Load currently published quiz from GitHub raw
   const url = `https://raw.githubusercontent.com/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/${QUIZ_BRANCH}/${QUIZ_FILE_PATH}`;
   try {
     const res = await fetch(url + '?t=' + Date.now());
     if (res.ok) {
       const data = await res.json();
-      // Support new { today, queue } format and old flat format
       const quiz = data.today || (data.question ? data : null);
       if (!quiz) return;
       const panel = document.getElementById('quizCurrentPanel');
-      const text  = document.getElementById('quizCurrentText');
+      const text = document.getElementById('quizCurrentText');
       panel.style.display = 'block';
-      // Show the New Quiz button now that there's a live quiz
       document.getElementById('newQuizBtn').style.display = 'inline-flex';
-      text.innerHTML = `<strong>${quiz.question}</strong><br>
-        A: ${quiz.optionA} &nbsp;|&nbsp; B: ${quiz.optionB} &nbsp;|&nbsp; C: ${quiz.optionC}<br>
-        <span style="color:var(--green)">✓ Correct: Option ${quiz.correctAnswer}</span>
-        ${quiz.contributedBy ? ` &nbsp;·&nbsp; <em>by ${quiz.contributedBy}</em>` : ''}`;
-      // Pre-fill form with current values
-      document.getElementById('quizQuestion').value       = quiz.question       || '';
-      document.getElementById('quizOptionA').value        = quiz.optionA        || '';
-      document.getElementById('quizOptionB').value        = quiz.optionB        || '';
-      document.getElementById('quizOptionC').value        = quiz.optionC        || '';
-      document.getElementById('quizCorrectAnswer').value  = quiz.correctAnswer  || '';
-      document.getElementById('quizContributedBy').value  = quiz.contributedBy  || '';
+      text.innerHTML = `<strong>${quiz.question}</strong><br>A: ${quiz.optionA} | B: ${quiz.optionB} | C: ${quiz.optionC}<br><span style="color:var(--green)">✓ Correct: Option ${quiz.correctAnswer}</span>`;
+      document.getElementById('quizQuestion').value = quiz.question || '';
+      document.getElementById('quizOptionA').value = quiz.optionA || '';
+      document.getElementById('quizOptionB').value = quiz.optionB || '';
+      document.getElementById('quizOptionC').value = quiz.optionC || '';
+      document.getElementById('quizCorrectAnswer').value = quiz.correctAnswer || '';
+      document.getElementById('quizContributedBy').value = quiz.contributedBy || '';
       updateQuizPreview();
     }
-  } catch(e) { /* no quiz published yet — that's fine */ }
+  } catch(e) {}
 }
-
-// Holds the quiz data that was live when New Quiz was clicked, used for archiving
-let _liveQuizSnapshot = null;
 
 async function loadCorrectSubmitters() {
   const listEl = document.getElementById('quizSubmittersList');
@@ -2884,189 +2690,88 @@ async function loadCorrectSubmitters() {
   if (!db) { listEl.innerHTML = '<span style="color:var(--red)">✗ Firestore not ready.</span>'; return; }
   try {
     const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    // Answers are stored in 'quiz_answers' collection with fields: name, answer, quizQuestion
     const liveQuestion = document.getElementById('quizQuestion').value.trim();
-    const correctOpt   = document.getElementById('quizCorrectAnswer').value;
-    const q = query(
-      collection(db, 'quiz_answers'),
-      where('answer', '==', correctOpt),
-      where('quizQuestion', '==', liveQuestion)
-    );
+    const correctOpt = document.getElementById('quizCorrectAnswer').value;
+    const q = query(collection(db, 'quiz_answers'), where('answer', '==', correctOpt), where('quizQuestion', '==', liveQuestion));
     const snap = await getDocs(q);
-    if (snap.empty) {
-      listEl.innerHTML = '<span style="color:var(--text3);font-style:italic">No correct answers submitted yet.</span>';
-      return;
-    }
+    if (snap.empty) { listEl.innerHTML = '<span style="color:var(--text3);font-style:italic">No correct answers yet.</span>'; return; }
     const names = [];
     snap.forEach(doc => { const d = doc.data(); names.push(d.name || d.email || 'Anonymous'); });
-    listEl.innerHTML = names.map(n =>
-      `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-dim);color:var(--green);
-        border:1px solid var(--green);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 4px 3px 0">
-        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        ${n}
-      </span>`
-    ).join('');
-  } catch(e) {
-    listEl.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`;
-  }
+    listEl.innerHTML = names.map(n => `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-dim);color:var(--green);border:1px solid var(--green);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 4px 3px 0">${n}</span>`).join('');
+  } catch(e) { listEl.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
 }
 
 async function startNewQuiz() {
   const db = window._db;
-  // Snapshot the current live quiz data from the form (already populated by initQuizView)
   const currentQuestion = document.getElementById('quizQuestion').value.trim();
-  const currentA        = document.getElementById('quizOptionA').value.trim();
-  const currentB        = document.getElementById('quizOptionB').value.trim();
-  const currentC        = document.getElementById('quizOptionC').value.trim();
-  const currentCorrect  = document.getElementById('quizCorrectAnswer').value;
-  const currentBy       = document.getElementById('quizContributedBy').value.trim();
-
-  if (!currentQuestion) {
-    showToast('error', 'No Live Quiz', 'No quiz is currently loaded to archive.');
-    return;
-  }
-
-  // Fetch correct submitters before archiving
+  const currentCorrect = document.getElementById('quizCorrectAnswer').value;
+  if (!currentQuestion) { showToast('error', 'No Live Quiz', 'No quiz loaded to archive.'); return; }
   let correctSubmitters = [];
   if (db) {
     try {
       const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      const q = query(
-        collection(db, 'quiz_answers'),
-        where('answer', '==', currentCorrect),
-        where('quizQuestion', '==', currentQuestion)
-      );
+      const q = query(collection(db, 'quiz_answers'), where('answer', '==', currentCorrect), where('quizQuestion', '==', currentQuestion));
       const snap = await getDocs(q);
-      snap.forEach(doc => {
-        const d = doc.data();
-        correctSubmitters.push({ name: d.name || '', email: d.email || '', answeredAt: d.answeredAt || null });
-      });
-    } catch(e) {
-      console.warn('Could not fetch submitters for archive:', e);
-    }
+      snap.forEach(doc => { const d = doc.data(); correctSubmitters.push({ name: d.name || '', email: d.email || '' }); });
+    } catch(e) {}
   }
-
-  // Archive to Firestore
   if (db) {
     try {
       const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      await addDoc(collection(db, 'quiz_archive'), {
-        question:     currentQuestion,
-        optionA:      currentA,
-        optionB:      currentB,
-        optionC:      currentC,
-        correctAnswer: currentCorrect,
-        contributedBy: currentBy,
-        correctSubmitters: correctSubmitters,
-        correctCount:  correctSubmitters.length,
-        archivedAt:    serverTimestamp(),
-        date:          new Date().toISOString().slice(0, 10)
-      });
-      showToast('success', 'Quiz Archived', `Previous quiz saved to Firestore with ${correctSubmitters.length} correct submission(s).`);
-    } catch(e) {
-      showToast('error', 'Archive Failed', e.message);
-      return; // Don't clear the form if archive failed
-    }
+      await addDoc(collection(db, 'quiz_archive'), { question: currentQuestion, correctAnswer: currentCorrect, correctSubmitters, correctCount: correctSubmitters.length, archivedAt: serverTimestamp(), date: new Date().toISOString().slice(0, 10) });
+      showToast('success', 'Quiz Archived', `Saved with ${correctSubmitters.length} correct submission(s).`);
+    } catch(e) { showToast('error', 'Archive Failed', e.message); return; }
   }
-
-  // Clear form for new quiz
-  ['quizQuestion', 'quizOptionA', 'quizOptionB', 'quizOptionC', 'quizContributedBy'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
+  ['quizQuestion', 'quizOptionA', 'quizOptionB', 'quizOptionC', 'quizContributedBy'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('quizCorrectAnswer').value = '';
   document.getElementById('quizCurrentPanel').style.display = 'none';
   document.getElementById('newQuizBtn').style.display = 'none';
-  document.getElementById('quizSubmittersList').innerHTML = 'Click "Load Submitters" to fetch.';
   updateQuizPreview();
   showToast('success', 'Ready for New Quiz', 'Fill in the form and publish when ready.');
 }
 
 async function saveQuizToGitHub() {
   const token = getQuizToken();
-  if (!token) {
-    showToast('error', 'No Token', 'Enter your GitHub Personal Access Token first.');
-    return;
-  }
-  const q  = document.getElementById('quizQuestion').value.trim();
-  const a  = document.getElementById('quizOptionA').value.trim();
-  const b  = document.getElementById('quizOptionB').value.trim();
-  const c  = document.getElementById('quizOptionC').value.trim();
+  if (!token) { showToast('error', 'No Token', 'Enter your GitHub token first.'); return; }
+  const q = document.getElementById('quizQuestion').value.trim();
+  const a = document.getElementById('quizOptionA').value.trim();
+  const b = document.getElementById('quizOptionB').value.trim();
+  const c = document.getElementById('quizOptionC').value.trim();
   const ok = document.getElementById('quizCorrectAnswer').value;
   const by = document.getElementById('quizContributedBy').value.trim();
-  if (!q || !a || !b || !c || !ok) {
-    showToast('error', 'Incomplete Quiz', 'Fill in the question, all three options, and the correct answer.');
-    return;
-  }
-
+  if (!q || !a || !b || !c || !ok) { showToast('error', 'Incomplete Quiz', 'Fill in all fields.'); return; }
   const quiz = { question: q, optionA: a, optionB: b, optionC: c, correctAnswer: ok, contributedBy: by };
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(quiz, null, 2))));
-
-  // Check if file already exists (need its SHA to update)
   const apiUrl = `https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/contents/${QUIZ_FILE_PATH}`;
   const headers = { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
-
   let sha = null;
-  try {
-    const check = await fetch(apiUrl, { headers });
-    if (check.ok) { const data = await check.json(); sha = data.sha; }
-  } catch(e) {}
-
+  try { const check = await fetch(apiUrl, { headers }); if (check.ok) { const data = await check.json(); sha = data.sha; } } catch(e) {}
   const body = { message: 'Update quiz.json via CMS', content, branch: QUIZ_BRANCH };
   if (sha) body.sha = sha;
-
   try {
     const res = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
-    if (res.ok) {
-      showToast('success', 'Quiz Published', 'quiz.json committed to GitHub — live on the site.');
-      initQuizView();
-    } else {
-      const err = await res.json();
-      showToast('error', 'GitHub Error', err.message || 'Could not save to GitHub.');
-    }
-  } catch(e) {
-    showToast('error', 'Network Error', e.message);
-  }
+    if (res.ok) { showToast('success', 'Quiz Published', 'quiz.json committed to GitHub.'); initQuizView(); }
+    else { const err = await res.json(); showToast('error', 'GitHub Error', err.message || 'Could not save.'); }
+  } catch(e) { showToast('error', 'Network Error', e.message); }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// QUIZ QUEUE — sequencing reader submissions after CMS today quiz
+// QUIZ QUEUE
 // ═══════════════════════════════════════════════════════════════════════════
-
 let queueState = { today: null, queue: [] };
 let pendingSubmissions = [];
 let dragSrcIndex = null;
 
 function syncQueueToken() {
   const t = document.getElementById('quizGithubToken').value.trim();
-  if (t) {
-    document.getElementById('queueGithubToken').value = t;
-    showQueueStatus('<span style="color:var(--green)">✓ Token synced from Quiz panel.</span>');
-  } else {
-    showQueueStatus('<span style="color:var(--yellow)">⚠ Quiz panel token is empty. Enter it there first.</span>');
-  }
+  if (t) { document.getElementById('queueGithubToken').value = t; showQueueStatus('<span style="color:var(--green)">✓ Token synced.</span>'); }
+  else { showQueueStatus('<span style="color:var(--yellow)">⚠ Quiz panel token is empty.</span>'); }
 }
-function showQueueStatus(html) {
-  const el = document.getElementById('queueTokenStatus');
-  el.style.display = 'block'; el.innerHTML = html;
-}
-function getQueueToken() {
-  return document.getElementById('queueGithubToken').value.trim()
-      || document.getElementById('quizGithubToken').value.trim();
-}
-function todayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function addDays(dateStr, n) {
-  const d = new Date(dateStr + 'T00:00:00');
-  d.setDate(d.getDate() + n);
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function formatDateNice(dateStr) {
-  if (!dateStr) return '';
-  const [y,m,dd] = dateStr.split('-');
-  return new Date(+y, +m-1, +dd).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
-}
+function showQueueStatus(html) { const el = document.getElementById('queueTokenStatus'); el.style.display = 'block'; el.innerHTML = html; }
+function getQueueToken() { return document.getElementById('queueGithubToken').value.trim() || document.getElementById('quizGithubToken').value.trim(); }
+function todayStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function addDays(dateStr, n) { const d = new Date(dateStr + 'T00:00:00'); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function formatDateNice(dateStr) { if (!dateStr) return ''; const [y,m,dd] = dateStr.split('-'); return new Date(+y,+m-1,+dd).toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
 
 async function loadQuizQueue() {
   showQueueStatus('<span style="color:var(--text3)">Loading quiz.json…</span>');
@@ -3075,24 +2780,12 @@ async function loadQuizQueue() {
     const res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
-      if (data.today !== undefined || data.queue !== undefined) {
-        queueState.today = data.today || null;
-        queueState.queue = data.queue || [];
-      } else if (data.question) {
-        queueState.today = { ...data, date: data.date || todayStr() };
-        queueState.queue = [];
-      } else {
-        queueState = { today: null, queue: [] };
-      }
-      showQueueStatus('<span style="color:var(--green)">✓ Loaded from GitHub.</span>');
-    } else {
-      showQueueStatus('<span style="color:var(--yellow)">⚠ quiz.json not found — starting fresh.</span>');
-      queueState = { today: null, queue: [] };
-    }
-  } catch(e) {
-    showQueueStatus(`<span style="color:var(--red)">✗ ${e.message}</span>`);
-    queueState = { today: null, queue: [] };
-  }
+      if (data.today !== undefined || data.queue !== undefined) { queueState.today = data.today || null; queueState.queue = data.queue || []; }
+      else if (data.question) { queueState.today = { ...data, date: data.date || todayStr() }; queueState.queue = []; }
+      else { queueState = { today: null, queue: [] }; }
+      showQueueStatus('<span style="color:var(--green)">✓ Loaded.</span>');
+    } else { showQueueStatus('<span style="color:var(--yellow)">⚠ quiz.json not found.</span>'); queueState = { today: null, queue: [] }; }
+  } catch(e) { showQueueStatus(`<span style="color:var(--red)">✗ ${e.message}</span>`); queueState = { today: null, queue: [] }; }
   document.getElementById('todayDateLabel').textContent = formatDateNice(todayStr());
   renderTodayPanel(); renderQueuePanel(); updateQueueBadge();
 }
@@ -3100,32 +2793,16 @@ async function loadQuizQueue() {
 function renderTodayPanel() {
   const panel = document.getElementById('todayQuizPanel');
   const q = queueState.today;
-  if (!q) {
-    panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No quiz set for today. Publish one from the Quiz panel — queued items will be shifted to subsequent days automatically.</span>';
-    return;
-  }
-  panel.innerHTML = `
-    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">${q.question}</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-      ${['A','B','C'].map(opt => `
-        <div style="padding:6px 12px;border-radius:6px;font-size:12px;
-                    background:${q.correctAnswer===opt?'var(--green-dim)':'var(--surface3)'};
-                    border:1px solid ${q.correctAnswer===opt?'var(--green)':'var(--border)'};
-                    color:${q.correctAnswer===opt?'var(--green)':'var(--text2)'}">
-          <strong>${opt}:</strong> ${q['option'+opt]||'—'}${q.correctAnswer===opt?' ✓':''}
-        </div>`).join('')}
-    </div>
-    ${q.contributedBy?`<div style="font-size:11px;color:var(--text3)">Contributed by: ${q.contributedBy}</div>`:''}
-    <div style="font-size:11px;color:var(--text3);margin-top:4px">Date: ${formatDateNice(q.date||todayStr())}</div>
-  `;
+  if (!q) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No quiz set for today.</span>'; return; }
+  panel.innerHTML = `<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">${q.question}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${['A','B','C'].map(opt => `<div style="padding:6px 12px;border-radius:6px;font-size:12px;background:${q.correctAnswer===opt?'var(--green-dim)':'var(--surface3)'};border:1px solid ${q.correctAnswer===opt?'var(--green)':'var(--border)'};color:${q.correctAnswer===opt?'var(--green)':'var(--text2)'}"><strong>${opt}:</strong> ${q['option'+opt]||'—'}${q.correctAnswer===opt?' ✓':''}</div>`).join('')}
+    </div>`;
 }
 
 function renderQueuePanel() {
   const panel = document.getElementById('queueSchedulePanel');
-  if (!queueState.queue.length) {
-    panel.innerHTML = '<span style="color:var(--text3);font-style:italic">Queue is empty. Approve pending submissions below to add them.</span>';
-    return;
-  }
+  if (!queueState.queue.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">Queue is empty.</span>'; return; }
   panel.innerHTML = '';
   queueState.queue.forEach((item, idx) => {
     const div = document.createElement('div');
@@ -3141,63 +2818,41 @@ function renderQueuePanel() {
       queueState.queue.splice(idx, 0, moved);
       resequenceDates(); renderQueuePanel();
     });
-    div.addEventListener('dragend', () => { dragSrcIndex = null; document.querySelectorAll('.queue-item').forEach(el=>el.classList.remove('drag-over')); });
     div.innerHTML = `
-      <div class="queue-item-drag" title="Drag to reorder">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="5" y1="8" x2="19" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="16" x2="19" y2="16"/>
-        </svg>
-      </div>
+      <div class="queue-item-drag"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="8" x2="19" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="16" x2="19" y2="16"/></svg></div>
       <div class="queue-item-body">
         <div class="queue-item-question">${item.question}</div>
-        <div class="queue-item-meta">
-          <span>A: ${item.optionA||'—'} &nbsp;·&nbsp; B: ${item.optionB||'—'} &nbsp;·&nbsp; C: ${item.optionC||'—'}</span>
-          ${item.contributedBy?`<span>· by <strong>${item.contributedBy}</strong></span>`:''}
-          ${item.source?`<span style="color:var(--accent)">· 📥 ${item.source}</span>`:''}
-        </div>
+        <div class="queue-item-meta"><span>A: ${item.optionA||'—'} · B: ${item.optionB||'—'} · C: ${item.optionC||'—'}</span>${item.contributedBy?`<span>· by <strong>${item.contributedBy}</strong></span>`:''}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <input type="date" class="queue-item-date-input" value="${item.date||''}"
-               onchange="queueState.queue[${idx}].date=this.value;updateQueueBadge()">
+        <input type="date" class="queue-item-date-input" value="${item.date||''}" onchange="queueState.queue[${idx}].date=this.value;updateQueueBadge()">
         <div class="queue-item-actions">
           <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},-1)" ${idx===0?'disabled':''}>↑</button>
           <button class="btn btn-sm btn-ghost" onclick="moveQueueItem(${idx},1)" ${idx===queueState.queue.length-1?'disabled':''}>↓</button>
           <button class="btn btn-sm btn-danger" onclick="removeFromQueue(${idx})">×</button>
         </div>
-      </div>
-    `;
+      </div>`;
     panel.appendChild(div);
   });
   updateQueueBadge();
 }
 
-function moveQueueItem(idx, dir) {
-  const t = idx + dir;
-  if (t < 0 || t >= queueState.queue.length) return;
-  [queueState.queue[idx], queueState.queue[t]] = [queueState.queue[t], queueState.queue[idx]];
-  resequenceDates(); renderQueuePanel();
-}
-function removeFromQueue(idx) {
-  queueState.queue.splice(idx, 1);
-  resequenceDates(); renderQueuePanel();
-}
-function resequenceDates() {
-  const base = queueState.today ? (queueState.today.date || todayStr()) : addDays(todayStr(), -1);
-  queueState.queue.forEach((item, i) => { item.date = addDays(base, i + 1); });
-}
+function moveQueueItem(idx, dir) { const t = idx+dir; if(t<0||t>=queueState.queue.length)return; [queueState.queue[idx],queueState.queue[t]]=[queueState.queue[t],queueState.queue[idx]]; resequenceDates();renderQueuePanel(); }
+function removeFromQueue(idx) { queueState.queue.splice(idx,1); resequenceDates();renderQueuePanel(); }
+function resequenceDates() { const base = queueState.today?(queueState.today.date||todayStr()):addDays(todayStr(),-1); queueState.queue.forEach((item,i)=>{item.date=addDays(base,i+1);}); }
 
 async function loadPendingSubmissions() {
   const panel = document.getElementById('pendingSubmissionsPanel');
   panel.innerHTML = '<span style="color:var(--text3)">Loading from Firestore…</span>';
   const db = window._db;
-  if (!db) { panel.innerHTML = '<span style="color:var(--red)">✗ Firestore not ready. Reload the page.</span>'; return; }
+  if (!db) { panel.innerHTML = '<span style="color:var(--red)">✗ Firestore not ready.</span>'; return; }
   try {
     const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     const q = query(collection(db, 'submissions'), where('type','==','quiz'), where('status','==','pending'));
     const snap = await getDocs(q);
     pendingSubmissions = [];
     snap.forEach(doc => pendingSubmissions.push({ firestoreId: doc.id, ...doc.data() }));
-    if (!pendingSubmissions.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No pending quiz submissions found.</span>'; return; }
+    if (!pendingSubmissions.length) { panel.innerHTML = '<span style="color:var(--text3);font-style:italic">No pending submissions.</span>'; return; }
     renderPendingSubmissions();
   } catch(e) { panel.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
 }
@@ -3212,114 +2867,63 @@ function renderPendingSubmissions() {
     const qCount = sub.questions ? sub.questions.length : 0;
     div.innerHTML = `
       <div class="submission-card-header">
-        <div>
-          <div class="submission-card-title">📋 ${sub.title||'Untitled Quiz'}</div>
-          <div class="submission-card-meta">
-            ${sub.author?`By <strong>${sub.author}</strong>`:''}
-            ${sub.email?` · ${sub.email}`:''}
-            · ${qCount} question${qCount!==1?'s':''}
-            ${sub.submittedAt?` · ${typeof sub.submittedAt==='string'?new Date(sub.submittedAt).toLocaleDateString():new Date(sub.submittedAt.seconds*1000).toLocaleDateString()}`:''}
-          </div>
-        </div>
+        <div><div class="submission-card-title">📋 ${sub.title||'Untitled Quiz'}</div><div class="submission-card-meta">${sub.author?`By <strong>${sub.author}</strong>`:''} · ${qCount} question${qCount!==1?'s':''}</div></div>
         <div style="display:flex;gap:6px;flex-shrink:0">
           <button class="btn btn-sm btn-ghost" onclick="toggleSubmissionDetail(${sIdx})" id="detailBtn_${sIdx}">Preview</button>
           <button class="btn btn-sm btn-primary" onclick="approveSubmission(${sIdx})">+ Add to Queue</button>
           <button class="btn btn-sm btn-danger" onclick="dismissSubmission(${sIdx})">Dismiss</button>
         </div>
       </div>
-      <div id="submissionDetail_${sIdx}" style="display:none">
-        ${sub.questions?sub.questions.map((q,qi)=>`
-          <div style="background:var(--surface3);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:12px">
-            <div style="font-weight:600;color:var(--text);margin-bottom:6px">Q${qi+1}: ${q.question}</div>
-            ${(q.options||[]).map((opt,oi)=>`
-              <div style="padding:4px 8px;border-radius:4px;margin-bottom:3px;
-                          background:${q.correctIndex===oi?'var(--green-dim)':'transparent'};
-                          color:${q.correctIndex===oi?'var(--green)':'var(--text2)'}">
-                ${String.fromCharCode(65+oi)}: ${opt}${q.correctIndex===oi?' ✓':''}
-              </div>`).join('')}
-          </div>`).join(''):'<em style="color:var(--text3)">No question data</em>'}
-      </div>
-    `;
+      <div id="submissionDetail_${sIdx}" style="display:none">${sub.questions?sub.questions.map((q,qi)=>`<div style="background:var(--surface3);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:12px"><div style="font-weight:600;color:var(--text);margin-bottom:6px">Q${qi+1}: ${q.question}</div>${(q.options||[]).map((opt,oi)=>`<div style="padding:4px 8px;border-radius:4px;margin-bottom:3px;background:${q.correctIndex===oi?'var(--green-dim)':'transparent'};color:${q.correctIndex===oi?'var(--green)':'var(--text2)'}">${String.fromCharCode(65+oi)}: ${opt}${q.correctIndex===oi?' ✓':''}</div>`).join('')}</div>`).join(''):'<em style="color:var(--text3)">No data</em>'}</div>`;
     panel.appendChild(div);
   });
 }
 
-function toggleSubmissionDetail(sIdx) {
-  const el = document.getElementById(`submissionDetail_${sIdx}`);
-  const btn = document.getElementById(`detailBtn_${sIdx}`);
-  const open = el.style.display !== 'none';
-  el.style.display = open ? 'none' : 'block';
-  btn.textContent = open ? 'Preview' : 'Hide';
-}
-
+function toggleSubmissionDetail(sIdx) { const el=document.getElementById(`submissionDetail_${sIdx}`);const btn=document.getElementById(`detailBtn_${sIdx}`);const open=el.style.display!=='none';el.style.display=open?'none':'block';btn.textContent=open?'Preview':'Hide'; }
 function approveSubmission(sIdx) {
   const sub = pendingSubmissions[sIdx];
-  if (!sub.questions || !sub.questions.length) { showToast('error','No Questions','This submission has no question data.'); return; }
-  sub.questions.forEach(q => {
-    const opts = q.options || [];
-    queueState.queue.push({
-      question: q.question,
-      optionA: opts[0]||'', optionB: opts[1]||'', optionC: opts[2]||'',
-      correctAnswer: ['A','B','C'][q.correctIndex]||'A',
-      contributedBy: sub.author||'',
-      source: sub.title||'reader submission',
-      date: ''
-    });
-  });
-  resequenceDates(); renderQueuePanel(); updateQueueBadge();
-  pendingSubmissions.splice(sIdx, 1); renderPendingSubmissions();
-  showToast('success','Added to Queue',`${sub.questions.length} question(s) from "${sub.title||'submission'}" queued.`);
+  if (!sub.questions||!sub.questions.length) { showToast('error','No Questions','No question data.'); return; }
+  sub.questions.forEach(q => { const opts=q.options||[]; queueState.queue.push({question:q.question,optionA:opts[0]||'',optionB:opts[1]||'',optionC:opts[2]||'',correctAnswer:['A','B','C'][q.correctIndex]||'A',contributedBy:sub.author||'',source:sub.title||'reader submission',date:''}); });
+  resequenceDates();renderQueuePanel();updateQueueBadge();
+  pendingSubmissions.splice(sIdx,1);renderPendingSubmissions();
+  showToast('success','Added to Queue',`${sub.questions.length} question(s) queued.`);
 }
-
-function dismissSubmission(sIdx) {
-  pendingSubmissions.splice(sIdx, 1);
-  renderPendingSubmissions();
-}
-
-function updateQueueBadge() {
-  document.getElementById('queueNavBadge').textContent = queueState.queue.length;
-}
+function dismissSubmission(sIdx) { pendingSubmissions.splice(sIdx,1); renderPendingSubmissions(); }
+function updateQueueBadge() { document.getElementById('queueNavBadge').textContent = queueState.queue.length; }
 
 async function publishQueueToGitHub() {
   const token = getQueueToken();
-  if (!token) { showToast('error','No Token','Enter your GitHub token above.'); return; }
-  if (!queueState.today && !queueState.queue.length) { showToast('error','Nothing to Publish','Set today\'s quiz or add items to the queue.'); return; }
+  if (!token) { showToast('error','No Token','Enter your GitHub token.'); return; }
+  if (!queueState.today && !queueState.queue.length) { showToast('error','Nothing to Publish','Add items first.'); return; }
   const payload = { today: queueState.today, queue: queueState.queue, lastUpdated: new Date().toISOString() };
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
   const apiUrl = `https://api.github.com/repos/${QUIZ_REPO_OWNER}/${QUIZ_REPO_NAME}/contents/${QUIZ_FILE_PATH}`;
   const headers = { Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' };
   let sha = null;
-  try { const c = await fetch(apiUrl,{headers}); if(c.ok){const d=await c.json();sha=d.sha;} } catch(e){}
-  const body = { message:'Update quiz schedule via CMS queue manager', content, branch:QUIZ_BRANCH };
+  try { const c=await fetch(apiUrl,{headers});if(c.ok){const d=await c.json();sha=d.sha;} } catch(e){}
+  const body = { message:'Update quiz schedule via CMS', content, branch:QUIZ_BRANCH };
   if (sha) body.sha = sha;
   try {
     const res = await fetch(apiUrl, { method:'PUT', headers, body:JSON.stringify(body) });
-    if (res.ok) {
-      showToast('success','Schedule Published',`Today\'s quiz + ${queueState.queue.length} queued item(s) committed to GitHub.`);
-    } else {
-      const err = await res.json();
-      showToast('error','GitHub Error', err.message||'Could not save.');
-    }
+    if (res.ok) { showToast('success','Schedule Published',`Today + ${queueState.queue.length} queued item(s) committed.`); }
+    else { const err=await res.json(); showToast('error','GitHub Error',err.message||'Could not save.'); }
   } catch(e) { showToast('error','Network Error',e.message); }
 }
 
-// Hook: when today's quiz is saved from the Quiz panel, sync queueState and re-sequence
 const _origSaveQuiz = saveQuizToGitHub;
 saveQuizToGitHub = async function() {
-  const q  = document.getElementById('quizQuestion').value.trim();
-  const a  = document.getElementById('quizOptionA').value.trim();
-  const b  = document.getElementById('quizOptionB').value.trim();
-  const c  = document.getElementById('quizOptionC').value.trim();
-  const ok = document.getElementById('quizCorrectAnswer').value;
-  const by = document.getElementById('quizContributedBy').value.trim();
+  const q=document.getElementById('quizQuestion').value.trim();
+  const a=document.getElementById('quizOptionA').value.trim();
+  const b=document.getElementById('quizOptionB').value.trim();
+  const c=document.getElementById('quizOptionC').value.trim();
+  const ok=document.getElementById('quizCorrectAnswer').value;
+  const by=document.getElementById('quizContributedBy').value.trim();
   if (q && queueState.queue.length > 0) {
-    queueState.today = { question:q, optionA:a, optionB:b, optionC:c, correctAnswer:ok, contributedBy:by, date:todayStr() };
-    resequenceDates();
-    await publishQueueToGitHub();
-    initQuizView();
+    queueState.today = { question:q,optionA:a,optionB:b,optionC:c,correctAnswer:ok,contributedBy:by,date:todayStr() };
+    resequenceDates(); await publishQueueToGitHub(); initQuizView();
   } else {
     await _origSaveQuiz();
-    if (q) queueState.today = { question:q, optionA:a, optionB:b, optionC:c, correctAnswer:ok, contributedBy:by, date:todayStr() };
+    if (q) queueState.today = { question:q,optionA:a,optionB:b,optionC:c,correctAnswer:ok,contributedBy:by,date:todayStr() };
   }
 };
 </script>
