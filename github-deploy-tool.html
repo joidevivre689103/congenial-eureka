@@ -286,6 +286,77 @@
 
   .hint { font-size: 0.65rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.5; }
 
+  /* ── Field save row ── */
+  .field-save-row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .field-save-row input {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  .btn-save-field {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.42rem 0.65rem;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-save-field:hover { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  .btn-save-field.saved { background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.35); color: var(--accent); }
+  .field-saved-tick {
+    font-size: 0.6rem;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  .field-saved-tick.show { opacity: 1; }
+
+  /* ── File path dropdown ── */
+  .filepath-wrap {
+    position: relative;
+  }
+  .filepath-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.6rem 2rem 0.6rem 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2378716c' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+  .filepath-select:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .filepath-select option { background: var(--surface); color: var(--text); }
+  .filepath-select optgroup { color: var(--muted); font-size: 0.65rem; letter-spacing: 0.08em; }
+  .filepath-custom {
+    margin-top: 0.4rem;
+    display: none;
+  }
+  .filepath-custom.show { display: block; }
+
   .saved-badge {
     display: inline-block;
     font-size: 0.6rem;
@@ -520,12 +591,65 @@
       <span id="cloudBadge" class="cloud-badge" style="display:none">&#9729; cloud</span>
     </div>
     <div class="row">
-      <div><label>GitHub Username</label><input type="text" id="owner" placeholder="e.g. your-username" /></div>
-      <div><label>Repository Name</label><input type="text" id="repo" placeholder="e.g. congenial-eureka" /></div>
+      <div>
+        <label>GitHub Username</label>
+        <div class="field-save-row">
+          <input type="text" id="owner" placeholder="e.g. your-username" />
+          <button class="btn-save-field" id="saveOwnerBtn" onclick="saveField('owner')" title="Save username">save</button>
+          <span class="field-saved-tick" id="ownerTick">&#10003; saved</span>
+        </div>
+      </div>
+      <div>
+        <label>Repository Name</label>
+        <div class="field-save-row">
+          <input type="text" id="repo" placeholder="e.g. congenial-eureka" />
+          <button class="btn-save-field" id="saveRepoBtn" onclick="saveField('repo')" title="Save repo name">save</button>
+          <span class="field-saved-tick" id="repoTick">&#10003; saved</span>
+        </div>
+      </div>
     </div>
     <div class="row">
-      <div><label>Branch</label><input type="text" id="branch" value="main" /></div>
-      <div><label>File Path in Repo</label><input type="text" id="filepath" placeholder="e.g. batting-records.html" /></div>
+      <div>
+        <label>Branch</label>
+        <div class="field-save-row">
+          <input type="text" id="branch" value="main" />
+          <button class="btn-save-field" id="saveBranchBtn" onclick="saveField('branch')" title="Save branch">save</button>
+          <span class="field-saved-tick" id="branchTick">&#10003; saved</span>
+        </div>
+      </div>
+      <div>
+        <label>File Path in Repo</label>
+        <div class="filepath-wrap">
+          <select class="filepath-select" id="filepathSelect" onchange="onFilepathSelect(this.value)">
+            <option value="">— select a page —</option>
+            <optgroup label="── Front End ──">
+              <option value="news.html">news.html — Stories front page</option>
+              <option value="article.html">article.html — Article reader</option>
+              <option value="country-results.html">country-results.html — Countries</option>
+              <option value="batting-records.html">batting-records.html — Batting records</option>
+              <option value="index.html">index.html — Player comparison</option>
+              <option value="simulation.html">simulation.html — Simulation</option>
+            </optgroup>
+            <optgroup label="── Back End ──">
+              <option value="cms.html">cms.html — CMS</option>
+              <option value="backsim.html">backsim.html — Sim Weights</option>
+              <option value="architecture.html">architecture.html — Architecture</option>
+              <option value="test.html">test.html — Tests</option>
+              <option value="reference.html">reference.html — Reference</option>
+              <option value="admin.html">admin.html — Admin</option>
+              <option value="github-deploy-tool.html">github-deploy-tool.html — Deploy</option>
+              <option value="secrets.html">secrets.html — Secrets Vault</option>
+              <option value="submit.html">submit.html — Content submission</option>
+            </optgroup>
+            <optgroup label="── Data / Config ──">
+              <option value="data.js">data.js — Shared data file</option>
+              <option value="extract_data.py">extract_data.py — Data extraction script</option>
+            </optgroup>
+            <option value="__custom__">✏ Enter custom path…</option>
+          </select>
+        </div>
+        <input type="text" id="filepath" class="filepath-custom" placeholder="e.g. src/utils.js" />
+      </div>
     </div>
     <div class="row full">
       <div>
@@ -533,7 +657,7 @@
         <div class="token-row">
           <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
           <button class="btn btn-ghost" onclick="toggleToken()">show</button>
-          <button class="btn btn-ghost" onclick="saveConfig()">save</button>
+          <button class="btn btn-ghost" onclick="saveConfig()">save token</button>
         </div>
         <p class="hint" id="tokenHint">Generate at github.com &#8594; Settings &#8594; Developer settings &#8594; Personal access tokens. Needs <strong>Contents: Read &amp; Write</strong>.</p>
       </div>
@@ -609,9 +733,19 @@
 
   async function saveToCloud(uid, config) {
     const encToken = config.token ? await encryptToken(config.token, uid) : '';
+    // Merge — only overwrite fields that are explicitly passed
+    const existing = {};
+    try {
+      const snap = await getDoc(doc(db, 'deployConfig', uid));
+      if (snap.exists()) Object.assign(existing, snap.data());
+    } catch(e) {}
     await setDoc(doc(db, 'deployConfig', uid), {
-      owner: config.owner, repo: config.repo, branch: config.branch,
-      encToken, updatedAt: Date.now()
+      ...existing,
+      ...(config.owner !== undefined ? { owner: config.owner } : {}),
+      ...(config.repo  !== undefined ? { repo:  config.repo  } : {}),
+      ...(config.branch !== undefined ? { branch: config.branch } : {}),
+      ...(config.token !== undefined ? { encToken } : {}),
+      updatedAt: Date.now()
     });
   }
 
@@ -743,6 +877,37 @@
     }
   };
 
+  // Save a single field (owner / repo / branch) independently
+  window.saveField = async (field) => {
+    const val = document.getElementById(field).value.trim();
+    const btn = document.getElementById('save' + field.charAt(0).toUpperCase() + field.slice(1) + 'Btn');
+    const tick = document.getElementById(field + 'Tick');
+    const user = auth.currentUser;
+
+    if (user) {
+      try {
+        await saveToCloud(user.uid, { [field]: val });
+        document.getElementById('cloudBadge').style.display = 'inline-block';
+        btn.classList.add('saved');
+        tick.classList.add('show');
+        setTimeout(() => { btn.classList.remove('saved'); tick.classList.remove('show'); }, 2200);
+      } catch(e) {
+        showStatus('Save failed: ' + e.message, 'error');
+      }
+    } else {
+      // Session fallback: read existing, patch field, re-save
+      try {
+        const existing = JSON.parse(sessionStorage.getItem('gh_deploy_config') || '{}');
+        existing[field] = val;
+        sessionStorage.setItem('gh_deploy_config', JSON.stringify(existing));
+        document.getElementById('savedBadge').style.display = 'inline-block';
+        btn.classList.add('saved');
+        tick.classList.add('show');
+        setTimeout(() => { btn.classList.remove('saved'); tick.classList.remove('show'); }, 2200);
+      } catch(e) {}
+    }
+  };
+
   function checkVaultConnection() {
     function tryLoad() {
       try {
@@ -759,6 +924,26 @@
 </script>
 
 <script>
+  function onFilepathSelect(val) {
+    const custom = document.getElementById('filepath');
+    if (val === '__custom__') {
+      custom.classList.add('show');
+      custom.focus();
+      custom.value = '';
+    } else {
+      custom.classList.remove('show');
+      custom.value = val;
+    }
+  }
+
+  function getFilepath() {
+    const sel = document.getElementById('filepathSelect').value;
+    if (sel === '__custom__' || sel === '') {
+      return document.getElementById('filepath').value.trim();
+    }
+    return sel;
+  }
+
   function setVaultConnected() {
     document.getElementById('vaultBanner').className = 'vault-banner connected';
     document.getElementById('vaultMsg').textContent = 'GitHub Token loaded from Secrets Vault';
@@ -789,7 +974,7 @@
     const owner = document.getElementById('owner').value.trim();
     const repo = document.getElementById('repo').value.trim();
     const branch = document.getElementById('branch').value.trim() || 'main';
-    const filepath = document.getElementById('filepath').value.trim();
+    const filepath = getFilepath();
     const token = document.getElementById('token').value.trim();
     const content = document.getElementById('content').value;
     const commitMsg = document.getElementById('commitMsg').value.trim() || 'Update via Claude deploy tool';
@@ -809,7 +994,7 @@
     const owner = document.getElementById('owner').value.trim();
     const repo = document.getElementById('repo').value.trim();
     const branch = document.getElementById('branch').value.trim() || 'main';
-    const filepath = document.getElementById('filepath').value.trim();
+    const filepath = getFilepath();
     const token = document.getElementById('token').value.trim();
     const content = document.getElementById('content').value;
     const commitMsg = document.getElementById('commitMsg').value.trim() || 'Update via Claude deploy tool';
