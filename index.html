@@ -1163,7 +1163,7 @@ function agg(player,idxs,isFiltered){
 
 // ---- Multi-player Table Builder ----
 function buildTable(stats, cols, options = {}) {
-  const { showBowlInns = false, showTotals = false, sharedStats = null } = options;
+  const { showBowlInns = false, showTotals = false, sharedStats = null, cohortIndex = null, sharedTests = null } = options;
   let hdr = '<th>Player</th>';
   cols.forEach(c => {
     if(c.sec) hdr += `<th class="sec-head">${c.sec}</th>`;
@@ -1243,14 +1243,24 @@ function buildTable(stats, cols, options = {}) {
       : null;
     const tColors = ['var(--accent)','var(--blue)','var(--green)','var(--gold)'];
     const tNames  = ['A','B','C','D'];
-    if(cohortGroups_ && cohortGroups_.length >= 2){
-      // Cohort mode: one totals row per cohort, no combined total
+    if(cohortIndex !== null){
+      // Sub-table for a single cohort group — use passed index and sharedTests count
+      const t = makeTotalsObj(stats, null);
+      const country = stats.map(s=>s.country).filter((c,i,a)=>a.indexOf(c)===i).join('/');
+      const lbl = (cohortTypeName||'Cohort')+' '+tNames[cohortIndex]+' — '+country;
+      const testsLabel = sharedTests !== null ? sharedTests : stats[0].tests; // all players same shared count
+      const meta = `${stats.length} players · ${testsLabel} Tests together`;
+      rows += renderTotalsRow(lbl, meta, t, tColors[cohortIndex%tColors.length]);
+    } else if(cohortGroups_ && cohortGroups_.length >= 2){
+      // Full cohort table — one totals row per group
       cohortGroups_.forEach((grp, gi) => {
         if(!grp || grp.length === 0) return;
         const t = makeTotalsObj(grp, null);
         const country = grp.map(s=>s.country).filter((c,i,a)=>a.indexOf(c)===i).join('/');
         const lbl = (cohortTypeName||'Cohort')+' '+tNames[gi]+' — '+country;
-        const meta = `${grp.length} players · ${t.tests} Tests`;
+        // Tests: all players in group have same count (shared filter applied), use first player's
+        const testsLabel = grp[0].tests;
+        const meta = `${grp.length} players · ${testsLabel} Tests together`;
         rows += renderTotalsRow(lbl, meta, t, tColors[gi%tColors.length]);
       });
     } else if(sharedStats){
@@ -1284,7 +1294,7 @@ function switchTab(tab,btn){
 }
 
 function render(){
-  const players=activeSel();
+  const players = (cohortMode && window._cohortPlayerOverride) ? window._cohortPlayerOverride : activeSel();
   if(players.length<2)return;
   document.getElementById('emptyState').style.display='none';
   document.getElementById('comp').classList.add('show');
@@ -1555,7 +1565,8 @@ function render(){
         const parts = groupTogetherData.map((g,gi) => {
           if(!g.togStats) return `<div class="filt-sum" style="background:rgba(208,64,64,0.1);color:var(--red);margin-bottom:8px;">${(cohortTypeName||'Cohort')+' '+(COHORT_NAMES_EN||['A','B','C','D'])[gi]}: no shared matches</div>`;
           const label = (cohortTypeName||'Cohort')+' '+(COHORT_NAMES_EN||['A','B','C','D'])[gi];
-          return `<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">${label}</div>${buildTable(g.togStats, cols, { showBowlInns: isBowling, showTotals: true })}</div>`;
+          const nT = g.sharedIds.size;
+          return `<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">${label} — ${nT} shared Test${nT!==1?'s':''}</div>${buildTable(g.togStats, cols, { showBowlInns: isBowling, showTotals: true, cohortIndex: gi, sharedTests: nT })}</div>`;
         });
         togetherHTML = parts.join('');
       } else {
@@ -1571,7 +1582,7 @@ function render(){
         if(!g.togStats || g.sharedIds.size === 0)
           return `<div class="filt-sum" style="background:rgba(208,64,64,0.1);color:var(--red);margin-bottom:8px;">${label}: no shared matches</div>`;
         const nTests = g.sharedIds.size;
-        return `<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">${label} — ${nTests} shared Test${nTests!==1?'s':''}</div>${buildTable(g.togStats, cols, { showBowlInns: isBowling, showTotals: true })}</div>`;
+        return `<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">${label} — ${nTests} shared Test${nTests!==1?'s':''}</div>${buildTable(g.togStats, cols, { showBowlInns: isBowling, showTotals: true, cohortIndex: gi, sharedTests: nTests })}</div>`;
       });
       togetherHTML = parts.join('');
     }
@@ -2136,19 +2147,16 @@ function hasEnoughCohorts(){
 }
 
 function renderCohorts(){
-  // Flatten cohort groups into sel[] preserving order, store split boundaries
   const allPlayers = cohortGroups.map(g => g.filter(Boolean)).flat();
   if(allPlayers.length < 2) return;
 
-  // Store boundaries: array of cumulative sizes per cohort for splitCohorts
+  // Store boundaries and full player list — bypasses sel[] MAX_PLAYERS limit
   window._cohortBoundaries = cohortGroups.map(g => g.filter(Boolean).length);
-
-  const savedSel = sel.slice();
-  for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = allPlayers[i] || null;
+  window._cohortPlayerOverride = allPlayers;
 
   originalRender();
 
-  for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = savedSel[i];
+  window._cohortPlayerOverride = null;
   updateExportButton();
 }
 
