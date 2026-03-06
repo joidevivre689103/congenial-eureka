@@ -250,42 +250,6 @@ body{
 .sidebar-item-headline a:hover{ color:var(--accent); }
 .sidebar-item-meta{ font-family:'Inter',sans-serif; font-size:11px; color:var(--text3); margin-top:4px; }
 
-/* ─── LIVE SCORES ─── */
-.live-scores{
-  background:var(--text);
-  color:#fff;
-  border-radius:6px;
-  padding:16px;
-  margin-top:4px;
-}
-.live-scores-header{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
-.live-dot{
-  width:8px; height:8px;
-  background:#e04040;
-  border-radius:50%;
-  animation:pulse 1.5s infinite;
-}
-@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.4} }
-.live-scores-title{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-}
-.score-card{
-  background:rgba(255,255,255,0.08);
-  border-radius:4px;
-  padding:12px;
-  margin-bottom:10px;
-}
-.score-card:last-child{ margin-bottom:0; }
-.score-match{ font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.5px; opacity:0.6; margin-bottom:8px; }
-.score-teams{ display:flex; flex-direction:column; gap:6px; }
-.score-team{ display:flex; justify-content:space-between; align-items:center; }
-.score-team-name{ font-family:'Inter',sans-serif; font-size:13px; font-weight:600; }
-.score-team-score{ font-family:'Inter',sans-serif; font-size:13px; font-weight:700; color:var(--gold); }
-.score-status{ font-family:'Inter',sans-serif; font-size:10px; color:rgba(255,255,255,0.5); margin-top:8px; }
 
 /* ─── QUIZ WIDGET ─── */
 .quiz-widget{
@@ -631,29 +595,6 @@ body{
         </div>
       </div>
 
-      <div class="live-scores">
-        <div class="live-scores-header">
-          <span class="live-dot"></span>
-          <span class="live-scores-title">Live Scores</span>
-        </div>
-        <div class="score-card">
-          <div class="score-match">3rd Test • Day 2 • Johannesburg</div>
-          <div class="score-teams">
-            <div class="score-team"><span class="score-team-name">South Africa</span><span class="score-team-score">284 & 45/2</span></div>
-            <div class="score-team"><span class="score-team-name">England</span><span class="score-team-score">312</span></div>
-          </div>
-          <div class="score-status">SA lead by 17 runs</div>
-        </div>
-        <div class="score-card">
-          <div class="score-match">1st Test • Day 4 • Karachi</div>
-          <div class="score-teams">
-            <div class="score-team"><span class="score-team-name">Pakistan</span><span class="score-team-score">388 & 156/4</span></div>
-            <div class="score-team"><span class="score-team-name">New Zealand</span><span class="score-team-score">421</span></div>
-          </div>
-          <div class="score-status">PAK lead by 123 runs</div>
-        </div>
-      </div>
-
       <div class="quiz-widget" id="quizWidget" style="display:none">
         <div class="quiz-widget-label">
           <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -666,6 +607,27 @@ body{
       </div>
     </aside>
   </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SNIPPETS STRIP — rendered by JS from snippets.json
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <section class="snippets-section" id="snippetsSection" style="display:none">
+    <div class="snippets-header">
+      <h2 class="snippets-title">From the Desk</h2>
+      <div class="snippets-nav">
+        <button class="snippets-btn" id="snippetsPrev" onclick="snippetsPage(-1)" disabled>
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="snippets-page-label" id="snippetsPageLabel"></span>
+        <button class="snippets-btn" id="snippetsNext" onclick="snippetsPage(1)">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="snippets-grid" id="snippetsGrid"></div>
+  </section>
+
 
   <!-- THREE COLUMN GRID -->
   <section class="content-grid">
@@ -799,26 +761,6 @@ body{
       </article>
     </div>
   </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       SNIPPETS STRIP — rendered by JS from snippets.json
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <section class="snippets-section" id="snippetsSection" style="display:none">
-    <div class="snippets-header">
-      <h2 class="snippets-title">From the Desk</h2>
-      <div class="snippets-nav">
-        <button class="snippets-btn" id="snippetsPrev" onclick="snippetsPage(-1)" disabled>
-          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <span class="snippets-page-label" id="snippetsPageLabel"></span>
-        <button class="snippets-btn" id="snippetsNext" onclick="snippetsPage(1)">
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="snippets-grid" id="snippetsGrid"></div>
-  </section>
-
 </main>
 
 <!-- STATS PROMO -->
