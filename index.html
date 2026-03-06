@@ -163,20 +163,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 }
 
 /* Filters */
-.filters-panel{
-  background:var(--surface);border:1px solid var(--border);border-radius:11px;
-  padding:14px 16px;margin-bottom:18px;display:none;
-}
-.filters-panel.show{display:block}
-.fp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.fp-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)}
-.fp-reset{
-  font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;
-  font-family:'Outfit',sans-serif;font-weight:600;
-}
-.fp-reset:hover{text-decoration:underline}
-.fp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px}
-.fp-group label{font-size:10.5px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px}
 .fp-select{
   width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;
   padding:6px 10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;
@@ -186,14 +172,48 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 }
 .fp-select:focus{border-color:var(--accent)}
 
+/* Larger top-level dropdowns (Record Type / Stats Type) */
+.top-select{
+  padding:9px 32px 9px 12px !important;
+  font-size:13.5px !important;
+  font-weight:500;
+  border-radius:7px;
+  border-width:1.5px;
+}
+
+/* Filters panel — more breathing room */
+.filters-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:11px;
+  padding:18px 20px 16px;margin-bottom:20px;display:none;
+}
+.filters-panel.show{display:block}
+.fp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.fp-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)}
+.fp-reset{
+  font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:600;
+}
+.fp-reset:hover{text-decoration:underline}
+.fp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px 18px}
+.fp-group label{font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px}
+.fp-select-lg{
+  width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:7px;
+  padding:9px 32px 9px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;
+  outline:none;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6578'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  transition:border-color 0.2s,background 0.15s;
+}
+.fp-select-lg:focus{border-color:var(--accent);background-color:var(--surface3)}
+
 /* Multi-select opponent dropdown */
 .ms-wrap{position:relative}
 .ms-toggle{
-  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;
-  padding:6px 28px 6px 10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;
-  outline:none;cursor:pointer;text-align:left;min-height:30px;
+  width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:7px;
+  padding:9px 32px 9px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;
+  outline:none;cursor:pointer;text-align:left;min-height:38px;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6578'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
+  background-repeat:no-repeat;background-position:right 12px center;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .ms-toggle:focus,.ms-toggle.open{border-color:var(--accent)}
@@ -429,7 +449,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .sel-area{gap:10px}
   .sel-card{flex:1 1 calc(50% - 5px);min-width:280px;max-width:calc(50% - 5px)}
   .add-player-btn{flex:1 1 calc(50% - 5px);min-width:280px;max-width:calc(50% - 5px)}
-  .fp-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .fp-grid{grid-template-columns:repeat(3,1fr);gap:10px 16px}
   .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .cmp-table{min-width:800px}
   .cmp-table thead th{padding:9px 10px;font-size:10px}
@@ -437,8 +457,8 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   .cmp-table tbody td.player-cell{min-width:140px}
   .sel-input{font-size:14px;padding:10px 12px}
   .dd-item{padding:10px 14px;font-size:13px}
-  .fp-select{padding:8px 12px;font-size:13px}
-  .ms-toggle{padding:8px 12px;font-size:13px;min-height:36px}
+  .fp-select-lg,.top-select{padding:10px 32px 10px 13px !important;font-size:13.5px !important}
+  .ms-toggle{padding:10px 32px 10px 13px;font-size:13.5px;min-height:40px}
   .tab{padding:10px 18px;font-size:12.5px}
   .dd{max-height:300px}
   .ms-dd{max-height:280px}
@@ -614,17 +634,22 @@ header.header{display:none !important}
 
 <div class="main">
   <!-- ═══ Record Type + Stats Type dropdowns ═══ -->
-  <div class="record-type-filter" style="margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">
-    <div class="fp-group" style="max-width:200px;">
-      <label>Record Type</label>
-      <select class="fp-select" id="fRecordType" onchange="handleRecordTypeChange()">
+  <div class="record-type-filter" style="margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;">
+    <div class="fp-group" style="min-width:180px;">
+      <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px;">Record Type</label>
+      <select class="fp-select top-select" id="fRecordType" onchange="handleRecordTypeChange()">
         <option value="player" selected>Player</option>
+        <option value="duo">Duo (2 players)</option>
+        <option value="triple">Triple (3 players)</option>
+        <option value="quartet">Quartet (4 players)</option>
+        <option value="quintet">Quintet (5 players)</option>
+        <option value="eleven">Eleven (11 players)</option>
         <option value="partnerships">Partnerships</option>
       </select>
     </div>
-    <div class="fp-group" style="max-width:200px;">
-      <label>Stats Type</label>
-      <select class="fp-select" id="fStatsType" onchange="handleStatsTypeChange()">
+    <div class="fp-group" style="min-width:180px;">
+      <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px;">Stats Type</label>
+      <select class="fp-select top-select" id="fStatsType" onchange="handleStatsTypeChange()">
         <option value="both" selected>Both</option>
         <option value="batting">Batting</option>
         <option value="bowling">Bowling</option>
@@ -714,13 +739,13 @@ header.header{display:none !important}
           <div class="ms-dd" id="fOppDD"></div>
         </div>
       </div>
-      <div class="fp-group"><label>Home / Away</label><select class="fp-select" id="fHA" onchange="applyFilters()"><option value="">All</option><option value="home">Home</option><option value="away">Away</option><option value="neutral">Neutral</option></select></div>
-      <div class="fp-group"><label>City</label><select class="fp-select" id="fCity" onchange="applyFilters()"><option value="">All cities</option></select></div>
-      <div class="fp-group"><label>Ground</label><select class="fp-select" id="fGnd" onchange="applyFilters()"><option value="">All grounds</option></select></div>
-      <div class="fp-group"><label>Match Innings</label><select class="fp-select" id="fInn" onchange="applyFilters()"><option value="">All innings</option><option value="1">1st innings</option><option value="2">2nd innings</option><option value="3">3rd innings</option><option value="4">4th innings</option></select></div>
-      <div class="fp-group"><label>Result</label><select class="fp-select" id="fRes" onchange="applyFilters()"><option value="">All results</option><option value="won">Won</option><option value="lost">Lost</option><option value="drawn">Drawn</option><option value="tied">Tied</option></select></div>
-      <div class="fp-group"><label>Toss</label><select class="fp-select" id="fToss" onchange="applyFilters()"><option value="">All</option><option value="won">Won toss</option><option value="lost">Lost toss</option></select></div>
-      <div class="fp-group"><label>Played Together</label><select class="fp-select" id="fTogether" onchange="applyFilters()"><option value="">No (all stats)</option><option value="yes">Yes (same matches)</option></select></div>
+      <div class="fp-group"><label>Home / Away</label><select class="fp-select-lg" id="fHA" onchange="applyFilters()"><option value="">All</option><option value="home">Home</option><option value="away">Away</option><option value="neutral">Neutral</option></select></div>
+      <div class="fp-group"><label>City</label><select class="fp-select-lg" id="fCity" onchange="applyFilters()"><option value="">All cities</option></select></div>
+      <div class="fp-group"><label>Ground</label><select class="fp-select-lg" id="fGnd" onchange="applyFilters()"><option value="">All grounds</option></select></div>
+      <div class="fp-group"><label>Match Innings</label><select class="fp-select-lg" id="fInn" onchange="applyFilters()"><option value="">All innings</option><option value="1">1st innings</option><option value="2">2nd innings</option><option value="3">3rd innings</option><option value="4">4th innings</option></select></div>
+      <div class="fp-group"><label>Result</label><select class="fp-select-lg" id="fRes" onchange="applyFilters()"><option value="">All results</option><option value="won">Won</option><option value="lost">Lost</option><option value="drawn">Drawn</option><option value="tied">Tied</option></select></div>
+      <div class="fp-group"><label>Toss</label><select class="fp-select-lg" id="fToss" onchange="applyFilters()"><option value="">All</option><option value="won">Won toss</option><option value="lost">Lost toss</option></select></div>
+      <div class="fp-group"><label>Played Together</label><select class="fp-select-lg" id="fTogether" onchange="applyFilters()"><option value="">No (all stats)</option><option value="yes">Yes (same matches)</option></select></div>
     </div>
     <div class="active-filters" id="activeFilt"></div>
   </div>
@@ -728,7 +753,7 @@ header.header{display:none !important}
   <div class="empty" id="emptyState">
     <div class="empty-ico">&#127951;</div>
     <h2>Select players to compare</h2>
-    <p>Search from 3,253 Test cricketers. Compare up to 5 players with filters by opponent, venue, innings, result and more.</p>
+    <p>Search from 3,253 Test cricketers. Compare up to 10 players — or pick a Duo, Triple, Quartet, Quintet or Eleven from Record Type above.</p>
   </div>
 
   <!-- Partnership Empty State -->
@@ -1752,6 +1777,9 @@ const MAX_PARTNERSHIPS = 4;
 let partnershipSel = { '1a':null,'1b':null,'2a':null,'2b':null,'3a':null,'3b':null,'4a':null,'4b':null };
 const PARTNERSHIP_COLORS = ['p1','p2','p3','p4'];
 
+// Map Record Type value → target number of player slots (null = free/unlimited up to MAX)
+const RECORD_TYPE_SLOTS = { player:null, duo:2, triple:3, quartet:4, quintet:5, eleven:11, partnerships:null };
+
 function handleRecordTypeChange(){
   const recordType = document.getElementById('fRecordType').value;
   partnershipMode = (recordType === 'partnerships');
@@ -1759,6 +1787,7 @@ function handleRecordTypeChange(){
   const partnershipArea = document.getElementById('partnershipArea');
   const emptyState = document.getElementById('emptyState');
   const partnershipEmptyState = document.getElementById('partnershipEmptyState');
+
   if(partnershipMode){
     selArea.classList.add('hidden');
     partnershipArea.classList.remove('hidden');
@@ -1772,10 +1801,42 @@ function handleRecordTypeChange(){
     emptyState.classList.remove('hidden');
     emptyState.style.display = 'block';
     partnershipEmptyState.classList.add('hidden');
+
+    // Set the target slot count for group types
+    const target = RECORD_TYPE_SLOTS[recordType]; // null means free
+    const addBtn = document.getElementById('addPlayerBtn');
+
+    if(target !== null){
+      // Add slots up to target
+      while(slotCount < target) addPlayerSlot();
+      // Hide/show slots: show exactly `target` slots, hide any beyond that
+      for(let i = 1; i <= MAX_PLAYERS; i++){
+        const card = document.getElementById('c'+i);
+        if(!card) continue;
+        if(i <= target){
+          card.style.display = '';
+        } else {
+          // Clear and hide extra slots
+          clearP(i);
+          card.style.display = 'none';
+        }
+      }
+      // Hide Add Player button — group size is fixed
+      addBtn.style.display = 'none';
+    } else {
+      // Free mode (Player): show all current slots, show Add Player button
+      for(let i = 1; i <= slotCount; i++){
+        const card = document.getElementById('c'+i);
+        if(card) card.style.display = '';
+      }
+      addBtn.style.display = slotCount >= MAX_PLAYERS ? 'none' : '';
+    }
   }
+
   document.getElementById('comp').classList.remove('show');
   document.getElementById('partnershipComp').style.display = 'none';
   document.getElementById('filtersPanel').classList.remove('show');
+
   if(partnershipMode && !window.partnershipSearchInit){
     initPartnershipSearch(['1a','1b','2a','2b']);
     window.partnershipSearchInit = true;
