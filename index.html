@@ -698,7 +698,7 @@ header.header{display:none !important}
   <div class="empty hidden" id="partnershipEmptyState">
     <div class="empty-ico">&#129309;</div>
     <h2>Select partnerships to compare</h2>
-    <p>Choose two players for each partnership to compare their batting partnership statistics when they played together.</p>
+    <p>Choose two players for each partnership to compare their partnership statistics when they played together.</p>
   </div>
 
   <!-- Partnership Results -->
@@ -1491,7 +1491,7 @@ function handleRecordTypeChange() {
     document.querySelector('#partnershipEmptyState h2').textContent = 'Select ' + cfg.label.toLowerCase() + 's to compare';
     document.querySelector('#partnershipEmptyState p').textContent =
       'Choose ' + cfg.groupSize + ' players for each ' + cfg.label.toLowerCase() +
-      ' to compare their combined batting statistics.';
+      ' to compare their combined statistics.';
   } else {
     selArea.classList.remove('hidden');
     partnershipArea.classList.add('hidden');
