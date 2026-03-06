@@ -1695,36 +1695,60 @@ function exportToExcel(){
   if(f.together) filterParts.push('played together');
   const filterSummary = filterParts.length ? 'Filters: '+filterParts.join(' · ') : 'No filters applied';
 
-  // Career stats for all players
+  // Raw career rowSets (no cohort filter) — used for Career sheet
   const careerRowSets = players.map(p => getRows(p));
   const careerStats   = players.map((p,i) => agg(p, careerRowSets[i], any));
 
-  // Together stats (shared-match subset)
-  const allMatchSets = careerRowSets.map(idxs => new Set(idxs.map(i=>SCD[i][0])));
-  let sharedMatchIds = new Set(allMatchSets[0]);
-  for(let i=1;i<allMatchSets.length;i++) sharedMatchIds = new Set([...sharedMatchIds].filter(m=>allMatchSets[i].has(m)));
+  // Per-cohort shared rowSets — mirrors what the screen shows as the default view
+  // Helper: filter rowSets to within-cohort shared matches
+  function exportCohortSharedFilter(rSets){
+    if(!window._cohortBoundaries || window._cohortBoundaries.length < 2) return null;
+    let offset = 0;
+    const result = [];
+    window._cohortBoundaries.forEach(size => {
+      const grp = rSets.slice(offset, offset + size);
+      const matchSets = grp.map(idxs => new Set(idxs.map(i => SCD[i][0])));
+      let shared = new Set(matchSets[0]);
+      for(let k=1;k<matchSets.length;k++) shared = new Set([...shared].filter(m=>matchSets[k].has(m)));
+      grp.forEach(idxs => result.push(shared.size > 0 ? idxs.filter(i => shared.has(SCD[i][0])) : []));
+      offset += size;
+    });
+    return result;
+  }
 
-  let togetherPlayers = players;
-  let togetherRowSets = careerRowSets.map(idxs => idxs.filter(i=>sharedMatchIds.has(SCD[i][0])));
-
-  if(sharedMatchIds.size===0 && players.length>2){
-    const withShared=[], sharedByP=[];
-    for(let i=0;i<players.length;i++){
-      const myShared=new Set();
-      for(let j=0;j<players.length;j++){
-        if(i!==j) [...allMatchSets[i]].filter(m=>allMatchSets[j].has(m)).forEach(m=>myShared.add(m));
-      }
-      if(myShared.size>0){ withShared.push(i); sharedByP.push(myShared); }
-    }
-    if(withShared.length>=2){
-      togetherPlayers = withShared.map(i=>players[i]);
-      togetherRowSets = withShared.map((pIdx,i)=>careerRowSets[pIdx].filter(idx=>sharedByP[i].has(SCD[idx][0])));
-    } else { togetherPlayers=[]; togetherRowSets=[]; }
-  } else if(sharedMatchIds.size===0){ togetherPlayers=[]; togetherRowSets=[]; }
-
-  const togetherStats = togetherPlayers.length>=2
-    ? togetherPlayers.map((p,i)=>agg(p,togetherRowSets[i],true))
+  // cohortSharedStats = what the screen shows as the DEFAULT view in cohort mode
+  const cohortSharedRowSets = cohortMode ? exportCohortSharedFilter(careerRowSets) : null;
+  const cohortSharedStats   = cohortSharedRowSets
+    ? players.map((p,i) => agg(p, cohortSharedRowSets[i], true))
     : null;
+
+  // Non-cohort together stats (shared across ALL players) — used in normal mode
+  let togetherPlayers = players;
+  let togetherRowSets = null;
+  let togetherStats   = null;
+  if(!cohortMode){
+    const allMatchSets = careerRowSets.map(idxs => new Set(idxs.map(i=>SCD[i][0])));
+    let sharedMatchIds = new Set(allMatchSets[0]);
+    for(let i=1;i<allMatchSets.length;i++) sharedMatchIds = new Set([...sharedMatchIds].filter(m=>allMatchSets[i].has(m)));
+    togetherRowSets = careerRowSets.map(idxs => idxs.filter(i=>sharedMatchIds.has(SCD[i][0])));
+    if(sharedMatchIds.size===0 && players.length>2){
+      const withShared=[], sharedByP=[];
+      for(let i=0;i<players.length;i++){
+        const myShared=new Set();
+        for(let j=0;j<players.length;j++){
+          if(i!==j) [...allMatchSets[i]].filter(m=>allMatchSets[j].has(m)).forEach(m=>myShared.add(m));
+        }
+        if(myShared.size>0){ withShared.push(i); sharedByP.push(myShared); }
+      }
+      if(withShared.length>=2){
+        togetherPlayers = withShared.map(i=>players[i]);
+        togetherRowSets = withShared.map((pIdx,i)=>careerRowSets[pIdx].filter(idx=>sharedByP[i].has(SCD[idx][0])));
+      } else { togetherPlayers=[]; togetherRowSets=[]; }
+    } else if(sharedMatchIds.size===0){ togetherPlayers=[]; togetherRowSets=[]; }
+    togetherStats = togetherPlayers.length>=2
+      ? togetherPlayers.map((p,i)=>agg(p,togetherRowSets[i],true))
+      : null;
+  }
 
   // Cohort totals: sum a stats array into one aggregate row
   function cohortTotal(statArr, label){
@@ -1820,12 +1844,32 @@ function exportToExcel(){
   const tabLabel = activeTab==='allstats' ? 'All Stats' : activeTab.charAt(0).toUpperCase()+activeTab.slice(1);
   const wb = XLSX.utils.book_new();
 
-  if(dualViewOn){
-    // Career sheet
+  if(cohortMode){
+    if(dualViewOn){
+      // Cohort dual view: Career (all Tests) + Played Together (within-cohort shared)
+      const wsC = XLSX.utils.aoa_to_sheet([]);
+      buildSheet(wsC, careerStats, tabLabel+' — Career (all Tests)', filterSummary, incBat, incBowl, incField);
+      XLSX.utils.book_append_sheet(wb, wsC, 'Career');
+      const wsT = XLSX.utils.aoa_to_sheet([]);
+      if(cohortSharedStats){
+        buildSheet(wsT, cohortSharedStats, tabLabel+' — Played Together (within cohort)', filterSummary, incBat, incBowl, false);
+      } else {
+        XLSX.utils.sheet_add_aoa(wsT,[['No shared matches found within cohorts.']],{origin:'A1'});
+      }
+      XLSX.utils.book_append_sheet(wb, wsT, 'Played Together');
+    } else {
+      // Cohort default view: within-cohort shared matches (like-for-like)
+      const ws = XLSX.utils.aoa_to_sheet([]);
+      const statsToUse = cohortSharedStats || careerStats;
+      const label = cohortSharedStats ? tabLabel+' — Shared Tests (within cohort)' : tabLabel+' — Career';
+      buildSheet(ws, statsToUse, label, filterSummary, incBat, incBowl, incField);
+      XLSX.utils.book_append_sheet(wb, ws, cohortSharedStats ? 'Shared Tests' : tabLabel);
+    }
+  } else if(dualViewOn){
+    // Normal dual view: Career + Played Together (all players)
     const wsC = XLSX.utils.aoa_to_sheet([]);
     buildSheet(wsC, careerStats, tabLabel+' — Career', filterSummary, incBat, incBowl, incField);
     XLSX.utils.book_append_sheet(wb, wsC, 'Career');
-    // Together sheet
     if(togetherStats && togetherStats.length>=2){
       const wsT = XLSX.utils.aoa_to_sheet([]);
       const excl = togetherPlayers.length<players.length
