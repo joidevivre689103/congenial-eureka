@@ -244,6 +244,16 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .partnership-cards{display:flex;gap:8px;align-items:flex-start}
 .partnership-card{flex:1;min-width:150px;max-width:180px}
 .partnership-card .sel-input{font-size:12px;padding:7px 10px}
+/* Elevens mode: full-width compact cards stacked vertically */
+.partnership-card-eleven{
+  flex:none;width:100%;max-width:340px;
+  padding:8px 12px;
+}
+.partnership-card-eleven .sel-label{
+  display:inline-block;margin-bottom:0;margin-left:22px;
+  font-size:9px;letter-spacing:1.4px;
+}
+.partnership-card-eleven .sel-input{font-size:12px;padding:6px 10px;margin-top:4px}
 .partnership-plus{
   display:flex;align-items:center;justify-content:center;
   font-size:16px;font-weight:700;color:var(--text3);padding:0 2px;
@@ -1394,15 +1404,17 @@ const PARTNERSHIP_COLORS = ['p1', 'p2', 'p3', 'p4'];
 // Build a player-group DOM element for N players
 function buildGroupHTML(groupNum, cfg) {
   const pColor = PARTNERSHIP_COLORS[groupNum - 1];
+  const isEleven = cfg.groupSize === 11;
   const div = document.createElement('div');
   div.className = 'partnership-group';
   div.id = 'pg' + groupNum;
   let cardsHTML = '';
   for(let p = 0; p < cfg.groupSize; p++) {
     const slot = groupNum + '_' + p;
-    if(p > 0) cardsHTML += '<div class="partnership-plus">&</div>';
+    // Only add & separator for non-eleven modes
+    if(p > 0 && !isEleven) cardsHTML += '<div class="partnership-plus">&</div>';
     cardsHTML += `
-      <div class="sel-card partnership-card" id="pc${slot}">
+      <div class="sel-card partnership-card${isEleven ? ' partnership-card-eleven' : ''}" id="pc${slot}">
         <div class="sel-pcolor" style="color:var(--${pColor});background:var(--${pColor})"></div>
         <div class="sel-label" style="margin-left:18px">Player ${p + 1}</div>
         <input class="sel-input" id="ps${slot}" placeholder="Search player..." autocomplete="off">
@@ -1411,9 +1423,11 @@ function buildGroupHTML(groupNum, cfg) {
         <div class="sel-info" id="pi${slot}"><div class="si-name" id="pn${slot}"></div><div class="si-meta" id="pm${slot}"></div></div>
       </div>`;
   }
+  // Elevens: vertical column; others: horizontal wrap
+  const cardsStyle = isEleven ? 'flex-direction:column;gap:8px;' : 'flex-wrap:wrap;gap:8px;';
   div.innerHTML = `
     <div class="partnership-label" style="border-left:3px solid var(--${pColor});color:var(--${pColor})">${cfg.label} ${groupNum}</div>
-    <div class="partnership-cards" style="flex-wrap:wrap;gap:8px;">${cardsHTML}</div>`;
+    <div class="partnership-cards" style="${cardsStyle}">${cardsHTML}</div>`;
   return div;
 }
 
