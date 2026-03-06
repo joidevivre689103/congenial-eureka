@@ -37,9 +37,7 @@ body{
   line-height:1.6;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MASTHEAD
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ MASTHEAD ═══ */
 .masthead{
   text-align:center;
   padding:20px 24px 16px;
@@ -62,9 +60,7 @@ body{
   letter-spacing:-1px;
   line-height:1.1;
 }
-.masthead-logo span{
-  color:var(--accent);
-}
+.masthead-logo span{ color:var(--accent); }
 .masthead-tagline{
   font-family:'Inter',sans-serif;
   font-size:11px;
@@ -75,9 +71,7 @@ body{
   margin-top:6px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ NAV ═══ */
 .nav-bar{
   border-bottom:1px solid var(--border);
   background:var(--surface);
@@ -105,12 +99,8 @@ body{
   position:relative;
   transition:color 0.2s;
 }
-.nav-link:hover{
-  color:var(--accent);
-}
-.nav-link.active{
-  color:var(--accent);
-}
+.nav-link:hover{ color:var(--accent); }
+.nav-link.active{ color:var(--accent); }
 .nav-link.active::after{
   content:'';
   position:absolute;
@@ -126,7 +116,6 @@ body{
   margin-left:4px;
   opacity:0.6;
 }
-
 @media(max-width:900px){
   .nav-inner{
     overflow-x:auto;
@@ -135,23 +124,13 @@ body{
     scrollbar-width:none;
   }
   .nav-inner::-webkit-scrollbar{display:none}
-  .nav-link{
-    white-space:nowrap;
-    padding:12px 14px;
-    font-size:11px;
-  }
+  .nav-link{ white-space:nowrap; padding:12px 14px; font-size:11px; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MAIN LAYOUT
-═══════════════════════════════════════════════════════════════════════════ */
-.main{
-  max-width:1400px;
-  margin:0 auto;
-  padding:0 24px;
-}
+/* ═══ MAIN LAYOUT ═══ */
+.main{ max-width:1400px; margin:0 auto; padding:0 24px; }
 
-/* ─── BREAKING TICKER ─── */
+/* ─── TICKER ─── */
 .ticker{
   background:var(--accent);
   color:#fff;
@@ -183,7 +162,7 @@ body{
   100%{transform:translateX(-100%)}
 }
 
-/* ─── HERO SECTION ─── */
+/* ─── HERO ─── */
 .hero-section{
   display:grid;
   grid-template-columns:1fr 340px;
@@ -191,7 +170,6 @@ body{
   border-bottom:1px solid var(--border);
   padding:32px 0;
 }
-
 .hero-main{
   padding-right:32px;
   border-right:1px solid var(--border);
@@ -213,21 +191,9 @@ body{
   letter-spacing:-0.5px;
   margin-bottom:16px;
 }
-.hero-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.hero-headline a:hover{
-  text-decoration:underline;
-  text-decoration-thickness:2px;
-  text-underline-offset:4px;
-}
-.hero-summary{
-  font-size:18px;
-  line-height:1.6;
-  color:var(--text2);
-  margin-bottom:20px;
-}
+.hero-headline a{ color:inherit; text-decoration:none; }
+.hero-headline a:hover{ text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:4px; }
+.hero-summary{ font-size:18px; line-height:1.6; color:var(--text2); margin-bottom:20px; }
 .hero-image{
   width:100%;
   aspect-ratio:16/10;
@@ -244,21 +210,11 @@ body{
   gap:16px;
   align-items:center;
 }
-.hero-author{
-  font-weight:600;
-  color:var(--text2);
-}
-.hero-time{
-  opacity:0.8;
-}
+.hero-author{ font-weight:600; color:var(--text2); }
 
 /* ─── SIDEBAR ─── */
-.hero-sidebar{
-  padding-left:24px;
-}
-.sidebar-section{
-  margin-bottom:28px;
-}
+.hero-sidebar{ padding-left:24px; }
+.sidebar-section{ margin-bottom:28px; }
 .sidebar-title{
   font-family:'Inter',sans-serif;
   font-size:10px;
@@ -274,7 +230,7 @@ body{
   padding:12px 0;
   border-bottom:1px solid var(--surface3);
 }
-.sidebar-item:last-child{border-bottom:none}
+.sidebar-item:last-child{ border-bottom:none; }
 .sidebar-item-num{
   font-family:'Playfair Display',serif;
   font-size:28px;
@@ -290,21 +246,11 @@ body{
   font-weight:600;
   line-height:1.35;
 }
-.sidebar-item-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.sidebar-item-headline a:hover{
-  color:var(--accent);
-}
-.sidebar-item-meta{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  color:var(--text3);
-  margin-top:4px;
-}
+.sidebar-item-headline a{ color:inherit; text-decoration:none; }
+.sidebar-item-headline a:hover{ color:var(--accent); }
+.sidebar-item-meta{ font-family:'Inter',sans-serif; font-size:11px; color:var(--text3); margin-top:4px; }
 
-/* ─── LIVE SCORES WIDGET ─── */
+/* ─── LIVE SCORES ─── */
 .live-scores{
   background:var(--text);
   color:#fff;
@@ -312,23 +258,14 @@ body{
   padding:16px;
   margin-top:4px;
 }
-.live-scores-header{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-bottom:14px;
-}
+.live-scores-header{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
 .live-dot{
-  width:8px;
-  height:8px;
+  width:8px; height:8px;
   background:#e04040;
   border-radius:50%;
   animation:pulse 1.5s infinite;
 }
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:0.4}
-}
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.4} }
 .live-scores-title{
   font-family:'Inter',sans-serif;
   font-size:10px;
@@ -342,44 +279,15 @@ body{
   padding:12px;
   margin-bottom:10px;
 }
-.score-card:last-child{margin-bottom:0}
-.score-match{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:600;
-  letter-spacing:0.5px;
-  opacity:0.6;
-  margin-bottom:8px;
-}
-.score-teams{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.score-team{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.score-team-name{
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  font-weight:600;
-}
-.score-team-score{
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  color:var(--gold);
-}
-.score-status{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  color:rgba(255,255,255,0.5);
-  margin-top:8px;
-}
+.score-card:last-child{ margin-bottom:0; }
+.score-match{ font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.5px; opacity:0.6; margin-bottom:8px; }
+.score-teams{ display:flex; flex-direction:column; gap:6px; }
+.score-team{ display:flex; justify-content:space-between; align-items:center; }
+.score-team-name{ font-family:'Inter',sans-serif; font-size:13px; font-weight:600; }
+.score-team-score{ font-family:'Inter',sans-serif; font-size:13px; font-weight:700; color:var(--gold); }
+.score-status{ font-family:'Inter',sans-serif; font-size:10px; color:rgba(255,255,255,0.5); margin-top:8px; }
 
-/* ── QUIZ WIDGET ── */
+/* ─── QUIZ WIDGET ─── */
 .quiz-widget{
   background:var(--surface2);
   border:1px solid var(--border);
@@ -407,11 +315,7 @@ body{
   color:var(--text);
   margin-bottom:12px;
 }
-.quiz-options{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
+.quiz-options{ display:flex; flex-direction:column; gap:7px; }
 .quiz-option{
   display:flex;
   align-items:center;
@@ -427,84 +331,26 @@ body{
   color:var(--text2);
   user-select:none;
 }
-.quiz-option:hover{
-  border-color:var(--accent);
-  background:var(--accent-dim);
-  color:var(--accent);
-}
-.quiz-option input[type="radio"]{
-  accent-color:var(--accent);
-  width:14px;
-  height:14px;
-  flex-shrink:0;
-  pointer-events:none;
-}
-.quiz-option.correct{
-  border-color:var(--green);
-  background:rgba(26,104,72,0.1);
-  color:var(--green);
-  font-weight:600;
-}
-.quiz-option.wrong{
-  border-color:#b03030;
-  background:rgba(176,48,48,0.08);
-  color:#b03030;
-}
+.quiz-option:hover{ border-color:var(--accent); background:var(--accent-dim); color:var(--accent); }
+.quiz-option input[type="radio"]{ accent-color:var(--accent); width:14px; height:14px; flex-shrink:0; pointer-events:none; }
+.quiz-option.correct{ border-color:var(--green); background:rgba(26,104,72,0.1); color:var(--green); font-weight:600; }
+.quiz-option.wrong{ border-color:#b03030; background:rgba(176,48,48,0.08); color:#b03030; }
 .quiz-option.disabled{ pointer-events:none; }
-.quiz-result{
-  margin-top:12px;
-  padding:10px 12px;
-  border-radius:4px;
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:600;
-  display:none;
-}
-.quiz-result.show{ display:block }
-.quiz-result.correct{
-  background:rgba(26,104,72,0.12);
-  border:1px solid var(--green);
-  color:var(--green);
-}
-.quiz-result.wrong{
-  background:rgba(176,48,48,0.08);
-  border:1px solid #b03030;
-  color:#b03030;
-}
-.quiz-contributed{
-  margin-top:9px;
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  color:var(--text3);
-  font-style:italic;
-}
-#quizNameInput:focus{
-  border-color:#1a1208 !important;
-  background:#fff !important;
-}
-#quizNameSubmit:hover{
-  background:#b5171e !important;
-}
+.quiz-result{ margin-top:12px; padding:10px 12px; border-radius:4px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; display:none; }
+.quiz-result.show{ display:block; }
+.quiz-result.correct{ background:rgba(26,104,72,0.12); border:1px solid var(--green); color:var(--green); }
+.quiz-result.wrong{ background:rgba(176,48,48,0.08); border:1px solid #b03030; color:#b03030; }
+.quiz-contributed{ margin-top:9px; font-family:'Inter',sans-serif; font-size:10px; color:var(--text3); font-style:italic; }
+#quizNameInput:focus{ border-color:#1a1208 !important; background:#fff !important; }
+#quizNameSubmit:hover{ background:#b5171e !important; }
 
 @media(max-width:900px){
-  .hero-section{
-    grid-template-columns:1fr;
-  }
-  .hero-main{
-    padding-right:0;
-    border-right:none;
-    padding-bottom:24px;
-    border-bottom:1px solid var(--border);
-    margin-bottom:24px;
-  }
-  .hero-sidebar{
-    padding-left:0;
-  }
+  .hero-section{ grid-template-columns:1fr; }
+  .hero-main{ padding-right:0; border-right:none; padding-bottom:24px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+  .hero-sidebar{ padding-left:0; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CONTENT GRID (3 Columns)
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ CONTENT GRID ═══ */
 .content-grid{
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
@@ -516,9 +362,8 @@ body{
   padding:0 24px;
   border-right:1px solid var(--border);
 }
-.content-col:first-child{padding-left:0}
-.content-col:last-child{border-right:none;padding-right:0}
-
+.content-col:first-child{ padding-left:0; }
+.content-col:last-child{ border-right:none; padding-right:0; }
 .col-header{
   font-family:'Inter',sans-serif;
   font-size:10px;
@@ -530,399 +375,166 @@ body{
   border-bottom:2px solid var(--accent);
   margin-bottom:20px;
 }
-
-.article-card{
-  margin-bottom:24px;
-}
-.article-card:last-child{margin-bottom:0}
-.article-card-image{
-  width:100%;
-  aspect-ratio:16/10;
-  object-fit:cover;
-  border-radius:3px;
-  margin-bottom:12px;
-  background:var(--surface3);
-}
-.article-card-headline{
-  font-family:'Playfair Display',serif;
-  font-size:18px;
-  font-weight:600;
-  line-height:1.3;
-  margin-bottom:8px;
-}
-.article-card-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.article-card-headline a:hover{
-  color:var(--accent);
-}
-.article-card-summary{
-  font-size:14px;
-  line-height:1.55;
-  color:var(--text2);
-  margin-bottom:10px;
-}
-.article-card-meta{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  color:var(--text3);
-}
-
-.article-mini{
-  display:flex;
-  gap:14px;
-  padding:14px 0;
-  border-top:1px solid var(--surface3);
-}
-.article-mini:first-of-type{border-top:none}
-.article-mini-image{
-  width:80px;
-  height:60px;
-  object-fit:cover;
-  border-radius:3px;
-  flex-shrink:0;
-  background:var(--surface3);
-}
-.article-mini-content{flex:1}
-.article-mini-headline{
-  font-family:'Playfair Display',serif;
-  font-size:14px;
-  font-weight:600;
-  line-height:1.35;
-}
-.article-mini-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.article-mini-headline a:hover{color:var(--accent)}
-.article-mini-meta{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  color:var(--text3);
-  margin-top:4px;
-}
+.article-card{ margin-bottom:24px; }
+.article-card:last-child{ margin-bottom:0; }
+.article-card-image{ width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:3px; margin-bottom:12px; background:var(--surface3); }
+.article-card-headline{ font-family:'Playfair Display',serif; font-size:18px; font-weight:600; line-height:1.3; margin-bottom:8px; }
+.article-card-headline a{ color:inherit; text-decoration:none; }
+.article-card-headline a:hover{ color:var(--accent); }
+.article-card-summary{ font-size:14px; line-height:1.55; color:var(--text2); margin-bottom:10px; }
+.article-card-meta{ font-family:'Inter',sans-serif; font-size:11px; color:var(--text3); }
+.article-mini{ display:flex; gap:14px; padding:14px 0; border-top:1px solid var(--surface3); }
+.article-mini:first-of-type{ border-top:none; }
+.article-mini-image{ width:80px; height:60px; object-fit:cover; border-radius:3px; flex-shrink:0; background:var(--surface3); }
+.article-mini-content{ flex:1; }
+.article-mini-headline{ font-family:'Playfair Display',serif; font-size:14px; font-weight:600; line-height:1.35; }
+.article-mini-headline a{ color:inherit; text-decoration:none; }
+.article-mini-headline a:hover{ color:var(--accent); }
+.article-mini-meta{ font-family:'Inter',sans-serif; font-size:10px; color:var(--text3); margin-top:4px; }
 
 @media(max-width:900px){
-  .content-grid{
-    grid-template-columns:1fr;
-  }
-  .content-col{
-    padding:0;
-    border-right:none;
-    padding-bottom:28px;
-    margin-bottom:28px;
-    border-bottom:1px solid var(--border);
-  }
-  .content-col:last-child{
-    margin-bottom:0;
-    padding-bottom:0;
-    border-bottom:none;
-  }
+  .content-grid{ grid-template-columns:1fr; }
+  .content-col{ padding:0; border-right:none; padding-bottom:28px; margin-bottom:28px; border-bottom:1px solid var(--border); }
+  .content-col:last-child{ margin-bottom:0; padding-bottom:0; border-bottom:none; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ANALYSIS SECTION (Featured Essays)
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ ANALYSIS SECTION ═══ */
 .analysis-section{
   padding:40px 0;
   border-bottom:1px solid var(--border);
 }
-.section-header{
+.section-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+.section-title{ font-family:'Playfair Display',serif; font-size:26px; font-weight:700; }
+.section-link{ font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--accent); text-decoration:none; }
+.section-link:hover{ text-decoration:underline; }
+.analysis-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+.analysis-card{ background:var(--surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; transition:transform 0.2s, box-shadow 0.2s; }
+.analysis-card:hover{ transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.08); }
+.analysis-card-image{ width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--surface3); }
+.analysis-card-content{ padding:20px; }
+.analysis-card-category{ font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+.analysis-card-headline{ font-family:'Playfair Display',serif; font-size:20px; font-weight:600; line-height:1.3; margin-bottom:10px; }
+.analysis-card-headline a{ color:inherit; text-decoration:none; }
+.analysis-card-headline a:hover{ color:var(--accent); }
+.analysis-card-excerpt{ font-size:14px; line-height:1.55; color:var(--text2); margin-bottom:14px; }
+.analysis-card-author{ font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--text); }
+.analysis-card-author span{ color:var(--text3); font-weight:400; }
+@media(max-width:900px){ .analysis-grid{ grid-template-columns:1fr; gap:20px; } }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SNIPPETS STRIP
+═══════════════════════════════════════════════════════════════════════════ */
+.snippets-section{
+  padding:40px 0;
+  border-bottom:1px solid var(--border);
+}
+.snippets-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:28px;
 }
-.section-title{
+.snippets-title{
   font-family:'Playfair Display',serif;
   font-size:26px;
   font-weight:700;
 }
-.section-link{
+.snippets-nav{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.snippets-page-label{
   font-family:'Inter',sans-serif;
   font-size:12px;
-  font-weight:600;
-  color:var(--accent);
-  text-decoration:none;
-}
-.section-link:hover{text-decoration:underline}
-
-.analysis-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:28px;
-}
-.analysis-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:6px;
-  overflow:hidden;
-  transition:transform 0.2s, box-shadow 0.2s;
-}
-.analysis-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 8px 30px rgba(0,0,0,0.08);
-}
-.analysis-card-image{
-  width:100%;
-  aspect-ratio:16/9;
-  object-fit:cover;
-  background:var(--surface3);
-}
-.analysis-card-content{
-  padding:20px;
-}
-.analysis-card-category{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-  color:var(--gold);
-  margin-bottom:10px;
-}
-.analysis-card-headline{
-  font-family:'Playfair Display',serif;
-  font-size:20px;
-  font-weight:600;
-  line-height:1.3;
-  margin-bottom:10px;
-}
-.analysis-card-headline a{
-  color:inherit;
-  text-decoration:none;
-}
-.analysis-card-headline a:hover{color:var(--accent)}
-.analysis-card-excerpt{
-  font-size:14px;
-  line-height:1.55;
-  color:var(--text2);
-  margin-bottom:14px;
-}
-.analysis-card-author{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:600;
-  color:var(--text);
-}
-.analysis-card-author span{
   color:var(--text3);
-  font-weight:400;
-}
-
-@media(max-width:900px){
-  .analysis-grid{
-    grid-template-columns:1fr;
-    gap:20px;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   STATS PROMO SECTION
-═══════════════════════════════════════════════════════════════════════════ */
-.stats-promo{
-  padding:48px 0;
-  background:linear-gradient(180deg,var(--surface2) 0%,var(--bg) 100%);
-  border-bottom:1px solid var(--border);
-}
-.stats-promo-inner{
-  max-width:1400px;
-  margin:0 auto;
-  padding:0 24px;
-}
-.stats-header{
+  min-width:60px;
   text-align:center;
-  margin-bottom:36px;
 }
-.stats-header h2{
-  font-family:'Playfair Display',serif;
-  font-size:32px;
-  font-weight:700;
-  margin-bottom:8px;
-}
-.stats-header p{
-  font-size:16px;
-  color:var(--text2);
-}
-
-.stats-cards{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
-}
-.stat-card{
-  background:var(--surface);
+.snippets-btn{
+  width:36px;
+  height:36px;
   border:1px solid var(--border);
-  border-radius:8px;
-  padding:24px;
-  text-align:center;
-  text-decoration:none;
-  color:inherit;
-  transition:all 0.25s;
-}
-.stat-card:hover{
-  border-color:var(--gold);
-  transform:translateY(-4px);
-  box-shadow:0 12px 40px rgba(192,128,24,0.12);
-}
-.stat-card-icon{
-  width:48px;
-  height:48px;
-  margin:0 auto 16px;
-  background:var(--gold-dim);
-  border-radius:12px;
+  background:var(--surface);
+  border-radius:4px;
+  cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-}
-.stat-card-icon svg{
-  width:24px;
-  height:24px;
-  stroke:var(--gold);
-  fill:none;
-  stroke-width:2;
-}
-.stat-card-title{
-  font-family:'Inter',sans-serif;
-  font-size:14px;
-  font-weight:700;
-  margin-bottom:6px;
-}
-.stat-card-desc{
-  font-size:13px;
-  color:var(--text3);
-  line-height:1.45;
-}
-
-@media(max-width:900px){
-  .stats-cards{
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
-  }
-  .stat-card{padding:18px}
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   AUDIO LISTEN BUTTON
-═══════════════════════════════════════════════════════════════════════════ */
-.audio-listen-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  padding:5px 12px;
-  border-radius:20px;
-  border:1px solid var(--border);
-  background:var(--surface);
+  transition:all 0.15s;
   color:var(--text2);
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  font-weight:600;
-  cursor:pointer;
-  transition:all 0.2s;
-  white-space:nowrap;
-  vertical-align:middle;
 }
-.audio-listen-btn:hover{
-  background:var(--accent-dim);
+.snippets-btn:hover:not(:disabled){
   border-color:var(--accent);
   color:var(--accent);
+  background:var(--accent-dim);
 }
-.audio-listen-btn.playing{
+.snippets-btn:disabled{
+  opacity:0.3;
+  cursor:default;
+}
+.snippets-btn svg{
+  width:16px;
+  height:16px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.snippets-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:20px;
+}
+@media(max-width:1100px){ .snippets-grid{ grid-template-columns:repeat(3,1fr); } }
+@media(max-width:760px)  { .snippets-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:500px)  { .snippets-grid{ grid-template-columns:1fr; } }
+
+.snippet-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:20px 22px;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  transition:transform 0.2s, box-shadow 0.2s;
+  min-height:130px;
+}
+.snippet-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 24px rgba(0,0,0,0.07);
+}
+.snippet-card::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
   background:var(--accent);
-  border-color:var(--accent);
-  color:#fff;
-  animation:audio-pulse 1.5s ease-in-out infinite;
+  border-radius:6px 6px 0 0;
+  opacity:0.6;
 }
-@keyframes audio-pulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(160,48,32,0.3)}
-  50%{box-shadow:0 0 0 6px rgba(160,48,32,0)}
+.snippet-card-rule{
+  width:28px;
+  height:2px;
+  background:var(--border2);
+  margin-bottom:14px;
+  flex-shrink:0;
 }
-.audio-listen-btn svg{
-  width:14px;height:14px;
-  stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;
-}
-.audio-listen-btn .audio-bars{
-  display:inline-flex;align-items:center;gap:2px;height:14px;
-}
-.audio-listen-btn .audio-bars span{
-  display:block;width:2px;background:currentColor;border-radius:1px;
-  animation:audio-bar 0.8s ease-in-out infinite;
-}
-.audio-listen-btn .audio-bars span:nth-child(1){height:4px;animation-delay:0s}
-.audio-listen-btn .audio-bars span:nth-child(2){height:8px;animation-delay:0.15s}
-.audio-listen-btn .audio-bars span:nth-child(3){height:12px;animation-delay:0.3s}
-.audio-listen-btn .audio-bars span:nth-child(4){height:6px;animation-delay:0.45s}
-@keyframes audio-bar{
-  0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.3)}
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════════════════════════════════════ */
-.footer{
-  background:var(--text);
-  color:rgba(255,255,255,0.7);
-  padding:48px 24px 32px;
-}
-.footer-inner{
-  max-width:1400px;
-  margin:0 auto;
-}
-.footer-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  padding-bottom:32px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
-  margin-bottom:24px;
-}
-.footer-brand{
-  font-family:'Playfair Display',serif;
-  font-size:28px;
-  font-weight:700;
-  color:#fff;
-}
-.footer-nav{
-  display:flex;
-  gap:32px;
-}
-.footer-nav a{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:500;
-  color:rgba(255,255,255,0.6);
-  text-decoration:none;
-}
-.footer-nav a:hover{color:#fff}
-
-.footer-bottom{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  color:rgba(255,255,255,0.4);
-  display:flex;
-  justify-content:space-between;
-}
-
-@media(max-width:900px){
-  .footer-top{
-    flex-direction:column;
-    gap:24px;
-  }
-  .footer-nav{
-    flex-wrap:wrap;
-    gap:16px;
-  }
-  .footer-bottom{
-    flex-direction:column;
-    gap:8px;
-  }
+.snippet-card-text{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:14px;
+  line-height:1.65;
+  color:var(--text2);
+  flex:1;
 }
 </style>
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
   const firebaseConfig = {
     apiKey: "AIzaSyBnfn9hK0y-p6nvIZ_AwoJnWD7DfDuIQd4",
     authDomain: "hitwicket-cba02.firebaseapp.com",
@@ -931,10 +543,8 @@ body{
     messagingSenderId: "196915483829",
     appId: "1:196915483829:web:071c47af79914aec88dafc"
   };
-
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
-
   window._quizDb           = db;
   window._quizFsCollection = collection;
   window._quizFsAddDoc     = addDoc;
@@ -943,18 +553,14 @@ body{
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MASTHEAD
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- MASTHEAD -->
 <header class="masthead">
   <div class="masthead-date">Friday, February 27, 2026</div>
   <h1 class="masthead-logo">Cricket <span>Times</span></h1>
   <div class="masthead-tagline">The Definitive Voice of Test Cricket</div>
 </header>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     NAVIGATION
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- NAV -->
 <nav class="nav-bar">
   <div class="nav-inner">
     <a href="news.html" class="nav-link active">Stories</a>
@@ -968,22 +574,18 @@ body{
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     BREAKING NEWS TICKER
-═══════════════════════════════════════════════════════════════════════════ -->
-<div class="ticker">
+<!-- TICKER -->
+<div class="ticker" id="tickerBar">
   <span class="ticker-label">Breaking</span>
-  <span class="ticker-content">
+  <span class="ticker-content" id="tickerContent">
     England announce squad for upcoming Ashes series • Virat Kohli surpasses 9,000 Test runs • Australia clinch Border-Gavaskar Trophy 3-1 • ICC announces new Test Championship cycle format • Ben Stokes hints at potential return to red-ball cricket
   </span>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MAIN CONTENT
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN -->
 <main class="main">
-  
-  <!-- ─── HERO SECTION ─── -->
+
+  <!-- HERO -->
   <section class="hero-section">
     <article class="hero-main">
       <div class="hero-category">Test Cricket</div>
@@ -991,8 +593,8 @@ body{
         <a href="#">India's Dominance at Home: How Spin Bowling Has Redefined Test Cricket Strategy</a>
       </h2>
       <p class="hero-summary">
-        A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack 
-        has forced visiting teams to fundamentally rethink their approach to subcontinent tours. 
+        A deep dive into India's 17-series unbeaten streak at home and how their spin-heavy attack
+        has forced visiting teams to fundamentally rethink their approach to subcontinent tours.
         From Ashwin's artistry to Jadeja's relentless accuracy, the numbers tell a compelling story.
       </p>
       <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
@@ -1003,9 +605,8 @@ body{
         <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>
       </div>
     </article>
-    
+
     <aside class="hero-sidebar">
-      <!-- Most Read -->
       <div class="sidebar-section">
         <h3 class="sidebar-title">Most Read</h3>
         <div class="sidebar-item">
@@ -1029,8 +630,7 @@ body{
           <div class="sidebar-item-meta">News • 3 min</div>
         </div>
       </div>
-      
-      <!-- Live Scores -->
+
       <div class="live-scores">
         <div class="live-scores-header">
           <span class="live-dot"></span>
@@ -1039,34 +639,21 @@ body{
         <div class="score-card">
           <div class="score-match">3rd Test • Day 2 • Johannesburg</div>
           <div class="score-teams">
-            <div class="score-team">
-              <span class="score-team-name">South Africa</span>
-              <span class="score-team-score">284 & 45/2</span>
-            </div>
-            <div class="score-team">
-              <span class="score-team-name">England</span>
-              <span class="score-team-score">312</span>
-            </div>
+            <div class="score-team"><span class="score-team-name">South Africa</span><span class="score-team-score">284 & 45/2</span></div>
+            <div class="score-team"><span class="score-team-name">England</span><span class="score-team-score">312</span></div>
           </div>
           <div class="score-status">SA lead by 17 runs</div>
         </div>
         <div class="score-card">
           <div class="score-match">1st Test • Day 4 • Karachi</div>
           <div class="score-teams">
-            <div class="score-team">
-              <span class="score-team-name">Pakistan</span>
-              <span class="score-team-score">388 & 156/4</span>
-            </div>
-            <div class="score-team">
-              <span class="score-team-name">New Zealand</span>
-              <span class="score-team-score">421</span>
-            </div>
+            <div class="score-team"><span class="score-team-name">Pakistan</span><span class="score-team-score">388 & 156/4</span></div>
+            <div class="score-team"><span class="score-team-name">New Zealand</span><span class="score-team-score">421</span></div>
           </div>
           <div class="score-status">PAK lead by 123 runs</div>
         </div>
       </div>
 
-      <!-- Quiz Widget — populated from quiz.json in GitHub repo -->
       <div class="quiz-widget" id="quizWidget" style="display:none">
         <div class="quiz-widget-label">
           <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -1079,25 +666,17 @@ body{
       </div>
     </aside>
   </section>
-  
-  <!-- ─── THREE COLUMN CONTENT ─── -->
+
+  <!-- THREE COLUMN GRID -->
   <section class="content-grid">
-    
-    <!-- Column 1: Latest News -->
     <div class="content-col">
       <h3 class="col-header">Latest News</h3>
-      
       <article class="article-card">
         <div class="article-card-image" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48);"></div>
-        <h4 class="article-card-headline">
-          <a href="#">England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination</a>
-        </h4>
-        <p class="article-card-summary">
-          The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.
-        </p>
+        <h4 class="article-card-headline"><a href="#">England Name Unchanged Squad for Final Test as Bazball Philosophy Faces Ultimate Examination</a></h4>
+        <p class="article-card-summary">The selectors have resisted calls for change despite the series deficit, backing the aggressive approach that has divided opinion.</p>
         <div class="article-card-meta">2 hours ago <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#4a5a4a,#3a4a38);"></div>
         <div class="article-mini-content">
@@ -1105,7 +684,6 @@ body{
           <div class="article-mini-meta">4 hours ago</div>
         </div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#5a4a4a,#4a3a38);"></div>
         <div class="article-mini-content">
@@ -1113,7 +691,6 @@ body{
           <div class="article-mini-meta">6 hours ago</div>
         </div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#4a4a5a,#38384a);"></div>
         <div class="article-mini-content">
@@ -1122,22 +699,15 @@ body{
         </div>
       </article>
     </div>
-    
-    <!-- Column 2: Features -->
+
     <div class="content-col">
       <h3 class="col-header">Features</h3>
-      
       <article class="article-card">
         <div class="article-card-image" style="background:linear-gradient(135deg,#5a5040,#4a4030);"></div>
-        <h4 class="article-card-headline">
-          <a href="#">The Numbers Behind Bradman: Why His Records May Never Be Broken</a>
-        </h4>
-        <p class="article-card-summary">
-          Statistical analysis reveals just how far ahead of his peers the Don truly was, and why modern cricket's evolution makes his feats even more remarkable.
-        </p>
+        <h4 class="article-card-headline"><a href="#">The Numbers Behind Bradman: Why His Records May Never Be Broken</a></h4>
+        <p class="article-card-summary">Statistical analysis reveals just how far ahead of his peers the Don truly was, and why modern cricket's evolution makes his feats even more remarkable.</p>
         <div class="article-card-meta">Analysis • 15 min read <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#404a50,#303a40);"></div>
         <div class="article-mini-content">
@@ -1145,7 +715,6 @@ body{
           <div class="article-mini-meta">Interview • 10 min</div>
         </div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#504a40,#403a30);"></div>
         <div class="article-mini-content">
@@ -1153,7 +722,6 @@ body{
           <div class="article-mini-meta">Technology • 8 min</div>
         </div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#405040,#304030);"></div>
         <div class="article-mini-content">
@@ -1162,22 +730,15 @@ body{
         </div>
       </article>
     </div>
-    
-    <!-- Column 3: Opinion -->
+
     <div class="content-col">
       <h3 class="col-header">Opinion</h3>
-      
       <article class="article-card">
         <div class="article-card-image" style="background:linear-gradient(135deg,#604850,#503840);"></div>
-        <h4 class="article-card-headline">
-          <a href="#">Test Cricket's Survival Depends on Embracing Change, Not Fighting It</a>
-        </h4>
-        <p class="article-card-summary">
-          The game's oldest format must evolve or risk becoming a museum piece. Here's what needs to happen.
-        </p>
+        <h4 class="article-card-headline"><a href="#">Test Cricket's Survival Depends on Embracing Change, Not Fighting It</a></h4>
+        <p class="article-card-summary">The game's oldest format must evolve or risk becoming a museum piece. Here's what needs to happen.</p>
         <div class="article-card-meta">Michael Holding • Opinion <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#484858,#383848);"></div>
         <div class="article-mini-content">
@@ -1185,7 +746,6 @@ body{
           <div class="article-mini-meta">Ian Chappell</div>
         </div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#585048,#484038);"></div>
         <div class="article-mini-content">
@@ -1193,7 +753,6 @@ body{
           <div class="article-mini-meta">Ricky Ponting</div>
         </div>
       </article>
-      
       <article class="article-mini">
         <div class="article-mini-image" style="background:linear-gradient(135deg,#485848,#384838);"></div>
         <div class="article-mini-content">
@@ -1203,14 +762,13 @@ body{
       </article>
     </div>
   </section>
-  
-  <!-- ─── ANALYSIS SECTION ─── -->
+
+  <!-- ANALYSIS -->
   <section class="analysis-section" id="analysis">
     <div class="section-header">
       <h2 class="section-title">Deep Analysis</h2>
       <a href="#" class="section-link">View all analysis →</a>
     </div>
-    
     <div class="analysis-grid">
       <article class="analysis-card">
         <div class="analysis-card-image" style="background:linear-gradient(135deg,#2a4048,#1a3038);"></div>
@@ -1221,7 +779,6 @@ body{
           <div class="analysis-card-author">Dr. Sarah Williams <span>• 20 min read</span> <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
-      
       <article class="analysis-card">
         <div class="analysis-card-image" style="background:linear-gradient(135deg,#483828,#382818);"></div>
         <div class="analysis-card-content">
@@ -1231,7 +788,6 @@ body{
           <div class="analysis-card-author">Wasim Akram <span>• 18 min read</span> <button class="audio-listen-btn" data-audio="true" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button></div>
         </div>
       </article>
-      
       <article class="analysis-card">
         <div class="analysis-card-image" style="background:linear-gradient(135deg,#384838,#283828);"></div>
         <div class="analysis-card-content">
@@ -1243,47 +799,53 @@ body{
       </article>
     </div>
   </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SNIPPETS STRIP — rendered by JS from snippets.json
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <section class="snippets-section" id="snippetsSection" style="display:none">
+    <div class="snippets-header">
+      <h2 class="snippets-title">From the Desk</h2>
+      <div class="snippets-nav">
+        <button class="snippets-btn" id="snippetsPrev" onclick="snippetsPage(-1)" disabled>
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="snippets-page-label" id="snippetsPageLabel"></span>
+        <button class="snippets-btn" id="snippetsNext" onclick="snippetsPage(1)">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="snippets-grid" id="snippetsGrid"></div>
+  </section>
+
 </main>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     STATS PROMO SECTION
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- STATS PROMO -->
 <section class="stats-promo">
   <div class="stats-promo-inner">
     <div class="stats-header">
       <h2>Explore Test Cricket Statistics</h2>
       <p>Comprehensive data and analysis tools covering every Test match ever played</p>
     </div>
-    
     <div class="stats-cards">
       <a href="country-results.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
         <h3 class="stat-card-title">Countries</h3>
         <p class="stat-card-desc">Head-to-head records and historical results between nations</p>
       </a>
-      
       <a href="batting-records.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        </div>
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div>
         <h3 class="stat-card-title">Batting Records</h3>
         <p class="stat-card-desc">All-time batting leaders with advanced filtering options</p>
       </a>
-      
       <a href="index.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
         <h3 class="stat-card-title">Player Compare</h3>
         <p class="stat-card-desc">Side-by-side statistical comparison of any two players</p>
       </a>
-      
       <a href="simulation.html" class="stat-card">
-        <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
-        </div>
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></div>
         <h3 class="stat-card-title">Simulation</h3>
         <p class="stat-card-desc">Custom weighted rankings based on your criteria</p>
       </a>
@@ -1291,9 +853,7 @@ body{
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-top">
@@ -1317,168 +877,284 @@ body{
   </div>
 </footer>
 
-<script>
-// Dynamic date in masthead
-const dateEl = document.querySelector('.masthead-date');
-const now = new Date();
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-dateEl.textContent = now.toLocaleDateString('en-US', options);
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MISSING CSS (stats-promo, audio button) — carried over from original
+═══════════════════════════════════════════════════════════════════════════ -->
+<style>
+.stats-promo{
+  padding:48px 0;
+  background:linear-gradient(180deg,var(--surface2) 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--border);
+}
+.stats-promo-inner{ max-width:1400px; margin:0 auto; padding:0 24px; }
+.stats-header{ text-align:center; margin-bottom:36px; }
+.stats-header h2{ font-family:'Playfair Display',serif; font-size:32px; font-weight:700; margin-bottom:8px; }
+.stats-header p{ font-size:16px; color:var(--text2); }
+.stats-cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:24px;
+  text-align:center;
+  text-decoration:none;
+  color:inherit;
+  transition:all 0.25s;
+}
+.stat-card:hover{ border-color:var(--gold); transform:translateY(-4px); box-shadow:0 12px 40px rgba(192,128,24,0.12); }
+.stat-card-icon{ width:48px; height:48px; margin:0 auto 16px; background:var(--gold-dim); border-radius:12px; display:flex; align-items:center; justify-content:center; }
+.stat-card-icon svg{ width:24px; height:24px; stroke:var(--gold); fill:none; stroke-width:2; }
+.stat-card-title{ font-family:'Inter',sans-serif; font-size:14px; font-weight:700; margin-bottom:6px; }
+.stat-card-desc{ font-size:13px; color:var(--text3); line-height:1.45; }
+@media(max-width:900px){ .stats-cards{ grid-template-columns:repeat(2,1fr); gap:14px; } .stat-card{ padding:18px; } }
 
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    const href = this.getAttribute('href');
+.audio-listen-btn{
+  display:inline-flex; align-items:center; gap:5px; padding:5px 12px;
+  border-radius:20px; border:1px solid var(--border); background:var(--surface);
+  color:var(--text2); font-family:'Inter',sans-serif; font-size:11px; font-weight:600;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap; vertical-align:middle;
+}
+.audio-listen-btn:hover{ background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
+.audio-listen-btn.playing{ background:var(--accent); border-color:var(--accent); color:#fff; animation:audio-pulse 1.5s ease-in-out infinite; }
+@keyframes audio-pulse{ 0%,100%{box-shadow:0 0 0 0 rgba(160,48,32,0.3)} 50%{box-shadow:0 0 0 6px rgba(160,48,32,0)} }
+.audio-listen-btn svg{ width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0; }
+.audio-listen-btn .audio-bars{ display:inline-flex;align-items:center;gap:2px;height:14px; }
+.audio-listen-btn .audio-bars span{ display:block;width:2px;background:currentColor;border-radius:1px;animation:audio-bar 0.8s ease-in-out infinite; }
+.audio-listen-btn .audio-bars span:nth-child(1){height:4px;animation-delay:0s}
+.audio-listen-btn .audio-bars span:nth-child(2){height:8px;animation-delay:0.15s}
+.audio-listen-btn .audio-bars span:nth-child(3){height:12px;animation-delay:0.3s}
+.audio-listen-btn .audio-bars span:nth-child(4){height:6px;animation-delay:0.45s}
+@keyframes audio-bar{ 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.3)} }
+.footer{ background:var(--text); color:rgba(255,255,255,0.7); padding:48px 24px 32px; }
+.footer-inner{ max-width:1400px; margin:0 auto; }
+.footer-top{ display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:32px; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:24px; }
+.footer-brand{ font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:#fff; }
+.footer-nav{ display:flex; gap:32px; }
+.footer-nav a{ font-family:'Inter',sans-serif; font-size:12px; font-weight:500; color:rgba(255,255,255,0.6); text-decoration:none; }
+.footer-nav a:hover{ color:#fff; }
+.footer-bottom{ font-family:'Inter',sans-serif; font-size:11px; color:rgba(255,255,255,0.4); display:flex; justify-content:space-between; }
+@media(max-width:900px){ .footer-top{ flex-direction:column; gap:24px; } .footer-nav{ flex-wrap:wrap; gap:16px; } .footer-bottom{ flex-direction:column; gap:8px; } }
+</style>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════════════
+const GH_OWNER  = 'joidevivre689103';
+const GH_REPO   = 'congenial-eureka';
+const GH_BRANCH = 'main';
+
+function rawUrl(file) {
+  return `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${file}?t=${Date.now()}`;
+}
+
+async function ghFetch(file) {
+  const res = await fetch(rawUrl(file));
+  if (!res.ok) return null;
+  return res.json();
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function formatArticleDate(dateStr) {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const diffHrs  = Math.floor((Date.now() - d) / 3600000);
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffHrs < 1)  return 'Just now';
+  if (diffHrs < 24) return diffHrs + ' hours ago';
+  if (diffDays === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DYNAMIC DATE
+// ═══════════════════════════════════════════════════════════════════════════
+document.querySelector('.masthead-date').textContent =
+  new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SMOOTH SCROLL
+// ═══════════════════════════════════════════════════════════════════════════
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
     if (href === '#') return;
     e.preventDefault();
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const t = document.querySelector(href);
+    if (t) t.scrollIntoView({ behavior:'smooth', block:'start' });
   });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CMS INTEGRATION — Load published content from localStorage
+// TICKER — from ticker.json
 // ═══════════════════════════════════════════════════════════════════════════
-(function loadCMSContent() {
-  let cmsData;
+(async function loadTicker() {
   try {
-    const raw = localStorage.getItem('cricketTimesCMS');
-    if (!raw) return; // No CMS data yet, keep default content
-    cmsData = JSON.parse(raw);
-  } catch(e) {
-    return; // Parse error, keep defaults
-  }
-
-  const { articles, tickerItems, liveScores } = cmsData;
-
-  // ─── TICKER ───
-  if (tickerItems && tickerItems.length > 0) {
-    const tickerContent = document.querySelector('.ticker-content');
-    if (tickerContent) {
-      tickerContent.textContent = tickerItems.join(' • ');
+    const data = await ghFetch('ticker.json');
+    if (!data) return;
+    // Hide ticker if disabled
+    if (data.enabled === false) {
+      document.getElementById('tickerBar').style.display = 'none';
+      return;
     }
-  }
+    if (data.items && data.items.length > 0) {
+      document.getElementById('tickerContent').textContent = data.items.join(' • ');
+    }
+  } catch(e) { /* keep default */ }
+})();
 
-  // ─── LIVE SCORES ───
-  if (liveScores && liveScores.length > 0) {
-    const scoresContainer = document.querySelector('.live-scores');
-    if (scoresContainer) {
-      const header = scoresContainer.querySelector('.live-scores-header').outerHTML;
-      const cardsHTML = liveScores.map(score => `
-        <div class="score-card">
-          <div class="score-match">${escapeHTML(score.match)}</div>
-          <div class="score-teams">
-            <div class="score-team">
-              <span class="score-team-name">${escapeHTML(score.team1.name)}</span>
-              <span class="score-team-score">${escapeHTML(score.team1.score)}</span>
-            </div>
-            <div class="score-team">
-              <span class="score-team-name">${escapeHTML(score.team2.name)}</span>
-              <span class="score-team-score">${escapeHTML(score.team2.score)}</span>
+// ═══════════════════════════════════════════════════════════════════════════
+// ARTICLES — from articles.json
+// ═══════════════════════════════════════════════════════════════════════════
+(async function loadArticles() {
+  try {
+    const data = await ghFetch('articles.json');
+    if (!data || !data.articles || data.articles.length === 0) return;
+
+    const articles = data.articles.filter(a => a.status === 'published');
+    if (articles.length === 0) return;
+
+    const heroArticle      = articles.find(a => a.placement === 'hero');
+    const newsCat          = articles.filter(a => a.category === 'news');
+    const featuresCat      = articles.filter(a => a.category === 'features');
+    const opinionCat       = articles.filter(a => a.category === 'opinion');
+    const analysisCat      = articles.filter(a => a.category === 'analysis');
+    const featuredArticles = articles.filter(a => a.placement === 'featured');
+
+    // ─── HERO ───
+    if (heroArticle) {
+      const heroMain = document.querySelector('.hero-main');
+      if (heroMain) {
+        const cat = heroArticle.category.charAt(0).toUpperCase() + heroArticle.category.slice(1);
+        heroMain.innerHTML = `
+          <div class="hero-category">${escapeHTML(cat)}</div>
+          <h2 class="hero-headline"><a href="article.html?id=${heroArticle.id}">${escapeHTML(heroArticle.headline)}</a></h2>
+          <p class="hero-summary">${escapeHTML(heroArticle.summary)}</p>
+          <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
+          <div class="hero-meta">
+            <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
+            <span class="hero-time">${heroArticle.readTime} min read</span>
+            <span>${formatArticleDate(heroArticle.date)}</span>
+            ${heroArticle.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${heroArticle.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
+          </div>`;
+      }
+    }
+
+    // ─── MOST READ SIDEBAR ───
+    const mostRead = articles.slice(0, 4);
+    const sidebarSection = document.querySelector('.sidebar-section');
+    if (sidebarSection && mostRead.length > 0) {
+      sidebarSection.innerHTML = '<h3 class="sidebar-title">Most Read</h3>' +
+        mostRead.map((a, i) => `
+          <div class="sidebar-item">
+            <span class="sidebar-item-num">${i + 1}</span>
+            <h4 class="sidebar-item-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
+            <div class="sidebar-item-meta">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))} • ${a.readTime} min</div>
+          </div>`).join('');
+    }
+
+    // ─── THREE COLUMNS ───
+    const contentCols = document.querySelectorAll('.content-col');
+    if (contentCols.length >= 3) {
+      renderColumn(contentCols[0], 'Latest News',  newsCat.length     > 0 ? newsCat     : articles);
+      renderColumn(contentCols[1], 'Features',     featuresCat.length > 0 ? featuresCat : featuredArticles);
+      renderColumn(contentCols[2], 'Opinion',      opinionCat.length  > 0 ? opinionCat  : articles.slice(-3));
+    }
+
+    // ─── ANALYSIS SECTION ───
+    const analysisGrid     = document.querySelector('.analysis-grid');
+    const analysisArticles = analysisCat.length > 0 ? analysisCat : articles.filter(a => a.readTime >= 10);
+    if (analysisGrid && analysisArticles.length > 0) {
+      const colors = ['linear-gradient(135deg,#2a4048,#1a3038)','linear-gradient(135deg,#483828,#382818)','linear-gradient(135deg,#384838,#283828)'];
+      analysisGrid.innerHTML = analysisArticles.slice(0, 3).map((a, i) => `
+        <article class="analysis-card">
+          <div class="analysis-card-image" style="background:${colors[i % colors.length]};"></div>
+          <div class="analysis-card-content">
+            <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
+            <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
+            <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
+            <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span>
+              ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
             </div>
           </div>
-          <div class="score-status">${escapeHTML(score.status)}</div>
-        </div>
-      `).join('');
-      scoresContainer.innerHTML = header + cardsHTML;
+        </article>`).join('');
     }
-  }
-
-  // ─── ARTICLES ───
-  if (!articles || articles.length === 0) return;
-
-  // Categorize articles by placement and category
-  const heroArticle = articles.find(a => a.placement === 'hero');
-  const featuredArticles = articles.filter(a => a.placement === 'featured');
-  const standardArticles = articles.filter(a => a.placement === 'standard');
-
-  // Group by category
-  const newsCat = articles.filter(a => a.category === 'news');
-  const featuresCat = articles.filter(a => a.category === 'features');
-  const opinionCat = articles.filter(a => a.category === 'opinion');
-  const analysisCat = articles.filter(a => a.category === 'analysis');
-
-  // ─── HERO SECTION ───
-  if (heroArticle) {
-    const heroMain = document.querySelector('.hero-main');
-    if (heroMain) {
-      const categoryLabel = heroArticle.category.charAt(0).toUpperCase() + heroArticle.category.slice(1);
-      heroMain.innerHTML = `
-        <div class="hero-category">${escapeHTML(categoryLabel)}</div>
-        <h2 class="hero-headline">
-          <a href="article.html?id=${heroArticle.id}">${escapeHTML(heroArticle.headline)}</a>
-        </h2>
-        <p class="hero-summary">${escapeHTML(heroArticle.summary)}</p>
-        <div class="hero-image" style="background:linear-gradient(135deg,#2a4a3a,#1a2a28);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-family:Inter,sans-serif;font-size:12px;">Featured Image</div>
-        <div class="hero-meta">
-          <span class="hero-author">By ${escapeHTML(heroArticle.author)}</span>
-          <span class="hero-time">${heroArticle.readTime} min read</span>
-          <span>${formatArticleDate(heroArticle.date)}</span>
-          ${heroArticle.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${heroArticle.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
-        </div>
-      `;
-    }
-  }
-
-  // ─── MOST READ SIDEBAR ───
-  // Use top 4 articles by most recent
-  const mostRead = articles.slice(0, 4);
-  const sidebarSection = document.querySelector('.sidebar-section');
-  if (sidebarSection && mostRead.length > 0) {
-    const titleEl = sidebarSection.querySelector('.sidebar-title');
-    const titleHTML = titleEl ? titleEl.outerHTML : '<h3 class="sidebar-title">Most Read</h3>';
-    sidebarSection.innerHTML = titleHTML + mostRead.map((a, i) => `
-      <div class="sidebar-item">
-        <span class="sidebar-item-num">${i + 1}</span>
-        <h4 class="sidebar-item-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-        <div class="sidebar-item-meta">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))} • ${a.readTime} min</div>
-      </div>
-    `).join('');
-  }
-
-  // ─── THREE COLUMN CONTENT GRID ───
-  const contentCols = document.querySelectorAll('.content-col');
-  if (contentCols.length >= 3) {
-    // Column 1: Latest News
-    renderColumn(contentCols[0], 'Latest News', newsCat.length > 0 ? newsCat : standardArticles);
-
-    // Column 2: Features
-    renderColumn(contentCols[1], 'Features', featuresCat.length > 0 ? featuresCat : featuredArticles);
-
-    // Column 3: Opinion
-    renderColumn(contentCols[2], 'Opinion', opinionCat.length > 0 ? opinionCat : articles.slice(-3));
-  }
-
-  // ─── ANALYSIS SECTION ───
-  const analysisGrid = document.querySelector('.analysis-grid');
-  const analysisArticles = analysisCat.length > 0 ? analysisCat : articles.filter(a => a.readTime >= 10);
-  if (analysisGrid && analysisArticles.length > 0) {
-    const colors = [
-      'linear-gradient(135deg,#2a4048,#1a3038)',
-      'linear-gradient(135deg,#483828,#382818)',
-      'linear-gradient(135deg,#384838,#283828)'
-    ];
-    analysisGrid.innerHTML = analysisArticles.slice(0, 3).map((a, i) => `
-      <article class="analysis-card">
-        <div class="analysis-card-image" style="background:${colors[i % colors.length]};"></div>
-        <div class="analysis-card-content">
-          <div class="analysis-card-category">${escapeHTML(a.category.charAt(0).toUpperCase() + a.category.slice(1))}</div>
-          <h3 class="analysis-card-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h3>
-          <p class="analysis-card-excerpt">${escapeHTML(a.summary)}</p>
-          <div class="analysis-card-author">${escapeHTML(a.author)} <span>• ${a.readTime} min read</span> ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
-        </div>
-      </article>
-    `).join('');
+  } catch(e) {
+    console.warn('Could not load articles.json:', e);
   }
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// HELPER FUNCTIONS
+// SNIPPETS — from snippets.json, paginated
+// ═══════════════════════════════════════════════════════════════════════════
+const SNIPPETS_PER_PAGE = 4; // matches 4-column grid
+let allSnippets   = [];
+let snippetPage   = 0;
+
+function renderSnippetPage() {
+  const grid    = document.getElementById('snippetsGrid');
+  const prevBtn = document.getElementById('snippetsPrev');
+  const nextBtn = document.getElementById('snippetsNext');
+  const label   = document.getElementById('snippetsPageLabel');
+
+  const totalPages = Math.ceil(allSnippets.length / SNIPPETS_PER_PAGE);
+  const start      = snippetPage * SNIPPETS_PER_PAGE;
+  const page       = allSnippets.slice(start, start + SNIPPETS_PER_PAGE);
+
+  grid.innerHTML = page.map(s => `
+    <div class="snippet-card">
+      <div class="snippet-card-rule"></div>
+      <p class="snippet-card-text">${escapeHTML(s.text)}</p>
+    </div>`).join('');
+
+  prevBtn.disabled = snippetPage === 0;
+  nextBtn.disabled = snippetPage >= totalPages - 1;
+  label.textContent = totalPages > 1 ? `${snippetPage + 1} / ${totalPages}` : '';
+}
+
+function snippetsPage(dir) {
+  const totalPages = Math.ceil(allSnippets.length / SNIPPETS_PER_PAGE);
+  snippetPage = Math.max(0, Math.min(snippetPage + dir, totalPages - 1));
+  renderSnippetPage();
+}
+
+(async function loadSnippets() {
+  try {
+    const data = await ghFetch('snippets.json');
+    if (!data || !Array.isArray(data.snippets)) return;
+
+    allSnippets = data.snippets.filter(s => s.enabled && s.text && s.text.trim().length > 0);
+    if (allSnippets.length === 0) return;
+
+    document.getElementById('snippetsSection').style.display = 'block';
+
+    // Hide prev/next entirely if everything fits on one page
+    if (allSnippets.length <= SNIPPETS_PER_PAGE) {
+      document.querySelector('.snippets-nav').style.display = 'none';
+    }
+
+    renderSnippetPage();
+  } catch(e) {
+    console.warn('Could not load snippets.json:', e);
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER COLUMN HELPER
 // ═══════════════════════════════════════════════════════════════════════════
 function renderColumn(colEl, title, articles) {
   if (!articles || articles.length === 0) return;
-
   const gradients = [
     'linear-gradient(135deg,#3a4a5a,#2a3a48)',
     'linear-gradient(135deg,#4a5a4a,#3a4a38)',
@@ -1486,77 +1162,38 @@ function renderColumn(colEl, title, articles) {
     'linear-gradient(135deg,#4a4a5a,#38384a)',
     'linear-gradient(135deg,#504a40,#403a30)'
   ];
-
-  // First article gets full card treatment
   const lead = articles[0];
   const rest = articles.slice(1, 5);
-
-  let html = `<h3 class="col-header">${escapeHTML(title)}</h3>`;
-
-  // Lead article card
-  html += `
+  let html = `<h3 class="col-header">${escapeHTML(title)}</h3>
     <article class="article-card">
       <div class="article-card-image" style="background:${gradients[0]};"></div>
-      <h4 class="article-card-headline">
-        <a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a>
-      </h4>
+      <h4 class="article-card-headline"><a href="article.html?id=${lead.id}">${escapeHTML(lead.headline)}</a></h4>
       <p class="article-card-summary">${escapeHTML(lead.summary)}</p>
-      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read ${lead.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${lead.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
-    </article>
-  `;
-
-  // Mini articles
+      <div class="article-card-meta">${escapeHTML(lead.author)} • ${lead.readTime} min read
+        ${lead.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${lead.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
+      </div>
+    </article>`;
   rest.forEach((a, i) => {
-    html += `
-      <article class="article-mini">
-        <div class="article-mini-image" style="background:${gradients[(i + 1) % gradients.length]};"></div>
-        <div class="article-mini-content">
-          <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
-          <div class="article-mini-meta">${timeAgo(a.date)} ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}</div>
+    html += `<article class="article-mini">
+      <div class="article-mini-image" style="background:${gradients[(i+1)%gradients.length]};"></div>
+      <div class="article-mini-content">
+        <h4 class="article-mini-headline"><a href="article.html?id=${a.id}">${escapeHTML(a.headline)}</a></h4>
+        <div class="article-mini-meta">${timeAgo(a.date)}
+          ${a.audioEnabled !== false ? `<button class="audio-listen-btn" data-audio="true" data-article-id="${a.id}" onclick="toggleArticleAudio(this)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen</button>` : ''}
         </div>
-      </article>
-    `;
+      </div>
+    </article>`;
   });
-
   colEl.innerHTML = html;
 }
 
-function escapeHTML(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function formatArticleDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now - d;
-  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffHrs < 1) return 'Just now';
-  if (diffHrs < 24) return diffHrs + ' hours ago';
-  if (diffDays === 1) return 'Yesterday';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-
 // ═══════════════════════════════════════════════════════════════════════════
-// ARTICLE AUDIO PLAYBACK — Uses pre-generated narrations from CMS
+// AUDIO
 // ═══════════════════════════════════════════════════════════════════════════
-const AUDIO_ICON_LISTEN = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
+const AUDIO_ICON_LISTEN  = '<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Listen';
 const AUDIO_ICON_PLAYING = '<span class="audio-bars"><span></span><span></span><span></span><span></span></span> Playing';
 
-let currentAudio = null;
-let currentAudioBtn = null;
+let currentAudio = null, currentAudioBtn = null, currentUtterance = null;
 
 function resetBtn(btn) {
   if (!btn) return;
@@ -1564,224 +1201,74 @@ function resetBtn(btn) {
   btn.innerHTML = AUDIO_ICON_LISTEN;
 }
 
-function getAudioForButton(btn) {
-  // Priority 1: Direct article ID on the button (set by CMS dynamic rendering)
-  const articleId = btn.getAttribute('data-article-id');
-  if (articleId) {
-    const keys = ['cricketTimesAudio_' + articleId, 'cricketTimesEditorAudio_' + articleId];
-    for (const k of keys) {
-      try {
-        const d = localStorage.getItem(k);
-        if (d && d.startsWith('data:audio')) return d;
-      } catch(e) {}
-    }
-  }
-
-  // Priority 2: Match by headline in CMS data
-  const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
-  if (!article) return null;
-
-  const headlineEl = article.querySelector(
-    '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
-  );
-  if (!headlineEl) return null;
-  const headline = headlineEl.textContent.trim();
-
-  try {
-    const raw = localStorage.getItem('cricketTimesCMS');
-    if (raw) {
-      const cmsData = JSON.parse(raw);
-      if (cmsData.articles) {
-        const match = cmsData.articles.find(a => a.headline === headline);
-        if (match && match.audioEnabled !== false) {
-          const keys = ['cricketTimesAudio_' + match.id, 'cricketTimesEditorAudio_' + match.id];
-          for (const k of keys) {
-            try {
-              const d = localStorage.getItem(k);
-              if (d && d.startsWith('data:audio')) return d;
-            } catch(e) {}
-          }
-          if (match.audioData) return match.audioData;
-        }
-      }
-    }
-  } catch(e) {}
-  return null;
-}
-
 function getArticleText(btn) {
   const article = btn.closest('article, .hero-main, .analysis-card, .article-card, .article-mini');
   if (!article) return '';
-
-  const headlineEl = article.querySelector(
-    '.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a'
-  );
-  const headline = headlineEl ? headlineEl.textContent.trim() : '';
-
-  const summaryEl = article.querySelector(
-    '.hero-summary, .article-card-summary, .analysis-card-excerpt'
-  );
-  const summary = summaryEl ? summaryEl.textContent.trim() : '';
-
-  // Try CMS full content
-  if (headline) {
-    try {
-      const raw = localStorage.getItem('cricketTimesCMS');
-      if (raw) {
-        const cmsData = JSON.parse(raw);
-        if (cmsData.articles) {
-          const match = cmsData.articles.find(a => a.headline === headline);
-          if (match && match.content && match.content.trim().length > 10) {
-            return headline + '. ' + match.content.trim();
-          }
-          if (match && match.summary) {
-            return headline + '. ' + match.summary.trim();
-          }
-        }
-      }
-    } catch(e) {}
-  }
-
-  if (summary) return headline + '. ' + summary;
-  return headline || '';
+  const headlineEl = article.querySelector('.hero-headline a, .article-card-headline a, .article-mini-headline a, .analysis-card-headline a');
+  const headline   = headlineEl ? headlineEl.textContent.trim() : '';
+  const summaryEl  = article.querySelector('.hero-summary, .article-card-summary, .analysis-card-excerpt');
+  const summary    = summaryEl ? summaryEl.textContent.trim() : '';
+  return summary ? headline + '. ' + summary : headline;
 }
 
-let currentUtterance = null;
-
 function toggleArticleAudio(btn) {
-  // If currently playing this one → stop
   if (btn.classList.contains('playing')) {
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
     if (currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; }
-    resetBtn(btn);
-    currentAudioBtn = null;
-    return;
+    resetBtn(btn); currentAudioBtn = null; return;
   }
-
-  // Stop any other playing audio
-  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   if (currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; }
-  if (currentAudioBtn && currentAudioBtn !== btn) { resetBtn(currentAudioBtn); }
+  if (currentAudioBtn && currentAudioBtn !== btn) resetBtn(currentAudioBtn);
 
-  // Priority 1: Stored audio file from CMS (ElevenLabs cloned voice)
-  const audioSrc = getAudioForButton(btn);
-  if (audioSrc) {
-    const audio = new Audio(audioSrc);
-    currentAudio = audio;
-    currentAudioBtn = btn;
-    btn.classList.add('playing');
-    btn.innerHTML = AUDIO_ICON_PLAYING;
-    audio.addEventListener('ended', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
-    audio.addEventListener('error', () => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
-    audio.play().catch(() => { resetBtn(btn); currentAudio = null; currentAudioBtn = null; });
-    return;
-  }
-
-  // Priority 2: Browser Text-to-Speech (works without any API)
   const text = getArticleText(btn);
-  if (!text) {
-    btn.style.borderColor = 'var(--gold)'; btn.style.color = 'var(--gold)';
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> No content';
-    setTimeout(() => { btn.style.borderColor = ''; btn.style.color = ''; btn.innerHTML = AUDIO_ICON_LISTEN; }, 2000);
-    return;
-  }
-
-  if (!window.speechSynthesis) {
-    btn.style.borderColor = 'var(--red)'; btn.style.color = 'var(--red)';
-    btn.innerHTML = 'Not supported';
-    setTimeout(() => { btn.style.borderColor = ''; btn.style.color = ''; btn.innerHTML = AUDIO_ICON_LISTEN; }, 2000);
-    return;
-  }
+  if (!text || !window.speechSynthesis) { return; }
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 0.95;
-  utterance.pitch = 1.0;
-
-  // Pick a good English voice
+  utterance.rate = 0.95; utterance.pitch = 1.0;
   const voices = window.speechSynthesis.getVoices();
-  if (voices.length > 0) {
-    const preferred = voices.find(v => v.name.includes('Google UK English')) ||
-                      voices.find(v => v.name.includes('Google US English')) ||
-                      voices.find(v => v.name.includes('Samantha')) ||
-                      voices.find(v => v.lang.startsWith('en') && v.localService) ||
-                      voices.find(v => v.lang.startsWith('en'));
-    if (preferred) utterance.voice = preferred;
-  }
+  const preferred = voices.find(v => v.name.includes('Google UK English')) ||
+                    voices.find(v => v.name.includes('Google US English')) ||
+                    voices.find(v => v.lang.startsWith('en') && v.localService) ||
+                    voices.find(v => v.lang.startsWith('en'));
+  if (preferred) utterance.voice = preferred;
 
-  btn.classList.add('playing');
-  btn.innerHTML = AUDIO_ICON_PLAYING;
-  currentAudioBtn = btn;
-  currentUtterance = utterance;
-
-  // Chrome workaround: keep speech alive past 15s
-  let resumeTimer = setInterval(() => {
-    if (!window.speechSynthesis.speaking) { clearInterval(resumeTimer); }
+  btn.classList.add('playing'); btn.innerHTML = AUDIO_ICON_PLAYING;
+  currentAudioBtn = btn; currentUtterance = utterance;
+  const resumeTimer = setInterval(() => {
+    if (!window.speechSynthesis.speaking) clearInterval(resumeTimer);
     else { window.speechSynthesis.pause(); window.speechSynthesis.resume(); }
   }, 10000);
-
-  utterance.onend = () => { clearInterval(resumeTimer); resetBtn(btn); currentAudioBtn = null; currentUtterance = null; };
-  utterance.onerror = (e) => { clearInterval(resumeTimer); if (e.error !== 'canceled') console.warn('TTS error:', e.error); resetBtn(btn); currentAudioBtn = null; currentUtterance = null; };
-
+  utterance.onend  = () => { clearInterval(resumeTimer); resetBtn(btn); currentAudioBtn = null; currentUtterance = null; };
+  utterance.onerror = (e) => { clearInterval(resumeTimer); if(e.error!=='canceled') console.warn('TTS:',e.error); resetBtn(btn); currentAudioBtn=null; currentUtterance=null; };
   window.speechSynthesis.speak(utterance);
 }
-
-// Pre-load voices
 if (window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
   window.speechSynthesis.getVoices();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// QUIZ WIDGET — fetched from GitHub repo (no localStorage)
+// QUIZ
 // ═══════════════════════════════════════════════════════════════════════════
 (async function loadQuiz() {
-  const OWNER  = 'joidevivre689103';
-  const REPO   = 'congenial-eureka';
-  const BRANCH = 'main';
-  const FILE   = 'quiz.json';
-
   try {
-    const res = await fetch(
-      `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${FILE}?t=${Date.now()}`
-    );
-    if (!res.ok) return;
-    const data = await res.json();
-
-    // Support both new { today, queue } format and old flat format
+    const data = await ghFetch('quiz.json');
+    if (!data) return;
     const quiz = data.today || (data.question ? data : null);
     if (!quiz || !quiz.question || !quiz.optionA || !quiz.optionB || !quiz.optionC || !quiz.correctAnswer) return;
 
     document.getElementById('quizQuestionText').textContent = quiz.question;
-
-    const options = [
-      { label: 'A', text: quiz.optionA },
-      { label: 'B', text: quiz.optionB },
-      { label: 'C', text: quiz.optionC }
-    ];
-
+    const options = [{ label:'A', text:quiz.optionA },{ label:'B', text:quiz.optionB },{ label:'C', text:quiz.optionC }];
     const container = document.getElementById('quizOptionsContainer');
     let answered = false;
 
-    // Show a name prompt only after a correct answer — built lazily
     function buildNamePrompt(onSubmit) {
       const wrap = document.createElement('div');
       wrap.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
-      wrap.innerHTML = `
-        <input id="quizNameInput" type="text" placeholder="Your name (optional)"
-               style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #c8bca8;
-                      background:#f5f0e8;font-family:inherit;font-size:13px;outline:none;border-radius:3px">
-        <button id="quizNameSubmit"
-                style="padding:7px 14px;background:#1a1208;color:#f5f0e8;border:none;
-                       font-family:inherit;font-size:13px;cursor:pointer;border-radius:3px;white-space:nowrap">
-          Submit name
-        </button>
-      `;
-      wrap.querySelector('#quizNameSubmit').addEventListener('click', () => {
-        const name = wrap.querySelector('#quizNameInput').value.trim();
-        onSubmit(name);
-        wrap.remove();
-      });
+      wrap.innerHTML = `<input id="quizNameInput" type="text" placeholder="Your name (optional)" style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #c8bca8;background:#f5f0e8;font-family:inherit;font-size:13px;outline:none;border-radius:3px"><button id="quizNameSubmit" style="padding:7px 14px;background:#1a1208;color:#f5f0e8;border:none;font-family:inherit;font-size:13px;cursor:pointer;border-radius:3px;white-space:nowrap">Submit name</button>`;
+      wrap.querySelector('#quizNameSubmit').addEventListener('click', () => { onSubmit(wrap.querySelector('#quizNameInput').value.trim()); wrap.remove(); });
       return wrap;
     }
 
@@ -1789,14 +1276,10 @@ if (window.speechSynthesis) {
       const label = document.createElement('label');
       label.className = 'quiz-option';
       label.innerHTML = `<input type="radio" name="quizAnswer" value="${opt.label}"><span>${opt.text}</span>`;
-
       label.addEventListener('click', () => {
-        if (answered) return;
-        answered = true;
+        if (answered) return; answered = true;
         const resultEl = document.getElementById('quizResult');
         const isCorrect = opt.label === quiz.correctAnswer;
-
-        // Style all options
         container.querySelectorAll('.quiz-option').forEach(el => {
           el.classList.add('disabled');
           const val = el.querySelector('input').value;
@@ -1804,50 +1287,26 @@ if (window.speechSynthesis) {
           else if (val === opt.label && !isCorrect) el.classList.add('wrong');
         });
         label.querySelector('input').checked = true;
-
         if (isCorrect) {
           resultEl.textContent = '🎉 Congratulations! That\'s the correct answer!';
           resultEl.className = 'quiz-result show correct';
-
-          // Prompt for name, then write to Firestore
           const prompt = buildNamePrompt(async (name) => {
             try {
-              const db  = window._quizDb;
-              const col = window._quizFsCollection;
-              const add = window._quizFsAddDoc;
-              const ts  = window._quizFsTimestamp;
-              if (db && col && add) {
-                await add(col(db, 'quiz_answers'), {
-                  quizQuestion:  quiz.question,
-                  answer:        opt.label,
-                  name:          name || 'Anonymous',
-                  answeredAt:    ts ? ts() : new Date().toISOString(),
-                  quizDate:      quiz.date || new Date().toISOString().slice(0, 10)
-                });
-              }
-            } catch(e) {
-              console.warn('Could not save quiz answer:', e);
-            }
+              const db=window._quizDb, col=window._quizFsCollection, add=window._quizFsAddDoc, ts=window._quizFsTimestamp;
+              if (db && col && add) await add(col(db,'quiz_answers'),{ quizQuestion:quiz.question, answer:opt.label, name:name||'Anonymous', answeredAt:ts?ts():new Date().toISOString(), quizDate:quiz.date||new Date().toISOString().slice(0,10) });
+            } catch(e) { console.warn('Quiz save error:',e); }
           });
           resultEl.after(prompt);
-
         } else {
-          const correctText = options.find(o => o.label === quiz.correctAnswer).text;
-          resultEl.textContent = `Not quite — the correct answer is: ${correctText}`;
+          resultEl.textContent = `Not quite — the correct answer is: ${options.find(o=>o.label===quiz.correctAnswer).text}`;
           resultEl.className = 'quiz-result show wrong';
         }
       });
       container.appendChild(label);
     });
-
-    if (quiz.contributedBy) {
-      document.getElementById('quizContributedBy').textContent = `Contributed by: ${quiz.contributedBy}`;
-    }
-
+    if (quiz.contributedBy) document.getElementById('quizContributedBy').textContent = `Contributed by: ${quiz.contributedBy}`;
     document.getElementById('quizWidget').style.display = 'block';
-  } catch(e) {
-    // quiz.json not found yet or network error — widget stays hidden
-  }
+  } catch(e) { /* quiz widget stays hidden */ }
 })();
 </script>
 
