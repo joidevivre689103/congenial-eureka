@@ -1765,7 +1765,9 @@ function exportToExcel(){
   function cohortTotal(statArr, label){
     if(!statArr || statArr.length===0) return null;
     const t = { name: label, country: statArr.map(s=>s.country).filter((c,i,a)=>a.indexOf(c)===i).join('/') };
-    const sumKeys = ['tests','inns','no','runs','balls','fifties','hundreds',
+    // tests: all players in group played same shared matches — use first player's count, not sum
+    t.tests = statArr[0].tests;
+    const sumKeys = ['inns','no','runs','balls','fifties','hundreds',
                      'overs','mdns','bowlRuns','wkts','bowlInns','catches','stumpings','mom'];
     sumKeys.forEach(k=>{ t[k] = statArr.reduce((a,s)=>a+(typeof s[k]==='number'?s[k]:0),0); });
     t.hs = Math.max(...statArr.map(s=>typeof s.hs==='number'?s.hs:0));
@@ -1802,13 +1804,13 @@ function exportToExcel(){
 
   // Row builders
   const batHdr  = ['Player','Country','Tests','Innings','N.O.','Runs','Balls','Average','Strike Rate','H.S.','50s','100s'];
-  const bowlHdr = ['Player','Country','Bowl Inn','Overs','Maidens','Bowl Runs','Wickets','Average','Economy','B/W','Best'];
+  const bowlHdr = ['Player','Country','Tests','Bowl Inn','Overs','Maidens','Bowl Runs','Wickets','Average','Economy','B/W','Best'];
   const fieldHdr= ['Player','Catches','Stumpings','Man of Match'];
   const batCW   = [{wch:26},{wch:14},{wch:7},{wch:8},{wch:6},{wch:8},{wch:8},{wch:10},{wch:12},{wch:7},{wch:6},{wch:6}];
-  const bowlCW  = [{wch:26},{wch:14},{wch:9},{wch:8},{wch:8},{wch:10},{wch:8},{wch:10},{wch:10},{wch:8},{wch:10}];
+  const bowlCW  = [{wch:26},{wch:14},{wch:7},{wch:9},{wch:8},{wch:8},{wch:10},{wch:8},{wch:10},{wch:10},{wch:8},{wch:10}];
 
   function batRow(s){ return [s.name, s.country, s.tests, s.inns, s.no, s.runs, s.balls, n2(s.batAvg), sv(s.sr?n2(s.sr):null), s.hs||0, s.fifties||0, s.hundreds||0]; }
-  function bowlRow(s){ return [s.name, s.country, s.bowlInns||0, n1(s.overs), s.mdns||0, s.bowlRuns||0, s.wkts||0, n2(s.bowlAvg), n2(s.econ), n2(s.bpw), sv(s.bestBowl)]; }
+  function bowlRow(s){ return [s.name, s.country, s.tests, s.bowlInns||0, n1(s.overs), s.mdns||0, s.bowlRuns||0, s.wkts||0, n2(s.bowlAvg), n2(s.econ), n2(s.bpw), sv(s.bestBowl)]; }
   function fieldRow(s){ return [s.name, s.catches||0, s.stumpings||0, s.mom||0]; }
 
   // Write a labelled block to a sheet, return next row
@@ -1904,12 +1906,14 @@ function exportToExcel(){
     XLSX.utils.book_append_sheet(wb, ws, tabLabel);
   }
 
-  const nameParts = careerStats.map(s=>s.name.split(' ').pop()).join('_vs_');
-  const dualTag   = dualViewOn ? '_Dual' : '';
-  const filterTag = filterParts.length ? '_filtered' : '';
-  const stTag     = st!=='both' ? '_'+st : '';
-  const modeTag   = cohortMode ? '_'+(document.getElementById('fRecordType').value) : '';
-  XLSX.writeFile(wb, 'CricketTimes_'+tabLabel.replace(/\s/g,'')+'_'+nameParts+stTag+modeTag+dualTag+filterTag+'.xlsx');
+  // Short filename: CT_<mode><flags>_<initials>_YYMMDD
+  const initials = cohortMode
+    ? cohortGroups.map(g => g.filter(Boolean).map(p=>p.name.split(' ').pop()[0]).join('')).join('v')
+    : careerStats.slice(0,4).map(s=>s.name.split(' ').pop()[0]).join('');
+  const modeShort = cohortMode ? document.getElementById('fRecordType').value.slice(0,3).toUpperCase() : (st!=='both'?st[0].toUpperCase():'');
+  const flags = (dualViewOn?'D':'')+(filterParts.length?'F':'');
+  const dateStr = new Date().toISOString().slice(2,10).replace(/-/g,'');
+  XLSX.writeFile(wb, `CT_${modeShort}${flags}_${initials}_${dateStr}.xlsx`);
 }
 // ---- Dual view (Career vs Together) toggle ----
 let dualViewOn = false; // false = career only, true = show both side by side
