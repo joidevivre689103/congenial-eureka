@@ -251,25 +251,31 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .partnership-area.hidden{display:none !important}
 
 /* Cohort comparison area */
-.cohort-area{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-start;margin-bottom:18px}
+.cohort-area{display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
 .cohort-area.hidden{display:none !important}
-.cohort-group{flex:1;min-width:280px}
+.cohort-groups-wrap{display:flex;flex-wrap:wrap;gap:20px 32px;align-items:flex-start}
+.cohort-group{flex:1;min-width:260px;max-width:420px}
 .cohort-label{
   font-family:'DM Serif Display',serif;font-size:13px;font-weight:600;
   padding:5px 12px;margin-bottom:10px;border-radius:6px;
   background:var(--surface2);border:1px solid var(--border);color:var(--text2);
-  display:inline-block;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
-.cohort-group:first-child .cohort-label{border-left:3px solid var(--accent);color:var(--accent)}
-.cohort-group:last-child  .cohort-label{border-left:3px solid var(--blue);color:var(--blue)}
+.cohort-remove{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;line-height:1;padding:0 2px;}
+.cohort-remove:hover{color:var(--red)}
 .cohort-slots{display:flex;flex-direction:column;gap:8px}
 .cohort-vs{
-  align-self:center;font-family:'DM Serif Display',serif;font-size:20px;
+  align-self:center;font-family:'DM Serif Display',serif;font-size:18px;
   color:var(--text3);font-weight:700;padding:0 4px;flex-shrink:0;
+  display:none; /* shown dynamically between groups */
 }
+/* Cohort colour accents by index */
+.cohort-group[data-ci="0"] .cohort-label{border-left:3px solid var(--accent);color:var(--accent)}
+.cohort-group[data-ci="1"] .cohort-label{border-left:3px solid var(--blue);color:var(--blue)}
+.cohort-group[data-ci="2"] .cohort-label{border-left:3px solid var(--green);color:var(--green)}
+.cohort-group[data-ci="3"] .cohort-label{border-left:3px solid var(--gold);color:var(--gold)}
 @media(max-width:700px){
-  .cohort-area{flex-direction:column}
-  .cohort-vs{text-align:center;padding:4px 0}
+  .cohort-groups-wrap{flex-direction:column}
 }
 .empty.hidden{display:none !important}
 .partnership-group{flex:0 0 auto;min-width:340px}
@@ -703,17 +709,10 @@ header.header{display:none !important}
     <button class="add-player-btn" id="addPlayerBtn" onclick="addPlayerSlot()"><span class="plus">+</span> Add Player</button>
   </div>
 
-  <!-- Cohort Comparison Area (Together modes: duo/triple/quartet/quintet/eleven) -->
+  <!-- Cohort Comparison Area (Together modes) -->
   <div class="cohort-area hidden" id="cohortArea">
-    <div class="cohort-group" id="cg-a">
-      <div class="cohort-label" id="cg-a-label">Cohort A</div>
-      <div class="cohort-slots" id="cg-a-slots"></div>
-    </div>
-    <div class="cohort-vs">VS</div>
-    <div class="cohort-group" id="cg-b">
-      <div class="cohort-label" id="cg-b-label">Cohort B</div>
-      <div class="cohort-slots" id="cg-b-slots"></div>
-    </div>
+    <div class="cohort-groups-wrap" id="cohortGroupsWrap"></div>
+    <button class="add-player-btn" id="addCohortBtn" onclick="addCohort()" style="display:none"><span class="plus">+</span> Add Cohort</button>
   </div>
 
   <!-- Partnership Selection Area (hidden by default) -->
@@ -1616,7 +1615,7 @@ function showShareDialog(url, playerNames){ const copied = prompt('Copy this URL
 // Export to Excel — respects active tab, Stats Type, dual-view toggle, and cohort totals
 function exportToExcel(){
   const players = cohortMode
-    ? [...cohortSel.a.filter(Boolean), ...cohortSel.b.filter(Boolean)]
+    ? cohortGroups.flat().filter(Boolean)
     : activeSel();
   if(players.length < 2){ alert('Select at least 2 players to export'); return; }
 
@@ -1693,11 +1692,23 @@ function exportToExcel(){
     return t;
   }
 
-  // Split into two cohorts — respect explicit boundary if set by cohort mode
+  // Split into cohorts — use _cohortBoundaries for cohort mode (supports 2-4 cohorts)
+  // Returns { groups: [[statsA...],[statsB...],...] } for cohort mode
+  // or legacy { a, b } for normal 2-way split (used in writeSection)
   function splitCohorts(statsArr){
-    if(statsArr.length<2) return null;
-    const mid = (cohortMode && window._cohortSplit) ? window._cohortSplit : Math.ceil(statsArr.length/2);
-    return { a: statsArr.slice(0,mid), b: statsArr.slice(mid) };
+    if(statsArr.length < 2) return null;
+    if(cohortMode && window._cohortBoundaries && window._cohortBoundaries.length >= 2){
+      const groups = [];
+      let offset = 0;
+      window._cohortBoundaries.forEach(size => {
+        groups.push(statsArr.slice(offset, offset + size));
+        offset += size;
+      });
+      // Return legacy {a,b} from first two groups for 2-cohort compat, plus full groups array
+      return { a: groups[0]||[], b: groups[1]||[], groups };
+    }
+    const mid = Math.ceil(statsArr.length / 2);
+    return { a: statsArr.slice(0, mid), b: statsArr.slice(mid), groups: [statsArr.slice(0, mid), statsArr.slice(mid)] };
   }
 
   // Row builders
@@ -1720,22 +1731,22 @@ function exportToExcel(){
     return r;
   }
 
-  // Write individual rows + blank line + cohort totals
+  // Write individual rows + blank line + cohort totals (supports 2-4 cohorts)
   function writeSection(ws, title, hdr, statsArr, rowFn, r, cw){
     const cohorts = splitCohorts(statsArr);
-    const cohortTypeName = cohortMode
-      ? ({duo:'Duo',triple:'Triple',quartet:'Quartet',quintet:'Quintet',eleven:'Eleven'}[document.getElementById('fRecordType').value]||'Cohort')
-      : 'Cohort';
-    const cALabel = cohorts
-      ? (cohorts.a.length>1 ? cohortTypeName+' A — '+cohorts.a.map(s=>s.name.split(' ').pop()).join(', ') : cohorts.a[0].name+' Total')
-      : '';
-    const cBLabel = cohorts && cohorts.b.length>0
-      ? (cohorts.b.length>1 ? cohortTypeName+' B — '+cohorts.b.map(s=>s.name.split(' ').pop()).join(', ') : cohorts.b[0].name+' Total')
-      : '';
-    const cA = cohorts ? cohortTotal(cohorts.a, cALabel) : null;
-    const cB = cohorts && cohorts.b.length>0 ? cohortTotal(cohorts.b, cBLabel) : null;
+    const groups = cohorts ? cohorts.groups : null;
     const dataRows = statsArr.map(rowFn);
-    const totRows = [[], ...(cA?[rowFn(cA)]:[]), ...(cB?[rowFn(cB)]:[])];
+    const totRows = [];
+    if(groups && groups.length >= 2){
+      groups.forEach((g, gi) => {
+        if(!g || g.length === 0) return;
+        const lbl = g.length > 1
+          ? `${cohortTypeName||'Cohort'} ${COHORT_NAMES_EN[gi]} — ${g.map(s=>s.name.split(' ').pop()).join(', ')}`
+          : g[0].name + ' Total';
+        const tot = cohortTotal(g, lbl);
+        if(tot){ totRows.push([]); totRows.push(rowFn(tot)); }
+      });
+    }
     r = writeBlock(ws, title, hdr, [...dataRows, ...totRows], r, cw);
     return r + 2;
   }
@@ -1807,7 +1818,7 @@ function toggleDualView(){
 }
 
 function updateExportButton(){
-  const players = cohortMode ? [...cohortSel.a, ...cohortSel.b].filter(Boolean) : activeSel();
+  const players = cohortMode ? cohortGroups.flat().filter(Boolean) : activeSel();
   const show = players.length >= 2;
   document.getElementById('exportBtn').style.display = show ? 'flex' : 'none';
   const toggle = document.getElementById('dualToggle');
@@ -1832,24 +1843,37 @@ const PARTNERSHIP_COLORS = ['p1','p2','p3','p4'];
 // Map Record Type value → target number of player slots (null = free/unlimited up to MAX)
 const COHORT_SIZES = { duo:2, triple:3, quartet:4, quintet:5, eleven:11 };
 const TOGETHER_TYPES = new Set(Object.keys(COHORT_SIZES));
+const MAX_COHORTS = 4; // max cohorts for duo/triple/quartet/quintet
+const COHORT_COLORS = ['var(--accent)','var(--blue)','var(--green)','var(--gold)'];
+const COHORT_NAMES_EN = ['A','B','C','D'];
 
-// cohortSel['a'][0..n-1] and cohortSel['b'][0..n-1] hold selected players
-let cohortSel = { a: [], b: [] };
+// cohortGroups: array of arrays, each inner array has `cohortSize` slots (null or player)
+let cohortGroups = []; // e.g. [[p1,p2,p3],[p4,p5,p6]] for triple
 let cohortMode = false;
 let cohortSize = 0;
+let cohortTypeName = '';
+let cohortMaxGroups = 2;
+
+function handleRecordTypeChange_cohortReset(recordType){
+  cohortMode = TOGETHER_TYPES.has(recordType);
+  cohortSize = cohortMode ? COHORT_SIZES[recordType] : 0;
+  cohortMaxGroups = recordType === 'eleven' ? 2 : MAX_COHORTS;
+  cohortTypeName = { duo:'Duo', triple:'Triple', quartet:'Quartet', quintet:'Quintet', eleven:'Eleven' }[recordType] || '';
+  cohortGroups = [];
+}
 
 function handleRecordTypeChange(){
   const recordType = document.getElementById('fRecordType').value;
+  handleRecordTypeChange_cohortReset(recordType);
   partnershipMode = (recordType === 'partnerships');
-  cohortMode = TOGETHER_TYPES.has(recordType);
 
-  const selArea        = document.getElementById('selArea');
-  const cohortArea     = document.getElementById('cohortArea');
-  const partnershipArea= document.getElementById('partnershipArea');
-  const emptyState     = document.getElementById('emptyState');
+  const selArea         = document.getElementById('selArea');
+  const cohortArea      = document.getElementById('cohortArea');
+  const partnershipArea = document.getElementById('partnershipArea');
+  const emptyState      = document.getElementById('emptyState');
   const partnershipEmpty = document.getElementById('partnershipEmptyState');
 
-  // Hide all three areas first
+  // Hide all areas first
   selArea.classList.add('hidden');
   cohortArea.classList.add('hidden');
   partnershipArea.classList.add('hidden');
@@ -1872,14 +1896,9 @@ function handleRecordTypeChange(){
     if(hasEnoughPartnerships()) renderPartnerships();
 
   } else if(cohortMode){
-    cohortSize = COHORT_SIZES[recordType];
-    cohortSel = { a: Array(cohortSize).fill(null), b: Array(cohortSize).fill(null) };
-    const names = { duo:'Duo', triple:'Triple', quartet:'Quartet', quintet:'Quintet', eleven:'Eleven' };
-    const label = names[recordType];
-    document.getElementById('cg-a-label').textContent = label + ' A';
-    document.getElementById('cg-b-label').textContent = label + ' B';
-    buildCohortSlots('a', cohortSize);
-    buildCohortSlots('b', cohortSize);
+    // Initialise with 2 empty cohort groups
+    cohortGroups = [Array(cohortSize).fill(null), Array(cohortSize).fill(null)];
+    buildCohortArea();
     cohortArea.classList.remove('hidden');
     cohortArea.style.display = 'flex';
     emptyState.classList.remove('hidden');
@@ -1899,44 +1918,87 @@ function handleRecordTypeChange(){
   }
 }
 
-// Build N player slots inside a cohort group
-function buildCohortSlots(side, n){
-  const container = document.getElementById('cg-'+side+'-slots');
-  container.innerHTML = '';
-  for(let i = 0; i < n; i++){
-    const slotId = side + i;
-    const color = side === 'a' ? 'var(--accent)' : 'var(--blue)';
-    const div = document.createElement('div');
-    div.className = 'sel-card'; div.id = 'cslot-'+slotId;
-    div.style.cssText = 'margin:0';
-    div.innerHTML = `
-      <div class="sel-pcolor" style="background:${color};color:${color}"></div>
-      <div class="sel-label" style="margin-left:18px">Player ${i+1}</div>
-      <input class="sel-input" id="ci-${slotId}" placeholder="Search player..." autocomplete="off">
-      <button class="sel-clear" id="cx-${slotId}" onclick="clearCohortSlot('${side}',${i})">&times;</button>
-      <div class="dd" id="cd-${slotId}"></div>
-      <div class="sel-info" id="cinfo-${slotId}">
-        <div class="si-name" id="cname-${slotId}"></div>
-        <div class="si-meta" id="cmeta-${slotId}"></div>
-      </div>`;
-    container.appendChild(div);
-    initCohortSearch(side, i);
-  }
+function buildCohortArea(){
+  const wrap = document.getElementById('cohortGroupsWrap');
+  const addBtn = document.getElementById('addCohortBtn');
+  wrap.innerHTML = '';
+
+  cohortGroups.forEach((group, ci) => {
+    if(ci > 0){
+      const vs = document.createElement('div');
+      vs.className = 'cohort-vs';
+      vs.style.display = 'flex';
+      vs.textContent = 'VS';
+      vs.style.cssText = 'align-self:center;font-family:"DM Serif Display",serif;font-size:18px;color:var(--text3);font-weight:700;padding:0 4px;flex-shrink:0;';
+      wrap.appendChild(vs);
+    }
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'cohort-group';
+    groupDiv.dataset.ci = ci;
+
+    const canRemove = cohortGroups.length > 2;
+    groupDiv.innerHTML = `
+      <div class="cohort-label">
+        <span>${cohortTypeName} ${COHORT_NAMES_EN[ci]}</span>
+        ${canRemove ? `<button class="cohort-remove" onclick="removeCohort(${ci})" title="Remove cohort">&times;</button>` : ''}
+      </div>
+      <div class="cohort-slots" id="cslots-${ci}"></div>`;
+    wrap.appendChild(groupDiv);
+
+    // Build player slots inside this cohort
+    const slotsDiv = groupDiv.querySelector('.cohort-slots');
+    group.forEach((player, si) => {
+      const slotId = `${ci}-${si}`;
+      const color = COHORT_COLORS[ci % COHORT_COLORS.length];
+      const card = document.createElement('div');
+      card.className = 'sel-card'; card.id = 'cslot-'+slotId; card.style.margin = '0';
+      card.innerHTML = `
+        <div class="sel-pcolor" style="background:${color};color:${color}"></div>
+        <div class="sel-label" style="margin-left:18px">Player ${si+1}</div>
+        <input class="sel-input" id="ci-${slotId}" placeholder="Search player..." autocomplete="off">
+        <button class="sel-clear" id="cx-${slotId}" onclick="clearCohortSlot(${ci},${si})" style="display:${player?'flex':'none'}">&times;</button>
+        <div class="dd" id="cd-${slotId}"></div>
+        <div class="sel-info ${player?'show':''}" id="cinfo-${slotId}">
+          <div class="si-name" id="cname-${slotId}">${player ? (player.fullName||player.name) : ''}</div>
+          <div class="si-meta" id="cmeta-${slotId}">${player ? badge(player.country)+` ${player.fromYear}–${player.toYear} · ${player.tests} Tests` : ''}</div>
+        </div>`;
+      slotsDiv.appendChild(card);
+      initCohortSearch(ci, si);
+    });
+  });
+
+  // Show/hide Add Cohort button
+  addBtn.style.display = (cohortGroups.length < cohortMaxGroups) ? '' : 'none';
 }
 
-function initCohortSearch(side, idx){
-  const slotId = side + idx;
+function addCohort(){
+  if(cohortGroups.length >= cohortMaxGroups) return;
+  cohortGroups.push(Array(cohortSize).fill(null));
+  buildCohortArea();
+}
+
+function removeCohort(ci){
+  if(cohortGroups.length <= 2) return;
+  cohortGroups.splice(ci, 1);
+  buildCohortArea();
+  if(hasEnoughCohorts()) renderCohorts();
+  else { document.getElementById('comp').classList.remove('show'); document.getElementById('emptyState').style.display='block'; }
+}
+
+function initCohortSearch(ci, si){
+  const slotId = `${ci}-${si}`;
   const inp = document.getElementById('ci-'+slotId);
   const dd  = document.getElementById('cd-'+slotId);
+  if(!inp) return;
   inp.addEventListener('input', () => {
     const q = inp.value.trim().toLowerCase();
     if(q.length < 2){ dd.classList.remove('open'); return; }
-    const taken = [...cohortSel.a, ...cohortSel.b].filter(Boolean).map(p=>p.id);
+    const taken = cohortGroups.flat().filter(Boolean).map(p=>p.id);
     const m = PLAYERS.filter(p => !taken.includes(p.id) &&
       (p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q) || p.country.toLowerCase().includes(q))
     ).slice(0, 15);
     dd.innerHTML = m.map(p =>
-      `<div class="dd-item" onmousedown="event.preventDefault();pickCohort('${side}',${idx},${p.id})">` +
+      `<div class="dd-item" onmousedown="event.preventDefault();pickCohort(${ci},${si},${p.id})">` +
       `<span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}–${p.toYear}</span></span>` +
       `<span class="ct">${p.country}</span></div>`
     ).join('');
@@ -1947,10 +2009,10 @@ function initCohortSearch(side, idx){
   document.addEventListener('click', e => { if(!e.target.closest('#cslot-'+slotId)) dd.classList.remove('open'); });
 }
 
-function pickCohort(side, idx, id){
+function pickCohort(ci, si, id){
   const p = PLAYERS.find(x => x.id === id); if(!p) return;
-  cohortSel[side][idx] = p;
-  const slotId = side + idx;
+  cohortGroups[ci][si] = p;
+  const slotId = `${ci}-${si}`;
   document.getElementById('ci-'+slotId).value = '';
   document.getElementById('cd-'+slotId).classList.remove('open');
   document.getElementById('cname-'+slotId).textContent = p.fullName || p.name;
@@ -1960,37 +2022,35 @@ function pickCohort(side, idx, id){
   if(hasEnoughCohorts()){ document.getElementById('emptyState').style.display = 'none'; renderCohorts(); }
 }
 
-function clearCohortSlot(side, idx){
-  cohortSel[side][idx] = null;
-  const slotId = side + idx;
+function clearCohortSlot(ci, si){
+  cohortGroups[ci][si] = null;
+  const slotId = `${ci}-${si}`;
   document.getElementById('ci-'+slotId).value = '';
   document.getElementById('cinfo-'+slotId).classList.remove('show');
   document.getElementById('cx-'+slotId).style.display = 'none';
-  if(!hasEnoughCohorts()){ document.getElementById('comp').classList.remove('show'); document.getElementById('emptyState').style.display = 'block'; }
+  if(!hasEnoughCohorts()){ document.getElementById('comp').classList.remove('show'); document.getElementById('emptyState').style.display='block'; }
   else renderCohorts();
 }
 
 function hasEnoughCohorts(){
-  return cohortSel.a.filter(Boolean).length >= 1 && cohortSel.b.filter(Boolean).length >= 1;
+  // At least 2 cohorts each with at least 1 player
+  return cohortGroups.filter(g => g.filter(Boolean).length >= 1).length >= 2;
 }
 
 function renderCohorts(){
-  const allPlayers = [...cohortSel.a.filter(Boolean), ...cohortSel.b.filter(Boolean)];
+  // Flatten cohort groups into sel[] preserving order, store split boundaries
+  const allPlayers = cohortGroups.map(g => g.filter(Boolean)).flat();
   if(allPlayers.length < 2) return;
 
-  // Tag cohort boundary so export and buildDualOrSingle know where to split
-  window._cohortSplit = cohortSel.a.filter(Boolean).length;
+  // Store boundaries: array of cumulative sizes per cohort for splitCohorts
+  window._cohortBoundaries = cohortGroups.map(g => g.filter(Boolean).length);
 
-  // Temporarily fill sel[] with cohort players so render() works normally
   const savedSel = sel.slice();
   for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = allPlayers[i] || null;
 
-  // Call the original render (before the wrapper that calls updateExportButton)
   originalRender();
 
-  // Restore sel[]
   for(let i = 0; i < MAX_PLAYERS; i++) sel[i] = savedSel[i];
-
   updateExportButton();
 }
 
