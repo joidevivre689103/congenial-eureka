@@ -7,14 +7,12 @@
   "contributedBy": "ij",
   "today": {
     "question": "Who is the only player to score a century in his first three test matches?",
-    "options": {
-      "A": "Lawrence Rowe",
-      "B": "Brendon Kuruppu",
-      "C": "Mohammad Azharuddin"
-    },
-    "answer": "C",
+    "optionA": "Lawrence Rowe",
+    "optionB": "Brendon Kuruppu",
+    "optionC": "Mohammad Azharuddin",
+    "correctAnswer": "C",
     "contributedBy": "Nick Cawley",
     "date": "2026-03-07"
   },
-  "updatedAt": "2026-03-07T01:00:26.769Z"
+  "updatedAt": "2026-03-07T01:01:24.123Z"
 }
