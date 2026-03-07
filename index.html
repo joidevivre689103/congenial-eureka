@@ -1324,9 +1324,10 @@ function render(){
     return result;
   }
 
-  // In cohort mode the default (single/Career) view ALWAYS shows within-cohort shared match stats
-  // so comparison is like-for-like. Together toggle switches to per-cohort shared stats explicitly.
-  if(cohortMode){
+  // In cohort mode + Together view: apply within-cohort shared filter for like-for-like stats.
+  // Career view shows full career stats unfiltered.
+  // Dual view: buildDualOrSingle handles both columns independently.
+  if(cohortMode && !dualViewOn && f.together === 'yes'){
     rowSets = applyCohortSharedFilter(rowSets);
   }
 
