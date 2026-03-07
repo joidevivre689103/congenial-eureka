@@ -466,13 +466,11 @@ body{
 .snippet-card-text{ font-family:'Source Serif 4',Georgia,serif; font-size:14px; line-height:1.65; color:var(--text2); flex:1; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   VOICES PANEL — full-bleed horizontal band
+   VOICES PANEL — single full-width card with prev/next navigation
 ═══════════════════════════════════════════════════════════════════════════ */
 .voices-section{
-  width:100%;
-  background:var(--text);           /* dark ink band */
-  border-top:3px solid var(--accent);
-  padding:40px 0 44px;
+  padding:48px 0;
+  border-bottom:1px solid var(--border);
 }
 .voices-band-inner{
   max-width:1400px;
@@ -487,33 +485,27 @@ body{
 }
 .voices-section-title{
   font-family:'Playfair Display',serif;
-  font-size:22px;
+  font-size:26px;
   font-weight:700;
-  color:#fff;
-  letter-spacing:-0.2px;
-}
-.voices-section-subtitle{
-  font-family:'Source Serif 4',Georgia,serif;
-  font-size:13px;
-  color:rgba(255,255,255,0.45);
-  font-style:italic;
-  margin-bottom:24px;
+  color:var(--text);
 }
 .voices-more-link{
   font-family:'Inter',sans-serif;
-  font-size:11px;
+  font-size:12px;
   font-weight:700;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.6);
+  letter-spacing:0.4px;
+  color:var(--accent);
   text-decoration:none;
   display:inline-flex;
   align-items:center;
   gap:5px;
-  transition:color 0.2s;
+  padding:7px 16px;
+  border:1.5px solid var(--accent);
+  border-radius:4px;
+  transition:all 0.2s;
   white-space:nowrap;
 }
-.voices-more-link:hover{ color:#fff; }
+.voices-more-link:hover{ background:var(--accent); color:#fff; }
 .voices-more-link svg{
   width:13px; height:13px;
   stroke:currentColor; fill:none; stroke-width:2.5;
@@ -521,82 +513,100 @@ body{
 }
 .voices-more-link:hover svg{ transform:translateX(3px); }
 
-/* Horizontal scrolling row of cards */
-.voices-grid{
+/* Single card + arrow nav */
+.voices-stage{
   display:flex;
-  gap:16px;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  padding-bottom:4px;
-}
-.voices-grid::-webkit-scrollbar{ display:none; }
-
-.voice-card-front{
-  flex:0 0 280px;
-  scroll-snap-align:start;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
+  align-items:stretch;
+  gap:0;
+  border:1px solid var(--border);
   border-radius:6px;
-  padding:20px 22px 16px;
+  overflow:hidden;
+}
+.voices-nav-btn{
+  flex:0 0 52px;
+  background:var(--surface2);
+  border:none;
+  cursor:pointer;
   display:flex;
-  flex-direction:column;
-  gap:10px;
+  align-items:center;
+  justify-content:center;
+  color:var(--text3);
+  transition:background 0.15s, color 0.15s;
+}
+.voices-nav-btn:hover{ background:var(--surface3); color:var(--accent); }
+.voices-nav-btn svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+.voices-nav-btn:disabled{ opacity:0.25; cursor:default; }
+.voices-nav-btn:disabled:hover{ background:var(--surface2); color:var(--text3); }
+
+.voices-card-wrap{
+  flex:1;
+  min-width:0;
+  background:var(--surface);
+  padding:32px 40px 28px;
+  border-left:1px solid var(--border);
+  border-right:1px solid var(--border);
   position:relative;
-  transition:background 0.2s, border-color 0.2s;
 }
-.voice-card-front:hover{
-  background:rgba(255,255,255,0.10);
-  border-color:rgba(255,255,255,0.22);
-}
-.voice-card-front::before{
+.voices-card-wrap::before{
   content:'';
   position:absolute;
-  top:16px; bottom:16px; left:0;
-  width:3px;
+  top:0; left:0; right:0;
+  height:3px;
   background:var(--accent);
-  border-radius:0 2px 2px 0;
-  opacity:0.7;
-}
-.voice-card-front-quote{
-  font-family:'Playfair Display',serif;
-  font-size:14px;
-  line-height:1.65;
-  color:rgba(255,255,255,0.88);
-  font-style:italic;
-  flex:1;
-}
-.voice-card-front-quote::before{
-  content:'\201C';
-  font-size:36px;
-  line-height:0;
-  vertical-align:-12px;
-  margin-right:3px;
-  color:var(--accent);
   opacity:0.5;
+}
+.voices-quote{
   font-family:'Playfair Display',serif;
+  font-size:clamp(16px,2vw,22px);
+  line-height:1.65;
+  color:var(--text);
+  font-style:italic;
+  margin-bottom:20px;
+  position:relative;
+  padding-left:32px;
+}
+.voices-quote::before{
+  content:'\201C';
+  position:absolute;
+  left:0; top:-8px;
+  font-size:64px;
+  line-height:1;
+  color:var(--accent);
+  opacity:0.2;
   font-style:normal;
 }
-.voice-card-front-footer{
+.voices-card-footer{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:8px;
-  padding-top:10px;
-  border-top:1px solid rgba(255,255,255,0.10);
+  gap:16px;
 }
-.voice-card-front-name{
+.voices-attribution{}
+.voices-name{
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+}
+.voices-context{
   font-family:'Inter',sans-serif;
   font-size:12px;
-  font-weight:700;
-  color:rgba(255,255,255,0.9);
+  color:var(--text3);
+  font-style:italic;
+  margin-top:2px;
 }
-.voice-card-front-context{
+.voices-card-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-shrink:0;
+}
+.voices-counter{
   font-family:'Inter',sans-serif;
   font-size:11px;
-  color:rgba(255,255,255,0.45);
-  font-style:italic;
+  color:var(--text3);
+  font-weight:500;
+  white-space:nowrap;
 }
 .voice-role-pill{
   font-family:'Inter',sans-serif;
@@ -604,22 +614,20 @@ body{
   font-weight:700;
   letter-spacing:0.5px;
   text-transform:uppercase;
-  padding:3px 9px;
+  padding:4px 10px;
   border-radius:20px;
   flex-shrink:0;
 }
-.voice-role-pill.player     { background:rgba(26,104,72,0.30);  color:#6dbb9a; }
-.voice-role-pill.fan        { background:rgba(26,72,120,0.30);  color:#6d9abb; }
-.voice-role-pill.expert     { background:rgba(120,48,120,0.30); color:#bb7abb; }
-.voice-role-pill.commentator{ background:rgba(160,88,32,0.30);  color:#d4996a; }
-.voice-role-pill.other      { background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.5); }
+.voice-role-pill.player     { background:rgba(26,104,72,0.10);  color:#1a6848; }
+.voice-role-pill.fan        { background:rgba(26,72,120,0.10);  color:#1a4878; }
+.voice-role-pill.expert     { background:rgba(120,48,120,0.10); color:#783078; }
+.voice-role-pill.commentator{ background:rgba(160,88,32,0.10);  color:#a05820; }
+.voice-role-pill.other      { background:var(--surface3);       color:var(--text3); }
 
-.voices-empty{
-  color:rgba(255,255,255,0.4);
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  font-style:italic;
-  padding:32px 0;
+@media(max-width:640px){
+  .voices-card-wrap{ padding:24px 20px 20px; }
+  .voices-nav-btn{ flex:0 0 40px; }
+  .voices-quote{ font-size:16px; padding-left:20px; }
 }
 </style>
 <script type="module">
@@ -888,7 +896,7 @@ body{
 
 </main>
 
-<!-- VOICES BAND — full-bleed, outside main container -->
+<!-- VOICES BAND -->
 <section class="voices-section" id="voicesSection" style="display:none">
   <div class="voices-band-inner">
     <div class="voices-band-head">
@@ -898,8 +906,15 @@ body{
         <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </a>
     </div>
-    <p class="voices-section-subtitle">What players, fans, and experts are saying about Test cricket</p>
-    <div class="voices-grid" id="voicesGrid"></div>
+    <div class="voices-stage">
+      <button class="voices-nav-btn" id="voicesPrev" onclick="voicesNav(-1)" aria-label="Previous voice">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="voices-card-wrap" id="voicesCard"></div>
+      <button class="voices-nav-btn" id="voicesNext" onclick="voicesNav(1)" aria-label="Next voice">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
   </div>
 </section>
 
@@ -1245,43 +1260,44 @@ function resetSnippetTimer() { startSnippetTimer(); }
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// VOICES — from voices.json, shows up to 4 on front page
+// VOICES — single card navigator
 // ═══════════════════════════════════════════════════════════════════════════
 (async function loadVoices() {
   try {
     const data = await ghFetch('voices.json');
-    if (!data) return;
-    // Respect the section-enabled toggle from CMS
-    if (data.enabled === false) return;
-
+    if (!data || data.enabled === false) return;
     const voices = (data.voices || []).filter(v => v.visible !== false);
     if (voices.length === 0) return;
 
-    const section = document.getElementById('voicesSection');
-    const grid    = document.getElementById('voicesGrid');
-
-    // Show max 4 on front page — full list is on voices.html
-    const preview = voices.slice(0, 4);
-
+    let idx = 0;
     const roleLabels = { player:'Player', fan:'Fan', expert:'Expert', commentator:'Commentator', other:'Other' };
 
-    grid.innerHTML = preview.map(v => {
+    function renderVoice() {
+      const v = voices[idx];
       const role = v.role || 'other';
-      const roleLabel = roleLabels[role] || 'Other';
-      return `
-        <div class="voice-card-front">
-          <div class="voice-card-front-quote">${escapeHTML(v.voice)}</div>
-          <div class="voice-card-front-footer">
-            <div>
-              <div class="voice-card-front-name">${escapeHTML(v.name)}</div>
-              ${v.context ? `<div class="voice-card-front-context">${escapeHTML(v.context)}</div>` : ''}
-            </div>
-            <span class="voice-role-pill ${role}">${roleLabel}</span>
+      document.getElementById('voicesCard').innerHTML = `
+        <div class="voices-quote">${escapeHTML(v.voice)}</div>
+        <div class="voices-card-footer">
+          <div class="voices-attribution">
+            <div class="voices-name">${escapeHTML(v.name)}</div>
+            ${v.context ? `<div class="voices-context">${escapeHTML(v.context)}</div>` : ''}
+          </div>
+          <div class="voices-card-right">
+            <span class="voices-counter">${idx + 1} / ${voices.length}</span>
+            <span class="voice-role-pill ${role}">${roleLabels[role] || 'Other'}</span>
           </div>
         </div>`;
-    }).join('');
+      document.getElementById('voicesPrev').disabled = idx === 0;
+      document.getElementById('voicesNext').disabled = idx === voices.length - 1;
+    }
 
-    section.style.display = 'block';
+    window.voicesNav = function(dir) {
+      idx = Math.max(0, Math.min(voices.length - 1, idx + dir));
+      renderVoice();
+    };
+
+    renderVoice();
+    document.getElementById('voicesSection').style.display = 'block';
   } catch(e) {
     console.warn('Could not load voices.json:', e);
   }
