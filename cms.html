@@ -4,30 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cricket Times — Content Management</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0f1117;
-  --surface:#1a1d24;
-  --surface2:#252830;
-  --surface3:#2f333d;
-  --border:#3a3f4a;
-  --border2:#4a505c;
-  --text:#f0f2f5;
-  --text2:#a0a8b8;
-  --text3:#6a7080;
-  --accent:#3b82f6;
-  --accent-hover:#2563eb;
-  --accent-dim:rgba(59,130,246,0.15);
-  --green:#22c55e;
-  --green-dim:rgba(34,197,94,0.15);
-  --yellow:#eab308;
-  --yellow-dim:rgba(234,179,8,0.15);
-  --red:#ef4444;
-  --red-dim:rgba(239,68,68,0.15);
-  --orange:#f97316;
-  --purple:#a855f7;
+  --bg:#faf9f7;
+  --surface:#ffffff;
+  --surface2:#f5f4f2;
+  --surface3:#eceae6;
+  --border:#d8d4cc;
+  --border2:#c8c4bc;
+  --text:#1a1a18;
+  --text2:#4a4a46;
+  --text3:#7a7a74;
+  --accent:#a03020;
+  --accent-hover:#801810;
+  --accent-dim:rgba(160,48,32,0.08);
+  --green:#1a6848;
+  --green-dim:rgba(26,104,72,0.12);
+  --yellow:#92700a;
+  --yellow-dim:rgba(146,112,10,0.12);
+  --red:#b02020;
+  --red-dim:rgba(176,32,32,0.10);
+  --orange:#a05820;
+  --purple:#703070;
 }
 
 body{
@@ -64,9 +64,9 @@ body{
   border-bottom:1px solid var(--border);
   margin-bottom:20px;
 }
-.sidebar-brand h1{font-size:18px;font-weight:800;letter-spacing:-0.3px;}
+.sidebar-brand h1{font-size:18px;font-weight:700;letter-spacing:-0.3px;font-family:'Playfair Display',serif;}
 .sidebar-brand span{color:var(--accent);}
-.sidebar-brand p{font-size:11px;color:var(--text3);margin-top:4px;}
+.sidebar-brand p{font-size:11px;color:var(--text3);margin-top:4px;font-family:'Inter',sans-serif;letter-spacing:0.5px;text-transform:uppercase;}
 
 .sidebar-nav{flex:1;padding:0 12px;}
 .nav-section{margin-bottom:24px;}
@@ -100,7 +100,7 @@ body{
 /* ─── MAIN CONTENT ─── */
 .main{padding:24px 32px;overflow-y:auto;}
 .main-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
-.main-title{font-size:24px;font-weight:700;letter-spacing:-0.3px;}
+.main-title{font-size:24px;font-weight:700;letter-spacing:-0.3px;font-family:'Playfair Display',serif;}
 .main-actions{display:flex;gap:12px;}
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -133,7 +133,7 @@ body{
 .stat-card-icon.blue{background:var(--accent-dim)} .stat-card-icon.blue svg{stroke:var(--accent)}
 .stat-card-icon.green{background:var(--green-dim)} .stat-card-icon.green svg{stroke:var(--green)}
 .stat-card-icon.yellow{background:var(--yellow-dim)} .stat-card-icon.yellow svg{stroke:var(--yellow)}
-.stat-card-icon.purple{background:rgba(168,85,247,0.15)} .stat-card-icon.purple svg{stroke:var(--purple)}
+.stat-card-icon.purple{background:rgba(112,48,112,0.12)} .stat-card-icon.purple svg{stroke:var(--purple)}
 .stat-card-trend{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;}
 .stat-card-trend.up{background:var(--green-dim);color:var(--green)}
 .stat-card-trend.down{background:var(--red-dim);color:var(--red)}
@@ -1827,7 +1827,7 @@ function runAudioDiagnostic(){try{const keys=Object.keys(localStorage).filter(k=
 // QUIZ
 // ═══════════════════════════════════════════════════════════════════════════
 function initQuizView(){loadAudioSettings();}
-function updateQuizPreview(){const q=document.getElementById('quizQuestion').value.trim(),a=document.getElementById('quizOptionA').value.trim(),b=document.getElementById('quizOptionB').value.trim(),c=document.getElementById('quizOptionC').value.trim(),correct=document.getElementById('quizCorrectAnswer').value,by=document.getElementById('quizContributedBy').value.trim();if(!q){document.getElementById('quizPreview').textContent='Fill in the fields above to see a preview.';return;}document.getElementById('quizPreview').innerHTML=`<div style="font-weight:600;margin-bottom:8px">${q}</div>${[['A',a],['B',b],['C',c]].map(([l,t])=>`<div style="padding:6px 10px;border-radius:6px;margin-bottom:4px;background:${correct===l?'var(--green-dim)':'var(--surface3)'};color:${correct===l?'var(--green)':'var(--text2)'}"><strong>${l}.</strong> ${t||'—'}</div>`).join('')}${by?`<div style="font-size:11px;color:var(--text3);margin-top:8px">Contributed by: ${by}</div>`:''}`);}
+function updateQuizPreview(){const q=document.getElementById('quizQuestion').value.trim(),a=document.getElementById('quizOptionA').value.trim(),b=document.getElementById('quizOptionB').value.trim(),c=document.getElementById('quizOptionC').value.trim(),correct=document.getElementById('quizCorrectAnswer').value,by=document.getElementById('quizContributedBy').value.trim();if(!q){document.getElementById('quizPreview').textContent='Fill in the fields above to see a preview.';return;}document.getElementById('quizPreview').innerHTML=`<div style="font-weight:600;margin-bottom:8px">${q}</div>${[['A',a],['B',b],['C',c]].map(([l,t])=>`<div style="padding:6px 10px;border-radius:6px;margin-bottom:4px;background:${correct===l?'var(--green-dim)':'var(--surface3)'};color:${correct===l?'var(--green)':'var(--text2)'}"><strong>${l}.</strong> ${t||'—'}</div>`).join('')}${by?`<div style="font-size:11px;color:var(--text3);margin-top:8px">Contributed by: ${by}</div>`:''}`;}
 async function saveQuizToGitHub(){const token=document.getElementById('quizGithubToken').value.trim();if(!token){showToast('error','No Token','Enter your GitHub token first.');return;}const q={question:document.getElementById('quizQuestion').value.trim(),optionA:document.getElementById('quizOptionA').value.trim(),optionB:document.getElementById('quizOptionB').value.trim(),optionC:document.getElementById('quizOptionC').value.trim(),correctAnswer:document.getElementById('quizCorrectAnswer').value,contributedBy:document.getElementById('quizContributedBy').value.trim(),date:new Date().toISOString().split('T')[0]};if(!q.question||!q.optionA||!q.optionB||!q.optionC||!q.correctAnswer){showToast('error','Incomplete','Fill in all required fields.');return;}showToast('success','Saving…','Publishing quiz to GitHub…');try{const owner=GH_OWNER,repo=GH_REPO,path='quiz.json';let sha='';try{const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}});if(r.ok){const d=await r.json();sha=d.sha;}}catch(e){}const existing=sha?JSON.parse(atob((await(await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}})).json()).content.replace(/\n/g,''))):{}; const newJson={...existing,today:q,updatedAt:new Date().toISOString()};const content=btoa(unescape(encodeURIComponent(JSON.stringify(newJson,null,2))));const body={message:`Update quiz: ${q.question.substring(0,50)}`,content,...(sha?{sha}:{})};const resp=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});if(resp.ok){showToast('success','Quiz Published','Quiz saved to quiz.json successfully.');}else{const err=await resp.json();showToast('error','GitHub Error',err.message||'Failed to save.');}}catch(err){showToast('error','Error',err.message.substring(0,100));}}
 async function loadQuizFromGitHub(){const token=document.getElementById('quizGithubToken').value.trim();if(!token){showToast('error','No Token','Enter your GitHub token first.');return;}const status=document.getElementById('quizTokenStatus');status.style.display='block';status.innerHTML='<span style="color:var(--text3)">Loading quiz.json from GitHub…</span>';try{const result=await ghGet('quiz.json',token);if(!result){status.innerHTML='<span style="color:var(--yellow)">quiz.json not found — publish a quiz first.</span>';return;}const quiz=result.data.today||(result.data.question?result.data:null);if(!quiz){status.innerHTML='<span style="color:var(--yellow)">No active quiz found in quiz.json.</span>';return;}document.getElementById('quizQuestion').value=quiz.question||'';document.getElementById('quizOptionA').value=quiz.optionA||quiz.options?.A||'';document.getElementById('quizOptionB').value=quiz.optionB||quiz.options?.B||'';document.getElementById('quizOptionC').value=quiz.optionC||quiz.options?.C||'';document.getElementById('quizCorrectAnswer').value=quiz.correctAnswer||quiz.answer||'';document.getElementById('quizContributedBy').value=quiz.contributedBy||'';updateQuizPreview();status.innerHTML=`<span style="color:var(--green)">✓ Loaded quiz from GitHub (last updated ${quiz.date||'unknown date'}).</span>`;showToast('success','Quiz Loaded','Form populated from quiz.json.');}catch(e){status.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`;showToast('error','Load Failed',e.message.substring(0,100));}}
 function verifyQuizToken(){const token=document.getElementById('quizGithubToken').value.trim();if(!token){showToast('error','No Token','Enter a token first.');return;}fetch('https://api.github.com/user',{headers:{'Authorization':`token ${token}`}}).then(r=>r.json()).then(d=>{const status=document.getElementById('quizTokenStatus');status.style.display='block';if(d.login){status.innerHTML=`<span style="color:var(--green)">✓ Authenticated as <strong>${d.login}</strong></span>`;showToast('success','Token Valid',`Authenticated as ${d.login}`);}else{status.innerHTML=`<span style="color:var(--red)">✗ Invalid token</span>`;showToast('error','Token Invalid','Check your GitHub token.');}}).catch(()=>showToast('error','Network Error','Could not reach GitHub API.'));}
