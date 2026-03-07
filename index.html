@@ -678,7 +678,7 @@ header.header{display:none !important}
           <option value="partnerships">Partnerships</option>
         </optgroup>
         <optgroup label="── Head to Head ──">
-          <option value="against">1 Against Many</option>
+          <option value="against">1 Against X</option>
         </optgroup>
       </select>
     </div>
@@ -2338,7 +2338,7 @@ function handleRecordTypeChange(){
     againstEmpty.classList.remove('hidden'); againstEmpty.style.display = 'block';
     // Grey out Stats Type — not applicable for 1-against-many view
     const stg = document.getElementById('statsTypeGroup');
-    if(stg){ stg.style.opacity='0.35'; stg.style.pointerEvents='none'; stg.title='Not applicable for 1 Against Many'; }
+    if(stg){ stg.style.opacity='0.35'; stg.style.pointerEvents='none'; stg.title='Not applicable for 1 Against X'; }
     if(!window.againstSearchInit){
       initAgainstSearch(0); initAgainstSearch(1); initAgainstSearch(2);
       window.againstSearchInit = true;
