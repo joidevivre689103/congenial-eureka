@@ -1142,10 +1142,12 @@ function agg(player,idxs,isFiltered){
   });
   let sr;
   if(!isFiltered){
+    // No filters: use career totals from player data
     sr = player.batBalls>0 ? (player.batRuns/player.batBalls)*100 : null;
   } else {
-    const isModernPlayer = player.fromYear >= 1990;
-    sr = (isModernPlayer && balls>0) ? (runs/balls)*100 : null;
+    // Filters active: use balls from filtered innings if available
+    // If no balls data exists for these innings, sr will naturally be null
+    sr = balls>0 ? (runs/balls)*100 : null;
   }
   return{
     tests:tests.size, inns, no, runs, balls,
