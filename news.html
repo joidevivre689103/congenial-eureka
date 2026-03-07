@@ -892,7 +892,8 @@ function rawUrl(file) {
 
 async function ghFetch(file) {
   const res = await fetch(rawUrl(file));
-  if (!res.ok) return null;
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub returned ${res.status} for ${file}`);
   return res.json();
 }
 
@@ -1126,6 +1127,14 @@ function resetSnippetTimer() { startSnippetTimer(); }
     }
   } catch(e) {
     console.warn('Could not load snippets.json:', e);
+    // Show a visible error in the section for debugging
+    const sec = document.getElementById('snippetsSection');
+    if (sec) {
+      sec.style.display = 'block';
+      document.getElementById('snippetsGrid').innerHTML =
+        `<div style="color:var(--text3);font-family:Inter,sans-serif;font-size:13px;padding:8px 0;grid-column:1/-1">Could not load snippets: ${e.message}</div>`;
+      document.querySelector('.snippets-nav').style.display = 'none';
+    }
   }
 })();
 
