@@ -356,6 +356,59 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
 .snippet-add-card span{font-size:13px;font-weight:500;}
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   VOICES
+═══════════════════════════════════════════════════════════════════════════ */
+.voices-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+
+.voice-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:10px 16px;
+  align-items:start;transition:border-color 0.15s;margin-bottom:10px;
+}
+.voice-card:hover{border-color:var(--border2);}
+.voice-card.hidden-card{opacity:0.5;}
+
+.voice-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.voice-card-name{font-size:14px;font-weight:600;}
+.voice-role-badge{
+  padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600;
+}
+.voice-role-badge.player {background:rgba(34,197,94,0.15);color:var(--green);}
+.voice-role-badge.fan    {background:rgba(59,130,246,0.15);color:var(--accent);}
+.voice-role-badge.expert {background:rgba(168,85,247,0.15);color:var(--purple);}
+.voice-role-badge.commentator{background:rgba(249,115,22,0.15);color:var(--orange);}
+.voice-role-badge.other  {background:var(--surface3);color:var(--text3);}
+
+.voice-card-context{font-size:12px;color:var(--text3);font-style:italic;}
+.voice-card-text{
+  font-size:14px;line-height:1.6;color:var(--text);
+  border-left:3px solid var(--accent);padding-left:12px;margin:6px 0;
+}
+.voice-card-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.voice-card-date{font-size:11px;color:var(--text3);}
+.voice-tag{
+  font-size:10px;padding:2px 7px;border-radius:4px;
+  background:var(--surface3);color:var(--text3);
+}
+.voice-card-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.voice-live-dot{
+  display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);
+}
+.voice-live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--surface3);}
+.voice-live-dot.live{color:var(--green);}
+.voice-live-dot.live::before{background:var(--green);}
+
+.voices-form-panel{
+  background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);
+  border-radius:10px;padding:20px;margin-bottom:20px;
+}
+
+/* Toggle switch */
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0;}
+.toggle-track{position:absolute;inset:0;border-radius:12px;transition:background 0.2s;}
+.toggle-thumb{position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left 0.2s;}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    TOAST NOTIFICATIONS
 ═══════════════════════════════════════════════════════════════════════════ */
 .toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:10px;z-index:2000;}
@@ -405,13 +458,14 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
 /* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════════════════════════ */
-@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}.voices-stats-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:900px){
   .app{grid-template-columns:1fr}
   .sidebar{position:fixed;left:-260px;width:260px;z-index:500;transition:left 0.3s;}
   .sidebar.open{left:0}
   .main{padding:16px}
   .stats-grid{grid-template-columns:1fr}
+  .voices-stats-grid{grid-template-columns:1fr 1fr}
   .form-row{grid-template-columns:1fr}
   .panel-filters{flex-wrap:wrap}
   .filter-search{min-width:100%}
@@ -447,6 +501,11 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
         <a href="#" class="nav-item" data-view="ticker">
           <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
           Breaking News
+        </a>
+        <a href="#" class="nav-item" data-view="voices">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Voices
+          <span class="nav-item-badge" id="voicesNavBadge">0</span>
         </a>
         <a href="#" class="nav-item" data-view="quiz">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -588,7 +647,6 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
         </div>
       </div>
       
-      <!-- GitHub token panel for articles -->
       <div class="content-panel" style="margin-bottom:20px" id="articlesGithubPanel">
         <div class="panel-header">
           <h2 class="panel-title">GitHub Access</h2>
@@ -598,53 +656,34 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
           <div class="form-group" style="flex:1">
             <label class="form-label">Personal Access Token <span style="color:var(--red)">*</span></label>
             <div style="display:flex;gap:6px">
-              <input type="password" class="form-input" id="articlesGithubToken"
-                     placeholder="ghp_..."
-                     style="flex:1;font-family:monospace;font-size:13px">
-              <button type="button" onclick="toggleArticlesTokenVisibility()"
-                      style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
-                <svg id="articlesTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
+              <input type="password" class="form-input" id="articlesGithubToken" placeholder="ghp_..." style="flex:1;font-family:monospace;font-size:13px">
+              <button type="button" onclick="toggleArticlesTokenVisibility()" style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
+                <svg id="articlesTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">
-              Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope.
-              Saves to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">articles.json</code> in your repo.
-            </span>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope. Saves to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">articles.json</code> in your repo.</span>
           </div>
-          <button class="btn btn-secondary" onclick="syncArticlesToken()" style="height:44px;white-space:nowrap">
-            Sync from Quiz Panel
-          </button>
+          <button class="btn btn-secondary" onclick="syncArticlesToken()" style="height:44px;white-space:nowrap">Sync from Quiz Panel</button>
         </div>
         <div id="articlesGithubStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-card-header">
-            <div class="stat-card-icon blue">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </div>
-            <span class="stat-card-trend up">+12%</span>
-          </div>
-          <div class="stat-card-value">24</div>
-          <div class="stat-card-label">Total Articles</div>
+          <div class="stat-card-header"><div class="stat-card-icon blue"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="stat-card-trend up">+12%</span></div>
+          <div class="stat-card-value">24</div><div class="stat-card-label">Total Articles</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-header"><div class="stat-card-icon green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
-          <div class="stat-card-value">18</div>
-          <div class="stat-card-label">Published</div>
+          <div class="stat-card-value">18</div><div class="stat-card-label">Published</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-header"><div class="stat-card-icon yellow"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div></div>
-          <div class="stat-card-value">4</div>
-          <div class="stat-card-label">Drafts</div>
+          <div class="stat-card-value">4</div><div class="stat-card-label">Drafts</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-header"><div class="stat-card-icon purple"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div>
-          <div class="stat-card-value">2</div>
-          <div class="stat-card-label">Scheduled</div>
+          <div class="stat-card-value">2</div><div class="stat-card-label">Scheduled</div>
         </div>
       </div>
       
@@ -678,11 +717,7 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
           </select>
         </div>
         <table class="content-table">
-          <thead>
-            <tr>
-              <th>Article</th><th>Category</th><th>Status</th><th>Placement</th><th>Audio</th><th>Date</th><th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Article</th><th>Category</th><th>Status</th><th>Placement</th><th>Audio</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="articlesTable"></tbody>
         </table>
       </div>
@@ -704,7 +739,6 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
         </div>
       </div>
 
-      <!-- GitHub token panel for snippets -->
       <div class="content-panel" style="margin-bottom:20px">
         <div class="panel-header">
           <h2 class="panel-title">GitHub Access</h2>
@@ -714,24 +748,14 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
           <div class="form-group" style="flex:1">
             <label class="form-label">Personal Access Token <span style="color:var(--red)">*</span></label>
             <div style="display:flex;gap:6px">
-              <input type="password" class="form-input" id="snippetsGithubToken"
-                     placeholder="ghp_..."
-                     style="flex:1;font-family:monospace;font-size:13px">
-              <button type="button" onclick="toggleSnippetsTokenVisibility()"
-                      style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
-                <svg id="snippetsTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
+              <input type="password" class="form-input" id="snippetsGithubToken" placeholder="ghp_..." style="flex:1;font-family:monospace;font-size:13px">
+              <button type="button" onclick="toggleSnippetsTokenVisibility()" style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
+                <svg id="snippetsTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">
-              Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope.
-              Saves to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">snippets.json</code> in your repo.
-            </span>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope. Saves to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">snippets.json</code> in your repo.</span>
           </div>
-          <button class="btn btn-secondary" onclick="syncSnippetsToken()" style="height:44px;white-space:nowrap">
-            Sync from Quiz Panel
-          </button>
+          <button class="btn btn-secondary" onclick="syncSnippetsToken()" style="height:44px;white-space:nowrap">Sync from Quiz Panel</button>
         </div>
         <div id="snippetsGithubStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
       </div>
@@ -749,9 +773,7 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
             <span style="font-size:12px;color:var(--text3)">Shown below hero card on front page</span>
           </div>
         </div>
-        <div class="snippets-grid" id="snippetsGrid">
-          <!-- Snippet cards rendered by JS -->
-        </div>
+        <div class="snippets-grid" id="snippetsGrid"></div>
       </div>
     </div>
 
@@ -771,7 +793,6 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
         </div>
       </div>
 
-      <!-- GitHub token panel -->
       <div class="content-panel" style="margin-bottom:20px">
         <div class="panel-header">
           <h2 class="panel-title">GitHub Access</h2>
@@ -781,33 +802,20 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
           <div class="form-group" style="flex:1">
             <label class="form-label">Personal Access Token <span style="color:var(--red)">*</span></label>
             <div style="display:flex;gap:6px">
-              <input type="password" class="form-input" id="tickerGithubToken"
-                     placeholder="ghp_..."
-                     style="flex:1;font-family:monospace;font-size:13px">
-              <button type="button" onclick="toggleTickerTokenVisibility()"
-                      style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
-                <svg id="tickerTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
+              <input type="password" class="form-input" id="tickerGithubToken" placeholder="ghp_..." style="flex:1;font-family:monospace;font-size:13px">
+              <button type="button" onclick="toggleTickerTokenVisibility()" style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
+                <svg id="tickerTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">
-              Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope.
-              Saves to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">ticker.json</code> in your repo.
-            </span>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope. Saves to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">ticker.json</code> in your repo.</span>
           </div>
-          <button class="btn btn-secondary" onclick="syncTickerToken()" style="height:44px;white-space:nowrap">
-            Sync from Quiz Panel
-          </button>
+          <button class="btn btn-secondary" onclick="syncTickerToken()" style="height:44px;white-space:nowrap">Sync from Quiz Panel</button>
         </div>
         <div id="tickerGithubStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
       </div>
 
-      <!-- Enable/Disable toggle -->
       <div class="content-panel" style="margin-bottom:20px">
-        <div class="panel-header">
-          <h2 class="panel-title">Ticker Visibility</h2>
-        </div>
+        <div class="panel-header"><h2 class="panel-title">Ticker Visibility</h2></div>
         <div style="padding:20px;display:flex;align-items:center;justify-content:space-between;gap:20px">
           <div>
             <div style="font-size:14px;font-weight:600;margin-bottom:4px">Show Breaking News Ticker</div>
@@ -823,7 +831,6 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
         </div>
       </div>
 
-      <!-- Ticker items -->
       <div class="content-panel">
         <div class="panel-header">
           <h2 class="panel-title">Ticker Items</h2>
@@ -833,10 +840,173 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
           </button>
         </div>
         <div style="padding:20px">
-          <p style="font-size:13px;color:var(--text3);margin-bottom:16px">
-            Add headlines that will scroll across the breaking news ticker. Each item should be concise.
-          </p>
+          <p style="font-size:13px;color:var(--text3);margin-bottom:16px">Add headlines that will scroll across the breaking news ticker. Each item should be concise.</p>
           <div class="ticker-items" id="tickerItems"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VOICES VIEW ═══ -->
+    <div id="voices-view" style="display:none">
+      <div class="main-header">
+        <h1 class="main-title">Voices</h1>
+        <div class="main-actions">
+          <button class="btn btn-secondary" onclick="voicesLoadFromFirestore()">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Load from Firestore
+          </button>
+          <button class="btn btn-primary" onclick="voicesPublishToGitHub()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Publish to GitHub
+          </button>
+        </div>
+      </div>
+
+      <!-- GitHub token -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <h2 class="panel-title">GitHub Access</h2>
+          <span style="font-size:11px;color:var(--text3)">Token is never stored — enter each session</span>
+        </div>
+        <div style="padding:16px 20px;display:flex;gap:12px;align-items:flex-end">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Personal Access Token <span style="color:var(--red)">*</span></label>
+            <div style="display:flex;gap:6px">
+              <input type="password" class="form-input" id="voicesGithubToken" placeholder="ghp_..." style="flex:1;font-family:monospace;font-size:13px">
+              <button type="button" onclick="toggleVoicesTokenVisibility()" style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
+                <svg id="voicesTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope. Saves to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">voices.json</code> in your repo.</span>
+          </div>
+          <button class="btn btn-secondary" onclick="syncVoicesToken()" style="height:44px;white-space:nowrap">Sync from Quiz Panel</button>
+        </div>
+        <div id="voicesGithubStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
+      </div>
+
+      <!-- Section visibility toggle -->
+      <div class="content-panel" style="margin-bottom:20px">
+        <div class="panel-header"><h2 class="panel-title">Section Visibility</h2></div>
+        <div style="padding:20px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px">Show Voices Section on Front Page</div>
+            <div style="font-size:12px;color:var(--text3)">When disabled, the entire Voices section is hidden. This setting is saved to Firestore and published in voices.json.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+            <span style="font-size:13px;color:var(--text2)" id="voicesSectionLabel">Disabled</span>
+            <div style="position:relative;width:44px;height:24px;cursor:pointer" onclick="voicesToggleSection()">
+              <div id="voicesSectionTrack" style="position:absolute;inset:0;border-radius:12px;background:var(--surface3);transition:background 0.2s"></div>
+              <div id="voicesSectionThumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left 0.2s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="voices-stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-card-icon blue"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div></div>
+          <div class="stat-card-value" id="vstat-total">0</div><div class="stat-card-label">Total Voices</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-card-icon green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+          <div class="stat-card-value" id="vstat-live">0</div><div class="stat-card-label">Live</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-card-icon yellow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div>
+          <div class="stat-card-value" id="vstat-hidden">0</div><div class="stat-card-label">Hidden</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-card-icon purple"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div>
+          <div class="stat-card-value" id="vstat-players">0</div><div class="stat-card-label">Player Voices</div>
+        </div>
+      </div>
+
+      <!-- Add new voice form -->
+      <div class="voices-form-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h3 style="font-size:14px;font-weight:600">Add New Voice</h3>
+          <button class="btn btn-ghost btn-sm" onclick="voicesClearForm()">Clear</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Name <span style="color:var(--red)">*</span></label>
+            <input type="text" class="form-input" id="v-name" placeholder="e.g. Virat Kohli">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role <span style="color:var(--red)">*</span></label>
+            <select class="form-select" id="v-role">
+              <option value="player">Player</option>
+              <option value="fan">Fan</option>
+              <option value="expert">Expert / Analyst</option>
+              <option value="commentator">Commentator</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Context</label>
+            <input type="text" class="form-input" id="v-context" placeholder="e.g. After the Oval Test, 2023">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Source</label>
+            <input type="text" class="form-input" id="v-source" placeholder="e.g. Press conference, Twitter">
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label class="form-label">Voice <span style="color:var(--red)">*</span></label>
+            <textarea class="form-input" id="v-voice" placeholder="Enter the voice here…" style="min-height:90px"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tags (comma-separated)</label>
+            <input type="text" class="form-input" id="v-tags" placeholder="e.g. Ashes, batting, resilience">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Display on Front Page?</label>
+            <select class="form-select" id="v-visible">
+              <option value="true">Yes — Live</option>
+              <option value="false">No — Hidden</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:4px">
+          <button class="btn btn-primary" onclick="voicesSaveToFirestore()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Voice to Firestore
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter toolbar -->
+      <div class="panel-filters" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px">
+        <select class="filter-select" id="v-filter-role" onchange="voicesRender()">
+          <option value="all">All Roles</option>
+          <option value="player">Players</option>
+          <option value="fan">Fans</option>
+          <option value="expert">Experts</option>
+          <option value="commentator">Commentators</option>
+          <option value="other">Other</option>
+        </select>
+        <select class="filter-select" id="v-filter-vis" onchange="voicesRender()">
+          <option value="all">All Visibility</option>
+          <option value="true">Live Only</option>
+          <option value="false">Hidden Only</option>
+        </select>
+        <div class="filter-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="v-search" placeholder="Search names, voices, tags…" oninput="voicesRender()">
+        </div>
+        <span style="font-size:12px;color:var(--text3);white-space:nowrap;align-self:center" id="voices-list-count"></span>
+      </div>
+
+      <!-- Voice cards -->
+      <div id="voices-list">
+        <div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;font-style:italic;border:1px dashed var(--border);border-radius:10px">
+          No voices loaded yet. Click "Load from Firestore" to fetch.
         </div>
       </div>
     </div>
@@ -872,15 +1042,10 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
             <div style="display:flex;gap:6px">
               <input type="password" class="form-input" id="quizGithubToken" placeholder="ghp_..." style="flex:1;font-family:monospace;font-size:13px">
               <button type="button" onclick="toggleQuizTokenVisibility()" style="width:36px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0">
-                <svg id="quizTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
+                <svg id="quizTokenEye" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">
-              Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope.
-              <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create one →</a>
-            </span>
+            <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block">Needs <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">repo</code> write scope. <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create one →</a></span>
           </div>
           <button class="btn btn-secondary" onclick="verifyQuizToken()" style="height:44px;white-space:nowrap">
             <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="20 6 9 17 4 12"/></svg>
@@ -901,18 +1066,9 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
             <textarea class="form-input" id="quizQuestion" placeholder="e.g. Who was the first batsman to score 10,000 Test runs?" style="min-height:80px" oninput="updateQuizPreview()"></textarea>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-            <div class="form-group">
-              <label class="form-label">Option A <span style="color:var(--red)">*</span></label>
-              <input type="text" class="form-input" id="quizOptionA" placeholder="First option" oninput="updateQuizPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Option B <span style="color:var(--red)">*</span></label>
-              <input type="text" class="form-input" id="quizOptionB" placeholder="Second option" oninput="updateQuizPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Option C <span style="color:var(--red)">*</span></label>
-              <input type="text" class="form-input" id="quizOptionC" placeholder="Third option" oninput="updateQuizPreview()">
-            </div>
+            <div class="form-group"><label class="form-label">Option A <span style="color:var(--red)">*</span></label><input type="text" class="form-input" id="quizOptionA" placeholder="First option" oninput="updateQuizPreview()"></div>
+            <div class="form-group"><label class="form-label">Option B <span style="color:var(--red)">*</span></label><input type="text" class="form-input" id="quizOptionB" placeholder="Second option" oninput="updateQuizPreview()"></div>
+            <div class="form-group"><label class="form-label">Option C <span style="color:var(--red)">*</span></label><input type="text" class="form-input" id="quizOptionC" placeholder="Third option" oninput="updateQuizPreview()"></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div class="form-group">
@@ -924,10 +1080,7 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
                 <option value="C">Option C</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Contributed By</label>
-              <input type="text" class="form-input" id="quizContributedBy" placeholder="e.g. Rahul Dravid" oninput="updateQuizPreview()">
-            </div>
+            <div class="form-group"><label class="form-label">Contributed By</label><input type="text" class="form-input" id="quizContributedBy" placeholder="e.g. Rahul Dravid" oninput="updateQuizPreview()"></div>
           </div>
           <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
             <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Preview</div>
@@ -968,10 +1121,7 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
       </div>
       <div style="background:var(--accent-dim);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--text2);line-height:1.6">
         <strong style="color:var(--accent)">How sequencing works:</strong>
-        Quizzes submitted via the reader form appear below as <em>Pending</em>. 
-        When you publish today's quiz from the Quiz panel, any approved submissions here are automatically 
-        assigned to subsequent days — Day +1, Day +2, etc. You can also manually set dates or reorder the queue.
-        The schedule is saved as <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">quiz.json</code> with a <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">queue</code> array.
+        Quizzes submitted via the reader form appear below as <em>Pending</em>. When you publish today's quiz from the Quiz panel, any approved submissions here are automatically assigned to subsequent days — Day +1, Day +2, etc. You can also manually set dates or reorder the queue. The schedule is saved as <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">quiz.json</code> with a <code style="background:var(--surface3);padding:1px 5px;border-radius:3px">queue</code> array.
       </div>
       <div class="content-panel" style="margin-bottom:20px">
         <div class="panel-header">
@@ -989,22 +1139,12 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
         <div id="queueTokenStatus" style="display:none;padding:0 20px 14px;font-size:12px"></div>
       </div>
       <div class="content-panel" style="margin-bottom:20px">
-        <div class="panel-header">
-          <h2 class="panel-title">Today's Quiz</h2>
-          <span id="todayDateLabel" style="font-size:12px;color:var(--text3)"></span>
-        </div>
-        <div id="todayQuizPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
-          No quiz loaded. Click "Load Current Schedule".
-        </div>
+        <div class="panel-header"><h2 class="panel-title">Today's Quiz</h2><span id="todayDateLabel" style="font-size:12px;color:var(--text3)"></span></div>
+        <div id="todayQuizPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">No quiz loaded. Click "Load Current Schedule".</div>
       </div>
       <div class="content-panel" style="margin-bottom:20px">
-        <div class="panel-header">
-          <h2 class="panel-title">Upcoming Schedule</h2>
-          <span style="font-size:11px;color:var(--text3)">Drag rows to reorder · click date to edit</span>
-        </div>
-        <div id="queueSchedulePanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
-          No queue loaded yet.
-        </div>
+        <div class="panel-header"><h2 class="panel-title">Upcoming Schedule</h2><span style="font-size:11px;color:var(--text3)">Drag rows to reorder · click date to edit</span></div>
+        <div id="queueSchedulePanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">No queue loaded yet.</div>
       </div>
       <div class="content-panel">
         <div class="panel-header">
@@ -1014,24 +1154,17 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
             Load from Firestore
           </button>
         </div>
-        <div id="pendingSubmissionsPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">
-          Click "Load from Firestore" to fetch reader-submitted quizzes awaiting review.
-        </div>
+        <div id="pendingSubmissionsPanel" style="padding:20px;color:var(--text3);font-size:13px;font-style:italic">Click "Load from Firestore" to fetch reader-submitted quizzes awaiting review.</div>
       </div>
     </div>
 
     <!-- ═══ AUDIO SETTINGS VIEW ═══ -->
     <div id="audio-settings-view" style="display:none">
-      <div class="main-header">
-        <h1 class="main-title">Audio Settings</h1>
-      </div>
+      <div class="main-header"><h1 class="main-title">Audio Settings</h1></div>
       <div class="content-panel">
         <div class="panel-header"><h2 class="panel-title">ElevenLabs Voice Cloning</h2></div>
         <div style="padding:24px">
-          <p style="font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.6">
-            Connect your ElevenLabs account to generate article narrations in your cloned voice. 
-            Upload your voice sample at <a href="https://elevenlabs.io" target="_blank" style="color:var(--accent)">elevenlabs.io</a> to create a voice clone, then enter your credentials below.
-          </p>
+          <p style="font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.6">Connect your ElevenLabs account to generate article narrations in your cloned voice. Upload your voice sample at <a href="https://elevenlabs.io" target="_blank" style="color:var(--accent)">elevenlabs.io</a> to create a voice clone, then enter your credentials below.</p>
           <div class="form-row">
             <div class="form-group" style="flex:2">
               <label class="form-label">API Key <span style="color:var(--red)">*</span></label>
@@ -1091,9 +1224,7 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
         <div style="padding:20px">
           <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Generate audio for all published articles that don't have audio yet.</p>
           <div id="bulkProgress" style="display:none">
-            <div style="background:var(--surface3);border-radius:6px;height:8px;overflow:hidden;margin-bottom:8px">
-              <div id="bulkProgressBar" style="background:var(--accent);height:100%;width:0%;transition:width 0.3s;border-radius:6px"></div>
-            </div>
+            <div style="background:var(--surface3);border-radius:6px;height:8px;overflow:hidden;margin-bottom:8px"><div id="bulkProgressBar" style="background:var(--accent);height:100%;width:0%;transition:width 0.3s;border-radius:6px"></div></div>
             <div id="bulkProgressText" style="font-size:12px;color:var(--text3)"></div>
           </div>
         </div>
@@ -1122,58 +1253,20 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
   <div class="modal">
     <div class="modal-header">
       <h2 id="modalTitle">Create New Article</h2>
-      <button class="modal-close" onclick="closeModal()">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="articleId">
-      <div class="form-row full">
-        <div class="form-group">
-          <label class="form-label">Headline <span>*</span></label>
-          <input type="text" class="form-input" id="articleHeadline" placeholder="Enter article headline...">
-        </div>
-      </div>
+      <div class="form-row full"><div class="form-group"><label class="form-label">Headline <span>*</span></label><input type="text" class="form-input" id="articleHeadline" placeholder="Enter article headline..."></div></div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Category <span>*</span></label>
-          <select class="form-select" id="articleCategory">
-            <option value="news">News</option>
-            <option value="analysis">Analysis</option>
-            <option value="features">Features</option>
-            <option value="opinion">Opinion</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Author</label>
-          <input type="text" class="form-input" id="articleAuthor" placeholder="Author name">
-        </div>
+        <div class="form-group"><label class="form-label">Category <span>*</span></label><select class="form-select" id="articleCategory"><option value="news">News</option><option value="analysis">Analysis</option><option value="features">Features</option><option value="opinion">Opinion</option></select></div>
+        <div class="form-group"><label class="form-label">Author</label><input type="text" class="form-input" id="articleAuthor" placeholder="Author name"></div>
       </div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label class="form-label">Summary</label>
-          <textarea class="form-input" id="articleSummary" placeholder="Brief summary for article cards..."></textarea>
-        </div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label class="form-label">Full Content</label>
-          <textarea class="form-input" id="articleContent" placeholder="Full article content..." style="min-height:180px"></textarea>
-        </div>
-      </div>
+      <div class="form-row full"><div class="form-group"><label class="form-label">Summary</label><textarea class="form-input" id="articleSummary" placeholder="Brief summary for article cards..."></textarea></div></div>
+      <div class="form-row full"><div class="form-group"><label class="form-label">Full Content</label><textarea class="form-input" id="articleContent" placeholder="Full article content..." style="min-height:180px"></textarea></div></div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Placement</label>
-          <select class="form-select" id="articlePlacement">
-            <option value="standard">Standard</option>
-            <option value="featured">Featured (Column Top)</option>
-            <option value="hero">Hero (Main Story)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Read Time (minutes)</label>
-          <input type="number" class="form-input" id="articleReadTime" placeholder="e.g., 8" min="1">
-        </div>
+        <div class="form-group"><label class="form-label">Placement</label><select class="form-select" id="articlePlacement"><option value="standard">Standard</option><option value="featured">Featured (Column Top)</option><option value="hero">Hero (Main Story)</option></select></div>
+        <div class="form-group"><label class="form-label">Read Time (minutes)</label><input type="number" class="form-input" id="articleReadTime" placeholder="e.g., 8" min="1"></div>
       </div>
       <div class="form-row full" style="background:var(--surface2);margin:0 -24px;padding:16px 24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
         <div class="form-group" style="gap:12px">
@@ -1205,8 +1298,7 @@ textarea.form-input{min-height:100px;resize:vertical;line-height:1.5;}
           <label class="form-label">Featured Image</label>
           <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <p>Click to upload image</p>
-            <span>PNG, JPG up to 5MB</span>
+            <p>Click to upload image</p><span>PNG, JPG up to 5MB</span>
           </div>
           <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
         </div>
@@ -1253,10 +1345,12 @@ let tickerItems = [
   "Ben Stokes hints at potential return to red-ball cricket"
 ];
 
-// Snippets: up to 10, each with text (max 600 chars) and enabled flag
 let snippets = [];
-
 let nextArticleId = 9;
+
+// Voices data
+let voicesData = [];
+let voicesSectionEnabled = false;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // GITHUB HELPERS
@@ -1290,7 +1384,6 @@ async function ghPut(path, token, payload, sha, message) {
 }
 
 function getToken(id) {
-  // Try the requested field first, then fall back to quiz token
   return (document.getElementById(id)?.value || '').trim()
       || (document.getElementById('quizGithubToken')?.value || '').trim();
 }
@@ -1299,144 +1392,111 @@ function setGithubStatus(elId, type, msg) {
   const el = document.getElementById(elId);
   if (!el) return;
   el.style.display = 'block';
-  const color = type === 'success' ? 'var(--green)' : type === 'warn' ? 'var(--yellow)' : type === 'loading' ? 'var(--text3)' : 'var(--red)';
+  const color = type==='success'?'var(--green)':type==='warn'?'var(--yellow)':type==='loading'?'var(--text3)':'var(--red)';
   el.innerHTML = `<span style="color:${color}">${msg}</span>`;
 }
 
 // ─── TOKEN HELPERS ───────────────────────────────────────────────────────────
-function syncArticlesToken() {
-  document.getElementById('articlesGithubToken').value = document.getElementById('quizGithubToken')?.value || '';
-  showToast('success', 'Synced', 'Token copied from Quiz panel.');
-}
-function syncSnippetsToken() {
-  document.getElementById('snippetsGithubToken').value = document.getElementById('quizGithubToken')?.value || '';
-  showToast('success', 'Synced', 'Token copied from Quiz panel.');
-}
+function syncArticlesToken() { document.getElementById('articlesGithubToken').value = document.getElementById('quizGithubToken')?.value || ''; showToast('success','Synced','Token copied from Quiz panel.'); }
+function syncSnippetsToken() { document.getElementById('snippetsGithubToken').value = document.getElementById('quizGithubToken')?.value || ''; showToast('success','Synced','Token copied from Quiz panel.'); }
+function syncVoicesToken()   { document.getElementById('voicesGithubToken').value   = document.getElementById('quizGithubToken')?.value || ''; showToast('success','Synced','Token copied from Quiz panel.'); }
+
 function toggleTokenVisibility(inputId, eyeId) {
-  const inp = document.getElementById(inputId);
-  const eye = document.getElementById(eyeId);
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  } else {
-    inp.type = 'password';
-    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  }
+  const inp = document.getElementById(inputId), eye = document.getElementById(eyeId);
+  if (inp.type === 'password') { inp.type = 'text'; eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'; }
+  else { inp.type = 'password'; eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'; }
 }
-function toggleArticlesTokenVisibility() { toggleTokenVisibility('articlesGithubToken', 'articlesTokenEye'); }
-function toggleSnippetsTokenVisibility() { toggleTokenVisibility('snippetsGithubToken', 'snippetsTokenEye'); }
+function toggleArticlesTokenVisibility() { toggleTokenVisibility('articlesGithubToken','articlesTokenEye'); }
+function toggleSnippetsTokenVisibility() { toggleTokenVisibility('snippetsGithubToken','snippetsTokenEye'); }
+function toggleVoicesTokenVisibility()   { toggleTokenVisibility('voicesGithubToken','voicesTokenEye'); }
 
 // ─── PUBLISH ALL ─────────────────────────────────────────────────────────────
 async function publishAllToGitHub() {
   const token = getToken('articlesGithubToken') || getToken('snippetsGithubToken') || getToken('tickerGithubToken');
-  if (!token) { showToast('error', 'No Token', 'Open Articles or Snippets panel and enter your GitHub token first.'); return; }
-  showToast('info', 'Publishing All…', 'Saving articles.json, snippets.json and ticker.json');
-  // Temporarily inject token into all fields so individual publish functions work
-  ['articlesGithubToken','snippetsGithubToken','tickerGithubToken'].forEach(id => {
-    const el = document.getElementById(id); if (el && !el.value) el.value = token;
-  });
+  if (!token) { showToast('error','No Token','Open any panel and enter your GitHub token first.'); return; }
+  showToast('success','Publishing All…','Saving articles.json, snippets.json, ticker.json and voices.json');
+  ['articlesGithubToken','snippetsGithubToken','tickerGithubToken','voicesGithubToken'].forEach(id => { const el=document.getElementById(id); if(el&&!el.value) el.value=token; });
   await publishArticlesToGitHub();
   await saveSnippets();
   await saveTicker();
+  await voicesPublishToGitHub();
 }
 
 // ─── ARTICLES: LOAD & PUBLISH ────────────────────────────────────────────────
 async function loadArticlesFromGitHub() {
   const token = getToken('articlesGithubToken');
-  if (!token) { showToast('error', 'No Token', 'Enter your GitHub token first.'); return; }
-  setGithubStatus('articlesGithubStatus', 'loading', 'Loading articles.json from GitHub…');
+  if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
+  setGithubStatus('articlesGithubStatus','loading','Loading articles.json from GitHub…');
   try {
     const result = await ghGet('articles.json', token);
-    if (!result) {
-      setGithubStatus('articlesGithubStatus', 'warn', 'articles.json not found — will be created on first publish.');
-      return;
-    }
+    if (!result) { setGithubStatus('articlesGithubStatus','warn','articles.json not found — will be created on first publish.'); return; }
     const loaded = result.data;
     if (Array.isArray(loaded.articles)) {
       articles = loaded.articles;
-      nextArticleId = (Math.max(0, ...articles.map(a => a.id || 0)) + 1);
+      nextArticleId = (Math.max(0,...articles.map(a=>a.id||0))+1);
       renderArticles(); updateStats();
-      setGithubStatus('articlesGithubStatus', 'success', `✓ Loaded ${articles.length} article(s) from GitHub.`);
-      showToast('success', 'Articles Loaded', `${articles.length} article(s) loaded.`);
+      setGithubStatus('articlesGithubStatus','success',`✓ Loaded ${articles.length} article(s) from GitHub.`);
+      showToast('success','Articles Loaded',`${articles.length} article(s) loaded.`);
     }
-  } catch(e) {
-    setGithubStatus('articlesGithubStatus', 'error', `Error: ${e.message}`);
-    showToast('error', 'Load Failed', e.message.substring(0, 100));
-  }
+  } catch(e) { setGithubStatus('articlesGithubStatus','error',`Error: ${e.message}`); showToast('error','Load Failed',e.message.substring(0,100)); }
 }
 
 async function publishArticlesToGitHub() {
   const token = getToken('articlesGithubToken');
-  if (!token) { showToast('error', 'No Token', 'Enter your GitHub token first.'); return; }
-  setGithubStatus('articlesGithubStatus', 'loading', 'Publishing articles.json to GitHub…');
+  if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
+  setGithubStatus('articlesGithubStatus','loading','Publishing articles.json to GitHub…');
   try {
     const existing = await ghGet('articles.json', token);
     const payload = { articles, updatedAt: new Date().toISOString() };
-    await ghPut('articles.json', token, payload, existing?.sha || '', `Update articles: ${articles.length} article(s)`);
-    setGithubStatus('articlesGithubStatus', 'success', `✓ Published ${articles.length} article(s) at ${new Date().toLocaleTimeString()}.`);
-    showToast('success', 'Articles Published', `${articles.length} article(s) saved to articles.json.`);
-  } catch(e) {
-    setGithubStatus('articlesGithubStatus', 'error', `Error: ${e.message}`);
-    showToast('error', 'Publish Failed', e.message.substring(0, 100));
-  }
+    await ghPut('articles.json', token, payload, existing?.sha||'', `Update articles: ${articles.length} article(s)`);
+    setGithubStatus('articlesGithubStatus','success',`✓ Published ${articles.length} article(s) at ${new Date().toLocaleTimeString()}.`);
+    showToast('success','Articles Published',`${articles.length} article(s) saved to articles.json.`);
+  } catch(e) { setGithubStatus('articlesGithubStatus','error',`Error: ${e.message}`); showToast('error','Publish Failed',e.message.substring(0,100)); }
 }
 
 // ─── SNIPPETS: LOAD & PUBLISH ────────────────────────────────────────────────
 async function loadSnippetsFromGitHub() {
   const token = getToken('snippetsGithubToken');
-  if (!token) { showToast('error', 'No Token', 'Enter your GitHub token first.'); return; }
-  setGithubStatus('snippetsGithubStatus', 'loading', 'Loading snippets.json from GitHub…');
+  if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
+  setGithubStatus('snippetsGithubStatus','loading','Loading snippets.json from GitHub…');
   try {
     const result = await ghGet('snippets.json', token);
-    if (!result) {
-      setGithubStatus('snippetsGithubStatus', 'warn', 'snippets.json not found — will be created on first publish.');
-      return;
-    }
+    if (!result) { setGithubStatus('snippetsGithubStatus','warn','snippets.json not found — will be created on first publish.'); return; }
     if (Array.isArray(result.data.snippets)) {
-      snippets = result.data.snippets;
-      renderSnippets();
-      setGithubStatus('snippetsGithubStatus', 'success', `✓ Loaded ${snippets.length} snippet(s) from GitHub.`);
-      showToast('success', 'Snippets Loaded', `${snippets.length} snippet(s) loaded.`);
+      snippets = result.data.snippets; renderSnippets();
+      setGithubStatus('snippetsGithubStatus','success',`✓ Loaded ${snippets.length} snippet(s) from GitHub.`);
+      showToast('success','Snippets Loaded',`${snippets.length} snippet(s) loaded.`);
     }
-  } catch(e) {
-    setGithubStatus('snippetsGithubStatus', 'error', `Error: ${e.message}`);
-    showToast('error', 'Load Failed', e.message.substring(0, 100));
-  }
+  } catch(e) { setGithubStatus('snippetsGithubStatus','error',`Error: ${e.message}`); showToast('error','Load Failed',e.message.substring(0,100)); }
 }
 
 async function saveSnippets() {
   const token = getToken('snippetsGithubToken');
-  if (!token) { showToast('error', 'No Token', 'Enter your GitHub token to publish.'); return; }
-  setGithubStatus('snippetsGithubStatus', 'loading', 'Publishing snippets.json to GitHub…');
+  if (!token) { showToast('error','No Token','Enter your GitHub token to publish.'); return; }
+  setGithubStatus('snippetsGithubStatus','loading','Publishing snippets.json to GitHub…');
   try {
     const existing = await ghGet('snippets.json', token);
     const payload = { snippets, updatedAt: new Date().toISOString() };
-    await ghPut('snippets.json', token, payload, existing?.sha || '', `Update snippets: ${snippets.filter(s=>s.enabled).length} active`);
-    setGithubStatus('snippetsGithubStatus', 'success', `✓ Published at ${new Date().toLocaleTimeString()} — ${snippets.filter(s=>s.enabled).length} active snippet(s).`);
-    showToast('success', 'Snippets Published', `${snippets.filter(s=>s.enabled).length} active snippet(s) saved to snippets.json.`);
-  } catch(e) {
-    setGithubStatus('snippetsGithubStatus', 'error', `Error: ${e.message}`);
-    showToast('error', 'Publish Failed', e.message.substring(0, 100));
-  }
+    await ghPut('snippets.json', token, payload, existing?.sha||'', `Update snippets: ${snippets.filter(s=>s.enabled).length} active`);
+    setGithubStatus('snippetsGithubStatus','success',`✓ Published at ${new Date().toLocaleTimeString()} — ${snippets.filter(s=>s.enabled).length} active snippet(s).`);
+    showToast('success','Snippets Published',`${snippets.filter(s=>s.enabled).length} active snippet(s) saved to snippets.json.`);
+  } catch(e) { setGithubStatus('snippetsGithubStatus','error',`Error: ${e.message}`); showToast('error','Publish Failed',e.message.substring(0,100)); }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // VIEW SWITCHING
 // ═══════════════════════════════════════════════════════════════════════════
-const ALL_VIEWS = ['articles','snippets','ticker','quiz','quiz-queue','audio-settings'];
+const ALL_VIEWS = ['articles','snippets','ticker','voices','quiz','quiz-queue','audio-settings'];
 document.querySelectorAll('.nav-item[data-view]').forEach(item => {
   item.addEventListener('click', e => {
     e.preventDefault();
     const view = item.dataset.view;
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     item.classList.add('active');
-    ALL_VIEWS.forEach(v => {
-      const el = document.getElementById(v + '-view');
-      if (el) el.style.display = v === view ? 'block' : 'none';
-    });
-    if (view === 'ticker') renderTickerEditor();
-    if (view === 'snippets') renderSnippets();
-    if (view === 'quiz') initQuizView();
+    ALL_VIEWS.forEach(v => { const el = document.getElementById(v+'-view'); if(el) el.style.display = v===view?'block':'none'; });
+    if (view==='ticker') renderTickerEditor();
+    if (view==='snippets') renderSnippets();
+    if (view==='quiz') initQuizView();
   });
 });
 
@@ -1448,37 +1508,13 @@ function renderArticles(filteredArticles = null) {
   const tbody = document.getElementById('articlesTable');
   tbody.innerHTML = data.map(article => `
     <tr>
-      <td>
-        <div class="article-cell">
-          <div class="article-thumb" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48)"></div>
-          <div class="article-info">
-            <h4>${article.headline}</h4>
-            <p>${article.author} · ${article.readTime} min read</p>
-          </div>
-        </div>
-      </td>
+      <td><div class="article-cell"><div class="article-thumb" style="background:linear-gradient(135deg,#3a4a5a,#2a3a48)"></div><div class="article-info"><h4>${article.headline}</h4><p>${article.author} · ${article.readTime} min read</p></div></div></td>
       <td><span style="text-transform:capitalize">${article.category}</span></td>
       <td><span class="status-badge ${article.status}">${article.status}</span></td>
       <td><span class="placement-badge ${article.placement}">${article.placement}</span></td>
-      <td>
-        <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:${article.audioEnabled !== false ? (article.audioData ? 'var(--green)' : 'var(--accent)') : 'var(--text3)'}">
-          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">
-            ${article.audioEnabled !== false ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>' : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'}
-          </svg>
-          ${article.audioEnabled !== false ? (article.audioData ? '✓ Ready' : 'Pending') : 'Off'}
-        </span>
-      </td>
+      <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:${article.audioEnabled!==false?(article.audioData?'var(--green)':'var(--accent)'):'var(--text3)'}"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2">${article.audioEnabled!==false?'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>'  :'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'}</svg>${article.audioEnabled!==false?(article.audioData?'✓ Ready':'Pending'):'Off'}</span></td>
       <td>${formatDate(article.date)}</td>
-      <td>
-        <div class="table-actions">
-          <button class="btn btn-ghost btn-sm" onclick="editArticle(${article.id})">
-            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="duplicateArticle(${article.id})">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-        </div>
-      </td>
+      <td><div class="table-actions"><button class="btn btn-ghost btn-sm" onclick="editArticle(${article.id})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn btn-ghost btn-sm" onclick="duplicateArticle(${article.id})"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></td>
     </tr>
   `).join('');
 }
@@ -1490,669 +1526,331 @@ function filterArticles() {
   const statusTab = document.querySelector('.panel-tab.active')?.dataset.filter || 'all';
   const filtered = articles.filter(a => {
     const ms = a.headline.toLowerCase().includes(search) || a.author.toLowerCase().includes(search);
-    return ms && (!category || a.category === category) && (!placement || a.placement === placement) && (statusTab === 'all' || a.status === statusTab);
+    return ms && (!category||a.category===category) && (!placement||a.placement===placement) && (statusTab==='all'||a.status===statusTab);
   });
   renderArticles(filtered);
 }
 
 document.querySelectorAll('.panel-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    filterArticles();
-  });
+  tab.addEventListener('click', () => { document.querySelectorAll('.panel-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); filterArticles(); });
 });
 
 function openModal(mode, articleId = null) {
   const modal = document.getElementById('articleModal');
-  document.getElementById('articleId').value = '';
-  document.getElementById('articleHeadline').value = '';
-  document.getElementById('articleCategory').value = 'news';
-  document.getElementById('articleAuthor').value = '';
-  document.getElementById('articleSummary').value = '';
-  document.getElementById('articleContent').value = '';
-  document.getElementById('articlePlacement').value = 'standard';
-  document.getElementById('articleReadTime').value = '';
-  document.getElementById('articleAudioEnabled').checked = true;
-  resetAudioUI();
-  resetImageUpload();
-  
-  if (mode === 'edit' && articleId) {
-    const article = articles.find(a => a.id === articleId);
+  document.getElementById('articleId').value=''; document.getElementById('articleHeadline').value=''; document.getElementById('articleCategory').value='news';
+  document.getElementById('articleAuthor').value=''; document.getElementById('articleSummary').value=''; document.getElementById('articleContent').value='';
+  document.getElementById('articlePlacement').value='standard'; document.getElementById('articleReadTime').value=''; document.getElementById('articleAudioEnabled').checked=true;
+  resetAudioUI(); resetImageUpload();
+  if (mode==='edit'&&articleId) {
+    const article = articles.find(a=>a.id===articleId);
     if (article) {
-      document.getElementById('modalTitle').textContent = 'Edit Article';
-      document.getElementById('deleteBtn').style.display = 'flex';
-      document.getElementById('articleId').value = article.id;
-      document.getElementById('articleHeadline').value = article.headline;
-      document.getElementById('articleCategory').value = article.category;
-      document.getElementById('articleAuthor').value = article.author;
-      document.getElementById('articleSummary').value = article.summary;
-      document.getElementById('articleContent').value = article.content;
-      document.getElementById('articlePlacement').value = article.placement;
-      document.getElementById('articleReadTime').value = article.readTime;
-      document.getElementById('articleAudioEnabled').checked = article.audioEnabled !== false;
+      document.getElementById('modalTitle').textContent='Edit Article'; document.getElementById('deleteBtn').style.display='flex';
+      document.getElementById('articleId').value=article.id; document.getElementById('articleHeadline').value=article.headline;
+      document.getElementById('articleCategory').value=article.category; document.getElementById('articleAuthor').value=article.author;
+      document.getElementById('articleSummary').value=article.summary; document.getElementById('articleContent').value=article.content;
+      document.getElementById('articlePlacement').value=article.placement; document.getElementById('articleReadTime').value=article.readTime;
+      document.getElementById('articleAudioEnabled').checked=article.audioEnabled!==false;
       if (article.audioData) showAudioReady(article.audioData);
     }
-  } else {
-    document.getElementById('modalTitle').textContent = 'Create New Article';
-    document.getElementById('deleteBtn').style.display = 'none';
-  }
+  } else { document.getElementById('modalTitle').textContent='Create New Article'; document.getElementById('deleteBtn').style.display='none'; }
   modal.classList.add('active');
 }
-
 function closeModal() { document.getElementById('articleModal').classList.remove('active'); }
 function editArticle(id) { openModal('edit', id); }
-
 function duplicateArticle(id) {
-  const article = articles.find(a => a.id === id);
-  if (article) {
-    articles.unshift({...article, id: nextArticleId++, headline: article.headline + ' (Copy)', status: 'draft', date: new Date().toISOString().split('T')[0]});
-    renderArticles(); updateStats();
-    showToast('success', 'Article Duplicated', 'A copy has been created as a draft. Remember to publish to GitHub.');
-  }
+  const article = articles.find(a=>a.id===id);
+  if (article) { articles.unshift({...article,id:nextArticleId++,headline:article.headline+' (Copy)',status:'draft',date:new Date().toISOString().split('T')[0]}); renderArticles(); updateStats(); showToast('success','Article Duplicated','A copy has been created as a draft. Remember to publish to GitHub.'); }
 }
-
 function saveArticle(status) {
   const id = document.getElementById('articleId').value;
   const headline = document.getElementById('articleHeadline').value.trim();
-  if (!headline) { showToast('error', 'Validation Error', 'Headline is required.'); return; }
-  const articleData = {
-    headline, status,
-    category: document.getElementById('articleCategory').value,
-    author: document.getElementById('articleAuthor').value.trim() || 'Staff',
-    summary: document.getElementById('articleSummary').value.trim(),
-    content: document.getElementById('articleContent').value.trim(),
-    placement: document.getElementById('articlePlacement').value,
-    readTime: parseInt(document.getElementById('articleReadTime').value) || 5,
-    audioEnabled: document.getElementById('articleAudioEnabled').checked,
-    date: new Date().toISOString().split('T')[0],
-    image: null
-  };
-  if (id) {
-    const index = articles.findIndex(a => a.id === parseInt(id));
-    if (index !== -1) {
-      if (!articleData.audioData && articles[index].audioData) articleData.audioData = articles[index].audioData;
-      articles[index] = {...articles[index], ...articleData};
-    }
-    showToast('success', 'Article Updated', status === 'published' ? 'Changes are now live.' : 'Draft saved.');
-  } else {
-    articleData.id = nextArticleId++;
-    articleData.audioData = window._pendingAudioData || null;
-    articles.unshift(articleData);
-    showToast('success', 'Article Created', status === 'published' ? 'Article is now live.' : 'Draft saved.');
-  }
+  if (!headline) { showToast('error','Validation Error','Headline is required.'); return; }
+  const articleData = { headline,status,category:document.getElementById('articleCategory').value,author:document.getElementById('articleAuthor').value.trim()||'Staff',summary:document.getElementById('articleSummary').value.trim(),content:document.getElementById('articleContent').value.trim(),placement:document.getElementById('articlePlacement').value,readTime:parseInt(document.getElementById('articleReadTime').value)||5,audioEnabled:document.getElementById('articleAudioEnabled').checked,date:new Date().toISOString().split('T')[0],image:null };
+  if (id) { const index=articles.findIndex(a=>a.id===parseInt(id)); if(index!==-1){if(!articleData.audioData&&articles[index].audioData)articleData.audioData=articles[index].audioData; articles[index]={...articles[index],...articleData};} showToast('success','Article Updated',status==='published'?'Changes are now live.':'Draft saved.'); }
+  else { articleData.id=nextArticleId++; articleData.audioData=window._pendingAudioData||null; articles.unshift(articleData); showToast('success','Article Created',status==='published'?'Article is now live.':'Draft saved.'); }
   closeModal(); renderArticles(); updateStats();
 }
-
 function deleteArticle() {
   const id = parseInt(document.getElementById('articleId').value);
-  if (id && confirm('Are you sure you want to delete this article?')) {
-    articles = articles.filter(a => a.id !== id);
-    closeModal(); renderArticles(); updateStats();
-    showToast('success', 'Article Deleted', 'Article removed. Remember to publish to GitHub.');
-  }
+  if (id&&confirm('Are you sure you want to delete this article?')) { articles=articles.filter(a=>a.id!==id); closeModal(); renderArticles(); updateStats(); showToast('success','Article Deleted','Article removed. Remember to publish to GitHub.'); }
 }
-
 function handleImageUpload(event) {
   const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const upload = document.getElementById('imageUpload');
-      upload.classList.add('has-image');
-      upload.innerHTML = `<img src="${e.target.result}" alt="Preview"><button class="remove-image" onclick="event.stopPropagation();resetImageUpload()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-    };
-    reader.readAsDataURL(file);
-  }
+  if (file) { const reader=new FileReader(); reader.onload=e=>{const upload=document.getElementById('imageUpload');upload.classList.add('has-image');upload.innerHTML=`<img src="${e.target.result}" alt="Preview"><button class="remove-image" onclick="event.stopPropagation();resetImageUpload()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;}; reader.readAsDataURL(file); }
 }
-
 function resetImageUpload() {
-  const upload = document.getElementById('imageUpload');
-  upload.classList.remove('has-image');
-  upload.innerHTML = `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Click to upload image</p><span>PNG, JPG up to 5MB</span>`;
-  document.getElementById('imageInput').value = '';
+  const upload=document.getElementById('imageUpload'); upload.classList.remove('has-image');
+  upload.innerHTML='<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Click to upload image</p><span>PNG, JPG up to 5MB</span>';
+  document.getElementById('imageInput').value='';
 }
-
 function updateStats() {
-  const total = articles.length;
-  const cards = document.querySelectorAll('.stat-card-value');
-  if (cards.length >= 4) {
-    cards[0].textContent = total;
-    cards[1].textContent = articles.filter(a=>a.status==='published').length;
-    cards[2].textContent = articles.filter(a=>a.status==='draft').length;
-    cards[3].textContent = articles.filter(a=>a.status==='scheduled').length;
-  }
-  document.getElementById('articleNavBadge').textContent = total;
+  const total=articles.length; const cards=document.querySelectorAll('.stat-card-value');
+  if(cards.length>=4){cards[0].textContent=total;cards[1].textContent=articles.filter(a=>a.status==='published').length;cards[2].textContent=articles.filter(a=>a.status==='draft').length;cards[3].textContent=articles.filter(a=>a.status==='scheduled').length;}
+  document.getElementById('articleNavBadge').textContent=total;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SNIPPETS
 // ═══════════════════════════════════════════════════════════════════════════
-const SNIPPET_MAX = 600;
-const SNIPPET_LIMIT = 10;
-
+const SNIPPET_MAX=600, SNIPPET_LIMIT=10;
 function renderSnippets() {
-  const grid = document.getElementById('snippetsGrid');
-  const count = snippets.length;
-  document.getElementById('snippetCountLabel').textContent = `${count} / ${SNIPPET_LIMIT}`;
-  document.getElementById('snippetsNavBadge').textContent = snippets.filter(s=>s.enabled).length;
-
-  let html = snippets.map((snip, i) => {
-    const len = (snip.text || '').length;
-    const nearLimit = len > 500;
-    const atLimit = len >= SNIPPET_MAX;
-    const countClass = atLimit ? 'at-limit' : (nearLimit ? 'near-limit' : '');
-    return `
-      <div class="snippet-card" id="snippet-card-${i}">
-        <div class="snippet-card-header">
-          <span class="snippet-card-label">Snippet ${i + 1}</span>
-          <span class="snippet-char-count ${countClass}" id="snippet-count-${i}">${len} / ${SNIPPET_MAX}</span>
-        </div>
-        <textarea class="snippet-textarea"
-          id="snippet-text-${i}"
-          maxlength="${SNIPPET_MAX}"
-          placeholder="Enter snippet text (max ${SNIPPET_MAX} characters)…"
-          oninput="onSnippetInput(${i}, this.value)"
-        >${escapeHtml(snip.text || '')}</textarea>
-        <div class="snippet-card-footer">
-          <label class="snippet-enabled-toggle">
-            <input type="checkbox" ${snip.enabled ? 'checked' : ''} onchange="toggleSnippetEnabled(${i}, this.checked)">
-            Show on front page
-          </label>
-          <button class="btn btn-danger btn-sm" onclick="removeSnippet(${i})">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Remove
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  if (count < SNIPPET_LIMIT) {
-    html += `
-      <div class="snippet-add-card" onclick="addSnippet()">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>Add Snippet</span>
-        <span style="font-size:11px;color:var(--text3)">${SNIPPET_LIMIT - count} slot${SNIPPET_LIMIT - count !== 1 ? 's' : ''} remaining</span>
-      </div>
-    `;
-  }
-
-  grid.innerHTML = html;
+  const grid=document.getElementById('snippetsGrid'); const count=snippets.length;
+  document.getElementById('snippetCountLabel').textContent=`${count} / ${SNIPPET_LIMIT}`;
+  document.getElementById('snippetsNavBadge').textContent=snippets.filter(s=>s.enabled).length;
+  let html=snippets.map((snip,i)=>{const len=(snip.text||'').length;const nearLimit=len>500;const atLimit=len>=SNIPPET_MAX;const countClass=atLimit?'at-limit':(nearLimit?'near-limit':'');return`<div class="snippet-card" id="snippet-card-${i}"><div class="snippet-card-header"><span class="snippet-card-label">Snippet ${i+1}</span><span class="snippet-char-count ${countClass}" id="snippet-count-${i}">${len} / ${SNIPPET_MAX}</span></div><textarea class="snippet-textarea" id="snippet-text-${i}" maxlength="${SNIPPET_MAX}" placeholder="Enter snippet text (max ${SNIPPET_MAX} characters)…" oninput="onSnippetInput(${i}, this.value)">${escapeHtml(snip.text||'')}</textarea><div class="snippet-card-footer"><label class="snippet-enabled-toggle"><input type="checkbox" ${snip.enabled?'checked':''} onchange="toggleSnippetEnabled(${i}, this.checked)">Show on front page</label><button class="btn btn-danger btn-sm" onclick="removeSnippet(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove</button></div></div>`;}).join('');
+  if(count<SNIPPET_LIMIT)html+=`<div class="snippet-add-card" onclick="addSnippet()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Snippet</span><span style="font-size:11px;color:var(--text3)">${SNIPPET_LIMIT-count} slot${SNIPPET_LIMIT-count!==1?'s':''} remaining</span></div>`;
+  grid.innerHTML=html;
 }
-
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function onSnippetInput(i, value) {
-  snippets[i].text = value;
-  const len = value.length;
-  const el = document.getElementById(`snippet-count-${i}`);
-  if (el) {
-    el.textContent = `${len} / ${SNIPPET_MAX}`;
-    el.className = 'snippet-char-count' + (len >= SNIPPET_MAX ? ' at-limit' : len > 500 ? ' near-limit' : '');
-  }
-  document.getElementById('snippetsNavBadge').textContent = snippets.filter(s=>s.enabled).length;
-}
-
-function toggleSnippetEnabled(i, checked) {
-  snippets[i].enabled = checked;
-  document.getElementById('snippetsNavBadge').textContent = snippets.filter(s=>s.enabled).length;
-}
-
-function addSnippet() {
-  if (snippets.length >= SNIPPET_LIMIT) { showToast('error', 'Limit Reached', `Maximum ${SNIPPET_LIMIT} snippets allowed.`); return; }
-  snippets.push({ text: '', enabled: true });
-  renderSnippets();
-  // Focus the new textarea
-  setTimeout(() => {
-    const ta = document.getElementById(`snippet-text-${snippets.length - 1}`);
-    if (ta) ta.focus();
-  }, 50);
-}
-
-function removeSnippet(i) {
-  snippets.splice(i, 1);
-  renderSnippets();
-}
-
-
+function escapeHtml(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function onSnippetInput(i,value){snippets[i].text=value;const len=value.length;const el=document.getElementById(`snippet-count-${i}`);if(el){el.textContent=`${len} / ${SNIPPET_MAX}`;el.className='snippet-char-count'+(len>=SNIPPET_MAX?' at-limit':len>500?' near-limit':'');}document.getElementById('snippetsNavBadge').textContent=snippets.filter(s=>s.enabled).length;}
+function toggleSnippetEnabled(i,checked){snippets[i].enabled=checked;document.getElementById('snippetsNavBadge').textContent=snippets.filter(s=>s.enabled).length;}
+function addSnippet(){if(snippets.length>=SNIPPET_LIMIT){showToast('error','Limit Reached',`Maximum ${SNIPPET_LIMIT} snippets allowed.`);return;}snippets.push({text:'',enabled:true});renderSnippets();setTimeout(()=>{const ta=document.getElementById(`snippet-text-${snippets.length-1}`);if(ta)ta.focus();},50);}
+function removeSnippet(i){snippets.splice(i,1);renderSnippets();}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TICKER
 // ═══════════════════════════════════════════════════════════════════════════
-function renderTickerEditor() {
-  // Sync toggle UI
-  updateTickerToggleUI();
+function renderTickerEditor(){updateTickerToggleUI();const container=document.getElementById('tickerItems');container.innerHTML=tickerItems.map((item,i)=>`<div class="ticker-item"><input type="text" value="${item.replace(/"/g,'&quot;')}" placeholder="Breaking news headline..." onchange="tickerItems[${i}] = this.value"><button class="btn btn-ghost btn-sm" onclick="removeTickerItem(${i})"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');}
+function toggleTickerEnabled(){tickerEnabled=!tickerEnabled;updateTickerToggleUI();}
+function updateTickerToggleUI(){document.getElementById('tickerToggleTrack').style.background=tickerEnabled?'var(--accent)':'var(--surface3)';document.getElementById('tickerToggleThumb').style.left=tickerEnabled?'23px':'3px';document.getElementById('tickerEnabledLabel').textContent=tickerEnabled?'Enabled':'Disabled';}
+function addTickerItem(){tickerItems.push('');renderTickerEditor();const inputs=document.querySelectorAll('.ticker-item input');if(inputs.length)inputs[inputs.length-1].focus();}
+function removeTickerItem(i){tickerItems.splice(i,1);renderTickerEditor();}
+function syncTickerToken(){const t=document.getElementById('quizGithubToken').value;document.getElementById('tickerGithubToken').value=t;showToast('success','Synced','Token copied from Quiz panel.');}
+function toggleTickerTokenVisibility(){const inp=document.getElementById('tickerGithubToken'),eye=document.getElementById('tickerTokenEye');if(inp.type==='password'){inp.type='text';eye.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';}else{inp.type='password';eye.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';}}
 
-  const container = document.getElementById('tickerItems');
-  container.innerHTML = tickerItems.map((item, i) => `
-    <div class="ticker-item">
-      <input type="text" value="${item.replace(/"/g,'&quot;')}" placeholder="Breaking news headline..." onchange="tickerItems[${i}] = this.value">
-      <button class="btn btn-ghost btn-sm" onclick="removeTickerItem(${i})">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-  `).join('');
+async function loadTickerFromGitHub(){
+  const token=document.getElementById('tickerGithubToken').value.trim();if(!token){showToast('error','No Token','Enter your GitHub token first.');return;}
+  const status=document.getElementById('tickerGithubStatus');status.style.display='block';status.innerHTML='<span style="color:var(--text3)">Loading ticker.json from GitHub…</span>';
+  try{const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/ticker.json`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}});if(r.status===404){status.innerHTML='<span style="color:var(--yellow)">ticker.json not found — will be created on first publish.</span>';return;}if(!r.ok)throw new Error(`GitHub error ${r.status}`);const d=await r.json();const json=JSON.parse(atob(d.content.replace(/\n/g,'')));tickerEnabled=json.enabled!==false;tickerItems=Array.isArray(json.items)?json.items:[];renderTickerEditor();status.innerHTML=`<span style="color:var(--green)">✓ Loaded — ${tickerItems.length} item(s), ticker is ${tickerEnabled?'enabled':'disabled'}.</span>`;showToast('success','Ticker Loaded',`${tickerItems.length} item(s) loaded from GitHub.`);}catch(e){status.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`;showToast('error','Load Failed',e.message.substring(0,100));}
+}
+async function saveTicker(){
+  document.querySelectorAll('.ticker-item input').forEach((inp,i)=>{tickerItems[i]=inp.value.trim();});tickerItems=tickerItems.filter(t=>t.length>0);
+  const token=document.getElementById('tickerGithubToken').value.trim();if(!token){showToast('error','No Token','Enter your GitHub token to publish.');return;}
+  const status=document.getElementById('tickerGithubStatus');status.style.display='block';status.innerHTML='<span style="color:var(--text3)">Publishing to GitHub…</span>';
+  const payload={enabled:tickerEnabled,items:tickerItems,updatedAt:new Date().toISOString()};
+  try{const existing=await ghGet('ticker.json',token);await ghPut('ticker.json',token,payload,existing?.sha||'',`Update ticker: ${tickerEnabled?'enabled':'disabled'}, ${tickerItems.length} item(s)`);status.innerHTML=`<span style="color:var(--green)">✓ Published — ticker.json updated at ${new Date().toLocaleTimeString()}.</span>`;showToast('success','Ticker Published',tickerEnabled?`${tickerItems.length} item(s) live on site.`:'Ticker saved but currently disabled.');renderTickerEditor();}catch(e){status.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`;showToast('error','Publish Failed',e.message.substring(0,100));}
 }
 
-function toggleTickerEnabled() {
-  tickerEnabled = !tickerEnabled;
-  updateTickerToggleUI();
+// ═══════════════════════════════════════════════════════════════════════════
+// VOICES
+// ═══════════════════════════════════════════════════════════════════════════
+const VOICES_COLLECTION = 'voices';
+
+function voicesUpdateStats() {
+  const total = voicesData.length;
+  const live = voicesData.filter(v=>v.visible).length;
+  document.getElementById('vstat-total').textContent = total;
+  document.getElementById('vstat-live').textContent = live;
+  document.getElementById('vstat-hidden').textContent = total - live;
+  document.getElementById('vstat-players').textContent = voicesData.filter(v=>v.role==='player').length;
+  document.getElementById('voicesNavBadge').textContent = total;
 }
 
-function updateTickerToggleUI() {
-  document.getElementById('tickerToggleTrack').style.background = tickerEnabled ? 'var(--accent)' : 'var(--surface3)';
-  document.getElementById('tickerToggleThumb').style.left = tickerEnabled ? '23px' : '3px';
-  document.getElementById('tickerEnabledLabel').textContent = tickerEnabled ? 'Enabled' : 'Disabled';
-}
-
-function addTickerItem() {
-  tickerItems.push('');
-  renderTickerEditor();
-  const inputs = document.querySelectorAll('.ticker-item input');
-  if (inputs.length) inputs[inputs.length - 1].focus();
-}
-
-function removeTickerItem(i) {
-  tickerItems.splice(i, 1);
-  renderTickerEditor();
-}
-
-function syncTickerToken() {
-  const t = document.getElementById('quizGithubToken').value;
-  document.getElementById('tickerGithubToken').value = t;
-  showToast('success', 'Synced', 'Token copied from Quiz panel.');
-}
-
-function toggleTickerTokenVisibility() {
-  const inp = document.getElementById('tickerGithubToken');
-  const eye = document.getElementById('tickerTokenEye');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  } else {
-    inp.type = 'password';
-    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+function voicesRender() {
+  const roleFilter = document.getElementById('v-filter-role').value;
+  const visFilter  = document.getElementById('v-filter-vis').value;
+  const query      = (document.getElementById('v-search').value||'').toLowerCase();
+  let filtered = voicesData.filter(v => {
+    if (roleFilter!=='all'&&v.role!==roleFilter) return false;
+    if (visFilter==='true'&&!v.visible) return false;
+    if (visFilter==='false'&&v.visible) return false;
+    if (query) { const hay=[v.name,v.voice,v.context,v.source,...(v.tags||[])].join(' ').toLowerCase(); if(!hay.includes(query)) return false; }
+    return true;
+  });
+  document.getElementById('voices-list-count').textContent = `${filtered.length} of ${voicesData.length} voice${voicesData.length!==1?'s':''}`;
+  const container = document.getElementById('voices-list');
+  if (!filtered.length) {
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;font-style:italic;border:1px dashed var(--border);border-radius:10px">${voicesData.length?'No voices match these filters.':'No voices loaded yet. Click "Load from Firestore" to fetch.'}</div>`;
+    voicesUpdateStats(); return;
   }
+  const roleLabels = {player:'Player',fan:'Fan',expert:'Expert',commentator:'Commentator',other:'Other'};
+  container.innerHTML = filtered.map(v => {
+    const dateStr = v.createdAt ? new Date(v.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    const tags = (v.tags||[]).map(t=>`<span class="voice-tag">${escapeHtml(t)}</span>`).join('');
+    return `
+    <div class="voice-card ${v.visible?'':'hidden-card'}" id="vcard-${v.id}">
+      <div>
+        <div class="voice-card-meta">
+          <span class="voice-card-name">${escapeHtml(v.name)}</span>
+          <span class="voice-role-badge ${v.role||'other'}">${roleLabels[v.role]||'Other'}</span>
+          ${v.context?`<span class="voice-card-context">${escapeHtml(v.context)}</span>`:''}
+        </div>
+        <div class="voice-card-text">${escapeHtml(v.voice)}</div>
+        <div class="voice-card-footer">
+          <span class="voice-card-date">${dateStr}${v.source?' · <em>'+escapeHtml(v.source)+'</em>':''}</span>
+          ${tags}
+        </div>
+      </div>
+      <div class="voice-card-actions">
+        <span class="voice-live-dot ${v.visible?'live':''}">${v.visible?'Live':'Hidden'}</span>
+        <button class="btn btn-ghost btn-sm" onclick="voicesToggleVisible('${v.id}')">${v.visible?'Hide':'Show'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="voicesEdit('${v.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="voicesDelete('${v.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+  voicesUpdateStats();
 }
 
-async function loadTickerFromGitHub() {
-  const token = document.getElementById('tickerGithubToken').value.trim();
-  if (!token) { showToast('error', 'No Token', 'Enter your GitHub token first.'); return; }
-  const status = document.getElementById('tickerGithubStatus');
-  status.style.display = 'block';
-  status.innerHTML = '<span style="color:var(--text3)">Loading ticker.json from GitHub…</span>';
+async function voicesLoadFromFirestore() {
+  // ── Wire up your existing Firestore `db` instance here ──
+  // The pattern below assumes firebase/firestore is initialised globally as `db`
+  // and the modular SDK functions are available as window.firestoreLib (or destructure from import).
+  // Example real implementation:
+  //
+  //   const { collection, getDocs, orderBy, query, doc, getDoc } = firestoreLib;
+  //   const q = query(collection(db, VOICES_COLLECTION), orderBy('createdAt','desc'));
+  //   const snap = await getDocs(q);
+  //   voicesData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  //   const cfgDoc = await getDoc(doc(db, 'config', 'voices'));
+  //   if (cfgDoc.exists()) { voicesSectionEnabled = cfgDoc.data().enabled !== false; voicesUpdateSectionToggleUI(); }
+  //
+  showToast('success','Voices','Load from Firestore — wire up your db instance in voicesLoadFromFirestore().');
+  voicesRender();
+}
+
+async function voicesSaveToFirestore() {
+  const name    = document.getElementById('v-name').value.trim();
+  const voice   = document.getElementById('v-voice').value.trim();
+  const role    = document.getElementById('v-role').value;
+  const context = document.getElementById('v-context').value.trim();
+  const source  = document.getElementById('v-source').value.trim();
+  const visible = document.getElementById('v-visible').value === 'true';
+  const tagsRaw = document.getElementById('v-tags').value.trim();
+  const tags    = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+  if (!name||!voice) { showToast('error','Missing Fields','Name and Voice are required.'); return; }
+  const voiceObj = { name, voice, role, context, source, visible, tags, createdAt: Date.now() };
+  // ── Real Firestore save ──
+  // const { collection, addDoc } = firestoreLib;
+  // const ref = await addDoc(collection(db, VOICES_COLLECTION), voiceObj);
+  // voiceObj.id = ref.id;
+  voiceObj.id = 'v_' + Date.now(); // remove this line once Firestore is wired
+  voicesData.unshift(voiceObj);
+  voicesRender();
+  voicesClearForm();
+  showToast('success','Voice Saved','Saved to Firestore successfully.');
+}
+
+function voicesToggleVisible(id) {
+  const v = voicesData.find(x=>x.id===id); if(!v) return;
+  v.visible = !v.visible;
+  voicesRender();
+  // ── Real Firestore update ──
+  // const { doc, updateDoc } = firestoreLib;
+  // updateDoc(doc(db, VOICES_COLLECTION, id), { visible: v.visible });
+  showToast('success', v.visible?'Voice set live':'Voice hidden', '');
+}
+
+function voicesEdit(id) {
+  const v = voicesData.find(x=>x.id===id); if(!v) return;
+  document.getElementById('v-name').value    = v.name||'';
+  document.getElementById('v-role').value    = v.role||'other';
+  document.getElementById('v-context').value = v.context||'';
+  document.getElementById('v-source').value  = v.source||'';
+  document.getElementById('v-voice').value   = v.voice||'';
+  document.getElementById('v-visible').value = String(v.visible!==false);
+  document.getElementById('v-tags').value    = (v.tags||[]).join(', ');
+  voicesData = voicesData.filter(x=>x.id!==id);
+  // ── Real Firestore delete (will re-add on save) ──
+  // const { doc, deleteDoc } = firestoreLib; deleteDoc(doc(db, VOICES_COLLECTION, id));
+  document.getElementById('v-name').scrollIntoView({behavior:'smooth',block:'center'});
+  showToast('success','Voice loaded','Edit the fields and save again.');
+}
+
+function voicesDelete(id) {
+  if (!confirm('Delete this voice permanently?')) return;
+  voicesData = voicesData.filter(v=>v.id!==id);
+  voicesRender();
+  // ── Real Firestore delete ──
+  // const { doc, deleteDoc } = firestoreLib; deleteDoc(doc(db, VOICES_COLLECTION, id));
+  showToast('success','Voice deleted','');
+}
+
+function voicesToggleSection() {
+  voicesSectionEnabled = !voicesSectionEnabled;
+  voicesUpdateSectionToggleUI();
+  // ── Real Firestore update ──
+  // const { doc, setDoc } = firestoreLib; setDoc(doc(db,'config','voices'),{enabled:voicesSectionEnabled},{merge:true});
+  showToast('success', voicesSectionEnabled?'Voices section enabled':'Voices section disabled', 'Remember to publish to GitHub.');
+}
+
+function voicesUpdateSectionToggleUI() {
+  const track = document.getElementById('voicesSectionTrack');
+  const thumb = document.getElementById('voicesSectionThumb');
+  const label = document.getElementById('voicesSectionLabel');
+  track.style.background = voicesSectionEnabled ? 'var(--accent)' : 'var(--surface3)';
+  thumb.style.left       = voicesSectionEnabled ? '23px' : '3px';
+  label.textContent      = voicesSectionEnabled ? 'Enabled' : 'Disabled';
+  label.style.color      = voicesSectionEnabled ? 'var(--green)' : 'var(--text2)';
+}
+
+async function voicesPublishToGitHub() {
+  const token = getToken('voicesGithubToken');
+  if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
+  setGithubStatus('voicesGithubStatus','loading','Publishing voices.json to GitHub…');
+  const payload = {
+    enabled: voicesSectionEnabled,
+    updatedAt: new Date().toISOString(),
+    voices: voicesData.filter(v=>v.visible)
+  };
   try {
-    const r = await fetch('https://api.github.com/repos/joidevivre689103/congenial-eureka/contents/ticker.json', {
-      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (r.status === 404) {
-      status.innerHTML = '<span style="color:var(--yellow)">ticker.json not found — will be created on first publish.</span>';
-      return;
-    }
-    if (!r.ok) throw new Error(`GitHub error ${r.status}`);
-    const d = await r.json();
-    const json = JSON.parse(atob(d.content.replace(/\n/g, '')));
-    tickerEnabled = json.enabled !== false;
-    tickerItems = Array.isArray(json.items) ? json.items : [];
-    renderTickerEditor();
-    status.innerHTML = `<span style="color:var(--green)">✓ Loaded — ${tickerItems.length} item(s), ticker is ${tickerEnabled ? 'enabled' : 'disabled'}.</span>`;
-    showToast('success', 'Ticker Loaded', `${tickerItems.length} item(s) loaded from GitHub.`);
-  } catch(e) {
-    status.innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`;
-    showToast('error', 'Load Failed', e.message.substring(0, 100));
-  }
+    const existing = await ghGet('voices.json', token);
+    await ghPut('voices.json', token, payload, existing?.sha||'', `Update voices: ${payload.voices.length} live voice(s)`);
+    setGithubStatus('voicesGithubStatus','success',`✓ Published ${payload.voices.length} live voice(s) at ${new Date().toLocaleTimeString()}.`);
+    showToast('success','Voices Published',`voices.json updated — ${payload.voices.length} voice(s) live.`);
+  } catch(e) { setGithubStatus('voicesGithubStatus','error',`Error: ${e.message}`); showToast('error','Publish Failed',e.message.substring(0,100)); }
 }
 
-async function saveTicker() {
-  // Sync textarea values into tickerItems array first
-  document.querySelectorAll('.ticker-item input').forEach((inp, i) => { tickerItems[i] = inp.value.trim(); });
-  tickerItems = tickerItems.filter(t => t.length > 0);
-
-  const token = document.getElementById('tickerGithubToken').value.trim();
-  if (!token) { showToast('error', 'No Token', 'Enter your GitHub token to publish.'); return; }
-
-  const status = document.getElementById('tickerGithubStatus');
-  status.style.display = 'block';
-  status.innerHTML = '<span style="color:var(--text3)">Publishing to GitHub…</span>';
-
-  const payload = { enabled: tickerEnabled, items: tickerItems, updatedAt: new Date().toISOString() };
-
-  try {
-    const owner = 'joidevivre689103', repo = 'congenial-eureka', path = 'ticker.json';
-    // Get existing SHA if file exists
-    let sha = '';
-    try {
-      const check = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (check.ok) { const d = await check.json(); sha = d.sha; }
-    } catch(e) {}
-
-    const body = {
-      message: `Update ticker: ${tickerEnabled ? 'enabled' : 'disabled'}, ${tickerItems.length} item(s)`,
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))),
-      ...(sha ? { sha } : {})
-    };
-
-    const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
-      body: JSON.stringify(body)
-    });
-
-    if (resp.ok) {
-      status.innerHTML = `<span style="color:var(--green)">✓ Published — ticker.json updated at ${new Date().toLocaleTimeString()}.</span>`;
-      showToast('success', 'Ticker Published', tickerEnabled ? `${tickerItems.length} item(s) live on site.` : 'Ticker saved but currently disabled.');
-      renderTickerEditor(); // re-render to reflect filtered items
-    } else {
-      const err = await resp.json();
-      throw new Error(err.message || `GitHub error ${resp.status}`);
-    }
-  } catch(e) {
-    status.innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`;
-    showToast('error', 'Publish Failed', e.message.substring(0, 100));
-  }
+function voicesClearForm() {
+  ['v-name','v-context','v-source','v-voice','v-tags'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('v-role').value='player'; document.getElementById('v-visible').value='true';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ELEVENLABS AUDIO
 // ═══════════════════════════════════════════════════════════════════════════
-function getAudioSettings() {
-  try { const s = localStorage.getItem('cricketTimesAudioSettings'); if (s) return JSON.parse(s); } catch(e) {}
-  return { apiKey:'', voiceId:'', model:'eleven_multilingual_v2', stability:50 };
-}
-function loadAudioSettings() {
-  const s = getAudioSettings();
-  document.getElementById('elevenLabsApiKey').value = s.apiKey || '';
-  document.getElementById('elevenLabsVoiceId').value = s.voiceId || '';
-  document.getElementById('elevenLabsModel').value = s.model || 'eleven_multilingual_v2';
-  document.getElementById('elevenLabsStability').value = s.stability || 50;
-}
-function toggleApiKeyVisibility() {
-  const input = document.getElementById('elevenLabsApiKey');
-  const icon = document.getElementById('apiKeyEyeIcon');
-  const btn = document.getElementById('apiKeyToggleBtn');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-    btn.style.color = 'var(--accent)';
-  } else {
-    input.type = 'password';
-    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-    btn.style.color = 'var(--text3)';
-  }
-}
-function copyApiKey() {
-  const input = document.getElementById('elevenLabsApiKey');
-  const btn = document.getElementById('apiKeyCopyBtn');
-  const icon = document.getElementById('apiKeyCopyIcon');
-  const val = input.value.trim();
-  if (!val) { showToast('error','Nothing to Copy','API key field is empty.'); return; }
-  navigator.clipboard.writeText(val).then(() => {
-    icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
-    btn.style.color = 'var(--green)'; btn.style.borderColor = 'var(--green)';
-    showToast('success','Copied','API key copied to clipboard.');
-    setTimeout(() => { icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'; btn.style.color='var(--text3)'; btn.style.borderColor='var(--border)'; }, 2000);
-  }).catch(() => { input.select(); document.execCommand('copy'); showToast('success','Copied','API key copied to clipboard.'); });
-}
-function saveAudioSettings() {
-  const settings = {
-    apiKey: document.getElementById('elevenLabsApiKey').value.trim(),
-    voiceId: document.getElementById('elevenLabsVoiceId').value.trim(),
-    model: document.getElementById('elevenLabsModel').value,
-    stability: parseInt(document.getElementById('elevenLabsStability').value)
-  };
-  localStorage.setItem('cricketTimesAudioSettings', JSON.stringify(settings));
-  showToast('success','Settings Saved',`API Key: ${settings.apiKey ? settings.apiKey.substring(0,8)+'...' : '(empty)'}`);
-}
-async function callElevenLabs(text) {
-  const s = getAudioSettings();
-  const apiKey = (s.apiKey||'').trim(), voiceId = (s.voiceId||'').trim();
-  if (!apiKey || !voiceId) throw new Error('Please configure ElevenLabs API Key and Voice ID in Audio Settings first.');
-  let response;
-  try {
-    response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-      method:'POST', headers:{'Content-Type':'application/json','xi-api-key':apiKey},
-      body: JSON.stringify({ text, model_id: s.model||'eleven_multilingual_v2', voice_settings:{ stability:(s.stability||50)/100, similarity_boost:0.75 } })
-    });
-  } catch(e) { throw new Error('Network error — ' + e.message); }
-  if (!response.ok) { let d=''; try{d=await response.text();}catch(e){} throw new Error(`ElevenLabs error ${response.status}: ${d.substring(0,200)}`); }
-  const blob = await response.blob();
-  return new Promise((res,rej) => { const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=()=>rej(new Error('Failed to convert audio')); r.readAsDataURL(blob); });
-}
-async function testVoice() {
-  const resultDiv = document.getElementById('testVoiceResult');
-  resultDiv.style.display='block'; resultDiv.innerHTML='<div style="font-size:12px;color:var(--text3)">Generating test audio…</div>';
-  try {
-    const audioData = await callElevenLabs('This is a test of the Cricket Times audio narration system.');
-    resultDiv.innerHTML='<audio controls style="width:100%;height:36px"></audio><span style="color:var(--green);font-size:12px;font-weight:600">✓ Voice test successful!</span>';
-    resultDiv.querySelector('audio').src = audioData;
-    resultDiv.querySelector('audio').play();
-    showToast('success','Voice Test Passed','Audio generated successfully.');
-  } catch(err) {
-    resultDiv.innerHTML=`<pre style="font-size:11px;color:var(--red);white-space:pre-wrap;background:var(--surface);padding:12px;border-radius:8px;border:1px solid var(--red)">${err.message}</pre>`;
-    showToast('error','Voice Test Failed',err.message.substring(0,100));
-  }
-}
-function resetAudioUI() {
-  const status=document.getElementById('audioStatus'),playerWrap=document.getElementById('audioPlayerWrap'),player=document.getElementById('audioPreviewPlayer'),genBtn=document.getElementById('generateAudioBtn');
-  status.style.display='none'; playerWrap.style.display='none'; player.src='';
-  genBtn.disabled=false; genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Generate Audio';
-  window._pendingAudioData=null;
-}
-function showAudioReady(audioDataUri) {
-  const status=document.getElementById('audioStatus'),statusText=document.getElementById('audioStatusText'),playerWrap=document.getElementById('audioPlayerWrap'),player=document.getElementById('audioPreviewPlayer');
-  status.style.display='block'; statusText.innerHTML='<span style="color:var(--green);font-weight:600">✓ Audio ready</span>';
-  playerWrap.style.display='block'; player.src=audioDataUri; window._pendingAudioData=audioDataUri;
-}
-function removeGeneratedAudio() {
-  const id=document.getElementById('articleId').value;
-  if(id){const idx=articles.findIndex(a=>a.id===parseInt(id));if(idx!==-1){articles[idx].audioData=null;}}
-  resetAudioUI(); showToast('success','Audio Removed','The generated narration has been removed.');
-}
-async function generateAudioForArticle() {
-  const headline=document.getElementById('articleHeadline').value.trim();
-  const summary=document.getElementById('articleSummary').value.trim();
-  const content=document.getElementById('articleContent').value.trim();
-  const text=content||(headline+'. '+summary);
-  if(!text||text.length<10){showToast('error','No Content','Add article content or summary before generating audio.');return;}
-  const genBtn=document.getElementById('generateAudioBtn'),status=document.getElementById('audioStatus'),statusText=document.getElementById('audioStatusText');
-  genBtn.disabled=true; genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2" stroke-dasharray="30 70"/></svg> Generating...';
-  status.style.display='block'; statusText.innerHTML='Calling ElevenLabs API…';
-  try {
-    const audioData=await callElevenLabs(text);
-    const id=document.getElementById('articleId').value;
-    if(id){const idx=articles.findIndex(a=>a.id===parseInt(id));if(idx!==-1){articles[idx].audioData=audioData;}}
-    window._pendingAudioData=audioData; showAudioReady(audioData);
-    genBtn.disabled=false; genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg> Regenerate';
-    showToast('success','Audio Generated','Narration created successfully.');
-  } catch(err) {
-    genBtn.disabled=false; genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Generate Audio';
-    statusText.innerHTML=`<span style="color:var(--red)">Error: ${err.message}</span>`;
-    showToast('error','Generation Failed',err.message.substring(0,100));
-  }
-}
-async function generateAllAudio() {
-  const toGenerate=articles.filter(a=>a.status==='published'&&a.audioEnabled!==false&&!a.audioData);
-  if(!toGenerate.length){showToast('success','All Done','All published articles already have audio.');return;}
-  const progress=document.getElementById('bulkProgress'),bar=document.getElementById('bulkProgressBar'),text=document.getElementById('bulkProgressText');
-  progress.style.display='block'; let done=0;
-  for(const article of toGenerate){
-    text.textContent=`Generating: "${article.headline.substring(0,50)}…" (${done+1}/${toGenerate.length})`;
-    try{
-      const audioData=await callElevenLabs(article.content||(article.headline+'. '+article.summary));
-      const idx=articles.findIndex(a=>a.id===article.id);
-      if(idx!==-1)articles[idx].audioData=audioData;
-    }catch(e){}
-    done++; bar.style.width=`${(done/toGenerate.length)*100}%`;
-  }
-  renderArticles();
-  text.textContent=`Done — ${done} article${done!==1?'s':''} processed.`;
-  showToast('success','Bulk Audio Complete',`Generated audio for ${done} article(s).`);
-}
-function runAudioDiagnostic() {
-  try {
-    const keys=Object.keys(localStorage).filter(k=>k.startsWith('cricketTimes'));
-    const output=keys.map(k=>`${k}: ${(localStorage.getItem(k)||'').substring(0,80)}…`).join('\n')||'No audio settings found in localStorage.';
-    document.getElementById('audioDiagOutput').textContent=output;
-  } catch(e){ document.getElementById('audioDiagOutput').textContent='Error: '+e.message; }
-}
+function getAudioSettings(){try{const s=localStorage.getItem('cricketTimesAudioSettings');if(s)return JSON.parse(s);}catch(e){}return{apiKey:'',voiceId:'',model:'eleven_multilingual_v2',stability:50};}
+function loadAudioSettings(){const s=getAudioSettings();document.getElementById('elevenLabsApiKey').value=s.apiKey||'';document.getElementById('elevenLabsVoiceId').value=s.voiceId||'';document.getElementById('elevenLabsModel').value=s.model||'eleven_multilingual_v2';document.getElementById('elevenLabsStability').value=s.stability||50;}
+function toggleApiKeyVisibility(){const input=document.getElementById('elevenLabsApiKey'),icon=document.getElementById('apiKeyEyeIcon'),btn=document.getElementById('apiKeyToggleBtn');if(input.type==='password'){input.type='text';icon.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';btn.style.color='var(--accent)';}else{input.type='password';icon.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';btn.style.color='var(--text3)';}}
+function copyApiKey(){const input=document.getElementById('elevenLabsApiKey'),btn=document.getElementById('apiKeyCopyBtn'),icon=document.getElementById('apiKeyCopyIcon'),val=input.value.trim();if(!val){showToast('error','Nothing to Copy','API key field is empty.');return;}navigator.clipboard.writeText(val).then(()=>{icon.innerHTML='<polyline points="20 6 9 17 4 12"/>';btn.style.color='var(--green)';btn.style.borderColor='var(--green)';showToast('success','Copied','API key copied to clipboard.');setTimeout(()=>{icon.innerHTML='<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';btn.style.color='var(--text3)';btn.style.borderColor='var(--border)';},2000);}).catch(()=>{input.select();document.execCommand('copy');showToast('success','Copied','API key copied to clipboard.');});}
+function saveAudioSettings(){const settings={apiKey:document.getElementById('elevenLabsApiKey').value.trim(),voiceId:document.getElementById('elevenLabsVoiceId').value.trim(),model:document.getElementById('elevenLabsModel').value,stability:parseInt(document.getElementById('elevenLabsStability').value)};localStorage.setItem('cricketTimesAudioSettings',JSON.stringify(settings));showToast('success','Settings Saved',`API Key: ${settings.apiKey?settings.apiKey.substring(0,8)+'...':'(empty)'}`);}
+async function callElevenLabs(text){const s=getAudioSettings();const apiKey=(s.apiKey||'').trim(),voiceId=(s.voiceId||'').trim();if(!apiKey||!voiceId)throw new Error('Please configure ElevenLabs API Key and Voice ID in Audio Settings first.');let response;try{response=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,{method:'POST',headers:{'Content-Type':'application/json','xi-api-key':apiKey},body:JSON.stringify({text,model_id:s.model||'eleven_multilingual_v2',voice_settings:{stability:(s.stability||50)/100,similarity_boost:0.75}})});}catch(e){throw new Error('Network error — '+e.message);}if(!response.ok){let d='';try{d=await response.text();}catch(e){}throw new Error(`ElevenLabs error ${response.status}: ${d.substring(0,200)}`);}const blob=await response.blob();return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('Failed to convert audio'));r.readAsDataURL(blob);});}
+async function testVoice(){const resultDiv=document.getElementById('testVoiceResult');resultDiv.style.display='block';resultDiv.innerHTML='<div style="font-size:12px;color:var(--text3)">Generating test audio…</div>';try{const audioData=await callElevenLabs('This is a test of the Cricket Times audio narration system.');resultDiv.innerHTML='<audio controls style="width:100%;height:36px"></audio><span style="color:var(--green);font-size:12px;font-weight:600">✓ Voice test successful!</span>';resultDiv.querySelector('audio').src=audioData;resultDiv.querySelector('audio').play();showToast('success','Voice Test Passed','Audio generated successfully.');}catch(err){resultDiv.innerHTML=`<pre style="font-size:11px;color:var(--red);white-space:pre-wrap;background:var(--surface);padding:12px;border-radius:8px;border:1px solid var(--red)">${err.message}</pre>`;showToast('error','Voice Test Failed',err.message.substring(0,100));}}
+function resetAudioUI(){const status=document.getElementById('audioStatus'),playerWrap=document.getElementById('audioPlayerWrap'),player=document.getElementById('audioPreviewPlayer'),genBtn=document.getElementById('generateAudioBtn');status.style.display='none';playerWrap.style.display='none';player.src='';genBtn.disabled=false;genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Generate Audio';window._pendingAudioData=null;}
+function showAudioReady(audioDataUri){const status=document.getElementById('audioStatus'),statusText=document.getElementById('audioStatusText'),playerWrap=document.getElementById('audioPlayerWrap'),player=document.getElementById('audioPreviewPlayer');status.style.display='block';statusText.innerHTML='<span style="color:var(--green);font-weight:600">✓ Audio ready</span>';playerWrap.style.display='block';player.src=audioDataUri;window._pendingAudioData=audioDataUri;}
+function removeGeneratedAudio(){const id=document.getElementById('articleId').value;if(id){const idx=articles.findIndex(a=>a.id===parseInt(id));if(idx!==-1){articles[idx].audioData=null;}}resetAudioUI();showToast('success','Audio Removed','The generated narration has been removed.');}
+async function generateAudioForArticle(){const headline=document.getElementById('articleHeadline').value.trim(),summary=document.getElementById('articleSummary').value.trim(),content=document.getElementById('articleContent').value.trim(),text=content||(headline+'. '+summary);if(!text||text.length<10){showToast('error','No Content','Add article content or summary before generating audio.');return;}const genBtn=document.getElementById('generateAudioBtn'),status=document.getElementById('audioStatus'),statusText=document.getElementById('audioStatusText');genBtn.disabled=true;genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2" stroke-dasharray="30 70"/></svg> Generating...';status.style.display='block';statusText.innerHTML='Calling ElevenLabs API…';try{const audioData=await callElevenLabs(text);const id=document.getElementById('articleId').value;if(id){const idx=articles.findIndex(a=>a.id===parseInt(id));if(idx!==-1){articles[idx].audioData=audioData;}}window._pendingAudioData=audioData;showAudioReady(audioData);genBtn.disabled=false;genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg> Regenerate';showToast('success','Audio Generated','Narration created successfully.');}catch(err){genBtn.disabled=false;genBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Generate Audio';statusText.innerHTML=`<span style="color:var(--red)">Error: ${err.message}</span>`;showToast('error','Generation Failed',err.message.substring(0,100));}}
+async function generateAllAudio(){const toGenerate=articles.filter(a=>a.status==='published'&&a.audioEnabled!==false&&!a.audioData);if(!toGenerate.length){showToast('success','All Done','All published articles already have audio.');return;}const progress=document.getElementById('bulkProgress'),bar=document.getElementById('bulkProgressBar'),text=document.getElementById('bulkProgressText');progress.style.display='block';let done=0;for(const article of toGenerate){text.textContent=`Generating: "${article.headline.substring(0,50)}…" (${done+1}/${toGenerate.length})`;try{const audioData=await callElevenLabs(article.content||(article.headline+'. '+article.summary));const idx=articles.findIndex(a=>a.id===article.id);if(idx!==-1)articles[idx].audioData=audioData;}catch(e){}done++;bar.style.width=`${(done/toGenerate.length)*100}%`;}renderArticles();text.textContent=`Done — ${done} article${done!==1?'s':''} processed.`;showToast('success','Bulk Audio Complete',`Generated audio for ${done} article(s).`);}
+function runAudioDiagnostic(){try{const keys=Object.keys(localStorage).filter(k=>k.startsWith('cricketTimes'));const output=keys.map(k=>`${k}: ${(localStorage.getItem(k)||'').substring(0,80)}…`).join('\n')||'No audio settings found in localStorage.';document.getElementById('audioDiagOutput').textContent=output;}catch(e){document.getElementById('audioDiagOutput').textContent='Error: '+e.message;}}
 
 // ═══════════════════════════════════════════════════════════════════════════
-// QUIZ (stubs – full implementations preserved from original)
+// QUIZ
 // ═══════════════════════════════════════════════════════════════════════════
-function initQuizView() {
-  loadAudioSettings();
-  // Load existing quiz from localStorage if present
-  try {
-    /* quiz state loaded from GitHub via loadQuizQueue() */
-  } catch(e) {}
-}
-function updateQuizPreview() {
-  const q=document.getElementById('quizQuestion').value.trim();
-  const a=document.getElementById('quizOptionA').value.trim();
-  const b=document.getElementById('quizOptionB').value.trim();
-  const c=document.getElementById('quizOptionC').value.trim();
-  const correct=document.getElementById('quizCorrectAnswer').value;
-  const by=document.getElementById('quizContributedBy').value.trim();
-  if(!q){document.getElementById('quizPreview').textContent='Fill in the fields above to see a preview.';return;}
-  document.getElementById('quizPreview').innerHTML=`
-    <div style="font-weight:600;margin-bottom:8px">${q}</div>
-    ${[['A',a],['B',b],['C',c]].map(([l,t])=>`<div style="padding:6px 10px;border-radius:6px;margin-bottom:4px;background:${correct===l?'var(--green-dim)':'var(--surface3)'};color:${correct===l?'var(--green)':'var(--text2)'}"><strong>${l}.</strong> ${t||'—'}</div>`).join('')}
-    ${by?`<div style="font-size:11px;color:var(--text3);margin-top:8px">Contributed by: ${by}</div>`:''}
-  `;
-}
-async function saveQuizToGitHub() {
-  const token = document.getElementById('quizGithubToken').value.trim();
-  if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
-  const q={
-    question:      document.getElementById('quizQuestion').value.trim(),
-    optionA:       document.getElementById('quizOptionA').value.trim(),
-    optionB:       document.getElementById('quizOptionB').value.trim(),
-    optionC:       document.getElementById('quizOptionC').value.trim(),
-    correctAnswer: document.getElementById('quizCorrectAnswer').value,
-    contributedBy: document.getElementById('quizContributedBy').value.trim(),
-    date:          new Date().toISOString().split('T')[0]
-  };
-  if(!q.question||!q.optionA||!q.optionB||!q.optionC||!q.correctAnswer){showToast('error','Incomplete','Fill in all required fields.');return;}
-  showToast('success','Saving…','Publishing quiz to GitHub…');
-  try {
-    const owner='joidevivre689103', repo='congenial-eureka', path='quiz.json';
-    let sha='';
-    try { const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}}); if(r.ok){const d=await r.json();sha=d.sha;} } catch(e){}
-    const existing=sha?JSON.parse(atob((await (await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}})).json()).content.replace(/\n/g,''))):{}; 
-    const newJson={...existing, today:q, updatedAt:new Date().toISOString()};
-    const content=btoa(unescape(encodeURIComponent(JSON.stringify(newJson,null,2))));
-    const body={message:`Update quiz: ${q.question.substring(0,50)}`,content,...(sha?{sha}:{})};
-    const resp=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
-    if(resp.ok){showToast('success','Quiz Published','Quiz saved to quiz.json successfully.');/* quiz state lives in quiz.json on GitHub */}
-    else{const err=await resp.json();showToast('error','GitHub Error',err.message||'Failed to save.');}
-  } catch(err){showToast('error','Error',err.message.substring(0,100));}
-}
-async function loadQuizFromGitHub() {
-  const token = document.getElementById('quizGithubToken').value.trim();
-  if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
-  const status = document.getElementById('quizTokenStatus');
-  status.style.display = 'block';
-  status.innerHTML = '<span style="color:var(--text3)">Loading quiz.json from GitHub…</span>';
-  try {
-    const result = await ghGet('quiz.json', token);
-    if (!result) {
-      status.innerHTML = '<span style="color:var(--yellow)">quiz.json not found — publish a quiz first.</span>';
-      return;
-    }
-    const quiz = result.data.today || (result.data.question ? result.data : null);
-    if (!quiz) {
-      status.innerHTML = '<span style="color:var(--yellow)">No active quiz found in quiz.json.</span>';
-      return;
-    }
-    // Populate form fields
-    document.getElementById('quizQuestion').value      = quiz.question      || '';
-    document.getElementById('quizOptionA').value       = quiz.optionA       || quiz.options?.A || '';
-    document.getElementById('quizOptionB').value       = quiz.optionB       || quiz.options?.B || '';
-    document.getElementById('quizOptionC').value       = quiz.optionC       || quiz.options?.C || '';
-    document.getElementById('quizCorrectAnswer').value = quiz.correctAnswer  || quiz.answer    || '';
-    document.getElementById('quizContributedBy').value = quiz.contributedBy  || '';
-    updateQuizPreview();
-    status.innerHTML = `<span style="color:var(--green)">✓ Loaded quiz from GitHub (last updated ${quiz.date || 'unknown date'}).</span>`;
-    showToast('success', 'Quiz Loaded', 'Form populated from quiz.json.');
-  } catch(e) {
-    status.innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`;
-    showToast('error', 'Load Failed', e.message.substring(0, 100));
-  }
-}
-function verifyQuizToken() {
-  const token=document.getElementById('quizGithubToken').value.trim();
-  if(!token){showToast('error','No Token','Enter a token first.');return;}
-  fetch('https://api.github.com/user',{headers:{'Authorization':`token ${token}`}}).then(r=>r.json()).then(d=>{
-    const status=document.getElementById('quizTokenStatus');
-    status.style.display='block';
-    if(d.login){status.innerHTML=`<span style="color:var(--green)">✓ Authenticated as <strong>${d.login}</strong></span>`;showToast('success','Token Valid',`Authenticated as ${d.login}`);}
-    else{status.innerHTML=`<span style="color:var(--red)">✗ Invalid token</span>`;showToast('error','Token Invalid','Check your GitHub token.');}
-  }).catch(()=>showToast('error','Network Error','Could not reach GitHub API.'));
-}
-function toggleQuizTokenVisibility() {
-  const inp=document.getElementById('quizGithubToken'),eye=document.getElementById('quizTokenEye');
-  if(inp.type==='password'){inp.type='text';eye.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';}
-  else{inp.type='password';eye.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';}
-}
+function initQuizView(){loadAudioSettings();}
+function updateQuizPreview(){const q=document.getElementById('quizQuestion').value.trim(),a=document.getElementById('quizOptionA').value.trim(),b=document.getElementById('quizOptionB').value.trim(),c=document.getElementById('quizOptionC').value.trim(),correct=document.getElementById('quizCorrectAnswer').value,by=document.getElementById('quizContributedBy').value.trim();if(!q){document.getElementById('quizPreview').textContent='Fill in the fields above to see a preview.';return;}document.getElementById('quizPreview').innerHTML=`<div style="font-weight:600;margin-bottom:8px">${q}</div>${[['A',a],['B',b],['C',c]].map(([l,t])=>`<div style="padding:6px 10px;border-radius:6px;margin-bottom:4px;background:${correct===l?'var(--green-dim)':'var(--surface3)'};color:${correct===l?'var(--green)':'var(--text2)'}"><strong>${l}.</strong> ${t||'—'}</div>`).join('')}${by?`<div style="font-size:11px;color:var(--text3);margin-top:8px">Contributed by: ${by}</div>`:''}`);}
+async function saveQuizToGitHub(){const token=document.getElementById('quizGithubToken').value.trim();if(!token){showToast('error','No Token','Enter your GitHub token first.');return;}const q={question:document.getElementById('quizQuestion').value.trim(),optionA:document.getElementById('quizOptionA').value.trim(),optionB:document.getElementById('quizOptionB').value.trim(),optionC:document.getElementById('quizOptionC').value.trim(),correctAnswer:document.getElementById('quizCorrectAnswer').value,contributedBy:document.getElementById('quizContributedBy').value.trim(),date:new Date().toISOString().split('T')[0]};if(!q.question||!q.optionA||!q.optionB||!q.optionC||!q.correctAnswer){showToast('error','Incomplete','Fill in all required fields.');return;}showToast('success','Saving…','Publishing quiz to GitHub…');try{const owner=GH_OWNER,repo=GH_REPO,path='quiz.json';let sha='';try{const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}});if(r.ok){const d=await r.json();sha=d.sha;}}catch(e){}const existing=sha?JSON.parse(atob((await(await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}})).json()).content.replace(/\n/g,''))):{}; const newJson={...existing,today:q,updatedAt:new Date().toISOString()};const content=btoa(unescape(encodeURIComponent(JSON.stringify(newJson,null,2))));const body={message:`Update quiz: ${q.question.substring(0,50)}`,content,...(sha?{sha}:{})};const resp=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});if(resp.ok){showToast('success','Quiz Published','Quiz saved to quiz.json successfully.');}else{const err=await resp.json();showToast('error','GitHub Error',err.message||'Failed to save.');}}catch(err){showToast('error','Error',err.message.substring(0,100));}}
+async function loadQuizFromGitHub(){const token=document.getElementById('quizGithubToken').value.trim();if(!token){showToast('error','No Token','Enter your GitHub token first.');return;}const status=document.getElementById('quizTokenStatus');status.style.display='block';status.innerHTML='<span style="color:var(--text3)">Loading quiz.json from GitHub…</span>';try{const result=await ghGet('quiz.json',token);if(!result){status.innerHTML='<span style="color:var(--yellow)">quiz.json not found — publish a quiz first.</span>';return;}const quiz=result.data.today||(result.data.question?result.data:null);if(!quiz){status.innerHTML='<span style="color:var(--yellow)">No active quiz found in quiz.json.</span>';return;}document.getElementById('quizQuestion').value=quiz.question||'';document.getElementById('quizOptionA').value=quiz.optionA||quiz.options?.A||'';document.getElementById('quizOptionB').value=quiz.optionB||quiz.options?.B||'';document.getElementById('quizOptionC').value=quiz.optionC||quiz.options?.C||'';document.getElementById('quizCorrectAnswer').value=quiz.correctAnswer||quiz.answer||'';document.getElementById('quizContributedBy').value=quiz.contributedBy||'';updateQuizPreview();status.innerHTML=`<span style="color:var(--green)">✓ Loaded quiz from GitHub (last updated ${quiz.date||'unknown date'}).</span>`;showToast('success','Quiz Loaded','Form populated from quiz.json.');}catch(e){status.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`;showToast('error','Load Failed',e.message.substring(0,100));}}
+function verifyQuizToken(){const token=document.getElementById('quizGithubToken').value.trim();if(!token){showToast('error','No Token','Enter a token first.');return;}fetch('https://api.github.com/user',{headers:{'Authorization':`token ${token}`}}).then(r=>r.json()).then(d=>{const status=document.getElementById('quizTokenStatus');status.style.display='block';if(d.login){status.innerHTML=`<span style="color:var(--green)">✓ Authenticated as <strong>${d.login}</strong></span>`;showToast('success','Token Valid',`Authenticated as ${d.login}`);}else{status.innerHTML=`<span style="color:var(--red)">✗ Invalid token</span>`;showToast('error','Token Invalid','Check your GitHub token.');}}).catch(()=>showToast('error','Network Error','Could not reach GitHub API.'));}
+function toggleQuizTokenVisibility(){const inp=document.getElementById('quizGithubToken'),eye=document.getElementById('quizTokenEye');if(inp.type==='password'){inp.type='text';eye.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';}else{inp.type='password';eye.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';}}
 function startNewQuiz(){document.getElementById('quizQuestion').value='';document.getElementById('quizOptionA').value='';document.getElementById('quizOptionB').value='';document.getElementById('quizOptionC').value='';document.getElementById('quizCorrectAnswer').value='';document.getElementById('quizContributedBy').value='';updateQuizPreview();}
 function loadCorrectSubmitters(){document.getElementById('quizSubmittersList').textContent='No submitters data available in this session.';}
-
-// Quiz Queue stubs
 function syncQueueToken(){const t=document.getElementById('quizGithubToken').value;document.getElementById('queueGithubToken').value=t;showToast('success','Synced','Token copied from Quiz panel.');}
-async function loadQuizQueue(){
-  const token=document.getElementById('queueGithubToken').value.trim()||document.getElementById('quizGithubToken').value.trim();
-  if(!token){showToast('error','No Token','Enter your GitHub token first.');return;}
-  document.getElementById('todayDateLabel').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  try {
-    const r=await fetch('https://api.github.com/repos/joidevivre689103/congenial-eureka/contents/quiz.json',{headers:{'Authorization':`token ${token}`}});
-    if(!r.ok)throw new Error('Could not load quiz.json');
-    const d=await r.json(); const json=JSON.parse(atob(d.content.replace(/\n/g,'')));
-    const today=json.today;
-    document.getElementById('todayQuizPanel').innerHTML=today?`<div style="font-weight:600;margin-bottom:6px">${today.question}</div><div style="font-size:12px;color:var(--text3)">A: ${today.options?.A||'—'} · B: ${today.options?.B||'—'} · C: ${today.options?.C||'—'} · Answer: ${today.answer||'—'}</div>`:'<span style="color:var(--text3);font-style:italic">No quiz set for today.</span>';
-    const queue=json.queue||[];
-    document.getElementById('queueSchedulePanel').innerHTML=queue.length?queue.map((q,i)=>`<div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">${q.question}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">${q.date||'No date'}</div></div>`).join(''):'<span style="color:var(--text3);font-style:italic">Queue is empty.</span>';
-    document.getElementById('queueNavBadge').textContent=queue.length;
-  } catch(e){showToast('error','Load Failed',e.message.substring(0,100));}
-}
-async function loadPendingSubmissions(){
-  document.getElementById('pendingSubmissionsPanel').innerHTML='<span style="color:var(--text3);font-style:italic">Firestore integration required. Configure Firebase credentials in secrets.html.</span>';
-}
+async function loadQuizQueue(){const token=document.getElementById('queueGithubToken').value.trim()||document.getElementById('quizGithubToken').value.trim();if(!token){showToast('error','No Token','Enter your GitHub token first.');return;}document.getElementById('todayDateLabel').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});try{const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/quiz.json`,{headers:{'Authorization':`token ${token}`}});if(!r.ok)throw new Error('Could not load quiz.json');const d=await r.json();const json=JSON.parse(atob(d.content.replace(/\n/g,'')));const today=json.today;document.getElementById('todayQuizPanel').innerHTML=today?`<div style="font-weight:600;margin-bottom:6px">${today.question}</div><div style="font-size:12px;color:var(--text3)">A: ${today.options?.A||'—'} · B: ${today.options?.B||'—'} · C: ${today.options?.C||'—'} · Answer: ${today.answer||'—'}</div>`:'<span style="color:var(--text3);font-style:italic">No quiz set for today.</span>';const queue=json.queue||[];document.getElementById('queueSchedulePanel').innerHTML=queue.length?queue.map((q,i)=>`<div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">${q.question}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">${q.date||'No date'}</div></div>`).join(''):'<span style="color:var(--text3);font-style:italic">Queue is empty.</span>';document.getElementById('queueNavBadge').textContent=queue.length;}catch(e){showToast('error','Load Failed',e.message.substring(0,100));}}
+async function loadPendingSubmissions(){document.getElementById('pendingSubmissionsPanel').innerHTML='<span style="color:var(--text3);font-style:italic">Firestore integration required. Configure Firebase credentials in secrets.html.</span>';}
 async function publishQueueToGitHub(){showToast('success','Queue Published','Schedule pushed to quiz.json.');}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════
-function formatDate(d) {
-  if(!d) return '—';
-  try { return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); } catch(e){return d;}
-}
-
-function showToast(type, title, message) {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  const icons = {
-    success: '<polyline points="20 6 9 17 4 12"/>',
-    error: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
-  };
-  toast.innerHTML = `
-    <div class="toast-icon ${type}"><svg viewBox="0 0 24 24">${icons[type]||icons.success}</svg></div>
-    <div class="toast-content"><h4>${title}</h4><p>${message}</p></div>
-  `;
-  container.appendChild(toast);
-  setTimeout(() => { toast.style.opacity='0'; toast.style.transform='translateX(100%)'; toast.style.transition='all 0.3s'; setTimeout(()=>toast.remove(),300); }, 4000);
-}
+function formatDate(d){if(!d)return'—';try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return d;}}
+function showToast(type,title,message){const container=document.getElementById('toastContainer');const toast=document.createElement('div');toast.className='toast';const icons={success:'<polyline points="20 6 9 17 4 12"/>',error:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'};toast.innerHTML=`<div class="toast-icon ${type}"><svg viewBox="0 0 24 24">${icons[type]||icons.success}</svg></div><div class="toast-content"><h4>${title}</h4><p>${message}</p></div>`;container.appendChild(toast);setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(100%)';toast.style.transition='all 0.3s';setTimeout(()=>toast.remove(),300);},4000);}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════════
 renderArticles();
 updateStats();
+voicesUpdateSectionToggleUI();
 document.getElementById('snippetsNavBadge').textContent = snippets.filter(s=>s.enabled).length;
 </script>
 </body>
