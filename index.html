@@ -677,6 +677,9 @@ header.header{display:none !important}
         <optgroup label="── Batting Partnerships ──">
           <option value="partnerships">Partnerships</option>
         </optgroup>
+        <optgroup label="── Head to Head ──">
+          <option value="against">Against (1 vs many)</option>
+        </optgroup>
       </select>
     </div>
     <div class="fp-group" style="min-width:180px;">
@@ -763,6 +766,66 @@ header.header{display:none !important}
       </div>
     </div>
     <button class="add-player-btn" id="addPartnershipBtn" onclick="addPartnershipSlot()"><span class="plus">+</span> Add Partnership</button>
+  </div>
+
+  <!-- Against Selection Area -->
+  <div class="against-area hidden" id="againstArea" style="display:none;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+      <div class="fp-group" style="margin:0;">
+        <label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:4px;">View as</label>
+        <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--surface);">
+          <button id="agBatterBtn" onclick="setAgainstMode('batter')" style="padding:7px 16px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:var(--accent);color:#fff;">Batter</button>
+          <button id="agBowlerBtn" onclick="setAgainstMode('bowler')" style="padding:7px 16px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:var(--surface);color:var(--text2);">Bowler</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);padding-top:18px;" id="againstHint">Select a batter and up to 10 bowlers they faced</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);" id="agFocusLabel">BATTER</div>
+        <div class="sel-card" id="agc0" style="min-width:220px;max-width:260px;">
+          <div class="sel-pcolor" style="color:var(--p1);background:var(--p1)"></div>
+          <div class="sel-label" style="margin-left:18px" id="agFocusCardLabel">Focus Player</div>
+          <input class="sel-input" id="ags0" placeholder="Search player..." autocomplete="off">
+          <button class="sel-clear" id="agx0" onclick="clearAgainstPlayer(0)">&times;</button>
+          <div class="dd" id="agd0"></div>
+          <div class="sel-info" id="agi0"><div class="si-name" id="agn0"></div><div class="si-meta" id="agm0"></div></div>
+        </div>
+      </div>
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent);font-weight:600;display:flex;align-items:center;margin-top:28px;padding:0 4px;">vs</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;" id="agOpponentsWrap">
+        <div class="sel-card" id="agc1" style="min-width:180px;max-width:220px;">
+          <div class="sel-pcolor" style="color:var(--p2);background:var(--p2)"></div>
+          <div class="sel-label" style="margin-left:18px" id="agOppLabel0">Bowler 1</div>
+          <input class="sel-input" id="ags1" placeholder="Search opponent..." autocomplete="off">
+          <button class="sel-clear" id="agx1" onclick="clearAgainstPlayer(1)">&times;</button>
+          <div class="dd" id="agd1"></div>
+          <div class="sel-info" id="agi1"><div class="si-name" id="agn1"></div><div class="si-meta" id="agm1"></div></div>
+        </div>
+        <div class="sel-card" id="agc2" style="min-width:180px;max-width:220px;">
+          <div class="sel-pcolor" style="color:var(--p3);background:var(--p3)"></div>
+          <div class="sel-label" style="margin-left:18px" id="agOppLabel1">Bowler 2</div>
+          <input class="sel-input" id="ags2" placeholder="Search opponent..." autocomplete="off">
+          <button class="sel-clear" id="agx2" onclick="clearAgainstPlayer(2)">&times;</button>
+          <div class="dd" id="agd2"></div>
+          <div class="sel-info" id="agi2"><div class="si-name" id="agn2"></div><div class="si-meta" id="agm2"></div></div>
+        </div>
+        <button class="add-player-btn" id="addAgainstBtn" onclick="addAgainstSlot()" style="min-width:100px;max-width:140px;align-self:flex-start;"><span class="plus">+</span> Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Against Empty State -->
+  <div class="empty hidden" id="againstEmptyState" style="display:none;">
+    <div class="empty-ico">&#9878;</div>
+    <h2>Select players to compare</h2>
+    <p>Choose a batter (or bowler) and up to 10 opponents to see their record in shared matches.</p>
+  </div>
+
+  <!-- Against Results -->
+  <div class="comp" id="againstComp" style="display:none;">
+    <div id="againstResults"></div>
+    <div class="foot-note" style="margin-top:4px;">* Stats are for matches where both players appeared on opposing sides — match-level, not ball-by-ball</div>
   </div>
 
   <div class="filters-panel" id="filtersPanel">
@@ -1949,6 +2012,256 @@ function updateExportButton(){
 const originalRender = render;
 render = function(){ originalRender(); updateExportButton(); }
 
+// ---- Against Mode ----
+let againstMode = 'batter'; // 'batter' or 'bowler'
+let againstSel = new Array(11).fill(null); // [0]=focus player, [1..10]=opponents
+let againstSlotCount = 2; // visible opponent slots
+
+function setAgainstMode(mode){
+  againstMode = mode;
+  const isB = mode==='batter';
+  document.getElementById('agBatterBtn').style.cssText = isB
+    ? 'padding:7px 16px;font-family:Outfit,sans-serif;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:var(--accent);color:#fff;'
+    : 'padding:7px 16px;font-family:Outfit,sans-serif;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:var(--surface);color:var(--text2);';
+  document.getElementById('agBowlerBtn').style.cssText = !isB
+    ? 'padding:7px 16px;font-family:Outfit,sans-serif;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:var(--accent);color:#fff;'
+    : 'padding:7px 16px;font-family:Outfit,sans-serif;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:var(--surface);color:var(--text2);';
+  document.getElementById('agFocusLabel').textContent = mode.toUpperCase();
+  document.getElementById('agFocusCardLabel').textContent = 'Focus ' + (isB ? 'Batter' : 'Bowler');
+  document.getElementById('againstHint').textContent = isB
+    ? 'Select a batter and up to 10 bowlers they faced'
+    : 'Select a bowler and up to 10 batters they bowled to';
+  for(let i=0;i<againstSlotCount;i++){
+    const lbl = document.getElementById('agOppLabel'+i);
+    if(lbl) lbl.textContent = (isB ? 'Bowler ' : 'Batter ') + (i+1);
+  }
+  if(hasEnoughAgainst()) renderAgainst();
+}
+
+function initAgainstSearch(slot){
+  const inp = document.getElementById('ags'+slot);
+  const dd  = document.getElementById('agd'+slot);
+  if(!inp || !dd) return;
+  inp.addEventListener('input',()=>{
+    const q = inp.value.trim().toLowerCase();
+    if(q.length<2){ dd.classList.remove('open'); return; }
+    const excludeIds = againstSel.filter(Boolean).map(p=>p.id);
+    const m = PLAYERS.filter(p=>
+      !excludeIds.includes(p.id) &&
+      (p.name.toLowerCase().includes(q)||p.fullName.toLowerCase().includes(q)||p.country.toLowerCase().includes(q))
+    ).slice(0,15);
+    dd.innerHTML = m.map(p=>
+      `<div class="dd-item" onclick="pickAgainstPlayer(${slot},${p.id})">` +
+      `<span><span class="nm">${p.fullName||p.name}</span><span class="yr">${p.fromYear}&ndash;${p.toYear}</span></span>` +
+      `<span class="ct">${p.country}</span></div>`
+    ).join('');
+    dd.classList.add('open');
+  });
+  inp.addEventListener('focus',()=>{ if(inp.value.trim().length>=2) dd.classList.add('open'); });
+  document.addEventListener('click',e=>{ if(!e.target.closest('#agc'+slot)) dd.classList.remove('open'); });
+}
+
+function pickAgainstPlayer(slot, id){
+  const p = PLAYERS.find(x=>x.id===id); if(!p) return;
+  againstSel[slot] = p;
+  document.getElementById('ags'+slot).value = '';
+  document.getElementById('agd'+slot).classList.remove('open');
+  document.getElementById('agn'+slot).textContent = p.fullName||p.name;
+  document.getElementById('agm'+slot).innerHTML = badge(p.country)+` ${p.fromYear}&ndash;${p.toYear} &middot; ${p.tests} Tests`;
+  document.getElementById('agi'+slot).classList.add('show');
+  document.getElementById('agx'+slot).classList.add('show');
+  const clrIdx = slot===0 ? 1 : Math.min(slot+1,10);
+  document.getElementById('agc'+slot).style.borderColor = `var(--p${clrIdx})`;
+  if(hasEnoughAgainst()){
+    document.getElementById('againstEmptyState').style.display = 'none';
+    renderAgainst();
+  }
+}
+
+function clearAgainstPlayer(slot){
+  againstSel[slot] = null;
+  document.getElementById('agi'+slot).classList.remove('show');
+  document.getElementById('agx'+slot).classList.remove('show');
+  document.getElementById('ags'+slot).value = '';
+  document.getElementById('agc'+slot).style.borderColor = '';
+  if(!hasEnoughAgainst()){
+    document.getElementById('againstComp').style.display = 'none';
+    document.getElementById('againstEmptyState').style.display = 'block';
+  } else renderAgainst();
+}
+
+function addAgainstSlot(){
+  if(againstSlotCount >= 10) return;
+  againstSlotCount++;
+  const n = againstSlotCount;
+  const wrap = document.getElementById('agOpponentsWrap');
+  const btn  = document.getElementById('addAgainstBtn');
+  const clrIdx = Math.min(n+1,10);
+  const oppLabel = (againstMode==='batter' ? 'Bowler ' : 'Batter ') + n;
+  const card = document.createElement('div');
+  card.className = 'sel-card'; card.id = 'agc'+n;
+  card.style.cssText = 'min-width:180px;max-width:220px;';
+  card.innerHTML =
+    `<div class="sel-pcolor" style="color:var(--p${clrIdx});background:var(--p${clrIdx})"></div>`+
+    `<div class="sel-label" style="margin-left:18px" id="agOppLabel${n-1}">${oppLabel}</div>`+
+    `<input class="sel-input" id="ags${n}" placeholder="Search opponent..." autocomplete="off">`+
+    `<button class="sel-clear" id="agx${n}" onclick="clearAgainstPlayer(${n})">&times;</button>`+
+    `<div class="dd" id="agd${n}"></div>`+
+    `<div class="sel-info" id="agi${n}"><div class="si-name" id="agn${n}"></div><div class="si-meta" id="agm${n}"></div></div>`;
+  wrap.insertBefore(card, btn);
+  initAgainstSearch(n);
+  if(againstSlotCount>=10) btn.style.display='none';
+}
+
+function hasEnoughAgainst(){
+  return againstSel[0] != null && againstSel.slice(1, againstSlotCount+1).filter(Boolean).length >= 1;
+}
+
+function calcAgainstStats(focusPlayer, opponent){
+  const focusPt = PT[focusPlayer.id];
+  const oppPt   = PT[opponent.id];
+
+  // All match IDs the opponent appeared in
+  const oppMatchIds = new Set();
+  (SCD_IDX[opponent.id]||[]).forEach(i => oppMatchIds.add(SCD[i][0]));
+
+  // Focus player's SCD rows where opponent played for the other side
+  const idxs = (SCD_IDX[focusPlayer.id]||[]).filter(i=>{
+    const r = SCD[i];
+    if(!oppMatchIds.has(r[0])) return false;
+    const meta = TESTS[r[0]]; if(!meta) return false;
+    const t1=meta[2], t2=meta[3];
+    return (focusPt===t1&&oppPt===t2) || (focusPt===t2&&oppPt===t1);
+  });
+
+  const sharedTests = new Set(idxs.map(i=>SCD[i][0]));
+
+  if(againstMode === 'batter'){
+    // Show focus batter's stats in these matches
+    let inns=0,no=0,runs=0,balls=0,hs=0,fifties=0,hundreds=0;
+    idxs.forEach(i=>{
+      const r=SCD[i];
+      if(r[4]===null) return; // didn't bat
+      inns++;
+      if(r[4]) no++;
+      const br = typeof r[3]==='number'?r[3]:0;
+      const bb = typeof r[5]==='number'?r[5]:0;
+      runs+=br; balls+=bb;
+      if(br>hs) hs=br;
+      if(br>=100) hundreds++;
+      else if(br>=50) fifties++;
+    });
+    const avg = (inns-no)>0 ? runs/(inns-no) : null;
+    const sr  = balls>0 ? (runs/balls)*100 : null;
+    return { tests:sharedTests.size, inns, no, runs, balls, avg, sr, hs, fifties, hundreds,
+             name:opponent.fullName||opponent.name, country:opponent.country };
+
+  } else {
+    // Bowler mode: show each opponent BATTER's record in matches where focus bowler played on opposing side
+    const batIdxs = (SCD_IDX[opponent.id]||[]).filter(i=>{
+      const r=SCD[i];
+      if(!sharedTests.has(r[0])) return false;
+      const meta=TESTS[r[0]]; if(!meta) return false;
+      const t1=meta[2],t2=meta[3];
+      return (oppPt===t1&&focusPt===t2)||(oppPt===t2&&focusPt===t1);
+    });
+    let inns=0,no=0,runs=0,balls=0,hs=0,fifties=0,hundreds=0;
+    batIdxs.forEach(i=>{
+      const r=SCD[i];
+      if(r[4]===null) return;
+      inns++;
+      if(r[4]) no++;
+      const br=typeof r[3]==='number'?r[3]:0;
+      const bb=typeof r[5]==='number'?r[5]:0;
+      runs+=br; balls+=bb;
+      if(br>hs) hs=br;
+      if(br>=100) hundreds++;
+      else if(br>=50) fifties++;
+    });
+    const avg = (inns-no)>0 ? runs/(inns-no) : null;
+    const sr  = balls>0 ? (runs/balls)*100 : null;
+    return { tests:sharedTests.size, inns, no, runs, balls, avg, sr, hs, fifties, hundreds,
+             name:opponent.fullName||opponent.name, country:opponent.country };
+  }
+}
+
+function renderAgainst(){
+  const focus     = againstSel[0];
+  const opponents = againstSel.slice(1, againstSlotCount+1).filter(Boolean);
+  if(!focus || opponents.length<1) return;
+
+  const focusName = focus.fullName||focus.name;
+  const allStats  = opponents.map(opp => calcAgainstStats(focus, opp));
+  const stats     = allStats.filter(s => s.tests > 0);
+
+  if(stats.length === 0){
+    document.getElementById('againstResults').innerHTML =
+      `<div class="verd"><div class="verd-lb">No shared matches</div>` +
+      `<div class="verd-tx">${focusName} and the selected opponents never played on opposing sides.</div></div>`;
+    document.getElementById('againstComp').style.display = 'block';
+    return;
+  }
+
+  const isBatter = againstMode === 'batter';
+  const oppType  = isBatter ? 'Bowler' : 'Batter';
+  const viewDesc = isBatter
+    ? `<strong>${focusName}</strong>'s batting in matches where each bowler played for the opposition`
+    : `Each batter's record in matches where <strong>${focusName}</strong> played for the opposition`;
+
+  const cols = [
+    {label:'Tests',   key:'tests',    higher:true,  dec:0},
+    {label:'Innings', key:'inns',     higher:true,  dec:0},
+    {label:'N.O.',    key:'no',       higher:null,  dec:0},
+    {label:'Runs',    key:'runs',     higher:true,  dec:0},
+    {label:'Average', key:'avg',      higher:true,  dec:2},
+    {label:'S/R',     key:'sr',       higher:true,  dec:2},
+    {label:'H.S.',    key:'hs',       higher:true,  dec:0},
+    {label:'50s',     key:'fifties',  higher:true,  dec:0},
+    {label:'100s',    key:'hundreds', higher:true,  dec:0},
+  ];
+
+  const bestVals = {};
+  cols.forEach(c=>{
+    if(c.higher===null) return;
+    const vals = stats.map(s=>typeof s[c.key]==='number'?s[c.key]:0);
+    if(c.higher) bestVals[c.key] = Math.max(...vals);
+    else { const nz=vals.filter(v=>v>0); bestVals[c.key]=nz.length?Math.min(...nz):0; }
+  });
+
+  let hdr = `<th>${oppType} (opponent)</th>`;
+  cols.forEach(c => hdr += `<th>${c.label}</th>`);
+
+  let rows = '';
+  stats.forEach((s, idx)=>{
+    const clrIdx = Math.min(idx+2, 10);
+    let row = `<td class="player-cell" style="border-left:3px solid var(--p${clrIdx})">` +
+      `<span class="pc-name">${s.name}</span>` +
+      `<span class="pc-meta">${s.country} &middot; ${s.tests} shared Tests</span></td>`;
+    cols.forEach(c=>{
+      if(c.higher===null){ row+=`<td>${fmt(s[c.key],c.dec||0)}</td>`; return; }
+      const v = s[c.key];
+      const n = typeof v==='number'?v:0;
+      let cls = '';
+      if(bestVals[c.key]!==undefined && n>0){
+        const allSame = stats.every(os=>(typeof os[c.key]==='number'?os[c.key]:0)===n);
+        if(!allSame) cls = n===bestVals[c.key] ? 'best' : 'worse';
+      }
+      row += `<td class="${cls}">${fmt(v, c.dec||2)}</td>`;
+    });
+    rows += `<tr>${row}</tr>`;
+  });
+
+  const html =
+    `<div class="verd" style="margin-bottom:16px;text-align:left;padding:14px 18px;">` +
+    `<div class="verd-lb">${isBatter?'Batter':'Bowler'} vs ${isBatter?'Bowlers':'Batters'}</div>` +
+    `<div class="verd-tx" style="font-size:13.5px;">${viewDesc}</div></div>` +
+    `<div class="tbl-wrap"><table class="cmp-table">` +
+    `<thead><tr>${hdr}</tr></thead><tbody>${rows}</tbody></table></div>`;
+
+  document.getElementById('againstResults').innerHTML = html;
+  document.getElementById('againstComp').style.display = 'block';
+}
+
 // ---- Partnership Mode ----
 let partnershipMode = false;
 let partnershipSlotCount = 2;
@@ -1982,22 +2295,28 @@ function handleRecordTypeChange(){
   const recordType = document.getElementById('fRecordType').value;
   handleRecordTypeChange_cohortReset(recordType);
   partnershipMode = (recordType === 'partnerships');
+  const againstActive = (recordType === 'against');
 
   const selArea         = document.getElementById('selArea');
   const cohortArea      = document.getElementById('cohortArea');
   const partnershipArea = document.getElementById('partnershipArea');
+  const againstArea     = document.getElementById('againstArea');
   const emptyState      = document.getElementById('emptyState');
   const partnershipEmpty = document.getElementById('partnershipEmptyState');
+  const againstEmpty    = document.getElementById('againstEmptyState');
 
   // Hide all areas first
   selArea.classList.add('hidden');
   cohortArea.classList.add('hidden');
   partnershipArea.classList.add('hidden');
+  againstArea.classList.add('hidden'); againstArea.style.display = 'none';
   emptyState.classList.add('hidden');
   partnershipEmpty.classList.add('hidden');
+  againstEmpty.classList.add('hidden'); againstEmpty.style.display = 'none';
 
   document.getElementById('comp').classList.remove('show');
   document.getElementById('partnershipComp').style.display = 'none';
+  document.getElementById('againstComp').style.display = 'none';
   document.getElementById('filtersPanel').classList.remove('show');
 
   if(partnershipMode){
@@ -2010,6 +2329,15 @@ function handleRecordTypeChange(){
       window.partnershipSearchInit = true;
     }
     if(hasEnoughPartnerships()) renderPartnerships();
+
+  } else if(againstActive){
+    againstArea.classList.remove('hidden'); againstArea.style.display = 'block';
+    againstEmpty.classList.remove('hidden'); againstEmpty.style.display = 'block';
+    if(!window.againstSearchInit){
+      initAgainstSearch(0); initAgainstSearch(1); initAgainstSearch(2);
+      window.againstSearchInit = true;
+    }
+    if(hasEnoughAgainst()) renderAgainst();
 
   } else if(cohortMode){
     // Initialise with 2 empty cohort groups
