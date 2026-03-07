@@ -466,133 +466,136 @@ body{
 .snippet-card-text{ font-family:'Source Serif 4',Georgia,serif; font-size:14px; line-height:1.65; color:var(--text2); flex:1; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   VOICES PANEL
+   VOICES PANEL — full-bleed horizontal band
 ═══════════════════════════════════════════════════════════════════════════ */
 .voices-section{
-  padding:48px 0;
-  border-bottom:1px solid var(--border);
+  width:100%;
+  background:var(--text);           /* dark ink band */
+  border-top:3px solid var(--accent);
+  padding:40px 0 44px;
 }
-.voices-section-header{
+.voices-band-inner{
+  max-width:1400px;
+  margin:0 auto;
+  padding:0 24px;
+}
+.voices-band-head{
   display:flex;
   justify-content:space-between;
-  align-items:flex-end;
-  margin-bottom:8px;
+  align-items:baseline;
+  margin-bottom:6px;
 }
 .voices-section-title{
   font-family:'Playfair Display',serif;
-  font-size:26px;
+  font-size:22px;
   font-weight:700;
+  color:#fff;
+  letter-spacing:-0.2px;
 }
 .voices-section-subtitle{
   font-family:'Source Serif 4',Georgia,serif;
-  font-size:14px;
-  color:var(--text3);
+  font-size:13px;
+  color:rgba(255,255,255,0.45);
   font-style:italic;
-  margin-bottom:28px;
-  border-bottom:1px solid var(--border);
-  padding-bottom:20px;
+  margin-bottom:24px;
 }
 .voices-more-link{
   font-family:'Inter',sans-serif;
-  font-size:12px;
+  font-size:11px;
   font-weight:700;
-  letter-spacing:0.4px;
-  color:var(--accent);
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.6);
   text-decoration:none;
   display:inline-flex;
   align-items:center;
-  gap:6px;
-  padding:8px 18px;
-  border:1.5px solid var(--accent);
-  border-radius:4px;
-  transition:all 0.2s;
+  gap:5px;
+  transition:color 0.2s;
   white-space:nowrap;
-  margin-bottom:4px;
 }
-.voices-more-link:hover{
-  background:var(--accent);
-  color:#fff;
-}
+.voices-more-link:hover{ color:#fff; }
 .voices-more-link svg{
-  width:14px; height:14px;
+  width:13px; height:13px;
   stroke:currentColor; fill:none; stroke-width:2.5;
   transition:transform 0.2s;
 }
 .voices-more-link:hover svg{ transform:translateX(3px); }
 
-/* Voices grid — horizontal scroll on mobile */
+/* Horizontal scrolling row of cards */
 .voices-grid{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:20px;
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-bottom:4px;
 }
-@media(max-width:1200px){ .voices-grid{ grid-template-columns:repeat(3,1fr); } }
-@media(max-width:800px) { .voices-grid{ grid-template-columns:repeat(2,1fr); } }
-@media(max-width:520px) { .voices-grid{ grid-template-columns:1fr; } }
+.voices-grid::-webkit-scrollbar{ display:none; }
 
 .voice-card-front{
-  background:var(--surface);
-  border:1px solid var(--border);
+  flex:0 0 280px;
+  scroll-snap-align:start;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
   border-radius:6px;
-  padding:22px 24px 18px;
+  padding:20px 22px 16px;
   display:flex;
   flex-direction:column;
   gap:10px;
   position:relative;
-  transition:transform 0.2s, box-shadow 0.2s;
+  transition:background 0.2s, border-color 0.2s;
 }
 .voice-card-front:hover{
-  transform:translateY(-3px);
-  box-shadow:0 8px 32px rgba(0,0,0,0.08);
+  background:rgba(255,255,255,0.10);
+  border-color:rgba(255,255,255,0.22);
 }
-/* left accent rule */
 .voice-card-front::before{
   content:'';
   position:absolute;
-  top:18px; bottom:18px; left:0;
+  top:16px; bottom:16px; left:0;
   width:3px;
   background:var(--accent);
   border-radius:0 2px 2px 0;
-  opacity:0.55;
+  opacity:0.7;
 }
 .voice-card-front-quote{
   font-family:'Playfair Display',serif;
-  font-size:15px;
+  font-size:14px;
   line-height:1.65;
-  color:var(--text);
+  color:rgba(255,255,255,0.88);
   font-style:italic;
   flex:1;
 }
-/* big opening quote mark */
 .voice-card-front-quote::before{
   content:'\201C';
-  font-size:40px;
+  font-size:36px;
   line-height:0;
-  vertical-align:-14px;
-  margin-right:4px;
+  vertical-align:-12px;
+  margin-right:3px;
   color:var(--accent);
-  opacity:0.35;
+  opacity:0.5;
   font-family:'Playfair Display',serif;
+  font-style:normal;
 }
 .voice-card-front-footer{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  margin-top:4px;
-  padding-top:12px;
-  border-top:1px solid var(--surface3);
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,0.10);
 }
 .voice-card-front-name{
   font-family:'Inter',sans-serif;
   font-size:12px;
   font-weight:700;
-  color:var(--text);
+  color:rgba(255,255,255,0.9);
 }
 .voice-card-front-context{
   font-family:'Inter',sans-serif;
   font-size:11px;
-  color:var(--text3);
+  color:rgba(255,255,255,0.45);
   font-style:italic;
 }
 .voice-role-pill{
@@ -605,22 +608,18 @@ body{
   border-radius:20px;
   flex-shrink:0;
 }
-.voice-role-pill.player    { background:rgba(26,104,72,0.10);  color:#1a6848; }
-.voice-role-pill.fan       { background:rgba(26,72,120,0.10);  color:#1a4878; }
-.voice-role-pill.expert    { background:rgba(120,48,120,0.10); color:#783078; }
-.voice-role-pill.commentator{ background:rgba(160,88,32,0.10);  color:#a05820; }
-.voice-role-pill.other     { background:var(--surface3);       color:var(--text3); }
+.voice-role-pill.player     { background:rgba(26,104,72,0.30);  color:#6dbb9a; }
+.voice-role-pill.fan        { background:rgba(26,72,120,0.30);  color:#6d9abb; }
+.voice-role-pill.expert     { background:rgba(120,48,120,0.30); color:#bb7abb; }
+.voice-role-pill.commentator{ background:rgba(160,88,32,0.30);  color:#d4996a; }
+.voice-role-pill.other      { background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.5); }
 
-/* empty state */
 .voices-empty{
-  text-align:center;
-  padding:48px 24px;
-  color:var(--text3);
+  color:rgba(255,255,255,0.4);
   font-family:'Inter',sans-serif;
   font-size:13px;
   font-style:italic;
-  border:1px dashed var(--border);
-  border-radius:6px;
+  padding:32px 0;
 }
 </style>
 <script type="module">
@@ -887,26 +886,12 @@ body{
     </div>
   </section>
 
-  <!-- ═══ VOICES PANEL ═══ -->
-  <section class="voices-section" id="voicesSection" style="display:none">
-    <div class="voices-section-header">
-      <h2 class="voices-section-title">Voices of the Game</h2>
-      <a href="voices.html" class="voices-more-link">
-        More Voices
-        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-    </div>
-    <p class="voices-section-subtitle">What players, fans, and experts are saying about Test cricket</p>
-    <div class="voices-grid" id="voicesGrid">
-      <div class="voices-empty">Loading voices…</div>
-    </div>
-  </section>
+</main>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       VOICES PANEL — fetched from voices.json
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <section class="voices-section" id="voicesSection" style="display:none">
-    <div class="voices-section-header">
+<!-- VOICES BAND — full-bleed, outside main container -->
+<section class="voices-section" id="voicesSection" style="display:none">
+  <div class="voices-band-inner">
+    <div class="voices-band-head">
       <h2 class="voices-section-title">Voices of the Game</h2>
       <a href="voices.html" class="voices-more-link">
         More Voices
@@ -915,9 +900,8 @@ body{
     </div>
     <p class="voices-section-subtitle">What players, fans, and experts are saying about Test cricket</p>
     <div class="voices-grid" id="voicesGrid"></div>
-  </section>
-
-</main>
+  </div>
+</section>
 
 <!-- STATS PROMO -->
 <section class="stats-promo">
@@ -1031,139 +1015,6 @@ body{
 .footer-bottom{ font-family:'Inter',sans-serif; font-size:11px; color:rgba(255,255,255,0.4); display:flex; justify-content:space-between; }
 @media(max-width:900px){ .footer-top{ flex-direction:column; gap:24px; } .footer-nav{ flex-wrap:wrap; gap:16px; } .footer-bottom{ flex-direction:column; gap:8px; } }
 
-/* ═══ VOICES PANEL ═══ */
-.voices-section{
-  padding:48px 0;
-  border-bottom:1px solid var(--border);
-}
-.voices-section-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  margin-bottom:6px;
-}
-.voices-section-title{
-  font-family:'Playfair Display',serif;
-  font-size:26px;
-  font-weight:700;
-}
-.voices-section-subtitle{
-  font-family:'Source Serif 4',Georgia,serif;
-  font-size:14px;
-  color:var(--text3);
-  font-style:italic;
-  margin-bottom:28px;
-  border-bottom:1px solid var(--border);
-  padding-bottom:20px;
-}
-.voices-more-link{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:0.4px;
-  color:var(--accent);
-  text-decoration:none;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:8px 18px;
-  border:1.5px solid var(--accent);
-  border-radius:4px;
-  transition:all 0.2s;
-  white-space:nowrap;
-  margin-bottom:4px;
-}
-.voices-more-link:hover{ background:var(--accent); color:#fff; }
-.voices-more-link svg{
-  width:14px; height:14px;
-  stroke:currentColor; fill:none; stroke-width:2.5;
-  transition:transform 0.2s;
-}
-.voices-more-link:hover svg{ transform:translateX(3px); }
-.voices-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
-}
-@media(max-width:1200px){ .voices-grid{ grid-template-columns:repeat(3,1fr); } }
-@media(max-width:800px) { .voices-grid{ grid-template-columns:repeat(2,1fr); } }
-@media(max-width:520px) { .voices-grid{ grid-template-columns:1fr; } }
-.voice-card-front{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:22px 24px 18px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  position:relative;
-  transition:transform 0.2s, box-shadow 0.2s;
-}
-.voice-card-front:hover{ transform:translateY(-3px); box-shadow:0 8px 32px rgba(0,0,0,0.08); }
-.voice-card-front::before{
-  content:'';
-  position:absolute;
-  top:18px; bottom:18px; left:0;
-  width:3px;
-  background:var(--accent);
-  border-radius:0 2px 2px 0;
-  opacity:0.5;
-}
-.voice-card-front-quote{
-  font-family:'Playfair Display',serif;
-  font-size:15px;
-  line-height:1.65;
-  color:var(--text);
-  font-style:italic;
-  flex:1;
-}
-.voice-card-front-quote::before{
-  content:'\201C';
-  font-size:40px;
-  line-height:0;
-  vertical-align:-14px;
-  margin-right:4px;
-  color:var(--accent);
-  opacity:0.3;
-  font-family:'Playfair Display',serif;
-  font-style:normal;
-}
-.voice-card-front-footer{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-top:4px;
-  padding-top:12px;
-  border-top:1px solid var(--surface3);
-}
-.voice-card-front-name{
-  font-family:'Inter',sans-serif;
-  font-size:12px;
-  font-weight:700;
-  color:var(--text);
-}
-.voice-card-front-context{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  color:var(--text3);
-  font-style:italic;
-}
-.voice-role-pill{
-  font-family:'Inter',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
-  padding:3px 9px;
-  border-radius:20px;
-  flex-shrink:0;
-}
-.voice-role-pill.player     { background:rgba(26,104,72,0.10);  color:#1a6848; }
-.voice-role-pill.fan        { background:rgba(26,72,120,0.10);  color:#1a4878; }
-.voice-role-pill.expert     { background:rgba(120,48,120,0.10); color:#783078; }
-.voice-role-pill.commentator{ background:rgba(160,88,32,0.10);  color:#a05820; }
-.voice-role-pill.other      { background:var(--surface3);       color:var(--text3); }
 </style>
 
 <script>
@@ -1591,31 +1442,6 @@ if (window.speechSynthesis) {
 // ═══════════════════════════════════════════════════════════════════════════
 // VOICES — from voices.json, preview of up to 4 on front page
 // ═══════════════════════════════════════════════════════════════════════════
-(async function loadVoices() {
-  try {
-    const res  = await fetch(rawUrl('voices.json'));
-    if (!res.ok) return;
-    const data = await res.json();
-    if (!data || data.enabled === false) return;
-    const voices = (data.voices || []).filter(v => v.visible !== false);
-    if (voices.length === 0) return;
-    const roleLabels = { player:'Player', fan:'Fan', expert:'Expert', commentator:'Commentator', other:'Other' };
-    document.getElementById('voicesGrid').innerHTML = voices.slice(0, 4).map(v => {
-      const role = v.role || 'other';
-      return `
-        <div class="voice-card-front">
-          <div class="voice-card-front-quote">${escapeHTML(v.voice)}</div>
-          <div class="voice-card-front-footer">
-            <div>
-              <div class="voice-card-front-name">${escapeHTML(v.name)}</div>
-              ${v.context ? `<div class="voice-card-front-context">${escapeHTML(v.context)}</div>` : ''}
-            </div>
-            <span class="voice-role-pill ${role}">${roleLabels[role] || 'Other'}</span>
-          </div>
-        </div>`;
-    }).join('');
-    document.getElementById('voicesSection').style.display = 'block';
-  } catch(e) { /* section stays hidden */ }
-})();
+// ── voices loader above (ghFetch version) is canonical ──
 </script>
 </html>
