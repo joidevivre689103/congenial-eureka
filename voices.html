@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>Voices of the Game — Cricket Times</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#faf9f7;
+  --surface:#ffffff;
+  --surface2:#f5f4f2;
+  --surface3:#eceae6;
+  --border:#d8d4cc;
+  --border2:#c8c4bc;
+  --text:#1a1a18;
+  --text2:#4a4a46;
+  --text3:#7a7a74;
+  --accent:#a03020;
+  --accent-hover:#801810;
+  --accent-dim:rgba(160,48,32,0.08);
+  --gold:#c08018;
+  --gold-dim:rgba(192,128,24,0.10);
+  --green:#1a6848;
+  --blue:#1a4878;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Source Serif 4',Georgia,serif;
+  min-height:100vh;
+  line-height:1.6;
+}
+
+/* ═══ MASTHEAD ═══ */
+.masthead{
+  text-align:center;
+  padding:20px 24px 16px;
+  border-bottom:2px solid var(--text);
+}
+.masthead-date{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-bottom:8px;
+}
+.masthead-logo{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,8vw,58px);
+  font-weight:700;
+  letter-spacing:-1px;
+  line-height:1.1;
+  text-decoration:none;
+  color:var(--text);
+  display:inline-block;
+}
+.masthead-logo span{ color:var(--accent); }
+.masthead-tagline{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-top:6px;
+}
+
+/* ═══ NAV ═══ */
+.nav-bar{
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.nav-inner{
+  max-width:1400px;
+  margin:0 auto;
+  padding:0 24px;
+  display:flex;
+  justify-content:center;
+}
+.nav-link{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  color:var(--text2);
+  text-decoration:none;
+  padding:14px 20px;
+  position:relative;
+  transition:color 0.2s;
+  white-space:nowrap;
+}
+.nav-link:hover{ color:var(--accent); }
+.nav-link.active{ color:var(--accent); }
+.nav-link.active::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:20px;
+  right:20px;
+  height:2px;
+  background:var(--accent);
+}
+@media(max-width:900px){
+  .nav-inner{
+    overflow-x:auto;
+    justify-content:flex-start;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .nav-inner::-webkit-scrollbar{display:none}
+  .nav-link{ padding:12px 14px; font-size:11px; }
+}
+
+/* ═══ PAGE HEADER ═══ */
+.page-header{
+  max-width:1400px;
+  margin:0 auto;
+  padding:48px 24px 0;
+}
+.page-header-inner{
+  border-bottom:1px solid var(--border);
+  padding-bottom:28px;
+  margin-bottom:0;
+}
+.page-breadcrumb{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.5px;
+  color:var(--text3);
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.page-breadcrumb a{ color:var(--text3); text-decoration:none; }
+.page-breadcrumb a:hover{ color:var(--accent); }
+.page-breadcrumb svg{ width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2; }
+.page-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,6vw,54px);
+  font-weight:700;
+  letter-spacing:-0.5px;
+  line-height:1.1;
+  margin-bottom:14px;
+}
+.page-deck{
+  font-size:18px;
+  line-height:1.6;
+  color:var(--text2);
+  max-width:680px;
+}
+
+/* ═══ FILTER BAR ═══ */
+.filter-bar{
+  max-width:1400px;
+  margin:0 auto;
+  padding:24px 24px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  position:sticky;
+  top:49px;
+  z-index:90;
+}
+.filter-label{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--text3);
+  flex-shrink:0;
+  margin-right:4px;
+}
+.filter-btn{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  padding:7px 16px;
+  border:1.5px solid var(--border);
+  border-radius:20px;
+  background:var(--surface);
+  color:var(--text2);
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.filter-btn:hover{ border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+.filter-btn.active{ border-color:var(--accent); background:var(--accent); color:#fff; }
+
+.filter-search-wrap{
+  margin-left:auto;
+  position:relative;
+  flex-shrink:0;
+}
+.filter-search-wrap svg{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:15px; height:15px;
+  stroke:var(--text3); fill:none; stroke-width:2;
+  pointer-events:none;
+}
+.filter-search-wrap input{
+  padding:8px 14px 8px 36px;
+  border:1.5px solid var(--border);
+  border-radius:20px;
+  background:var(--surface2);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  width:220px;
+  transition:all 0.15s;
+  outline:none;
+}
+.filter-search-wrap input:focus{
+  border-color:var(--accent);
+  background:var(--surface);
+  width:260px;
+}
+.filter-search-wrap input::placeholder{ color:var(--text3); }
+
+.voices-count{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  color:var(--text3);
+  margin-left:8px;
+  flex-shrink:0;
+  align-self:center;
+}
+
+@media(max-width:900px){
+  .filter-bar{ top:43px; padding:16px 16px; gap:8px; }
+  .filter-search-wrap{ margin-left:0; width:100%; }
+  .filter-search-wrap input{ width:100%; }
+  .filter-search-wrap input:focus{ width:100%; }
+}
+
+/* ═══ MAIN CONTENT ═══ */
+.voices-main{
+  max-width:1400px;
+  margin:0 auto;
+  padding:40px 24px 64px;
+}
+
+/* ─── EMPTY / LOADING ─── */
+.state-placeholder{
+  text-align:center;
+  padding:80px 24px;
+  color:var(--text3);
+}
+.state-placeholder svg{
+  width:48px; height:48px;
+  stroke:var(--border2); fill:none; stroke-width:1.5;
+  margin-bottom:16px;
+}
+.state-placeholder p{
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+}
+
+/* ─── LOADING SPINNER ─── */
+.spinner{
+  width:36px; height:36px;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+  margin:0 auto 16px;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ─── SECTION DIVIDERS ─── */
+.role-section{ margin-bottom:52px; }
+.role-section-header{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:24px;
+  padding-bottom:14px;
+  border-bottom:2px solid var(--text);
+}
+.role-section-title{
+  font-family:'Playfair Display',serif;
+  font-size:24px;
+  font-weight:700;
+}
+.role-section-count{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  color:var(--text3);
+  font-weight:500;
+}
+.role-section-rule{
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+/* ─── VOICE CARD ─── */
+.voices-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+@media(max-width:1100px){ .voices-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:640px)  { .voices-grid{ grid-template-columns:1fr; gap:16px; } }
+
+.voice-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:24px 26px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  position:relative;
+  transition:transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.voice-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.08);
+  border-color:var(--border2);
+}
+
+/* Left accent rule — colour varies by role */
+.voice-card::before{
+  content:'';
+  position:absolute;
+  top:20px; bottom:20px; left:0;
+  width:4px;
+  border-radius:0 3px 3px 0;
+  opacity:0.6;
+}
+.voice-card[data-role="player"]::before      { background:var(--green); }
+.voice-card[data-role="fan"]::before         { background:var(--blue); }
+.voice-card[data-role="expert"]::before      { background:#783078; }
+.voice-card[data-role="commentator"]::before { background:#a05820; }
+.voice-card[data-role="other"]::before       { background:var(--border2); }
+
+/* Opening quote mark */
+.voice-card-quote{
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  line-height:1.65;
+  color:var(--text);
+  font-style:italic;
+  flex:1;
+  position:relative;
+  padding-left:24px;
+}
+.voice-card-quote::before{
+  content:'\201C';
+  position:absolute;
+  left:0;
+  top:-6px;
+  font-size:48px;
+  line-height:1;
+  color:var(--accent);
+  opacity:0.25;
+  font-style:normal;
+  font-family:'Playfair Display',serif;
+}
+
+.voice-card-footer{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding-top:14px;
+  border-top:1px solid var(--surface3);
+}
+.voice-card-attribution{ flex:1; }
+.voice-card-name{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:2px;
+}
+.voice-card-context{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--text3);
+  font-style:italic;
+}
+.voice-card-source{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--text3);
+}
+.voice-card-source::before{ content:'— '; }
+
+/* Role pill */
+.role-pill{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  padding:4px 10px;
+  border-radius:20px;
+  flex-shrink:0;
+  align-self:flex-start;
+}
+.role-pill.player      { background:rgba(26,104,72,0.12);  color:#1a6848; }
+.role-pill.fan         { background:rgba(26,72,120,0.12);  color:#1a4878; }
+.role-pill.expert      { background:rgba(120,48,120,0.12); color:#783078; }
+.role-pill.commentator { background:rgba(160,88,32,0.12);  color:#a05820; }
+.role-pill.other       { background:var(--surface3);       color:var(--text3); }
+
+/* Tags */
+.voice-card-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:2px;
+}
+.voice-tag{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:3px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text3);
+}
+
+/* Date stamp */
+.voice-card-date{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  color:var(--text3);
+  margin-top:auto;
+  padding-top:6px;
+}
+
+/* ─── NO RESULTS ─── */
+.no-results{
+  text-align:center;
+  padding:64px 24px;
+  color:var(--text3);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-style:italic;
+  border:1px dashed var(--border);
+  border-radius:6px;
+}
+
+/* ═══ FOOTER ═══ */
+.footer{ background:var(--text); color:rgba(255,255,255,0.7); padding:48px 24px 32px; }
+.footer-inner{ max-width:1400px; margin:0 auto; }
+.footer-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding-bottom:32px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  margin-bottom:24px;
+}
+.footer-brand{ font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:#fff; }
+.footer-nav{ display:flex; flex-wrap:wrap; gap:24px 32px; }
+.footer-nav a{
+  font-family:'Inter',sans-serif; font-size:12px; font-weight:500;
+  color:rgba(255,255,255,0.6); text-decoration:none;
+}
+.footer-nav a:hover{ color:#fff; }
+.footer-bottom{
+  font-family:'Inter',sans-serif; font-size:11px;
+  color:rgba(255,255,255,0.4); display:flex; justify-content:space-between;
+}
+@media(max-width:900px){
+  .footer-top{ flex-direction:column; gap:24px; }
+  .footer-nav{ flex-wrap:wrap; gap:16px; }
+  .footer-bottom{ flex-direction:column; gap:8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-date" id="mastheadDate"></div>
+  <a href="news.html" class="masthead-logo">Cricket <span>Times</span></a>
+  <div class="masthead-tagline">The Definitive Voice of Test Cricket</div>
+</header>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a href="news.html" class="nav-link">Stories</a>
+    <a href="news.html#analysis" class="nav-link">Analysis</a>
+    <a href="country-results.html" class="nav-link">Countries</a>
+    <a href="batting-records.html" class="nav-link">Batting</a>
+    <a href="index.html" class="nav-link">Compare</a>
+    <a href="simulation.html" class="nav-link">Simulation</a>
+    <a href="voices.html" class="nav-link active">Voices</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-breadcrumb">
+      <a href="news.html">Stories</a>
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      Voices
+    </div>
+    <h1 class="page-title">Voices of the Game</h1>
+    <p class="page-deck">What players, fans, experts, and commentators are saying about Test cricket — collected and curated.</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">Filter</span>
+  <button class="filter-btn active" data-role="all" onclick="setFilter('all')">All</button>
+  <button class="filter-btn" data-role="player" onclick="setFilter('player')">Players</button>
+  <button class="filter-btn" data-role="fan" onclick="setFilter('fan')">Fans</button>
+  <button class="filter-btn" data-role="expert" onclick="setFilter('expert')">Experts</button>
+  <button class="filter-btn" data-role="commentator" onclick="setFilter('commentator')">Commentators</button>
+  <button class="filter-btn" data-role="other" onclick="setFilter('other')">Other</button>
+  <span class="voices-count" id="voicesCount"></span>
+  <div class="filter-search-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search voices…" oninput="renderVoices()">
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="voices-main" id="voicesMain">
+  <div class="state-placeholder" id="loadingState">
+    <div class="spinner"></div>
+    <p>Loading voices…</p>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">Cricket Times</div>
+      <nav class="footer-nav">
+        <a href="news.html">Stories</a>
+        <a href="news.html#analysis">Analysis</a>
+        <a href="voices.html">Voices</a>
+        <a href="country-results.html">Countries</a>
+        <a href="batting-records.html">Batting</a>
+        <a href="index.html">Compare</a>
+        <a href="simulation.html">Simulation</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Cricket Times. All rights reserved.</span>
+      <span>Statistics powered by comprehensive Test cricket databases</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const GH_OWNER  = 'joidevivre689103';
+const GH_REPO   = 'congenial-eureka';
+const GH_BRANCH = 'main';
+
+// ─── State ───
+let allVoices    = [];
+let activeFilter = 'all';
+
+// ─── Utils ───
+function rawUrl(file) {
+  return `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${file}?t=${Date.now()}`;
+}
+function escapeHTML(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+function formatDate(ts) {
+  if (!ts) return '';
+  return new Date(ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+
+// ─── Dynamic date ───
+document.getElementById('mastheadDate').textContent =
+  new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+// ─── Filter ───
+function setFilter(role) {
+  activeFilter = role;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.role === role);
+  });
+  renderVoices();
+}
+
+// ─── Render ───
+const ROLE_ORDER  = ['player', 'fan', 'expert', 'commentator', 'other'];
+const ROLE_LABELS = { player:'Players', fan:'Fans', expert:'Experts / Analysts', commentator:'Commentators', other:'Others' };
+const ROLE_PILL_LABELS = { player:'Player', fan:'Fan', expert:'Expert', commentator:'Commentator', other:'Other' };
+
+function renderVoices() {
+  const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const main  = document.getElementById('voicesMain');
+
+  // Filter
+  let filtered = allVoices.filter(v => {
+    if (activeFilter !== 'all' && v.role !== activeFilter) return false;
+    if (query) {
+      const hay = [v.name, v.voice, v.context, v.source, ...(v.tags || [])].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(query)) return false;
+    }
+    return true;
+  });
+
+  // Count
+  document.getElementById('voicesCount').textContent =
+    filtered.length === allVoices.length
+      ? `${allVoices.length} voice${allVoices.length !== 1 ? 's' : ''}`
+      : `${filtered.length} of ${allVoices.length}`;
+
+  if (filtered.length === 0) {
+    main.innerHTML = `<div class="no-results">No voices match your search. <a href="#" onclick="document.getElementById('searchInput').value='';setFilter('all');return false;" style="color:var(--accent);">Clear filters</a></div>`;
+    return;
+  }
+
+  // Group by role (or flat if filtering)
+  if (activeFilter !== 'all' || query) {
+    // Flat grid when filtering/searching
+    main.innerHTML = `<div class="voices-grid">${filtered.map(voiceCardHTML).join('')}</div>`;
+  } else {
+    // Grouped by role
+    const grouped = {};
+    filtered.forEach(v => {
+      const role = v.role || 'other';
+      if (!grouped[role]) grouped[role] = [];
+      grouped[role].push(v);
+    });
+    main.innerHTML = ROLE_ORDER
+      .filter(role => grouped[role] && grouped[role].length > 0)
+      .map(role => `
+        <section class="role-section">
+          <div class="role-section-header">
+            <h2 class="role-section-title">${ROLE_LABELS[role]}</h2>
+            <span class="role-section-count">${grouped[role].length} voice${grouped[role].length !== 1 ? 's' : ''}</span>
+            <div class="role-section-rule"></div>
+          </div>
+          <div class="voices-grid">${grouped[role].map(voiceCardHTML).join('')}</div>
+        </section>`
+      ).join('');
+  }
+}
+
+function voiceCardHTML(v) {
+  const role     = v.role || 'other';
+  const roleLabel = ROLE_PILL_LABELS[role] || 'Other';
+  const tags     = (v.tags || []).map(t => `<span class="voice-tag">${escapeHTML(t)}</span>`).join('');
+  const dateStr  = v.createdAt ? formatDate(v.createdAt) : '';
+
+  return `
+    <div class="voice-card" data-role="${role}">
+      <div class="voice-card-quote">${escapeHTML(v.voice)}</div>
+      <div class="voice-card-footer">
+        <div class="voice-card-attribution">
+          <div class="voice-card-name">${escapeHTML(v.name)}</div>
+          ${v.context ? `<div class="voice-card-context">${escapeHTML(v.context)}</div>` : ''}
+          ${v.source  ? `<div class="voice-card-source">${escapeHTML(v.source)}</div>` : ''}
+          ${tags      ? `<div class="voice-card-tags">${tags}</div>` : ''}
+          ${dateStr   ? `<div class="voice-card-date">${dateStr}</div>` : ''}
+        </div>
+        <span class="role-pill ${role}">${roleLabel}</span>
+      </div>
+    </div>`;
+}
+
+// ─── Load from voices.json ───
+(async function loadVoices() {
+  const main = document.getElementById('voicesMain');
+  try {
+    const res  = await fetch(rawUrl('voices.json'));
+    if (!res.ok && res.status !== 404) throw new Error(`HTTP ${res.status}`);
+    const data = res.status === 404 ? null : await res.json();
+
+    if (!data || !data.voices || data.voices.length === 0) {
+      main.innerHTML = `
+        <div class="state-placeholder">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p>No voices published yet.<br>Add voices via the CMS and publish to GitHub.</p>
+        </div>`;
+      document.getElementById('voicesCount').textContent = '0 voices';
+      return;
+    }
+
+    // Show all voices (not just visible:true — this is the full archive)
+    allVoices = data.voices.filter(v => v.visible !== false);
+
+    // Update filter bar to hide empty categories
+    const rolesPresent = new Set(allVoices.map(v => v.role || 'other'));
+    document.querySelectorAll('.filter-btn[data-role]').forEach(btn => {
+      const r = btn.dataset.role;
+      if (r !== 'all' && !rolesPresent.has(r)) btn.style.display = 'none';
+    });
+
+    renderVoices();
+  } catch(e) {
+    main.innerHTML = `
+      <div class="state-placeholder">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>Could not load voices: ${escapeHTML(e.message)}</p>
+      </div>`;
+  }
+})();
+</script>
+
+</body>
+</html>
