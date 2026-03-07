@@ -250,7 +250,6 @@ body{
 .sidebar-item-headline a:hover{ color:var(--accent); }
 .sidebar-item-meta{ font-family:'Inter',sans-serif; font-size:11px; color:var(--text3); margin-top:4px; }
 
-
 /* ─── QUIZ WIDGET ─── */
 .quiz-widget{
   background:var(--surface2);
@@ -385,9 +384,7 @@ body{
 .analysis-card-author span{ color:var(--text3); font-weight:400; }
 @media(max-width:900px){ .analysis-grid{ grid-template-columns:1fr; gap:20px; } }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   SNIPPETS STRIP
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ SNIPPETS STRIP ═══ */
 .snippets-section{
   padding:40px 0;
   border-bottom:1px solid var(--border);
@@ -433,19 +430,8 @@ body{
   color:var(--accent);
   background:var(--accent-dim);
 }
-.snippets-btn:disabled{
-  opacity:0.3;
-  cursor:default;
-}
-.snippets-btn svg{
-  width:16px;
-  height:16px;
-  stroke:currentColor;
-  fill:none;
-  stroke-width:2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
+.snippets-btn:disabled{ opacity:0.3; cursor:default; }
+.snippets-btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 .snippets-grid{
   display:grid;
   grid-template-columns:repeat(4, 1fr);
@@ -466,34 +452,175 @@ body{
   transition:transform 0.2s, box-shadow 0.2s;
   min-height:130px;
 }
-.snippet-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 24px rgba(0,0,0,0.07);
-}
+.snippet-card:hover{ transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,0,0,0.07); }
 .snippet-card::before{
   content:'';
   position:absolute;
-  top:0;
-  left:0;
-  right:0;
+  top:0; left:0; right:0;
   height:3px;
   background:var(--accent);
   border-radius:6px 6px 0 0;
   opacity:0.6;
 }
-.snippet-card-rule{
-  width:28px;
-  height:2px;
-  background:var(--border2);
-  margin-bottom:14px;
-  flex-shrink:0;
+.snippet-card-rule{ width:28px; height:2px; background:var(--border2); margin-bottom:14px; flex-shrink:0; }
+.snippet-card-text{ font-family:'Source Serif 4',Georgia,serif; font-size:14px; line-height:1.65; color:var(--text2); flex:1; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOICES PANEL
+═══════════════════════════════════════════════════════════════════════════ */
+.voices-section{
+  padding:48px 0;
+  border-bottom:1px solid var(--border);
 }
-.snippet-card-text{
+.voices-section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:8px;
+}
+.voices-section-title{
+  font-family:'Playfair Display',serif;
+  font-size:26px;
+  font-weight:700;
+}
+.voices-section-subtitle{
   font-family:'Source Serif 4',Georgia,serif;
   font-size:14px;
+  color:var(--text3);
+  font-style:italic;
+  margin-bottom:28px;
+  border-bottom:1px solid var(--border);
+  padding-bottom:20px;
+}
+.voices-more-link{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.4px;
+  color:var(--accent);
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 18px;
+  border:1.5px solid var(--accent);
+  border-radius:4px;
+  transition:all 0.2s;
+  white-space:nowrap;
+  margin-bottom:4px;
+}
+.voices-more-link:hover{
+  background:var(--accent);
+  color:#fff;
+}
+.voices-more-link svg{
+  width:14px; height:14px;
+  stroke:currentColor; fill:none; stroke-width:2.5;
+  transition:transform 0.2s;
+}
+.voices-more-link:hover svg{ transform:translateX(3px); }
+
+/* Voices grid — horizontal scroll on mobile */
+.voices-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:20px;
+}
+@media(max-width:1200px){ .voices-grid{ grid-template-columns:repeat(3,1fr); } }
+@media(max-width:800px) { .voices-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:520px) { .voices-grid{ grid-template-columns:1fr; } }
+
+.voice-card-front{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:22px 24px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  position:relative;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.voice-card-front:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.08);
+}
+/* left accent rule */
+.voice-card-front::before{
+  content:'';
+  position:absolute;
+  top:18px; bottom:18px; left:0;
+  width:3px;
+  background:var(--accent);
+  border-radius:0 2px 2px 0;
+  opacity:0.55;
+}
+.voice-card-front-quote{
+  font-family:'Playfair Display',serif;
+  font-size:15px;
   line-height:1.65;
-  color:var(--text2);
+  color:var(--text);
+  font-style:italic;
   flex:1;
+}
+/* big opening quote mark */
+.voice-card-front-quote::before{
+  content:'\201C';
+  font-size:40px;
+  line-height:0;
+  vertical-align:-14px;
+  margin-right:4px;
+  color:var(--accent);
+  opacity:0.35;
+  font-family:'Playfair Display',serif;
+}
+.voice-card-front-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:4px;
+  padding-top:12px;
+  border-top:1px solid var(--surface3);
+}
+.voice-card-front-name{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text);
+}
+.voice-card-front-context{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--text3);
+  font-style:italic;
+}
+.voice-role-pill{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  padding:3px 9px;
+  border-radius:20px;
+  flex-shrink:0;
+}
+.voice-role-pill.player    { background:rgba(26,104,72,0.10);  color:#1a6848; }
+.voice-role-pill.fan       { background:rgba(26,72,120,0.10);  color:#1a4878; }
+.voice-role-pill.expert    { background:rgba(120,48,120,0.10); color:#783078; }
+.voice-role-pill.commentator{ background:rgba(160,88,32,0.10);  color:#a05820; }
+.voice-role-pill.other     { background:var(--surface3);       color:var(--text3); }
+
+/* empty state */
+.voices-empty{
+  text-align:center;
+  padding:48px 24px;
+  color:var(--text3);
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-style:italic;
+  border:1px dashed var(--border);
+  border-radius:6px;
 }
 </style>
 <script type="module">
@@ -534,6 +661,8 @@ body{
     <a href="#" class="nav-link">Bowling</a>
     <a href="index.html" class="nav-link external">Compare</a>
     <a href="simulation.html" class="nav-link external">Simulation</a>
+    <a href="voices.html" class="nav-link external">Voices</a>
+    <a href="voices.html" class="nav-link">Voices</a>
     <a href="#" class="nav-link">Share</a>
   </div>
 </nav>
@@ -608,10 +737,7 @@ body{
     </aside>
   </section>
 
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       SNIPPETS STRIP — rendered by JS from snippets.json
-  ═══════════════════════════════════════════════════════════════════════════ -->
+  <!-- SNIPPETS STRIP -->
   <section class="snippets-section" id="snippetsSection" style="display:none">
     <div class="snippets-header">
       <h2 class="snippets-title">From the Desk</h2>
@@ -627,7 +753,6 @@ body{
     </div>
     <div class="snippets-grid" id="snippetsGrid"></div>
   </section>
-
 
   <!-- THREE COLUMN GRID -->
   <section class="content-grid">
@@ -761,6 +886,37 @@ body{
       </article>
     </div>
   </section>
+
+  <!-- ═══ VOICES PANEL ═══ -->
+  <section class="voices-section" id="voicesSection" style="display:none">
+    <div class="voices-section-header">
+      <h2 class="voices-section-title">Voices of the Game</h2>
+      <a href="voices.html" class="voices-more-link">
+        More Voices
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+    <p class="voices-section-subtitle">What players, fans, and experts are saying about Test cricket</p>
+    <div class="voices-grid" id="voicesGrid">
+      <div class="voices-empty">Loading voices…</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       VOICES PANEL — fetched from voices.json
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <section class="voices-section" id="voicesSection" style="display:none">
+    <div class="voices-section-header">
+      <h2 class="voices-section-title">Voices of the Game</h2>
+      <a href="voices.html" class="voices-more-link">
+        More Voices
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+    <p class="voices-section-subtitle">What players, fans, and experts are saying about Test cricket</p>
+    <div class="voices-grid" id="voicesGrid"></div>
+  </section>
+
 </main>
 
 <!-- STATS PROMO -->
@@ -803,6 +959,7 @@ body{
       <nav class="footer-nav">
         <a href="news.html">Stories</a>
         <a href="#analysis">Analysis</a>
+        <a href="voices.html">Voices</a>
         <a href="country-results.html">Countries</a>
         <a href="batting-records.html">Batting</a>
         <a href="#">Bowling</a>
@@ -819,9 +976,6 @@ body{
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MISSING CSS (stats-promo, audio button) — carried over from original
-═══════════════════════════════════════════════════════════════════════════ -->
 <style>
 .stats-promo{
   padding:48px 0;
@@ -871,11 +1025,145 @@ body{
 .footer-inner{ max-width:1400px; margin:0 auto; }
 .footer-top{ display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:32px; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:24px; }
 .footer-brand{ font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:#fff; }
-.footer-nav{ display:flex; gap:32px; }
+.footer-nav{ display:flex; flex-wrap:wrap; gap:24px 32px; }
 .footer-nav a{ font-family:'Inter',sans-serif; font-size:12px; font-weight:500; color:rgba(255,255,255,0.6); text-decoration:none; }
 .footer-nav a:hover{ color:#fff; }
 .footer-bottom{ font-family:'Inter',sans-serif; font-size:11px; color:rgba(255,255,255,0.4); display:flex; justify-content:space-between; }
 @media(max-width:900px){ .footer-top{ flex-direction:column; gap:24px; } .footer-nav{ flex-wrap:wrap; gap:16px; } .footer-bottom{ flex-direction:column; gap:8px; } }
+
+/* ═══ VOICES PANEL ═══ */
+.voices-section{
+  padding:48px 0;
+  border-bottom:1px solid var(--border);
+}
+.voices-section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:6px;
+}
+.voices-section-title{
+  font-family:'Playfair Display',serif;
+  font-size:26px;
+  font-weight:700;
+}
+.voices-section-subtitle{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:14px;
+  color:var(--text3);
+  font-style:italic;
+  margin-bottom:28px;
+  border-bottom:1px solid var(--border);
+  padding-bottom:20px;
+}
+.voices-more-link{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.4px;
+  color:var(--accent);
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 18px;
+  border:1.5px solid var(--accent);
+  border-radius:4px;
+  transition:all 0.2s;
+  white-space:nowrap;
+  margin-bottom:4px;
+}
+.voices-more-link:hover{ background:var(--accent); color:#fff; }
+.voices-more-link svg{
+  width:14px; height:14px;
+  stroke:currentColor; fill:none; stroke-width:2.5;
+  transition:transform 0.2s;
+}
+.voices-more-link:hover svg{ transform:translateX(3px); }
+.voices-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+@media(max-width:1200px){ .voices-grid{ grid-template-columns:repeat(3,1fr); } }
+@media(max-width:800px) { .voices-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:520px) { .voices-grid{ grid-template-columns:1fr; } }
+.voice-card-front{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:22px 24px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  position:relative;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.voice-card-front:hover{ transform:translateY(-3px); box-shadow:0 8px 32px rgba(0,0,0,0.08); }
+.voice-card-front::before{
+  content:'';
+  position:absolute;
+  top:18px; bottom:18px; left:0;
+  width:3px;
+  background:var(--accent);
+  border-radius:0 2px 2px 0;
+  opacity:0.5;
+}
+.voice-card-front-quote{
+  font-family:'Playfair Display',serif;
+  font-size:15px;
+  line-height:1.65;
+  color:var(--text);
+  font-style:italic;
+  flex:1;
+}
+.voice-card-front-quote::before{
+  content:'\201C';
+  font-size:40px;
+  line-height:0;
+  vertical-align:-14px;
+  margin-right:4px;
+  color:var(--accent);
+  opacity:0.3;
+  font-family:'Playfair Display',serif;
+  font-style:normal;
+}
+.voice-card-front-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:4px;
+  padding-top:12px;
+  border-top:1px solid var(--surface3);
+}
+.voice-card-front-name{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text);
+}
+.voice-card-front-context{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--text3);
+  font-style:italic;
+}
+.voice-role-pill{
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  padding:3px 9px;
+  border-radius:20px;
+  flex-shrink:0;
+}
+.voice-role-pill.player     { background:rgba(26,104,72,0.10);  color:#1a6848; }
+.voice-role-pill.fan        { background:rgba(26,72,120,0.10);  color:#1a4878; }
+.voice-role-pill.expert     { background:rgba(120,48,120,0.10); color:#783078; }
+.voice-role-pill.commentator{ background:rgba(160,88,32,0.10);  color:#a05820; }
+.voice-role-pill.other      { background:var(--surface3);       color:var(--text3); }
 </style>
 
 <script>
@@ -946,7 +1234,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   try {
     const data = await ghFetch('ticker.json');
     if (!data) return;
-    // Hide ticker if disabled
     if (data.enabled === false) {
       document.getElementById('tickerBar').style.display = 'none';
       return;
@@ -975,7 +1262,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     const analysisCat      = articles.filter(a => a.category === 'analysis');
     const featuredArticles = articles.filter(a => a.placement === 'featured');
 
-    // ─── HERO ───
     if (heroArticle) {
       const heroMain = document.querySelector('.hero-main');
       if (heroMain) {
@@ -994,7 +1280,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       }
     }
 
-    // ─── MOST READ SIDEBAR ───
     const mostRead = articles.slice(0, 4);
     const sidebarSection = document.querySelector('.sidebar-section');
     if (sidebarSection && mostRead.length > 0) {
@@ -1007,7 +1292,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
           </div>`).join('');
     }
 
-    // ─── THREE COLUMNS ───
     const contentCols = document.querySelectorAll('.content-col');
     if (contentCols.length >= 3) {
       renderColumn(contentCols[0], 'Latest News',  newsCat.length     > 0 ? newsCat     : articles);
@@ -1015,7 +1299,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       renderColumn(contentCols[2], 'Opinion',      opinionCat.length  > 0 ? opinionCat  : articles.slice(-3));
     }
 
-    // ─── ANALYSIS SECTION ───
     const analysisGrid     = document.querySelector('.analysis-grid');
     const analysisArticles = analysisCat.length > 0 ? analysisCat : articles.filter(a => a.readTime >= 10);
     if (analysisGrid && analysisArticles.length > 0) {
@@ -1039,7 +1322,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SNIPPETS — from snippets.json, paginated + autorotate every 60s
+// SNIPPETS
 // ═══════════════════════════════════════════════════════════════════════════
 const SNIPPETS_PER_PAGE  = 4;
 const SNIPPETS_ROTATE_MS = 30000;
@@ -1053,12 +1336,9 @@ function renderSnippetPage() {
   const prevBtn = document.getElementById('snippetsPrev');
   const nextBtn = document.getElementById('snippetsNext');
   const label   = document.getElementById('snippetsPageLabel');
-
   const totalPages = Math.ceil(allSnippets.length / SNIPPETS_PER_PAGE);
   const start      = snippetPage * SNIPPETS_PER_PAGE;
   const page       = allSnippets.slice(start, start + SNIPPETS_PER_PAGE);
-
-  // Fade out, swap content, fade in
   grid.style.transition = 'opacity 0.4s ease';
   grid.style.opacity = '0';
   setTimeout(() => {
@@ -1069,11 +1349,8 @@ function renderSnippetPage() {
       </div>`).join('');
     grid.style.opacity = '1';
   }, 400);
-
   prevBtn.disabled = snippetPage === 0;
   nextBtn.disabled = snippetPage >= totalPages - 1;
-
-  // Dot indicators
   if (totalPages > 1) {
     label.innerHTML = Array.from({ length: totalPages }, (_, i) =>
       `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;margin:0 3px;background:${i === snippetPage ? 'var(--accent)' : 'var(--border2)'};transition:background 0.3s"></span>`
@@ -1083,42 +1360,28 @@ function renderSnippetPage() {
 
 function snippetsPage(dir, manual) {
   const totalPages = Math.ceil(allSnippets.length / SNIPPETS_PER_PAGE);
-  if (dir > 0) {
-    snippetPage = snippetPage >= totalPages - 1 ? 0 : snippetPage + 1;
-  } else {
-    snippetPage = snippetPage <= 0 ? totalPages - 1 : snippetPage - 1;
-  }
+  if (dir > 0) { snippetPage = snippetPage >= totalPages - 1 ? 0 : snippetPage + 1; }
+  else { snippetPage = snippetPage <= 0 ? totalPages - 1 : snippetPage - 1; }
   renderSnippetPage();
   if (manual !== false) resetSnippetTimer();
 }
 
 function startSnippetTimer() {
   if (snippetTimer) clearInterval(snippetTimer);
-  snippetTimer = setInterval(() => {
-    if (!snippetPaused) snippetsPage(1, false);
-  }, SNIPPETS_ROTATE_MS);
+  snippetTimer = setInterval(() => { if (!snippetPaused) snippetsPage(1, false); }, SNIPPETS_ROTATE_MS);
 }
-
 function resetSnippetTimer() { startSnippetTimer(); }
 
 (async function loadSnippets() {
   try {
     const data = await ghFetch('snippets.json');
     if (!data || !Array.isArray(data.snippets)) return;
-
     allSnippets = data.snippets.filter(s => s.enabled && s.text && s.text.trim().length > 0);
     if (allSnippets.length === 0) return;
-
     document.getElementById('snippetsSection').style.display = 'block';
-
     const totalPages = Math.ceil(allSnippets.length / SNIPPETS_PER_PAGE);
-
-    if (totalPages <= 1) {
-      document.querySelector('.snippets-nav').style.display = 'none';
-    }
-
+    if (totalPages <= 1) document.querySelector('.snippets-nav').style.display = 'none';
     renderSnippetPage();
-
     if (totalPages > 1) {
       startSnippetTimer();
       const section = document.getElementById('snippetsSection');
@@ -1127,14 +1390,49 @@ function resetSnippetTimer() { startSnippetTimer(); }
     }
   } catch(e) {
     console.warn('Could not load snippets.json:', e);
-    // Show a visible error in the section for debugging
-    const sec = document.getElementById('snippetsSection');
-    if (sec) {
-      sec.style.display = 'block';
-      document.getElementById('snippetsGrid').innerHTML =
-        `<div style="color:var(--text3);font-family:Inter,sans-serif;font-size:13px;padding:8px 0;grid-column:1/-1">Could not load snippets: ${e.message}</div>`;
-      document.querySelector('.snippets-nav').style.display = 'none';
-    }
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VOICES — from voices.json, shows up to 4 on front page
+// ═══════════════════════════════════════════════════════════════════════════
+(async function loadVoices() {
+  try {
+    const data = await ghFetch('voices.json');
+    if (!data) return;
+    // Respect the section-enabled toggle from CMS
+    if (data.enabled === false) return;
+
+    const voices = (data.voices || []).filter(v => v.visible !== false);
+    if (voices.length === 0) return;
+
+    const section = document.getElementById('voicesSection');
+    const grid    = document.getElementById('voicesGrid');
+
+    // Show max 4 on front page — full list is on voices.html
+    const preview = voices.slice(0, 4);
+
+    const roleLabels = { player:'Player', fan:'Fan', expert:'Expert', commentator:'Commentator', other:'Other' };
+
+    grid.innerHTML = preview.map(v => {
+      const role = v.role || 'other';
+      const roleLabel = roleLabels[role] || 'Other';
+      return `
+        <div class="voice-card-front">
+          <div class="voice-card-front-quote">${escapeHTML(v.voice)}</div>
+          <div class="voice-card-front-footer">
+            <div>
+              <div class="voice-card-front-name">${escapeHTML(v.name)}</div>
+              ${v.context ? `<div class="voice-card-front-context">${escapeHTML(v.context)}</div>` : ''}
+            </div>
+            <span class="voice-role-pill ${role}">${roleLabel}</span>
+          </div>
+        </div>`;
+    }).join('');
+
+    section.style.display = 'block';
+  } catch(e) {
+    console.warn('Could not load voices.json:', e);
   }
 })();
 
@@ -1208,10 +1506,8 @@ function toggleArticleAudio(btn) {
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   if (currentUtterance) { window.speechSynthesis.cancel(); currentUtterance = null; }
   if (currentAudioBtn && currentAudioBtn !== btn) resetBtn(currentAudioBtn);
-
   const text = getArticleText(btn);
-  if (!text || !window.speechSynthesis) { return; }
-
+  if (!text || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 0.95; utterance.pitch = 1.0;
@@ -1221,7 +1517,6 @@ function toggleArticleAudio(btn) {
                     voices.find(v => v.lang.startsWith('en') && v.localService) ||
                     voices.find(v => v.lang.startsWith('en'));
   if (preferred) utterance.voice = preferred;
-
   btn.classList.add('playing'); btn.innerHTML = AUDIO_ICON_PLAYING;
   currentAudioBtn = btn; currentUtterance = utterance;
   const resumeTimer = setInterval(() => {
@@ -1246,12 +1541,10 @@ if (window.speechSynthesis) {
     if (!data) return;
     const quiz = data.today || (data.question ? data : null);
     if (!quiz || !quiz.question || !quiz.optionA || !quiz.optionB || !quiz.optionC || !quiz.correctAnswer) return;
-
     document.getElementById('quizQuestionText').textContent = quiz.question;
     const options = [{ label:'A', text:quiz.optionA },{ label:'B', text:quiz.optionB },{ label:'C', text:quiz.optionC }];
     const container = document.getElementById('quizOptionsContainer');
     let answered = false;
-
     function buildNamePrompt(onSubmit) {
       const wrap = document.createElement('div');
       wrap.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
@@ -1259,7 +1552,6 @@ if (window.speechSynthesis) {
       wrap.querySelector('#quizNameSubmit').addEventListener('click', () => { onSubmit(wrap.querySelector('#quizNameInput').value.trim()); wrap.remove(); });
       return wrap;
     }
-
     options.forEach(opt => {
       const label = document.createElement('label');
       label.className = 'quiz-option';
@@ -1296,7 +1588,34 @@ if (window.speechSynthesis) {
     document.getElementById('quizWidget').style.display = 'block';
   } catch(e) { /* quiz widget stays hidden */ }
 })();
+// ═══════════════════════════════════════════════════════════════════════════
+// VOICES — from voices.json, preview of up to 4 on front page
+// ═══════════════════════════════════════════════════════════════════════════
+(async function loadVoices() {
+  try {
+    const res  = await fetch(rawUrl('voices.json'));
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || data.enabled === false) return;
+    const voices = (data.voices || []).filter(v => v.visible !== false);
+    if (voices.length === 0) return;
+    const roleLabels = { player:'Player', fan:'Fan', expert:'Expert', commentator:'Commentator', other:'Other' };
+    document.getElementById('voicesGrid').innerHTML = voices.slice(0, 4).map(v => {
+      const role = v.role || 'other';
+      return `
+        <div class="voice-card-front">
+          <div class="voice-card-front-quote">${escapeHTML(v.voice)}</div>
+          <div class="voice-card-front-footer">
+            <div>
+              <div class="voice-card-front-name">${escapeHTML(v.name)}</div>
+              ${v.context ? `<div class="voice-card-front-context">${escapeHTML(v.context)}</div>` : ''}
+            </div>
+            <span class="voice-role-pill ${role}">${roleLabels[role] || 'Other'}</span>
+          </div>
+        </div>`;
+    }).join('');
+    document.getElementById('voicesSection').style.display = 'block';
+  } catch(e) { /* section stays hidden */ }
+})();
 </script>
-
-</body>
 </html>
