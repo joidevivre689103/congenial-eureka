@@ -466,22 +466,40 @@ body{
 .snippet-card-text{ font-family:'Source Serif 4',Georgia,serif; font-size:14px; line-height:1.65; color:var(--text2); flex:1; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   VOICES PANEL — compact full-bleed strip
+   VOICES PANEL
 ═══════════════════════════════════════════════════════════════════════════ */
 .voices-section{
-  border-bottom:1px solid var(--border);
+  padding:0 0 48px;
+}
+.voices-band-inner{
+  max-width:1400px;
+  margin:0 auto;
+  padding:0 24px;
 }
 .voices-stage{
   display:flex;
   align-items:stretch;
-  width:100%;
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  position:relative;
+}
+/* accent top bar — matches snippet-card::before */
+.voices-stage::before{
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:3px;
+  background:var(--accent);
+  border-radius:6px 6px 0 0;
+  opacity:0.6;
+  z-index:1;
 }
 .voices-nav-btn{
-  flex:0 0 48px;
+  flex:0 0 40px;
   background:var(--surface2);
   border:none;
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
   cursor:pointer;
   display:flex;
   align-items:center;
@@ -489,67 +507,55 @@ body{
   color:var(--text3);
   transition:background 0.15s, color 0.15s;
 }
-.voices-nav-btn:first-child{ border-left:1px solid var(--border); }
-.voices-nav-btn:last-child{ border-right:1px solid var(--border); }
+.voices-nav-btn:last-child{
+  border-right:none;
+  border-left:1px solid var(--border);
+}
 .voices-nav-btn:hover{ background:var(--surface3); color:var(--accent); }
-.voices-nav-btn svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; }
-.voices-nav-btn:disabled{ opacity:0.2; cursor:default; pointer-events:none; }
+.voices-nav-btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; }
+.voices-nav-btn:disabled{ opacity:0.2; pointer-events:none; }
 
 .voices-card-wrap{
   flex:1;
   min-width:0;
   background:var(--surface);
-  padding:14px 28px;
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
+  padding:20px 22px;
   display:flex;
   align-items:center;
-  gap:24px;
+  gap:20px;
 }
 .voices-quote{
-  font-family:'Inter',sans-serif;
+  font-family:'Source Serif 4',Georgia,serif;
   font-size:14px;
-  font-weight:500;
-  line-height:1.55;
-  color:var(--text);
-  font-style:italic;
+  font-weight:400;
+  font-style:normal;
+  line-height:1.65;
+  color:var(--text2);
   flex:1;
   min-width:0;
 }
-.voices-quote::before{
-  content:'\201C';
-  font-size:22px;
-  line-height:0;
-  vertical-align:-6px;
-  margin-right:3px;
-  color:var(--accent);
-  opacity:0.5;
-  font-style:normal;
-}
-.voices-card-footer{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  flex-shrink:0;
-}
-.voices-name{
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  color:var(--text);
-  white-space:nowrap;
-}
-.voices-context{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  color:var(--text3);
-  white-space:nowrap;
-}
-.voices-card-right{
+.voices-meta{
   display:flex;
   align-items:center;
   gap:10px;
   flex-shrink:0;
+}
+.voices-name{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:13px;
+  font-weight:400;
+  color:var(--text2);
+  white-space:nowrap;
+}
+.voices-context{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:12px;
+  color:var(--text3);
+  white-space:nowrap;
+}
+.voices-sep{
+  color:var(--border2);
+  font-size:12px;
 }
 .voices-counter{
   font-family:'Inter',sans-serif;
@@ -560,18 +566,18 @@ body{
 .voices-more-link{
   font-family:'Inter',sans-serif;
   font-size:11px;
-  font-weight:700;
-  letter-spacing:0.3px;
+  font-weight:600;
   color:var(--accent);
   text-decoration:none;
   display:inline-flex;
   align-items:center;
-  gap:4px;
+  gap:3px;
   white-space:nowrap;
   transition:opacity 0.2s;
+  flex-shrink:0;
 }
 .voices-more-link:hover{ opacity:0.7; }
-.voices-more-link svg{ width:11px; height:11px; stroke:currentColor; fill:none; stroke-width:2.5; transition:transform 0.2s; }
+.voices-more-link svg{ width:10px; height:10px; stroke:currentColor; fill:none; stroke-width:2.5; transition:transform 0.2s; }
 .voices-more-link:hover svg{ transform:translateX(2px); }
 .voice-role-pill{
   font-family:'Inter',sans-serif;
@@ -591,8 +597,8 @@ body{
 .voice-role-pill.other      { background:var(--surface3);       color:var(--text3); }
 
 @media(max-width:768px){
-  .voices-card-wrap{ flex-direction:column; align-items:flex-start; gap:8px; padding:12px 16px; }
-  .voices-context{ display:none; }
+  .voices-context,.voices-sep{ display:none; }
+  .voices-card-wrap{ gap:12px; }
 }
 </style>
 <script type="module">
@@ -895,14 +901,16 @@ body{
 
 <!-- VOICES BAND -->
 <section class="voices-section" id="voicesSection" style="display:none">
-  <div class="voices-stage">
-    <button class="voices-nav-btn" id="voicesPrev" onclick="voicesNav(-1)" aria-label="Previous voice">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="voices-card-wrap" id="voicesCard"></div>
-    <button class="voices-nav-btn" id="voicesNext" onclick="voicesNav(1)" aria-label="Next voice">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
+  <div class="voices-band-inner">
+    <div class="voices-stage">
+      <button class="voices-nav-btn" id="voicesPrev" onclick="voicesNav(-1)" aria-label="Previous voice">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="voices-card-wrap" id="voicesCard"></div>
+      <button class="voices-nav-btn" id="voicesNext" onclick="voicesNav(1)" aria-label="Next voice">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
   </div>
 </section>
 
@@ -1231,16 +1239,15 @@ function resetSnippetTimer() { startSnippetTimer(); }
     function renderVoice() {
       const v = voices[idx];
       const role = v.role || 'other';
+      const context = v.context ? `<span class="voices-sep">·</span><span class="voices-context">${escapeHTML(v.context)}</span>` : '';
       document.getElementById('voicesCard').innerHTML = `
         <div class="voices-quote">${escapeHTML(v.voice)}</div>
-        <div class="voices-card-footer">
+        <div class="voices-meta">
           <span class="voices-name">${escapeHTML(v.name)}</span>
-          ${v.context ? `<span class="voices-context">${escapeHTML(v.context)}</span>` : ''}
+          ${context}
           <span class="voice-role-pill ${role}">${roleLabels[role] || 'Other'}</span>
-        </div>
-        <div class="voices-card-right">
           <span class="voices-counter">${idx + 1} / ${voices.length}</span>
-          <a href="voices.html" class="voices-more-link">More Voices <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <a href="voices.html" class="voices-more-link">More Voices<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
         </div>`;
       document.getElementById('voicesPrev').disabled = idx === 0;
       document.getElementById('voicesNext').disabled = idx === voices.length - 1;
