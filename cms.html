@@ -2028,8 +2028,16 @@ function updateQuizPreview() {
 async function saveQuizToGitHub() {
   const token = document.getElementById('quizGithubToken').value.trim();
   if (!token) { showToast('error','No Token','Enter your GitHub token first.'); return; }
-  const q={question:document.getElementById('quizQuestion').value.trim(),options:{A:document.getElementById('quizOptionA').value.trim(),B:document.getElementById('quizOptionB').value.trim(),C:document.getElementById('quizOptionC').value.trim()},answer:document.getElementById('quizCorrectAnswer').value,contributedBy:document.getElementById('quizContributedBy').value.trim(),date:new Date().toISOString().split('T')[0]};
-  if(!q.question||!q.options.A||!q.options.B||!q.options.C||!q.answer){showToast('error','Incomplete','Fill in all required fields.');return;}
+  const q={
+    question:      document.getElementById('quizQuestion').value.trim(),
+    optionA:       document.getElementById('quizOptionA').value.trim(),
+    optionB:       document.getElementById('quizOptionB').value.trim(),
+    optionC:       document.getElementById('quizOptionC').value.trim(),
+    correctAnswer: document.getElementById('quizCorrectAnswer').value,
+    contributedBy: document.getElementById('quizContributedBy').value.trim(),
+    date:          new Date().toISOString().split('T')[0]
+  };
+  if(!q.question||!q.optionA||!q.optionB||!q.optionC||!q.correctAnswer){showToast('error','Incomplete','Fill in all required fields.');return;}
   showToast('success','Saving…','Publishing quiz to GitHub…');
   try {
     const owner='joidevivre689103', repo='congenial-eureka', path='quiz.json';
