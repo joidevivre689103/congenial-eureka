@@ -678,11 +678,11 @@ header.header{display:none !important}
           <option value="partnerships">Partnerships</option>
         </optgroup>
         <optgroup label="── Head to Head ──">
-          <option value="against">Against (1 vs many)</option>
+          <option value="against">1 Against Many</option>
         </optgroup>
       </select>
     </div>
-    <div class="fp-group" style="min-width:180px;">
+    <div class="fp-group" id="statsTypeGroup" style="min-width:180px;">
       <label style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px;">Stats Type</label>
       <select class="fp-select top-select" id="fStatsType" onchange="handleStatsTypeChange()">
         <option value="both" selected>Both</option>
@@ -2318,6 +2318,9 @@ function handleRecordTypeChange(){
   document.getElementById('partnershipComp').style.display = 'none';
   document.getElementById('againstComp').style.display = 'none';
   document.getElementById('filtersPanel').classList.remove('show');
+  // Restore Stats Type (re-enabled unless we're entering Against mode below)
+  const _stg = document.getElementById('statsTypeGroup');
+  if(_stg){ _stg.style.opacity=''; _stg.style.pointerEvents=''; _stg.title=''; }
 
   if(partnershipMode){
     partnershipArea.classList.remove('hidden');
@@ -2333,6 +2336,9 @@ function handleRecordTypeChange(){
   } else if(againstActive){
     againstArea.classList.remove('hidden'); againstArea.style.display = 'block';
     againstEmpty.classList.remove('hidden'); againstEmpty.style.display = 'block';
+    // Grey out Stats Type — not applicable for 1-against-many view
+    const stg = document.getElementById('statsTypeGroup');
+    if(stg){ stg.style.opacity='0.35'; stg.style.pointerEvents='none'; stg.title='Not applicable for 1 Against Many'; }
     if(!window.againstSearchInit){
       initAgainstSearch(0); initAgainstSearch(1); initAgainstSearch(2);
       window.againstSearchInit = true;
