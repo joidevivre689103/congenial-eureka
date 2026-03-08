@@ -473,7 +473,7 @@ body{
 }
 .voices-stage{
   display:flex;
-  align-items:stretch;
+  align-items:center;
   border:1px solid var(--border);
   border-radius:6px;
   overflow:hidden;
@@ -482,8 +482,8 @@ body{
   margin:0 auto;
   padding:0 24px;
   box-sizing:border-box;
+  background:var(--surface);
 }
-/* accent top bar */
 .voices-stage::before{
   content:'';
   position:absolute;
@@ -495,7 +495,7 @@ body{
   z-index:1;
 }
 .voices-nav-btn{
-  flex:0 0 32px;
+  flex:0 0 28px;
   background:transparent;
   border:none;
   cursor:pointer;
@@ -505,38 +505,64 @@ body{
   color:var(--text3);
   transition:color 0.15s;
   padding:0;
+  flex-shrink:0;
 }
 .voices-nav-btn:hover{ color:var(--accent); }
-.voices-nav-btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; }
+.voices-nav-btn svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
 .voices-nav-btn:disabled{ opacity:0.2; pointer-events:none; }
 
-.voices-card-wrap{
+/* Ticker track */
+.voices-ticker{
   flex:1;
   min-width:0;
-  background:var(--surface);
-  padding:16px 16px;
-  display:flex;
-  align-items:center;
-  gap:16px;
+  overflow:hidden;
+  position:relative;
+  padding:16px 8px;
 }
-.voices-quote{
+.voices-ticker::before,
+.voices-ticker::after{
+  content:'';
+  position:absolute;
+  top:0; bottom:0;
+  width:24px;
+  z-index:2;
+  pointer-events:none;
+}
+.voices-ticker::before{ left:0;  background:linear-gradient(to right, var(--surface), transparent); }
+.voices-ticker::after { right:0; background:linear-gradient(to left,  var(--surface), transparent); }
+
+.voices-ticker-inner{
+  display:flex;
+  width:max-content;
+  animation:voiceScroll var(--scroll-dur, 40s) linear infinite;
+}
+.voices-ticker-inner:hover{ animation-play-state:paused; }
+
+@keyframes voiceScroll{
+  0%   { transform:translateX(0); }
+  100% { transform:translateX(-50%); }
+}
+
+.voices-ticker-text{
   font-family:'Source Serif 4',Georgia,serif;
   font-size:14px;
   font-weight:400;
   font-style:normal;
   line-height:1.5;
   color:var(--text2);
-  flex:1;
-  min-width:0;
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  padding-right:120px;
 }
+
+/* Right-side meta */
 .voices-meta{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
   flex-shrink:0;
+  padding-left:12px;
+  border-left:1px solid var(--border);
+  margin-left:4px;
 }
 .voices-name{
   font-family:'Source Serif 4',Georgia,serif;
@@ -544,12 +570,6 @@ body{
   font-weight:400;
   color:var(--text2);
   white-space:nowrap;
-}
-.voices-controls{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-shrink:0;
 }
 .voices-counter{
   font-family:'Inter',sans-serif;
@@ -882,7 +902,10 @@ body{
     <button class="voices-nav-btn" id="voicesPrev" onclick="voicesNav(-1)" aria-label="Previous voice">
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="voices-card-wrap" id="voicesCard"></div>
+    <div class="voices-ticker" id="voicesTicker">
+      <div class="voices-ticker-inner" id="voicesTickerInner"></div>
+    </div>
+    <div class="voices-meta" id="voicesMeta"></div>
     <button class="voices-nav-btn" id="voicesNext" onclick="voicesNav(1)" aria-label="Next voice">
       <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
@@ -1213,16 +1236,32 @@ function resetSnippetTimer() { startSnippetTimer(); }
 
     function renderVoice() {
       const v = voices[idx];
-      document.getElementById('voicesCard').innerHTML = `
-        <div class="voices-quote">${escapeHTML(v.voice)}</div>
-        <div class="voices-meta">
-          <span class="voices-name">— ${escapeHTML(v.name)}</span>
-          <div class="voices-divider"></div>
-          <div class="voices-controls">
-            <span class="voices-counter">${idx + 1} / ${voices.length}</span>
-            <a href="voices.html" class="voices-more-link">More Voices<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-          </div>
-        </div>`;
+      const text = escapeHTML(v.voice);
+
+      // Duration: ~15 chars/sec is comfortable reading pace for scrolling text
+      const charCount = v.voice.length;
+      const duration  = Math.max(20, Math.round(charCount / 12)) + 's';
+
+      // Duplicate text so scroll loops seamlessly
+      const inner = document.getElementById('voicesTickerInner');
+      inner.innerHTML =
+        `<span class="voices-ticker-text">${text}</span>` +
+        `<span class="voices-ticker-text" aria-hidden="true">${text}</span>`;
+      inner.style.setProperty ? void 0 : null;
+      // Set duration via CSS custom property on parent
+      document.getElementById('voicesTicker').closest('.voices-stage')
+        .style.setProperty('--scroll-dur', duration);
+      // Restart animation
+      inner.style.animation = 'none';
+      inner.offsetHeight; // reflow
+      inner.style.animation = '';
+
+      document.getElementById('voicesMeta').innerHTML =
+        `<span class="voices-name">— ${escapeHTML(v.name)}</span>
+         <div class="voices-divider"></div>
+         <span class="voices-counter">${idx + 1} / ${voices.length}</span>
+         <a href="voices.html" class="voices-more-link">More Voices<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>`;
+
       document.getElementById('voicesPrev').disabled = idx === 0;
       document.getElementById('voicesNext').disabled = idx === voices.length - 1;
     }
