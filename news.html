@@ -480,8 +480,6 @@ body{
   position:relative;
   max-width:1400px;
   margin:0 auto;
-  padding:0 24px;
-  box-sizing:border-box;
   background:var(--surface);
 }
 .voices-stage::before{
@@ -541,24 +539,9 @@ body{
 .voices-meta{
   display:flex;
   align-items:center;
-  gap:8px;
   flex-shrink:0;
-  padding-left:12px;
+  padding:0 16px 0 12px;
   border-left:1px solid var(--border);
-  margin-left:4px;
-}
-.voices-name{
-  font-family:'Source Serif 4',Georgia,serif;
-  font-size:13px;
-  font-weight:400;
-  color:var(--text2);
-  white-space:nowrap;
-}
-.voices-counter{
-  font-family:'Inter',sans-serif;
-  font-size:11px;
-  color:var(--text3);
-  white-space:nowrap;
 }
 .voices-more-link{
   font-family:'Inter',sans-serif;
@@ -881,11 +864,13 @@ body{
 
 <!-- VOICES BAND -->
 <section class="voices-section" id="voicesSection" style="display:none">
-  <div class="voices-stage">
-    <div class="voices-ticker" id="voicesTicker">
-      <div class="voices-ticker-inner" id="voicesTickerInner"></div>
+  <div style="max-width:1400px;margin:0 auto;padding:0 24px">
+    <div class="voices-stage">
+      <div class="voices-ticker" id="voicesTicker">
+        <div class="voices-ticker-inner" id="voicesTickerInner"></div>
+      </div>
+      <div class="voices-meta" id="voicesMeta"></div>
     </div>
-    <div class="voices-meta" id="voicesMeta"></div>
   </div>
 </section>
 
@@ -1213,8 +1198,8 @@ function resetSnippetTimer() { startSnippetTimer(); }
 
     function renderVoice() {
       const v = voices[0];
-      const text = escapeHTML(v.voice);
-      const duration = Math.max(20, Math.round(v.voice.length / 12)) + 's';
+      const text = escapeHTML(v.voice) + ' — ' + escapeHTML(v.name);
+      const duration = Math.max(20, Math.round(text.length / 12)) + 's';
 
       const inner = document.getElementById('voicesTickerInner');
       inner.innerHTML =
@@ -1226,12 +1211,10 @@ function resetSnippetTimer() { startSnippetTimer(); }
       inner.style.animation = '';
 
       document.getElementById('voicesMeta').innerHTML =
-        `<span class="voices-name">— ${escapeHTML(v.name)}</span>
-         <div class="voices-divider"></div>
-         <a href="voices.html" class="voices-more-link">More Voices<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>`;
+        `<a href="voices.html" class="voices-more-link">More Voices<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>`;
     }
 
-    window.voicesNav = function(dir) {};  // no-op, kept for safety
+    window.voicesNav = function(dir) {};
 
     window.voicesNav = function(dir) {
       idx = Math.max(0, Math.min(voices.length - 1, idx + dir));
