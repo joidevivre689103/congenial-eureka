@@ -494,23 +494,6 @@ body{
   opacity:0.6;
   z-index:1;
 }
-.voices-nav-btn{
-  flex:0 0 28px;
-  background:transparent;
-  border:none;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--text3);
-  transition:color 0.15s;
-  padding:0;
-  flex-shrink:0;
-}
-.voices-nav-btn:hover{ color:var(--accent); }
-.voices-nav-btn svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
-.voices-nav-btn:disabled{ opacity:0.2; pointer-events:none; }
-
 /* Ticker track */
 .voices-ticker{
   flex:1;
@@ -899,16 +882,10 @@ body{
 <!-- VOICES BAND -->
 <section class="voices-section" id="voicesSection" style="display:none">
   <div class="voices-stage">
-    <button class="voices-nav-btn" id="voicesPrev" onclick="voicesNav(-1)" aria-label="Previous voice">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
     <div class="voices-ticker" id="voicesTicker">
       <div class="voices-ticker-inner" id="voicesTickerInner"></div>
     </div>
     <div class="voices-meta" id="voicesMeta"></div>
-    <button class="voices-nav-btn" id="voicesNext" onclick="voicesNav(1)" aria-label="Next voice">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
   </div>
 </section>
 
@@ -1235,36 +1212,26 @@ function resetSnippetTimer() { startSnippetTimer(); }
     const roleLabels = { player:'Player', fan:'Fan', expert:'Expert', commentator:'Commentator', other:'Other' };
 
     function renderVoice() {
-      const v = voices[idx];
+      const v = voices[0];
       const text = escapeHTML(v.voice);
+      const duration = Math.max(20, Math.round(v.voice.length / 12)) + 's';
 
-      // Duration: ~15 chars/sec is comfortable reading pace for scrolling text
-      const charCount = v.voice.length;
-      const duration  = Math.max(20, Math.round(charCount / 12)) + 's';
-
-      // Duplicate text so scroll loops seamlessly
       const inner = document.getElementById('voicesTickerInner');
       inner.innerHTML =
         `<span class="voices-ticker-text">${text}</span>` +
         `<span class="voices-ticker-text" aria-hidden="true">${text}</span>`;
-      inner.style.setProperty ? void 0 : null;
-      // Set duration via CSS custom property on parent
-      document.getElementById('voicesTicker').closest('.voices-stage')
-        .style.setProperty('--scroll-dur', duration);
-      // Restart animation
+      document.querySelector('.voices-stage').style.setProperty('--scroll-dur', duration);
       inner.style.animation = 'none';
-      inner.offsetHeight; // reflow
+      inner.offsetHeight;
       inner.style.animation = '';
 
       document.getElementById('voicesMeta').innerHTML =
         `<span class="voices-name">— ${escapeHTML(v.name)}</span>
          <div class="voices-divider"></div>
-         <span class="voices-counter">${idx + 1} / ${voices.length}</span>
          <a href="voices.html" class="voices-more-link">More Voices<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>`;
-
-      document.getElementById('voicesPrev').disabled = idx === 0;
-      document.getElementById('voicesNext').disabled = idx === voices.length - 1;
     }
+
+    window.voicesNav = function(dir) {};  // no-op, kept for safety
 
     window.voicesNav = function(dir) {
       idx = Math.max(0, Math.min(voices.length - 1, idx + dir));
